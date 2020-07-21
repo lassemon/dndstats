@@ -1,5 +1,6 @@
 import { Button, IconButton, TextField } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
+import PublishIcon from '@material-ui/icons/Publish'
 import TaperedRule from 'components/TaperedRule'
 import React, { Fragment } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
@@ -73,8 +74,68 @@ export const ItemStatsInput: React.FC = () => {
     })
   }
 
+  const onDeleteImage = () => {
+    setCurrentItem((item) => {
+      return {
+        ...item,
+        image: React.createElement("img", {
+          width: 200,
+          alt: "",
+          src: "",
+        }),
+      }
+    })
+  }
+
+  const onUpload = (event: any) => {
+    const imageFile = event.target.files[0]
+
+    if (imageFile) {
+      var reader = new FileReader()
+
+      reader.onload = (event) => {
+        if (event && event.target) {
+          const imgtag = React.createElement("img", {
+            width: 200,
+            alt: imageFile.name,
+            src: (event.target.result || "") as string,
+          })
+
+          setCurrentItem((item) => {
+            return {
+              ...item,
+              image: imgtag,
+            }
+          })
+        }
+      }
+
+      reader.readAsDataURL(imageFile)
+    }
+  }
+
   return (
     <div className={classes.root}>
+      <div className={classes.bottomButtons}>
+        <Button component="label">
+          Upload image for item
+          <input
+            type="file"
+            accept="image/*"
+            name="image"
+            id="file"
+            onChange={onUpload}
+            style={{
+              display: "none",
+            }}
+          />
+          <PublishIcon fontSize="large" />
+        </Button>
+        <Button onClick={onDeleteImage} className={classes.deleteButton}>
+          Clear image
+          <DeleteIcon fontSize="large" />
+        </Button>
+      </div>
       <TextField
         id="weapon-name"
         label="Name"

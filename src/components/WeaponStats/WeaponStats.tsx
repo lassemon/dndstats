@@ -23,29 +23,34 @@ export const WeaponStats: React.FC = () => {
   return (
     <div className={classes.root}>
       <OrangeBorder />
-      <h1 className={classes.name}>{currentWeapon.name}</h1>
-      <h2 className={classes.shortDescription}>
-        {currentWeapon.shortDescription}
-      </h2>
-      {currentWeapon.mainDescription.split("\n").map((value, key) => {
-        return <DescriptionBlock key={key}>{value}</DescriptionBlock>
-      })}
-      {currentWeapon.features.map((feature, key) => {
-        return (
-          <Fragment key={key}>
-            <h3 key={`header-${key}`} className={classes.featureName}>
-              {feature.featureName}
-            </h3>
-            {feature.featureDescription.split("\n").map((value, key) => {
-              return (
-                <DescriptionBlock key={`description-${key}`}>
-                  {value}
-                </DescriptionBlock>
-              )
-            })}
-          </Fragment>
-        )
-      })}
+      <div className={classes.topContainer}>
+        <div className={classes.headerContainer}>
+          <h1 className={classes.name}>{currentWeapon.name}</h1>
+          <h2 className={classes.shortDescription}>
+            {currentWeapon.shortDescription}
+          </h2>
+          {currentWeapon.mainDescription.split("\n").map((value, key) => {
+            return <DescriptionBlock key={key}>{value}</DescriptionBlock>
+          })}
+          {currentWeapon.features.map((feature, key) => {
+            return (
+              <Fragment key={key}>
+                <h3 key={`header-${key}`} className={classes.featureName}>
+                  {feature.featureName}
+                </h3>
+                {feature.featureDescription.split("\n").map((value, key) => {
+                  return (
+                    <DescriptionBlock key={`description-${key}`}>
+                      {value}
+                    </DescriptionBlock>
+                  )
+                })}
+              </Fragment>
+            )
+          })}
+        </div>
+        <div>{currentWeapon.image}</div>
+      </div>
       <div className={classes.statsContainer}>
         <TaperedRule />
         <div className={classes.stats}>

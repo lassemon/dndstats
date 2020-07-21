@@ -6,9 +6,10 @@ import React from 'react'
 
 const ItemStatsLayout: React.FC = () => {
   const isPrint = useMediaQuery("print")
+  const isSmall = useMediaQuery("(max-width:600px)")
   return (
-    <Grid container={true} spacing={10} justify="center">
-      <Grid item={true} xs={isPrint ? 12 : 6}>
+    <Grid container={true} spacing={isSmall ? 4 : 10} justify="center">
+      <Grid item={true} xs={12} md={isPrint ? 12 : 6}>
         <ItemStats />
       </Grid>
       {!isPrint && (

@@ -3,7 +3,9 @@ import statblockparch from 'assets/statblockparch.jpg'
 
 export const useStyles = makeStyles((theme) => ({
   main: {
-    padding: "0 2em",
+    [theme.breakpoints.up("md")]: {
+      padding: "0 2em",
+    },
   },
   appBar: {
     backgroundImage: `url(${statblockparch})`,

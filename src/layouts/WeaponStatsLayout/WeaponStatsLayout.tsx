@@ -6,8 +6,9 @@ import React from 'react'
 
 const WeaponStatsLayout: React.FC = () => {
   const isPrint = useMediaQuery("print")
+  const isSmall = useMediaQuery("(max-width:600px)")
   return (
-    <Grid container={true} spacing={10}>
+    <Grid container={true} spacing={isSmall ? 4 : 10}>
       {!isPrint && (
         <Grid item={true} xs={12} md={6}>
           <WeaponStatsInput />

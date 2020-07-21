@@ -28,21 +28,31 @@ export const ItemStats: React.FC = () => {
   return (
     <div className={classes.root}>
       <OrangeBorder />
-      <h1 className={classes.name}>{currentItem.name}</h1>
-      <h2 className={classes.shortDescription}>
-        {currentItem.shortDescription}
-      </h2>
-      {currentItem.features.map((feature, key) => {
-        return (
-          <div key={key}>
-            <h3 key={`header-${key}`} className={classes.featureName}>
-              {feature.featureName}
-            </h3>
-            <DescriptionBlock>{feature.featureDescription}</DescriptionBlock>
-          </div>
-        )
-      })}
-      <MainDescription>{currentItem.mainDescription}</MainDescription>
+      <div className={classes.topContainer}>
+        <div className={classes.headerContainer}>
+          <h1 className={classes.name}>{currentItem.name}</h1>
+          <h2 className={classes.shortDescription}>
+            {currentItem.shortDescription}
+          </h2>
+          {currentItem.features.map((feature, key) => {
+            return (
+              <div key={key}>
+                <h3 key={`header-${key}`} className={classes.featureName}>
+                  {feature.featureName}
+                </h3>
+                <DescriptionBlock>
+                  {feature.featureDescription}
+                </DescriptionBlock>
+              </div>
+            )
+          })}
+        </div>
+        <div>{currentItem.image}</div>
+      </div>
+
+      {currentItem.mainDescription && (
+        <MainDescription>{currentItem.mainDescription}</MainDescription>
+      )}
       <OrangeBorder />
     </div>
   )

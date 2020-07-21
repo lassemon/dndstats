@@ -1,8 +1,16 @@
+import mjolnirImage from 'assets/mjolnirImage'
+import shieldImage from 'assets/shieldImage'
+import React from 'react'
 import { atom } from 'recoil'
 
 export const weaponState = atom({
   key: "weaponState",
   default: {
+    image: React.createElement("img", {
+      width: 200,
+      alt: "mjolnir",
+      src: mjolnirImage,
+    }),
     name: "Mjölnir",
     shortDescription:
       "Whoever holds this hammer shall posess the power of Thor.",
@@ -25,6 +33,11 @@ On a failed save you become exhausted (level of 3) for the duration of the next 
 export const itemState = atom({
   key: "itemState",
   default: {
+    image: React.createElement("img", {
+      width: 200,
+      alt: "greatshield",
+      src: shieldImage,
+    }),
     name: "Greatshield of Artorias",
     shortDescription: "Shield, artifact (requires attunement, 18 str)",
     mainDescription:

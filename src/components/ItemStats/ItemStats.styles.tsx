@@ -13,6 +13,16 @@ export const useStyles = makeStyles((theme) => ({
     "-webkit-print-color-adjust": "exact",
     "-webkit-filter": "opacity(1)",
   },
+  topContainer: {
+    display: "flex",
+    margin: "0.7em 0 2em 0",
+    "& img": {
+      margin: "0.7em 0 0 0.7em",
+    },
+  },
+  headerContainer: {
+    flex: "1 1 auto",
+  },
   orangeBorder: {
     display: "block",
     background: "#e69a28",
@@ -43,7 +53,7 @@ export const useStyles = makeStyles((theme) => ({
   mainDescription: {
     background: "#e0e4c3",
     padding: "1em",
-    margin: "1em 0 2em 0",
+    margin: "0 0 2em 0",
     borderTop: "3px solid #1b1b1b",
     borderBottom: "3px solid #1b1b1b",
   },

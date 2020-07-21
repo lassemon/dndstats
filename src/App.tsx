@@ -39,7 +39,7 @@ const App: React.FC = () => {
               >
                 <Tab label="Item Stats" {...a11yProps(0)} />
                 <Tab label="Weapon Stats" {...a11yProps(1)} />
-                <Tab label="Monster Stats" {...a11yProps(2)} />
+                {/*<Tab label="Monster Stats" {...a11yProps(2)} /> */}
               </Tabs>
             </AppBar>
           )}
