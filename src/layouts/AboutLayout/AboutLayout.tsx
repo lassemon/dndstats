@@ -15,7 +15,8 @@ const AboutLayout: React.FC = () => {
           Use the edit fields to change generated stats to your liking. Some of
           the stats can be left empty and that will make them disappear from the
           generated result. Mandatory stats are not going to disappear even if
-          you leave the input empty.
+          you leave the input empty (for example the Actions header of a
+          monster).
         </Typography>
         <Typography variant="h6">Images</Typography>
         <Typography>
@@ -26,9 +27,8 @@ const AboutLayout: React.FC = () => {
           <br />
           Uploading a new image will always replace the old one.
           <br />
-          Use the "clear image" -button to remove the image entirely. The space
-          the image occupies will also be removed. This will also remove the
-          space the image occupies and leave more room for text.
+          Use the "clear image" -button to remove the image entirely. This will
+          also remove the space the image occupies and leave more room for text.
         </Typography>
         <Typography variant="h6">Printing</Typography>
         <Typography>

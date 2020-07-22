@@ -8,15 +8,15 @@ const WeaponStatsLayout: React.FC = () => {
   const isPrint = useMediaQuery("print")
   const isSmall = useMediaQuery("(max-width:600px)")
   return (
-    <Grid container={true} spacing={isSmall ? 4 : 10}>
-      {!isPrint && (
-        <Grid item={true} xs={12} md={6}>
-          <WeaponStatsInput />
-        </Grid>
-      )}
+    <Grid container={true} spacing={isSmall ? 4 : 10} justify="center">
       <Grid item={true} xs={12} md={isPrint ? 12 : 6}>
         <WeaponStats />
       </Grid>
+      {!isPrint && (
+        <Grid item={true} xs={12}>
+          <WeaponStatsInput />
+        </Grid>
+      )}
     </Grid>
   )
 }

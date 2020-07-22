@@ -38,6 +38,8 @@ const App: React.FC = () => {
                 value={value}
                 onChange={handleChange}
                 aria-label="simple tabs example"
+                variant="scrollable"
+                scrollButtons="auto"
               >
                 <Tab label="Item Stats" {...a11yProps(0)} />
                 <Tab label="Weapon Stats" {...a11yProps(1)} />
