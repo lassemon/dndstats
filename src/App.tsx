@@ -2,6 +2,7 @@ import './App.css'
 
 import { AppBar, Tab, Tabs, ThemeProvider, useMediaQuery } from '@material-ui/core'
 import TabPanel from 'components/TabPanel'
+import AboutLayout from 'layouts/AboutLayout'
 import ItemStatsLayout from 'layouts/ItemStatsLayout'
 import MonsterStatsLayout from 'layouts/MonsterStatsLayout'
 import WeaponStatsLayout from 'layouts/WeaponStatsLayout'
@@ -41,6 +42,7 @@ const App: React.FC = () => {
                 <Tab label="Item Stats" {...a11yProps(0)} />
                 <Tab label="Weapon Stats" {...a11yProps(1)} />
                 <Tab label="Monster Stats" {...a11yProps(2)} />
+                <Tab label="About" {...a11yProps(3)} />
               </Tabs>
             </AppBar>
           )}
@@ -52,6 +54,9 @@ const App: React.FC = () => {
           </TabPanel>
           <TabPanel value={value} index={2}>
             <MonsterStatsLayout />
+          </TabPanel>
+          <TabPanel value={value} index={3}>
+            <AboutLayout />
           </TabPanel>
         </main>
       </ThemeProvider>
