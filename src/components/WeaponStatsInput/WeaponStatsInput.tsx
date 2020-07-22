@@ -118,7 +118,7 @@ export const WeaponStatsInput: React.FC = () => {
     <div className={classes.root}>
       <div className={classes.bottomButtons}>
         <Button component="label">
-          Upload image for item
+          Upload image for weapon
           <input
             type="file"
             accept="image/*"

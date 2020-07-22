@@ -152,6 +152,7 @@ export const ItemStatsInput: React.FC = () => {
         id="weapon-main-description"
         label="Main Description"
         value={currentItem.mainDescription}
+        multiline={true}
         onChange={onChange("mainDescription")}
       />
       {currentItem.features.map((feature, key) => {

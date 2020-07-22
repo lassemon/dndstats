@@ -1,6 +1,6 @@
 html {
   height: 100%;
-  font-size: 13px;
+  font-size: 14px;
 }
 body {
   min-height: 100%;
@@ -12,10 +12,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+img {
+  max-width: 100%;
+}
+
 @media print {
   html,
   body {
-    max-width: 800px;
+    max-width: 1280px;
     margin: 0 auto;
     overflow: hidden;
   }

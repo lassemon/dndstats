@@ -4,7 +4,7 @@ export const useStyles = makeStyles((theme) => ({
   taperedRule: {
     display: "block",
     width: "100%",
-    height: "5px",
+    height: "7px",
     border: "none",
     color: theme.status.blood,
     fill: theme.status.blood,

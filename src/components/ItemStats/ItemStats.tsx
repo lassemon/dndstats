@@ -12,13 +12,19 @@ const OrangeBorder: React.FC = () => {
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
   const classes = useStyles()
-  return <p className={classes.description}>{children}</p>
+  return <p className={classes.blockDescription}>{children}</p>
+}
+
+const DescriptionInline: React.FC = (props) => {
+  const { children } = props
+  const classes = useStyles()
+  return <p className={classes.inlineDescription}>{children}</p>
 }
 
 const MainDescription: React.FC = (props) => {
   const { children } = props
   const classes = useStyles()
-  return <p className={classes.mainDescription}>{children}</p>
+  return <div className={classes.mainDescription}>{children}</div>
 }
 
 export const ItemStats: React.FC = () => {
@@ -40,18 +46,26 @@ export const ItemStats: React.FC = () => {
                 <h3 key={`header-${key}`} className={classes.featureName}>
                   {feature.featureName}
                 </h3>
-                <DescriptionBlock>
+                <DescriptionInline>
                   {feature.featureDescription}
-                </DescriptionBlock>
+                </DescriptionInline>
               </div>
             )
           })}
         </div>
-        <div>{currentItem.image}</div>
+        <div className={classes.imageContainer}>{currentItem.image}</div>
       </div>
 
       {currentItem.mainDescription && (
-        <MainDescription>{currentItem.mainDescription}</MainDescription>
+        <MainDescription>
+          {currentItem.mainDescription.split("\n").map((value, key) => {
+            return (
+              <DescriptionBlock key={`description-${key}`}>
+                {value}
+              </DescriptionBlock>
+            )
+          })}
+        </MainDescription>
       )}
       <OrangeBorder />
     </div>

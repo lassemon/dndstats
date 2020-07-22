@@ -33,12 +33,18 @@ const theme = createMuiTheme({
     },
   },
   overrides: {
+    MuiFormControl: {
+      root: {
+        width: "100%",
+      },
+    },
     MuiTextField: {
       root: {
         "& > label": {
-          fontSize: "2rem",
+          fontSize: "1.5rem",
           fontWeight: "bold",
           color: "#1b1b1b",
+          whiteSpace: "nowrap",
         },
         "& > label.Mui-focused.Mui-focused": {
           color: "#c77b09",

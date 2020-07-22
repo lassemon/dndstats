@@ -49,7 +49,7 @@ export const WeaponStats: React.FC = () => {
             )
           })}
         </div>
-        <div>{currentWeapon.image}</div>
+        <div className={classes.imageContainer}>{currentWeapon.image}</div>
       </div>
       <div className={classes.statsContainer}>
         <TaperedRule />
