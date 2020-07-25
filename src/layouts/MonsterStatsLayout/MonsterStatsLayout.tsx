@@ -6,7 +6,7 @@ import React from 'react'
 
 const MonsterStatsLayout: React.FC = () => {
   const isPrint = useMediaQuery("print")
-  const isSmall = useMediaQuery("(max-width:600px)")
+  const isSmall = useMediaQuery("(max-width:960px)")
   return (
     <Grid container={true} spacing={isPrint ? 0 : isSmall ? 4 : 10}>
       <Grid item={true} xs={12}>

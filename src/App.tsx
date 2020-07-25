@@ -5,6 +5,7 @@ import TabPanel from 'components/TabPanel'
 import AboutLayout from 'layouts/AboutLayout'
 import ItemStatsLayout from 'layouts/ItemStatsLayout'
 import MonsterStatsLayout from 'layouts/MonsterStatsLayout'
+import SpellStatsLayout from 'layouts/SpellStatsLayout'
 import WeaponStatsLayout from 'layouts/WeaponStatsLayout'
 import React, { useState } from 'react'
 import { RecoilRoot } from 'recoil'
@@ -42,9 +43,10 @@ const App: React.FC = () => {
                 scrollButtons="auto"
               >
                 <Tab label="Item Stats" {...a11yProps(0)} />
-                <Tab label="Weapon Stats" {...a11yProps(1)} />
-                <Tab label="Monster Stats" {...a11yProps(2)} />
-                <Tab label="About" {...a11yProps(3)} />
+                <Tab label="Spell Stats" {...a11yProps(1)} />
+                <Tab label="Weapon Stats" {...a11yProps(2)} />
+                <Tab label="Monster Stats" {...a11yProps(3)} />
+                <Tab label="About" {...a11yProps(4)} />
               </Tabs>
             </AppBar>
           )}
@@ -52,12 +54,15 @@ const App: React.FC = () => {
             <ItemStatsLayout />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <WeaponStatsLayout />
+            <SpellStatsLayout />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <MonsterStatsLayout />
+            <WeaponStatsLayout />
           </TabPanel>
           <TabPanel value={value} index={3}>
+            <MonsterStatsLayout />
+          </TabPanel>
+          <TabPanel value={value} index={4}>
             <AboutLayout />
           </TabPanel>
         </main>

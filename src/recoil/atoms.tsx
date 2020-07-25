@@ -55,6 +55,21 @@ export const itemState = atom({
   },
 })
 
+export const spellState = atom({
+  key: "spellState",
+  default: {
+    name: "Eldritch Blast",
+    shortDescription: "Evocation cantrip",
+    mainDescription: `A beam of crackling energy streaks toward a creature within range. Make a ranged spell Attack against the target. On a hit, the target takes 1d10 force damage.`,
+    athigherlevels: `The spell creates more than one beam when you reach higher levels: two beams at 5th Level, three beams at 11th level, and four beams at 17th level. You can direct the beams at the same target or at different ones. Make a separate Attack roll for each beam.`,
+    castingtime: "1 action",
+    range: "120 feet",
+    components: "V, S",
+    duration: "Instantaneous",
+    classes: "Warlock",
+  },
+})
+
 export const monsterState = atom({
   key: "monsterState",
   default: {

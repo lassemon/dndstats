@@ -24,6 +24,10 @@ img {
     overflow: hidden;
   }
 
+  #root {
+    margin: 1em;
+  }
+
   @page {
     size: A4;
     margin: 0;

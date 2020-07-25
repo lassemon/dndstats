@@ -43,9 +43,7 @@ export const ItemStats: React.FC = () => {
           {currentItem.features.map((feature, key) => {
             return (
               <div key={key}>
-                <h3 key={`header-${key}`} className={classes.featureName}>
-                  {feature.featureName}
-                </h3>
+                <h3 className={classes.featureName}>{feature.featureName}</h3>
                 <DescriptionInline>
                   {feature.featureDescription}
                 </DescriptionInline>

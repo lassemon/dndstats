@@ -137,19 +137,19 @@ export const ItemStatsInput: React.FC = () => {
         </Button>
       </div>
       <TextField
-        id="weapon-name"
+        id="item-name"
         label="Name"
         value={currentItem.name}
         onChange={onChange("name")}
       />
       <TextField
-        id="weapon-short-description"
+        id="item-short-description"
         label="Short Description"
         value={currentItem.shortDescription}
         onChange={onChange("shortDescription")}
       />
       <TextField
-        id="weapon-main-description"
+        id="item-main-description"
         label="Main Description"
         value={currentItem.mainDescription}
         multiline={true}
@@ -160,13 +160,13 @@ export const ItemStatsInput: React.FC = () => {
           <Fragment key={key}>
             <div className={classes.featureContainer}>
               <TextField
-                id={`weapon-${key}-feature-name`}
+                id={`item-${key}-feature-name`}
                 label="Feature Name"
                 value={feature.featureName}
                 onChange={onChangeFeatureName(key)}
               />
               <TextField
-                id={`weapon-${key}-feature-description`}
+                id={`item-${key}-feature-description`}
                 label="Feature Description"
                 value={feature.featureDescription}
                 onChange={onChangeFeatureDescription(key)}
