@@ -7,6 +7,7 @@ export const useStyles = makeStyles((theme) => ({
       padding: "0 2em",
     },
     maxWidth: "1280px",
+    margin: "0 auto",
   },
   appBar: {
     backgroundImage: `url(${statblockparch})`,

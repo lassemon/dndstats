@@ -1,6 +1,6 @@
 import './App.css'
 
-import { AppBar, Button, Tab, Tabs, ThemeProvider, Toolbar, useMediaQuery } from '@material-ui/core'
+import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar } from '@material-ui/core'
 import PrintIcon from '@material-ui/icons/Print'
 import TabPanel from 'components/TabPanel'
 import AboutLayout from 'layouts/AboutLayout'
@@ -24,20 +24,19 @@ function a11yProps(index: number) {
 const App: React.FC = () => {
   const classes = useStyles()
   const [value, setValue] = useState(0)
-  const isPrint = useMediaQuery("print")
 
   const handleChange = (event: any, newValue: number) => {
     setValue(newValue)
   }
 
-  const onPrint = () => {
+  const onPrint = (event: any) => {
     window.print()
   }
 
   return (
     <RecoilRoot>
       <ThemeProvider theme={theme}>
-        {!isPrint && (
+        <Box display="block" displayPrint="none">
           <AppBar position="static" className={classes.appBar}>
             <Toolbar>
               <Tabs
@@ -65,7 +64,7 @@ const App: React.FC = () => {
               </Button>
             </Toolbar>
           </AppBar>
-        )}
+        </Box>
         <main className={classes.main}>
           <TabPanel value={value} index={0}>
             <ItemStatsLayout />
