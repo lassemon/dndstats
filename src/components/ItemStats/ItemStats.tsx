@@ -1,13 +1,9 @@
+import StatsContainer from 'components/StatsContainer'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { itemState } from 'recoil/atoms'
 
 import useStyles from './ItemStats.styles'
-
-const OrangeBorder: React.FC = () => {
-  const classes = useStyles()
-  return <hr className={classes.orangeBorder} />
-}
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -32,8 +28,7 @@ export const ItemStats: React.FC = () => {
   const currentItem = useRecoilValue(itemState)
 
   return (
-    <div className={classes.root}>
-      <OrangeBorder />
+    <StatsContainer>
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>
           <h1 className={classes.name}>{currentItem.name}</h1>
@@ -65,8 +60,7 @@ export const ItemStats: React.FC = () => {
           })}
         </MainDescription>
       )}
-      <OrangeBorder />
-    </div>
+    </StatsContainer>
   )
 }
 

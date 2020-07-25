@@ -1,12 +1,10 @@
 import { Grid, TextField } from '@material-ui/core'
+import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { spellState } from 'recoil/atoms'
 
-import useStyles from './SpellStatsInput.styles'
-
 export const SpellStatsInput: React.FC = () => {
-  const classes = useStyles()
   const currentSpell = useRecoilValue(spellState)
   const setCurrentSpell = useSetRecoilState(spellState)
 
@@ -16,7 +14,7 @@ export const SpellStatsInput: React.FC = () => {
     })
 
   return (
-    <div className={classes.root}>
+    <StatsInputContainer>
       <Grid container={true} spacing={2}>
         <Grid item={true} xs={12}>
           <TextField
@@ -93,7 +91,7 @@ export const SpellStatsInput: React.FC = () => {
           />
         </Grid>
       </Grid>
-    </div>
+    </StatsInputContainer>
   )
 }
 

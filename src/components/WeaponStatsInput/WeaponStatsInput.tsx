@@ -1,19 +1,17 @@
-import { Button, IconButton, TextField } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import PublishIcon from '@material-ui/icons/Publish'
+import { Button, TextField } from '@material-ui/core'
+import FeatureInputContainer from 'components/FeatureInputContainer'
+import ImageButtons from 'components/ImageButtons'
+import StatsInputContainer from 'components/StatsInputContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { Fragment } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { weaponState } from 'recoil/atoms'
-
-import useStyles from './WeaponStatsInput.styles'
 
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
 }
 
 export const WeaponStatsInput: React.FC = () => {
-  const classes = useStyles()
   const currentWeapon = useRecoilValue(weaponState)
   const setCurrentWeapon = useSetRecoilState(weaponState)
 
@@ -115,27 +113,8 @@ export const WeaponStatsInput: React.FC = () => {
   }
 
   return (
-    <div className={classes.root}>
-      <div className={classes.bottomButtons}>
-        <Button component="label">
-          Upload image for weapon
-          <input
-            type="file"
-            accept="image/*"
-            name="image"
-            id="file"
-            onChange={onUpload}
-            style={{
-              display: "none",
-            }}
-          />
-          <PublishIcon fontSize="large" />
-        </Button>
-        <Button onClick={onDeleteImage} className={classes.deleteButton}>
-          Clear image
-          <DeleteIcon fontSize="large" />
-        </Button>
-      </div>
+    <StatsInputContainer>
+      <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
       <TextField
         id="weapon-name"
         label="Name"
@@ -158,7 +137,7 @@ export const WeaponStatsInput: React.FC = () => {
       {currentWeapon.features.map((feature, key) => {
         return (
           <Fragment key={key}>
-            <div className={classes.featureContainer}>
+            <FeatureInputContainer onDelete={onDeleteFeature(key)}>
               <TextField
                 id={`weapon-${key}-feature-name`}
                 label="Feature Name"
@@ -172,16 +151,7 @@ export const WeaponStatsInput: React.FC = () => {
                 value={feature.featureDescription}
                 onChange={onChangeFeatureDescription(key)}
               />
-              <div className={classes.deleteButtonContainer}>
-                <IconButton
-                  aria-label="delete"
-                  className={classes.deleteButton}
-                  onClick={onDeleteFeature(key)}
-                >
-                  <DeleteIcon fontSize="large" />
-                </IconButton>
-              </div>
-            </div>
+            </FeatureInputContainer>
             {currentWeapon.features.length > 1 &&
               key < currentWeapon.features.length - 1 && <TaperedRule />}
           </Fragment>
@@ -208,7 +178,7 @@ export const WeaponStatsInput: React.FC = () => {
         value={currentWeapon.properties}
         onChange={onChange("properties")}
       />
-    </div>
+    </StatsInputContainer>
   )
 }
 

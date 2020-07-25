@@ -1,5 +1,3 @@
-import './App.css'
-
 import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar } from '@material-ui/core'
 import PrintIcon from '@material-ui/icons/Print'
 import TabPanel from 'components/TabPanel'

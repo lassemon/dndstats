@@ -1,14 +1,10 @@
+import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { monsterState } from 'recoil/atoms'
 
 import useStyles from './MonsterStats.styles'
-
-const OrangeBorder: React.FC = () => {
-  const classes = useStyles()
-  return <hr className={classes.orangeBorder} />
-}
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -28,8 +24,7 @@ export const MonsterStats: React.FC = () => {
 
   return (
     <div className={classes.root}>
-      <div className={classes.monsterContainer}>
-        <OrangeBorder />
+      <StatsContainer className={classes.monsterContainer}>
         <h1 className={classes.name}>{currentMonster.name}</h1>
         <h2 className={classes.shortDescription}>
           {currentMonster.shortDescription}
@@ -50,7 +45,7 @@ export const MonsterStats: React.FC = () => {
           </div>
         </div>
         <TaperedRule />
-        <div className={classes.statsContainer}>
+        <div>
           <div className={classes.stats}>
             <div className={classes.statHeader}>STR</div>
             <div className={classes.statHeader}>DEX</div>
@@ -189,8 +184,7 @@ export const MonsterStats: React.FC = () => {
             </div>
           )}
         </div>
-        <OrangeBorder />
-      </div>
+      </StatsContainer>
       <div className={classes.imageContainer}>
         {currentMonster.image}
         {currentMonster.mainDescription && (

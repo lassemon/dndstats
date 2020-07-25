@@ -1,14 +1,10 @@
+import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { Fragment } from 'react'
 import { useRecoilValue } from 'recoil'
 import { weaponState } from 'recoil/atoms'
 
 import useStyles from './WeaponStats.styles'
-
-const OrangeBorder: React.FC = () => {
-  const classes = useStyles()
-  return <hr className={classes.orangeBorder} />
-}
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -21,8 +17,7 @@ export const WeaponStats: React.FC = () => {
   const currentWeapon = useRecoilValue(weaponState)
 
   return (
-    <div className={classes.root}>
-      <OrangeBorder />
+    <StatsContainer>
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>
           <h1 className={classes.name}>{currentWeapon.name}</h1>
@@ -51,7 +46,7 @@ export const WeaponStats: React.FC = () => {
         </div>
         <div className={classes.imageContainer}>{currentWeapon.image}</div>
       </div>
-      <div className={classes.statsContainer}>
+      <div>
         <TaperedRule />
         <div className={classes.stats}>
           <div className={classes.statHeader}>Damage</div>
@@ -70,8 +65,7 @@ export const WeaponStats: React.FC = () => {
         </div>
         <TaperedRule />
       </div>
-      <OrangeBorder />
-    </div>
+    </StatsContainer>
   )
 }
 

@@ -6,16 +6,25 @@ declare module "@material-ui/core/styles/createMuiTheme" {
       blood: React.CSSProperties["color"]
       light: React.CSSProperties["color"]
     }
+    custom: {
+      boxShadow: string
+    }
   }
   interface ThemeOptions {
     status: {
       blood: React.CSSProperties["color"]
       light: React.CSSProperties["color"]
     }
+    custom: {
+      boxShadow: string
+    }
   }
 }
 
 const theme = createMuiTheme({
+  custom: {
+    boxShadow: "0.1rem 0 0.5rem #afaba5, -0.1rem 0 0.5rem #afaba5",
+  },
   typography: {
     fontSize: 16,
   },

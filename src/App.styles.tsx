@@ -3,9 +3,7 @@ import statblockparch from 'assets/statblockparch.jpg'
 
 export const useStyles = makeStyles((theme) => ({
   main: {
-    [theme.breakpoints.up("md")]: {
-      padding: "0 2em",
-    },
+    padding: "0 1em 2em 1em",
     maxWidth: "1280px",
     margin: "0 auto",
   },

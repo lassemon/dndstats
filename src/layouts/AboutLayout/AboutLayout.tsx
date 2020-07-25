@@ -1,4 +1,5 @@
 import { Typography } from '@material-ui/core'
+import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
 
 import useStyles from './AboutLayout.styles'
@@ -8,7 +9,7 @@ const AboutLayout: React.FC = () => {
   return (
     <>
       <Typography variant="h3">About</Typography>
-      <div className={classes.root}>
+      <StatsInputContainer className={classes.root}>
         <Typography variant="h4">How to use</Typography>
         <Typography variant="h6">Text fields</Typography>
         <Typography>
@@ -68,7 +69,7 @@ const AboutLayout: React.FC = () => {
           </a>
           .
         </Typography>
-      </div>
+      </StatsInputContainer>
     </>
   )
 }

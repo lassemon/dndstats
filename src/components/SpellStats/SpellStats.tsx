@@ -1,14 +1,10 @@
+import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { spellState } from 'recoil/atoms'
 
 import useStyles from './SpellStats.styles'
-
-const OrangeBorder: React.FC = () => {
-  const classes = useStyles()
-  return <hr className={classes.orangeBorder} />
-}
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -33,8 +29,7 @@ export const SpellStats: React.FC = () => {
   const currentSpell = useRecoilValue(spellState)
 
   return (
-    <div className={classes.root}>
-      <OrangeBorder />
+    <StatsContainer>
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>
           <h1 className={classes.name}>{currentSpell.name}</h1>
@@ -84,8 +79,7 @@ export const SpellStats: React.FC = () => {
           </MainDescription>
         </>
       )}
-      <OrangeBorder />
-    </div>
+    </StatsContainer>
   )
 }
 

@@ -1,18 +1,16 @@
-import { Button, Grid, IconButton, TextField } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import PublishIcon from '@material-ui/icons/Publish'
+import { Button, Grid, TextField } from '@material-ui/core'
+import FeatureInputContainer from 'components/FeatureInputContainer'
+import ImageButtons from 'components/ImageButtons'
+import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { monsterState } from 'recoil/atoms'
-
-import useStyles from './MonsterStatsInput.styles'
 
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
 }
 
 export const MonsterStatsInput: React.FC = () => {
-  const classes = useStyles()
   const currentMonster = useRecoilValue(monsterState)
   const setCurrentMonster = useSetRecoilState(monsterState)
 
@@ -218,27 +216,8 @@ export const MonsterStatsInput: React.FC = () => {
   }
 
   return (
-    <div className={classes.root}>
-      <div className={classes.bottomButtons}>
-        <Button component="label">
-          Upload image for monster
-          <input
-            type="file"
-            accept="image/*"
-            name="image"
-            id="file"
-            onChange={onUpload}
-            style={{
-              display: "none",
-            }}
-          />
-          <PublishIcon fontSize="large" />
-        </Button>
-        <Button onClick={onDeleteImage} className={classes.deleteButton}>
-          Clear image
-          <DeleteIcon fontSize="large" />
-        </Button>
-      </div>
+    <StatsInputContainer>
+      <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
       <TextField
         id="monster-name"
         label="Name"
@@ -260,7 +239,7 @@ export const MonsterStatsInput: React.FC = () => {
       />
       {/* BASE STATS */}
       <Grid container={true} spacing={2}>
-        <Grid item={true} xs={4}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-AC"
             label="Armor Class"
@@ -268,7 +247,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("AC")}
           />
         </Grid>
-        <Grid item={true} xs={4}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-HP"
             label="Hit Points"
@@ -276,7 +255,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("HP")}
           />
         </Grid>
-        <Grid item={true} xs={4}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-speed"
             label="Speed"
@@ -338,7 +317,7 @@ export const MonsterStatsInput: React.FC = () => {
       </Grid>
       {/* EXTRA STATS */}
       <Grid container={true} spacing={2}>
-        <Grid item={true} xs={4} sm={3}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-skills"
             label="Skills"
@@ -346,7 +325,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("skills")}
           />
         </Grid>
-        <Grid item={true} xs={4} sm={3}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-saving-throws"
             label="Saving Throws"
@@ -354,7 +333,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("savingthrows")}
           />
         </Grid>
-        <Grid item={true} xs={4} sm={3}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-resistance"
             label="Damage Resistance"
@@ -362,7 +341,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("resistance")}
           />
         </Grid>
-        <Grid item={true} xs={4} sm={3}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-damage-immunities"
             label="Damage Immunities"
@@ -370,7 +349,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("damageimmunities")}
           />
         </Grid>
-        <Grid item={true} xs={4} sm={3}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-condition-immunities"
             label="Condition Immunities"
@@ -378,7 +357,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("conditionimmunities")}
           />
         </Grid>
-        <Grid item={true} xs={4} sm={3}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-senses"
             label="Senses"
@@ -386,7 +365,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("senses")}
           />
         </Grid>
-        <Grid item={true} xs={4} sm={3}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-languages"
             label="Languages"
@@ -394,7 +373,7 @@ export const MonsterStatsInput: React.FC = () => {
             onChange={onChange("languages")}
           />
         </Grid>
-        <Grid item={true} xs={4} sm={3}>
+        <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-challenge"
             label="Challenge"
@@ -407,7 +386,7 @@ export const MonsterStatsInput: React.FC = () => {
         {currentMonster.features.map((feature, key) => {
           return (
             <Grid key={key} item={true} xs={6}>
-              <div className={classes.featureContainer}>
+              <FeatureInputContainer onDelete={onDeleteFeature(key)}>
                 <TextField
                   id={`monster-${key}-feature-name`}
                   label="Feature Name"
@@ -421,16 +400,7 @@ export const MonsterStatsInput: React.FC = () => {
                   value={feature.description}
                   onChange={onChangeFeatureDescription(key)}
                 />
-                <div className={classes.deleteButtonContainer}>
-                  <IconButton
-                    aria-label="delete"
-                    className={classes.deleteButton}
-                    onClick={onDeleteFeature(key)}
-                  >
-                    <DeleteIcon fontSize="large" />
-                  </IconButton>
-                </div>
-              </div>
+              </FeatureInputContainer>
             </Grid>
           )
         })}
@@ -442,7 +412,7 @@ export const MonsterStatsInput: React.FC = () => {
         {currentMonster.actions.map((action, key) => {
           return (
             <Grid key={key} item={true} xs={6}>
-              <div className={classes.featureContainer}>
+              <FeatureInputContainer onDelete={onDeleteAction(key)}>
                 <TextField
                   id={`monster-${key}-action-name`}
                   label="Action Name"
@@ -456,16 +426,7 @@ export const MonsterStatsInput: React.FC = () => {
                   value={action.description}
                   onChange={onChangeActionDescription(key)}
                 />
-                <div className={classes.deleteButtonContainer}>
-                  <IconButton
-                    aria-label="delete"
-                    className={classes.deleteButton}
-                    onClick={onDeleteAction(key)}
-                  >
-                    <DeleteIcon fontSize="large" />
-                  </IconButton>
-                </div>
-              </div>
+              </FeatureInputContainer>
             </Grid>
           )
         })}
@@ -478,7 +439,7 @@ export const MonsterStatsInput: React.FC = () => {
         {currentMonster.reactions.map((reaction, key) => {
           return (
             <Grid key={key} item={true} xs={6}>
-              <div className={classes.featureContainer}>
+              <FeatureInputContainer onDelete={onDeleteReaction(key)}>
                 <TextField
                   id={`monster-${key}-reaction-name`}
                   label="Reaction Name"
@@ -492,16 +453,7 @@ export const MonsterStatsInput: React.FC = () => {
                   value={reaction.description}
                   onChange={onChangeReactionDescription(key)}
                 />
-                <div className={classes.deleteButtonContainer}>
-                  <IconButton
-                    aria-label="delete"
-                    className={classes.deleteButton}
-                    onClick={onDeleteReaction(key)}
-                  >
-                    <DeleteIcon fontSize="large" />
-                  </IconButton>
-                </div>
-              </div>
+              </FeatureInputContainer>
             </Grid>
           )
         })}
@@ -509,7 +461,7 @@ export const MonsterStatsInput: React.FC = () => {
       <Button variant="contained" color="primary" onClick={onAddReaction}>
         Add reaction
       </Button>
-    </div>
+    </StatsInputContainer>
   )
 }
 
