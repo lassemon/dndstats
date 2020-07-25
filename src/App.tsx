@@ -1,6 +1,7 @@
 import './App.css'
 
-import { AppBar, Tab, Tabs, ThemeProvider, useMediaQuery } from '@material-ui/core'
+import { AppBar, Button, Tab, Tabs, ThemeProvider, Toolbar, useMediaQuery } from '@material-ui/core'
+import PrintIcon from '@material-ui/icons/Print'
 import TabPanel from 'components/TabPanel'
 import AboutLayout from 'layouts/AboutLayout'
 import ItemStatsLayout from 'layouts/ItemStatsLayout'
@@ -29,16 +30,21 @@ const App: React.FC = () => {
     setValue(newValue)
   }
 
+  const onPrint = () => {
+    window.print()
+  }
+
   return (
     <RecoilRoot>
       <ThemeProvider theme={theme}>
-        <main className={classes.main}>
-          {!isPrint && (
-            <AppBar position="static" className={classes.appBar}>
+        {!isPrint && (
+          <AppBar position="static" className={classes.appBar}>
+            <Toolbar>
               <Tabs
+                className={classes.tabs}
                 value={value}
                 onChange={handleChange}
-                aria-label="simple tabs example"
+                aria-label="dnd stats tabs"
                 variant="scrollable"
                 scrollButtons="auto"
               >
@@ -48,8 +54,19 @@ const App: React.FC = () => {
                 <Tab label="Monster Stats" {...a11yProps(3)} />
                 <Tab label="About" {...a11yProps(4)} />
               </Tabs>
-            </AppBar>
-          )}
+              <Button
+                className={classes.printIcon}
+                variant="contained"
+                color="primary"
+                onClick={onPrint}
+                endIcon={<PrintIcon />}
+              >
+                Print page
+              </Button>
+            </Toolbar>
+          </AppBar>
+        )}
+        <main className={classes.main}>
           <TabPanel value={value} index={0}>
             <ItemStatsLayout />
           </TabPanel>
