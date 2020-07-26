@@ -19,7 +19,7 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
   return (
     <div className={classes.bottomButtons}>
       <Button component="label">
-        Upload image for item
+        Upload image
         <input
           type="file"
           accept="image/*"

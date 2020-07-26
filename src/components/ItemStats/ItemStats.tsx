@@ -29,15 +29,15 @@ export const ItemStats: React.FC = () => {
 
   return (
     <StatsContainer>
-      <div className={classes.topContainer}>
-        <div className={classes.headerContainer}>
+      <div className={classes.root}>
+        <div className={classes.textContainer}>
           <h1 className={classes.name}>{currentItem.name}</h1>
           <h2 className={classes.shortDescription}>
             {currentItem.shortDescription}
           </h2>
           {currentItem.features.map((feature, key) => {
             return (
-              <div key={key}>
+              <div className={classes.featureContainer} key={key}>
                 <h3 className={classes.featureName}>{feature.featureName}</h3>
                 <DescriptionInline>
                   {feature.featureDescription}
@@ -45,21 +45,20 @@ export const ItemStats: React.FC = () => {
               </div>
             )
           })}
+          {currentItem.mainDescription && (
+            <MainDescription>
+              {currentItem.mainDescription.split("\n").map((value, key) => {
+                return (
+                  <DescriptionBlock key={`description-${key}`}>
+                    {value}
+                  </DescriptionBlock>
+                )
+              })}
+            </MainDescription>
+          )}
         </div>
         <div className={classes.imageContainer}>{currentItem.image}</div>
       </div>
-
-      {currentItem.mainDescription && (
-        <MainDescription>
-          {currentItem.mainDescription.split("\n").map((value, key) => {
-            return (
-              <DescriptionBlock key={`description-${key}`}>
-                {value}
-              </DescriptionBlock>
-            )
-          })}
-        </MainDescription>
-      )}
     </StatsContainer>
   )
 }

@@ -1,16 +1,15 @@
 import { makeStyles } from '@material-ui/core'
 
 export const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+  },
   imageContainer: {
     "& > img": {
       width: "100%",
     },
   },
-  topContainer: {
-    display: "flex",
-    margin: "0 0 2em 0",
-  },
-  headerContainer: {
+  textContainer: {
     flex: "1 0 60%",
   },
   name: {
@@ -31,6 +30,7 @@ export const useStyles = makeStyles((theme) => ({
   mainDescription: {
     background: "#e0e4c3",
     padding: "0",
+    margin: "1em 0 0 0",
     borderTop: "3px solid #1b1b1b",
     borderBottom: "3px solid #1b1b1b",
   },
@@ -39,6 +39,9 @@ export const useStyles = makeStyles((theme) => ({
   },
   inlineDescription: {
     display: "inline",
+  },
+  featureContainer: {
+    margin: "0 0 0.5em 0",
   },
   featureName: {
     color: "#1b1b1b",
