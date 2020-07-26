@@ -13,7 +13,15 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
   const isPrint = useMediaQuery("print")
   const isSmall = useMediaQuery("(max-width:960px)")
   return (
-    <Grid container={true} spacing={isSmall ? 4 : 10} justify="center">
+    <Grid
+      container={true}
+      spacing={isSmall ? 4 : 6}
+      justify="center"
+      style={{
+        margin: 0,
+        width: "100%",
+      }}
+    >
       <Grid item={true} xs={12} md={isPrint ? 12 : widthPoint}>
         {statsComponent}
       </Grid>

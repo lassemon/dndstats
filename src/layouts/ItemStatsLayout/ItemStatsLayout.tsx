@@ -8,7 +8,7 @@ const ItemStatsLayout: React.FC = () => {
     <StatsLayout
       statsComponent={<ItemStats />}
       inputComponent={<ItemStatsInput />}
-      widthPoint={6}
+      widthPoint={7}
     />
   )
 }

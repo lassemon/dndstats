@@ -11,7 +11,7 @@ export const useStyles = makeStyles((theme) => ({
     "-webkit-filter": "opacity(1)",
     display: "flex",
     flexDirection: "column",
-    "& > *": {
+    "&& > *": {
       flex: "1 1 100%",
       margin: "0 0 3em 0",
     },
