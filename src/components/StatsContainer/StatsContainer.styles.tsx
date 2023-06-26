@@ -1,4 +1,4 @@
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from '@mui/material'
 import statblockparch from 'assets/statblockparch.jpg'
 
 export const useStyles = makeStyles((theme) => ({

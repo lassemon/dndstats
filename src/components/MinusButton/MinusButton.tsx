@@ -16,10 +16,10 @@ const MinusButton: React.FC<MinusButtonProps> = (props) => {
       aria-label="minus"
       className={classes.minusButton}
       onClick={onClick}
-      size="large">
+    >
       <MinusIcon fontSize="large" />
     </IconButton>
-  );
+  )
 }
 
 export default MinusButton

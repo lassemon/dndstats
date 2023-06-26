@@ -16,7 +16,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
     <Grid
       container={true}
       spacing={4}
-      justifyContent="center"
+      justify="center"
       style={{
         margin: 0,
         width: '100%'
@@ -33,7 +33,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
         </Box>
       </Grid>
     </Grid>
-  );
+  )
 }
 
 export default StatsLayout

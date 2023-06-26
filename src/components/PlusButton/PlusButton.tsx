@@ -16,10 +16,10 @@ const PlusButton: React.FC<PlusButtonProps> = (props) => {
       aria-label="plus"
       className={classes.plusButton}
       onClick={onClick}
-      size="large">
+    >
       <PlusIcon fontSize="large" />
     </IconButton>
-  );
+  )
 }
 
 export default PlusButton
