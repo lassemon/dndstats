@@ -1,12 +1,4 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  Tab,
-  Tabs,
-  ThemeProvider,
-  Toolbar
-} from '@mui/material'
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
 import PrintIcon from '@mui/icons-material/Print'
 import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'
@@ -25,6 +17,7 @@ import { RecoilRoot } from 'recoil'
 import theme from 'theme'
 
 import useStyles from './App.styles'
+import { AppBar, Box, Button, Tab, Tabs, Toolbar } from '@mui/material'
 
 function a11yProps(index: number) {
   return {
@@ -87,61 +80,64 @@ const App: React.FC = () => {
 
   return (
     <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        <Box display="block" displayPrint="none">
-          <AppBar position="static" className={classes.appBar}>
-            <Toolbar>
-              <Tabs
-                className={classes.tabs}
-                value={value}
-                onChange={handleChange}
-                aria-label="dnd stats tabs"
-                variant="scrollable"
-                scrollButtons="on"
-              >
-                <Tab label="Item Stats" {...a11yProps(0)} />
-                <Tab label="Spell Stats" {...a11yProps(1)} />
-                <Tab label="Weapon Stats" {...a11yProps(2)} />
-                <Tab label="Monster Stats" {...a11yProps(3)} />
-                <Tab label="Combat Tracker" {...a11yProps(4)} />
-                <Tab label="About" {...a11yProps(5)} />
-              </Tabs>
-              <ToggleButton onClick={onToggleBg} />
-              <PlusButton onClick={onFontSizeLarger} />
-              <MinusButton onClick={onFontSizeSmaller} />
-              <Button
-                className={classes.printIcon}
-                variant="contained"
-                color="primary"
-                onClick={onPrint}
-                endIcon={<PrintIcon />}
-              >
-                Print page
-              </Button>
-            </Toolbar>
-          </AppBar>
-        </Box>
-        <main className={classes.main}>
-          <TabPanel value={value} index={0}>
-            <ItemStatsLayout />
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <SpellStatsLayout />
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            <WeaponStatsLayout />
-          </TabPanel>
-          <TabPanel value={value} index={3}>
-            <MonsterStatsLayout />
-          </TabPanel>
-          <TabPanel value={value} index={4}>
-            <CombatTrackerLayout />
-          </TabPanel>
-          <TabPanel value={value} index={5}>
-            <AboutLayout />
-          </TabPanel>
-        </main>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <Box display="block" displayPrint="none">
+            <AppBar position="static" className={classes.appBar}>
+              <Toolbar>
+                <Tabs
+                  className={classes.tabs}
+                  value={value}
+                  onChange={handleChange}
+                  aria-label="dnd stats tabs"
+                  variant="scrollable"
+                  scrollButtons
+                  allowScrollButtonsMobile
+                >
+                  <Tab label="Item Stats" {...a11yProps(0)} />
+                  <Tab label="Spell Stats" {...a11yProps(1)} />
+                  <Tab label="Weapon Stats" {...a11yProps(2)} />
+                  <Tab label="Monster Stats" {...a11yProps(3)} />
+                  <Tab label="Combat Tracker" {...a11yProps(4)} />
+                  <Tab label="About" {...a11yProps(5)} />
+                </Tabs>
+                <ToggleButton onClick={onToggleBg} />
+                <PlusButton onClick={onFontSizeLarger} />
+                <MinusButton onClick={onFontSizeSmaller} />
+                <Button
+                  className={classes.printIcon}
+                  variant="contained"
+                  color="primary"
+                  onClick={onPrint}
+                  endIcon={<PrintIcon />}
+                >
+                  Print page
+                </Button>
+              </Toolbar>
+            </AppBar>
+          </Box>
+          <main className={classes.main}>
+            <TabPanel value={value} index={0}>
+              <ItemStatsLayout />
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <SpellStatsLayout />
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <WeaponStatsLayout />
+            </TabPanel>
+            <TabPanel value={value} index={3}>
+              <MonsterStatsLayout />
+            </TabPanel>
+            <TabPanel value={value} index={4}>
+              <CombatTrackerLayout />
+            </TabPanel>
+            <TabPanel value={value} index={5}>
+              <AboutLayout />
+            </TabPanel>
+          </main>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </RecoilRoot>
   )
 }

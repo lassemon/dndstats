@@ -16,10 +16,10 @@ const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
       aria-label="delete"
       className={classes.deleteButton}
       onClick={onClick}
-    >
+      size="large">
       <DeleteIcon fontSize="large" />
     </IconButton>
-  )
+  );
 }
 
 export default DeleteButton

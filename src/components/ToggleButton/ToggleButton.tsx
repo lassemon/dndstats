@@ -24,14 +24,14 @@ const ToggleButton: React.FC<ToggleButtonProps> = (props) => {
       aria-label="minus"
       className={`${value ? classes.onButton : classes.offButton}`}
       onClick={internalOnClick}
-    >
+      size="large">
       {value ? (
         <ToggleOnIcon fontSize="large" />
       ) : (
         <ToggleOffIcon fontSize="large" />
       )}
     </IconButton>
-  )
+  );
 }
 
 export default ToggleButton
