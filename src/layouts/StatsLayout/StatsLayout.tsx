@@ -3,7 +3,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import React from 'react'
 
 interface StatsLayoutProps {
-  statsComponent: React.ReactNode
+  statsComponent?: React.ReactNode
   inputComponent: React.ReactNode
   widthPoint?: GridSize
 }
@@ -15,16 +15,19 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
   return (
     <Grid
       container={true}
-      spacing={isSmall ? 4 : 6}
+      spacing={4}
       justify="center"
       style={{
         margin: 0,
-        width: "100%",
+        width: "100%"
       }}
     >
-      <Grid item={true} xs={12} md={isPrint ? 12 : widthPoint}>
+      {
+      statsComponent &&
+      <Grid item={true} xs={12} md={12}>
         {statsComponent}
       </Grid>
+      }
       <Grid item={true} xs={12}>
         <Box display="block" displayPrint="none">
           {inputComponent}

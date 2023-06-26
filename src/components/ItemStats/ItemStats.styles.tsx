@@ -1,10 +1,15 @@
 import { makeStyles } from '@material-ui/core'
 
 export const useStyles = makeStyles((theme) => ({
+  container: {
+    width: "45%"
+  },
   root: {
-    display: "flex",
+    display: "flex"
   },
   imageContainer: {
+    display: "flex",
+    alignItems: "center",
     "& > img": {
       width: "100%",
     },
@@ -17,7 +22,7 @@ export const useStyles = makeStyles((theme) => ({
     fontFamily:
       '"Libre Baskerville", "Lora", "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif',
     color: theme.status.blood,
-    fontSize: "1.7rem",
+    fontSize: "1.7em",
     letterSpacing: "1px",
     fontVariant: "small-caps",
   },
@@ -25,7 +30,7 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: 0,
     fontWeight: "normal",
     fontStyle: "italic",
-    fontSize: "0.95rem",
+    fontSize: "0.95em",
   },
   mainDescription: {
     background: "#e0e4c3",
@@ -37,19 +42,17 @@ export const useStyles = makeStyles((theme) => ({
   blockDescription: {
     margin: "0.5em",
   },
-  inlineDescription: {
-    display: "inline",
-  },
   featureContainer: {
     margin: "0 0 0.5em 0",
   },
   featureName: {
     color: "#1b1b1b",
     fontSize: "1rem",
-    display: "inline",
+    display: "block",
     letterSpacing: "1px",
     fontVariant: "small-caps",
-    padding: "0 4px 0 1em",
+    padding: "0 4px 0 0",
+    margin: 0
   },
 }))
 

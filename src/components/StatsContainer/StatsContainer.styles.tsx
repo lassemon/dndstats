@@ -2,18 +2,27 @@ import { makeStyles } from '@material-ui/core'
 import statblockparch from 'assets/statblockparch.jpg'
 
 export const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    resize: "both",
+    overflow: "hidden",
+    margin: "0 auto",
+    "&::-webkit-resizer": {
+      backgroundColor: "transparent"
+    }
+  },
   content: {
-    margin: "0 4px",
-    padding: "1em",
+    height: "calc(100% - 15px)",
+    margin: "0 8px",
     background: "#fdf1dc",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    backgroundImage: `url(${statblockparch})`,
     boxShadow: theme.custom.boxShadow,
     "-webkit-print-color-adjust": "exact",
     "-webkit-filter": "opacity(1)",
   },
+  margins: {
+    padding: "1em"
+  }
 }))
 
 export default useStyles

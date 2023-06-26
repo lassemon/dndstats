@@ -11,12 +11,6 @@ const DescriptionBlock: React.FC = (props) => {
   return <p className={classes.blockDescription}>{children}</p>
 }
 
-const DescriptionInline: React.FC = (props) => {
-  const { children } = props
-  const classes = useStyles()
-  return <p className={classes.inlineDescription}>{children}</p>
-}
-
 const MainDescription: React.FC = (props) => {
   const { children } = props
   const classes = useStyles()
@@ -28,7 +22,7 @@ export const ItemStats: React.FC = () => {
   const currentItem = useRecoilValue(itemState)
 
   return (
-    <StatsContainer>
+    <StatsContainer className={classes.container}>
       <div className={classes.root}>
         <div className={classes.textContainer}>
           <h1 className={classes.name}>{currentItem.name}</h1>
@@ -39,9 +33,13 @@ export const ItemStats: React.FC = () => {
             return (
               <div className={classes.featureContainer} key={key}>
                 <h3 className={classes.featureName}>{feature.featureName}</h3>
-                <DescriptionInline>
-                  {feature.featureDescription}
-                </DescriptionInline>
+                {feature.featureDescription.split("\n").map((value, key) => {
+                return (
+                  <DescriptionBlock key={`description-${key}`}>
+                    {value}
+                  </DescriptionBlock>
+                )
+              })}
               </div>
             )
           })}

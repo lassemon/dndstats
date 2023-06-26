@@ -1,7 +1,13 @@
 import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar } from '@material-ui/core'
 import PrintIcon from '@material-ui/icons/Print'
+import statblockparch from 'assets/statblockparch.jpg'
+import statblockparchwhite from 'assets/statblockparch_white.jpg'
+import MinusButton from 'components/MinusButton'
+import PlusButton from 'components/PlusButton'
 import TabPanel from 'components/TabPanel'
+import ToggleButton from 'components/ToggleButton'
 import AboutLayout from 'layouts/AboutLayout'
+import CombatTrackerLayout from 'layouts/CombatTrackerLayout'
 import ItemStatsLayout from 'layouts/ItemStatsLayout'
 import MonsterStatsLayout from 'layouts/MonsterStatsLayout'
 import SpellStatsLayout from 'layouts/SpellStatsLayout'
@@ -22,6 +28,7 @@ function a11yProps(index: number) {
 const App: React.FC = () => {
   const classes = useStyles()
   const [value, setValue] = useState(0)
+  const [bgValue, setBgValue] = useState('normal')
 
   const handleChange = (event: any, newValue: number) => {
     setValue(newValue)
@@ -29,6 +36,41 @@ const App: React.FC = () => {
 
   const onPrint = (event: any) => {
     window.print()
+  }
+
+  const onFontSizeLarger = (event: any) => {
+    const statsContainers = document.getElementsByClassName("stats-container")
+    for (var i = 0; i < statsContainers.length; i++) {
+      const element = statsContainers.item(i) as HTMLElement
+      const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
+      element.style.fontSize = `${fontSize + 1}px`
+   }
+  }
+
+  const onFontSizeSmaller = (event: any) => {
+    const statsContainers = document.getElementsByClassName("stats-container")
+    for (var i = 0; i < statsContainers.length; i++) {
+      const element = statsContainers.item(i) as HTMLElement
+      const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
+      element.style.fontSize = `${fontSize - 1}px`
+   }
+  }
+
+  const onToggleBg = (event: any) => {
+    const statsContainers = document.getElementsByClassName("stats-background")
+    if(bgValue === 'normal') {
+      setBgValue('white')
+    }else {
+      setBgValue('normal')
+    }
+    for (var i = 0; i < statsContainers.length; i++) {
+      const element = statsContainers.item(i) as HTMLElement
+      if(bgValue === 'white') {
+        element.style.backgroundImage = 'url(' + statblockparch + ')'
+      }else {
+        element.style.backgroundImage = 'url(' + statblockparchwhite + ')'
+      }
+   }
   }
 
   return (
@@ -49,8 +91,12 @@ const App: React.FC = () => {
                 <Tab label="Spell Stats" {...a11yProps(1)} />
                 <Tab label="Weapon Stats" {...a11yProps(2)} />
                 <Tab label="Monster Stats" {...a11yProps(3)} />
-                <Tab label="About" {...a11yProps(4)} />
+                <Tab label="Combat Tracker" {...a11yProps(4)} />
+                <Tab label="About" {...a11yProps(5)} />
               </Tabs>
+              <ToggleButton onClick={onToggleBg} />
+              <PlusButton onClick={onFontSizeLarger} />
+              <MinusButton onClick={onFontSizeSmaller} />
               <Button
                 className={classes.printIcon}
                 variant="contained"
@@ -77,6 +123,9 @@ const App: React.FC = () => {
             <MonsterStatsLayout />
           </TabPanel>
           <TabPanel value={value} index={4}>
+            <CombatTrackerLayout />
+          </TabPanel>
+          <TabPanel value={value} index={5}>
             <AboutLayout />
           </TabPanel>
         </main>

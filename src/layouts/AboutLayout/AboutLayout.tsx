@@ -47,17 +47,6 @@ const AboutLayout: React.FC = () => {
           .<br />
           The Balor image is stolen from{" "}
           <a href="https://www.dndbeyond.com/monsters/balor">D&D Beyond</a>.
-          <br />
-          If you find the usage of any of these images objectable, please send
-          me a message at{" "}
-          <a href="mailto:lassemon.pirinen@gmail.com">
-            lassemon.pirinen@gmail.com
-          </a>{" "}
-          and I will remove them immediately.
-          <br />
-          If you are an artist and would like to create an image with permission
-          for me to use for one or more of the pre-generated stats in return for
-          credits on this page, also feel free to contact me.
         </Typography>
         <Typography variant="h6">Feedback</Typography>
         <Typography>

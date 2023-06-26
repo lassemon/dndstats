@@ -17,7 +17,7 @@ export const WeaponStats: React.FC = () => {
   const currentWeapon = useRecoilValue(weaponState)
 
   return (
-    <StatsContainer>
+    <StatsContainer className={classes.container}>
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>
           <h1 className={classes.name}>{currentWeapon.name}</h1>

@@ -44,12 +44,12 @@ export const itemState = atom({
       {
         featureName: "Magic Shield",
         featureDescription:
-          "While holding this shield you have a bonus of +2 to AC and gain immunity to poison damage.",
+          `While holding this shield you have a bonus of +2 to AC and gain immunity to poison damage.`,
       },
       {
         featureName: "Divine Resistance",
         featureDescription:
-          "You are resistant to fire, force and necrotic damage while wielding this shield.",
+          `You are resistant to fire, force and necrotic damage while wielding this shield.`,
       },
     ],
   },
@@ -146,5 +146,17 @@ export const monsterState = atom({
           "Whenever a creature the balor can see, targets it with a spell, the balor bellows a terrible roar into the air. The spellcaster must make a DC 16 Wisdom saving throw. On a failed save the targets spell fails.",
       },
     ],
+  },
+})
+
+export const combatTrackerState = atom({
+  key: "combatTrackerState",
+  default: {
+    enemies: [{
+      "init": 15,
+      "name": "Orc",
+      "orig_hit_points": 15,
+      "current_hit_points": 15,
+    }]
   },
 })

@@ -148,6 +148,7 @@ export const ItemStatsInput: React.FC = () => {
                 id={`item-${key}-feature-description`}
                 label="Feature Description"
                 value={feature.featureDescription}
+                multiline={true}
                 onChange={onChangeFeatureDescription(key)}
               />
             </FeatureInputContainer>

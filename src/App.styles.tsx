@@ -1,15 +1,13 @@
 import { makeStyles } from '@material-ui/core'
-import statblockparch from 'assets/statblockparch.jpg'
 
 export const useStyles = makeStyles((theme) => ({
   main: {
     padding: "0 1em 2em 1em",
-    maxWidth: "1280px",
+    maxWidth: "98vw",
     margin: "0 auto",
   },
   appBar: {
-    backgroundImage: `url(${statblockparch})`,
-    margin: "0 0 2em 0",
+    margin: "0 0 1em 0",
   },
   tabs: {
     flexGrow: 1,
@@ -17,6 +15,7 @@ export const useStyles = makeStyles((theme) => ({
   printIcon: {
     whiteSpace: "nowrap",
     minWidth: "auto",
+    margin: "0 0 0 1em"
   },
 }))
 

@@ -29,7 +29,7 @@ export const SpellStats: React.FC = () => {
   const currentSpell = useRecoilValue(spellState)
 
   return (
-    <StatsContainer>
+    <StatsContainer className={classes.container}>
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>
           <h1 className={classes.name}>{currentSpell.name}</h1>

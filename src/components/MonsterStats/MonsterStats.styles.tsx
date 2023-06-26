@@ -27,7 +27,7 @@ export const useStyles = makeStyles((theme) => ({
     fontFamily:
       '"Libre Baskerville", "Lora", "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif',
     color: theme.status.blood,
-    fontSize: "1.7rem",
+    fontSize: "1.7em",
     letterSpacing: "1px",
     fontVariant: "small-caps",
   },
@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: 0,
     fontWeight: "normal",
     fontStyle: "italic",
-    fontSize: "0.95rem",
+    fontSize: "0.95em",
   },
   featureName: {
     margin: "1em 0 0.2em 0",
@@ -84,7 +84,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   actionName: {
     color: "#1b1b1b",
-    fontSize: "1rem",
+    fontSize: "1em",
     display: "inline",
     letterSpacing: "1px",
     fontVariant: "small-caps",

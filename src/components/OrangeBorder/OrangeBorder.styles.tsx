@@ -13,7 +13,7 @@ export const useStyles = makeStyles((theme) => ({
     border: "1px solid #000",
     height: "5px",
     padding: "0 10px 0",
-    margin: "0",
+    margin: "0 3px",
     boxSizing: "initial",
   },
 }))
