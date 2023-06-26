@@ -1,5 +1,5 @@
-import { IconButton } from '@mui/material'
-import PlusIcon from '@mui/icons-material/AddBox'
+import { IconButton } from '@material-ui/core'
+import PlusIcon from '@material-ui/icons/AddBox'
 import React from 'react'
 
 import useStyles from './PlusButton.styles'

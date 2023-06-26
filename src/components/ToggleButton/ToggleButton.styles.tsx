@@ -1,4 +1,4 @@
-import { makeStyles } from '@mui/material'
+import { makeStyles } from '@material-ui/core'
 
 export const useStyles = makeStyles((theme) => ({
   onButton: {
@@ -6,7 +6,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   offButton: {
     color: theme.palette.secondary.dark
-  }
+  },
 }))
 
 export default useStyles

@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material'
+import { Typography } from '@material-ui/core'
 import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
 
@@ -42,17 +42,17 @@ const AboutLayout: React.FC = () => {
         <Typography variant="h6">Credits</Typography>
         <Typography>
           The Shield image and Hammer image, that are shamelessly used on this
-          site, are made by{' '}
+          site, are made by{" "}
           <a href="https://brackwall.artstation.com/projects">Erik Dolphin</a>
           .<br />
-          The Balor image is stolen from{' '}
+          The Balor image is stolen from{" "}
           <a href="https://www.dndbeyond.com/monsters/balor">D&D Beyond</a>.
         </Typography>
         <Typography variant="h6">Feedback</Typography>
         <Typography>
-          If you find any bugs or problems with the site, feel free to report{' '}
+          If you find any bugs or problems with the site, feel free to report{" "}
           <a href="https://github.com/lassemon/dndstats/issues">an issue</a> at
-          the{' '}
+          the{" "}
           <a href="https://github.com/lassemon/dndstats">
             projects github page
           </a>

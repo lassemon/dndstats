@@ -1,4 +1,4 @@
-import { Button, TextField } from '@mui/material'
+import { Button, TextField } from '@material-ui/core'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
@@ -27,10 +27,10 @@ export const WeaponStatsInput: React.FC = () => {
         features: [
           ...weapon.features,
           {
-            featureName: 'Feature name',
-            featureDescription: 'Feature description'
-          }
-        ]
+            featureName: "Feature name",
+            featureDescription: "Feature description",
+          },
+        ],
       }
     })
   }
@@ -39,11 +39,11 @@ export const WeaponStatsInput: React.FC = () => {
     setCurrentWeapon((weapon) => {
       const featuresCopy = replaceItemAtIndex(weapon.features, index, {
         featureName: event.target.value,
-        featureDescription: weapon.features[index].featureDescription
+        featureDescription: weapon.features[index].featureDescription,
       })
       return {
         ...weapon,
-        features: featuresCopy
+        features: featuresCopy,
       }
     })
   }
@@ -52,11 +52,11 @@ export const WeaponStatsInput: React.FC = () => {
     setCurrentWeapon((weapon) => {
       const featuresCopy = replaceItemAtIndex(weapon.features, index, {
         featureName: weapon.features[index].featureName,
-        featureDescription: event.target.value
+        featureDescription: event.target.value,
       })
       return {
         ...weapon,
-        features: featuresCopy
+        features: featuresCopy,
       }
     })
   }
@@ -67,7 +67,7 @@ export const WeaponStatsInput: React.FC = () => {
       featuresCopy.splice(index, 1)
       return {
         ...weapon,
-        features: featuresCopy
+        features: featuresCopy,
       }
     })
   }
@@ -76,11 +76,11 @@ export const WeaponStatsInput: React.FC = () => {
     setCurrentWeapon((weapon) => {
       return {
         ...weapon,
-        image: React.createElement('img', {
+        image: React.createElement("img", {
           width: 200,
-          alt: '',
-          src: ''
-        })
+          alt: "",
+          src: "",
+        }),
       }
     })
   }
@@ -93,16 +93,16 @@ export const WeaponStatsInput: React.FC = () => {
 
       reader.onload = (event) => {
         if (event && event.target) {
-          const imgtag = React.createElement('img', {
+          const imgtag = React.createElement("img", {
             width: 200,
             alt: imageFile.name,
-            src: (event.target.result || '') as string
+            src: (event.target.result || "") as string,
           })
 
           setCurrentWeapon((weapon) => {
             return {
               ...weapon,
-              image: imgtag
+              image: imgtag,
             }
           })
         }
@@ -119,20 +119,20 @@ export const WeaponStatsInput: React.FC = () => {
         id="weapon-name"
         label="Name"
         value={currentWeapon.name}
-        onChange={onChange('name')}
+        onChange={onChange("name")}
       />
       <TextField
         id="weapon-short-description"
         label="Short Description"
         value={currentWeapon.shortDescription}
-        onChange={onChange('shortDescription')}
+        onChange={onChange("shortDescription")}
       />
       <TextField
         id="weapon-main-description"
         label="Main Description"
         multiline={true}
         value={currentWeapon.mainDescription}
-        onChange={onChange('mainDescription')}
+        onChange={onChange("mainDescription")}
       />
       {currentWeapon.features.map((feature, key) => {
         return (
@@ -164,19 +164,19 @@ export const WeaponStatsInput: React.FC = () => {
         id="weapon-damage"
         label="Damage"
         value={currentWeapon.damage}
-        onChange={onChange('damage')}
+        onChange={onChange("damage")}
       />
       <TextField
         id="weapon-weight"
         label="Weight"
         value={currentWeapon.weight}
-        onChange={onChange('weight')}
+        onChange={onChange("weight")}
       />
       <TextField
         id="weapon-properties"
         label="Properties"
         value={currentWeapon.properties}
-        onChange={onChange('properties')}
+        onChange={onChange("properties")}
       />
     </StatsInputContainer>
   )

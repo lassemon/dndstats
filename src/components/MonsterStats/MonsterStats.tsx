@@ -6,13 +6,13 @@ import { monsterState } from 'recoil/atoms'
 
 import useStyles from './MonsterStats.styles'
 
-const DescriptionBlock: React.FC<{ children?: React.ReactNode }> = (props) => {
+const DescriptionBlock: React.FC = (props) => {
   const { children } = props
   const classes = useStyles()
   return <p className={classes.blockDescription}>{children}</p>
 }
 
-const DescriptionInline: React.FC<{ children?: React.ReactNode }> = (props) => {
+const DescriptionInline: React.FC = (props) => {
   const { children } = props
   const classes = useStyles()
   return <p className={classes.inlineDescription}>{children}</p>
@@ -189,7 +189,7 @@ export const MonsterStats: React.FC = () => {
         {currentMonster.image}
         {currentMonster.mainDescription && (
           <div className={classes.mainDescription}>
-            {currentMonster.mainDescription.split('\n').map((value, key) => {
+            {currentMonster.mainDescription.split("\n").map((value, key) => {
               return (
                 <DescriptionBlock key={`description-${key}`}>
                   {value}

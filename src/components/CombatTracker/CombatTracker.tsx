@@ -1,4 +1,4 @@
-import { Grid, InputAdornment, TextField } from '@mui/material'
+import { Grid, InputAdornment, TextField } from '@material-ui/core'
 import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
@@ -55,7 +55,7 @@ export const CombatTracker: React.FC = () => {
     <StatsInputContainer>
       {currentCombat.enemies.map((enemy, key) => {
         return (
-          <Grid container={true} spacing={2} justifyContent="space-around">
+          <Grid container={true} spacing={2}>
             <Grid item={true} xs={12} sm={4}>
               <TextField
                 id="enemy-init"

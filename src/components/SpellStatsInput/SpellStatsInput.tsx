@@ -1,4 +1,4 @@
-import { Grid, TextField } from '@mui/material'
+import { Grid, TextField } from '@material-ui/core'
 import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
@@ -21,7 +21,7 @@ export const SpellStatsInput: React.FC = () => {
             id="spell-name"
             label="Name"
             value={currentSpell.name}
-            onChange={onChange('name')}
+            onChange={onChange("name")}
           />
         </Grid>
         <Grid item={true} xs={4}>
@@ -29,7 +29,7 @@ export const SpellStatsInput: React.FC = () => {
             id="spell-short-description"
             label="Short Description"
             value={currentSpell.shortDescription}
-            onChange={onChange('shortDescription')}
+            onChange={onChange("shortDescription")}
           />
         </Grid>
         <Grid item={true} xs={4}>
@@ -37,7 +37,7 @@ export const SpellStatsInput: React.FC = () => {
             id="spell-casting-time"
             label="Casting Time"
             value={currentSpell.castingtime}
-            onChange={onChange('castingtime')}
+            onChange={onChange("castingtime")}
           />
         </Grid>
         <Grid item={true} xs={4}>
@@ -45,7 +45,7 @@ export const SpellStatsInput: React.FC = () => {
             id="spell-range"
             label="Range"
             value={currentSpell.range}
-            onChange={onChange('range')}
+            onChange={onChange("range")}
           />
         </Grid>
         <Grid item={true} xs={4}>
@@ -53,7 +53,7 @@ export const SpellStatsInput: React.FC = () => {
             id="spell-components"
             label="Components"
             value={currentSpell.components}
-            onChange={onChange('components')}
+            onChange={onChange("components")}
           />
         </Grid>
         <Grid item={true} xs={4}>
@@ -61,7 +61,7 @@ export const SpellStatsInput: React.FC = () => {
             id="spell-duration"
             label="Duration"
             value={currentSpell.duration}
-            onChange={onChange('duration')}
+            onChange={onChange("duration")}
           />
         </Grid>
         <Grid item={true} xs={4}>
@@ -69,7 +69,7 @@ export const SpellStatsInput: React.FC = () => {
             id="spell-classes"
             label="Classes"
             value={currentSpell.classes}
-            onChange={onChange('classes')}
+            onChange={onChange("classes")}
           />
         </Grid>
         <Grid item={true} xs={12}>
@@ -78,7 +78,7 @@ export const SpellStatsInput: React.FC = () => {
             label="Main Description"
             value={currentSpell.mainDescription}
             multiline={true}
-            onChange={onChange('mainDescription')}
+            onChange={onChange("mainDescription")}
           />
         </Grid>
         <Grid item={true} xs={12}>
@@ -87,7 +87,7 @@ export const SpellStatsInput: React.FC = () => {
             label="At higher levels"
             value={currentSpell.athigherlevels}
             multiline={true}
-            onChange={onChange('athigherlevels')}
+            onChange={onChange("athigherlevels")}
           />
         </Grid>
       </Grid>
