@@ -6,13 +6,13 @@ import { weaponState } from 'recoil/atoms'
 
 import useStyles from './WeaponStats.styles'
 
-const DescriptionBlock: React.FC = (props) => {
+const DescriptionBlock: React.FC<{ children?: React.ReactNode }> = (props) => {
   const { children } = props
   const classes = useStyles()
   return <p className={classes.description}>{children}</p>
 }
 
-export const WeaponStats: React.FC = () => {
+export const WeaponStats: React.FC<{ children?: React.ReactNode }> = () => {
   const classes = useStyles()
   const currentWeapon = useRecoilValue(weaponState)
 
@@ -24,7 +24,7 @@ export const WeaponStats: React.FC = () => {
           <h2 className={classes.shortDescription}>
             {currentWeapon.shortDescription}
           </h2>
-          {currentWeapon.mainDescription.split("\n").map((value, key) => {
+          {currentWeapon.mainDescription.split('\n').map((value, key) => {
             return <DescriptionBlock key={key}>{value}</DescriptionBlock>
           })}
           {currentWeapon.features.map((feature, key) => {
@@ -33,7 +33,7 @@ export const WeaponStats: React.FC = () => {
                 <h3 key={`header-${key}`} className={classes.featureName}>
                   {feature.featureName}
                 </h3>
-                {feature.featureDescription.split("\n").map((value, key) => {
+                {feature.featureDescription.split('\n').map((value, key) => {
                   return (
                     <DescriptionBlock key={`description-${key}`}>
                       {value}

@@ -1,27 +1,27 @@
-import { makeStyles } from '@material-ui/core'
+import { makeStyles } from '@mui/material'
 import statblockparch from 'assets/statblockparch.jpg'
 
 export const useStyles = makeStyles((theme) => ({
   root: {
-    resize: "both",
-    overflow: "hidden",
-    margin: "0 auto",
-    "&::-webkit-resizer": {
-      backgroundColor: "transparent"
+    resize: 'both',
+    overflow: 'hidden',
+    margin: '0 auto',
+    '&::-webkit-resizer': {
+      backgroundColor: 'transparent'
     }
   },
   content: {
-    height: "calc(100% - 15px)",
-    margin: "0 8px",
-    background: "#fdf1dc",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
+    height: 'calc(100% - 15px)',
+    margin: '0 8px',
+    background: '#fdf1dc',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
     boxShadow: theme.custom.boxShadow,
-    "-webkit-print-color-adjust": "exact",
-    "-webkit-filter": "opacity(1)",
+    '-webkit-print-color-adjust': 'exact',
+    '-webkit-filter': 'opacity(1)'
   },
   margins: {
-    padding: "1em"
+    padding: '1em'
   }
 }))
 

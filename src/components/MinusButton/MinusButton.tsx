@@ -1,5 +1,5 @@
-import { IconButton } from '@material-ui/core'
-import MinusIcon from '@material-ui/icons/IndeterminateCheckBox'
+import { IconButton } from '@mui/material'
+import MinusIcon from '@mui/icons-material/IndeterminateCheckBox'
 import React from 'react'
 
 import useStyles from './MinusButton.styles'

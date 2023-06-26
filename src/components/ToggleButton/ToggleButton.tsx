@@ -1,6 +1,6 @@
-import { IconButton } from '@material-ui/core'
-import ToggleOffIcon from '@material-ui/icons/ToggleOff'
-import ToggleOnIcon from '@material-ui/icons/ToggleOn'
+import { IconButton } from '@mui/material'
+import ToggleOffIcon from '@mui/icons-material/ToggleOff'
+import ToggleOnIcon from '@mui/icons-material/ToggleOn'
 import React, { useState } from 'react'
 
 import useStyles from './ToggleButton.styles'
@@ -22,14 +22,14 @@ const ToggleButton: React.FC<ToggleButtonProps> = (props) => {
   return (
     <IconButton
       aria-label="minus"
-      className={`${value ? classes.onButton: classes.offButton}`}
+      className={`${value ? classes.onButton : classes.offButton}`}
       onClick={internalOnClick}
     >
-      {value ?
+      {value ? (
         <ToggleOnIcon fontSize="large" />
-        :
+      ) : (
         <ToggleOffIcon fontSize="large" />
-      }
+      )}
     </IconButton>
   )
 }

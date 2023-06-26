@@ -4,6 +4,7 @@ import React from 'react'
 import useStyles from './FeatureInputContainer.styles'
 
 interface FeatureInputContainerProps {
+  children?: React.ReactNode
   onDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 

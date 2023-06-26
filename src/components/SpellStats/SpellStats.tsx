@@ -6,19 +6,19 @@ import { spellState } from 'recoil/atoms'
 
 import useStyles from './SpellStats.styles'
 
-const DescriptionBlock: React.FC = (props) => {
+const DescriptionBlock: React.FC<{ children?: React.ReactNode }> = (props) => {
   const { children } = props
   const classes = useStyles()
   return <p className={classes.blockDescription}>{children}</p>
 }
 
-const DescriptionInline: React.FC = (props) => {
+const DescriptionInline: React.FC<{ children?: React.ReactNode }> = (props) => {
   const { children } = props
   const classes = useStyles()
   return <p className={classes.inlineDescription}>{children}</p>
 }
 
-const MainDescription: React.FC = (props) => {
+const MainDescription: React.FC<{ children?: React.ReactNode }> = (props) => {
   const { children } = props
   const classes = useStyles()
   return <div className={classes.mainDescription}>{children}</div>
@@ -61,7 +61,7 @@ export const SpellStats: React.FC = () => {
 
       {currentSpell.mainDescription && (
         <MainDescription>
-          {currentSpell.mainDescription.split("\n").map((value, key) => {
+          {currentSpell.mainDescription.split('\n').map((value, key) => {
             return (
               <DescriptionBlock key={`description-${key}`}>
                 {value}

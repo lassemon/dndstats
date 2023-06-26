@@ -1,6 +1,6 @@
-import { Button } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import PublishIcon from '@material-ui/icons/Publish'
+import { Button } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import PublishIcon from '@mui/icons-material/Publish'
 import React from 'react'
 
 import useStyles from './ImageButtons.styles'
@@ -27,7 +27,7 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
           id="file"
           onChange={onUpload}
           style={{
-            display: "none",
+            display: 'none'
           }}
         />
         <PublishIcon fontSize="large" />

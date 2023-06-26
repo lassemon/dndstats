@@ -1,5 +1,13 @@
-import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar } from '@material-ui/core'
-import PrintIcon from '@material-ui/icons/Print'
+import {
+  AppBar,
+  Box,
+  Button,
+  Tab,
+  Tabs,
+  ThemeProvider,
+  Toolbar
+} from '@mui/material'
+import PrintIcon from '@mui/icons-material/Print'
 import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'
 import MinusButton from 'components/MinusButton'
@@ -21,7 +29,7 @@ import useStyles from './App.styles'
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`
   }
 }
 
@@ -39,38 +47,42 @@ const App: React.FC = () => {
   }
 
   const onFontSizeLarger = (event: any) => {
-    const statsContainers = document.getElementsByClassName("stats-container")
+    const statsContainers = document.getElementsByClassName('stats-container')
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
-      const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
+      const fontSize = parseFloat(
+        window.getComputedStyle(element, null).getPropertyValue('font-size')
+      )
       element.style.fontSize = `${fontSize + 1}px`
-   }
+    }
   }
 
   const onFontSizeSmaller = (event: any) => {
-    const statsContainers = document.getElementsByClassName("stats-container")
+    const statsContainers = document.getElementsByClassName('stats-container')
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
-      const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
+      const fontSize = parseFloat(
+        window.getComputedStyle(element, null).getPropertyValue('font-size')
+      )
       element.style.fontSize = `${fontSize - 1}px`
-   }
+    }
   }
 
   const onToggleBg = (event: any) => {
-    const statsContainers = document.getElementsByClassName("stats-background")
-    if(bgValue === 'normal') {
+    const statsContainers = document.getElementsByClassName('stats-background')
+    if (bgValue === 'normal') {
       setBgValue('white')
-    }else {
+    } else {
       setBgValue('normal')
     }
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
-      if(bgValue === 'white') {
+      if (bgValue === 'white') {
         element.style.backgroundImage = 'url(' + statblockparch + ')'
-      }else {
+      } else {
         element.style.backgroundImage = 'url(' + statblockparchwhite + ')'
       }
-   }
+    }
   }
 
   return (
