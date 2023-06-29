@@ -3,6 +3,7 @@ import TaperedRule from 'components/TaperedRule'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { spellState } from 'recoil/atoms'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import useStyles from './SpellStats.styles'
 
@@ -27,9 +28,14 @@ const MainDescription: React.FC = (props) => {
 export const SpellStats: React.FC = () => {
   const classes = useStyles()
   const currentSpell = useRecoilValue(spellState)
+  const isMedium = useMediaQuery('(max-width:80em)')
 
   return (
-    <StatsContainer className={classes.container}>
+    <StatsContainer
+      className={`${classes.container} ${
+        isMedium ? classes.mediumContainer : ''
+      }`}
+    >
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>
           <h1 className={classes.name}>{currentSpell.name}</h1>
@@ -61,7 +67,7 @@ export const SpellStats: React.FC = () => {
 
       {currentSpell.mainDescription && (
         <MainDescription>
-          {currentSpell.mainDescription.split("\n").map((value, key) => {
+          {currentSpell.mainDescription.split('\n').map((value, key) => {
             return (
               <DescriptionBlock key={`description-${key}`}>
                 {value}

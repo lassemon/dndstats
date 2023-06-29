@@ -1,5 +1,4 @@
 import { Box, Grid, GridSize } from '@material-ui/core'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
 import React from 'react'
 
 interface StatsLayoutProps {
@@ -9,9 +8,7 @@ interface StatsLayoutProps {
 }
 
 const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
-  const { statsComponent, inputComponent, widthPoint = 12 } = props
-  const isPrint = useMediaQuery("print")
-  const isSmall = useMediaQuery("(max-width:960px)")
+  const { statsComponent, inputComponent } = props
   return (
     <Grid
       container={true}
@@ -19,15 +16,14 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
       justify="center"
       style={{
         margin: 0,
-        width: "100%"
+        width: '100%'
       }}
     >
-      {
-      statsComponent &&
-      <Grid item={true} xs={12} md={12}>
-        {statsComponent}
-      </Grid>
-      }
+      {statsComponent && (
+        <Grid item={true} xs={12} md={12}>
+          {statsComponent}
+        </Grid>
+      )}
       <Grid item={true} xs={12}>
         <Box display="block" displayPrint="none">
           {inputComponent}

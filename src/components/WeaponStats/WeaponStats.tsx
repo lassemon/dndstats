@@ -3,6 +3,7 @@ import TaperedRule from 'components/TaperedRule'
 import React, { Fragment } from 'react'
 import { useRecoilValue } from 'recoil'
 import { weaponState } from 'recoil/atoms'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import useStyles from './WeaponStats.styles'
 
@@ -15,16 +16,21 @@ const DescriptionBlock: React.FC = (props) => {
 export const WeaponStats: React.FC = () => {
   const classes = useStyles()
   const currentWeapon = useRecoilValue(weaponState)
+  const isMedium = useMediaQuery('(max-width:80em)')
 
   return (
-    <StatsContainer className={classes.container}>
+    <StatsContainer
+      className={`${classes.container} ${
+        isMedium ? classes.mediumContainer : ''
+      }`}
+    >
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>
           <h1 className={classes.name}>{currentWeapon.name}</h1>
           <h2 className={classes.shortDescription}>
             {currentWeapon.shortDescription}
           </h2>
-          {currentWeapon.mainDescription.split("\n").map((value, key) => {
+          {currentWeapon.mainDescription.split('\n').map((value, key) => {
             return <DescriptionBlock key={key}>{value}</DescriptionBlock>
           })}
           {currentWeapon.features.map((feature, key) => {
@@ -33,7 +39,7 @@ export const WeaponStats: React.FC = () => {
                 <h3 key={`header-${key}`} className={classes.featureName}>
                   {feature.featureName}
                 </h3>
-                {feature.featureDescription.split("\n").map((value, key) => {
+                {feature.featureDescription.split('\n').map((value, key) => {
                   return (
                     <DescriptionBlock key={`description-${key}`}>
                       {value}

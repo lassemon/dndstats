@@ -2,6 +2,7 @@ import StatsContainer from 'components/StatsContainer'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { itemState } from 'recoil/atoms'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import useStyles from './ItemStats.styles'
 
@@ -20,9 +21,14 @@ const MainDescription: React.FC = (props) => {
 export const ItemStats: React.FC = () => {
   const classes = useStyles()
   const currentItem = useRecoilValue(itemState)
+  const isMedium = useMediaQuery('(max-width:80em)')
 
   return (
-    <StatsContainer className={classes.container}>
+    <StatsContainer
+      className={`${classes.container} ${
+        isMedium ? classes.mediumContainer : ''
+      }`}
+    >
       <div className={classes.root}>
         <div className={classes.textContainer}>
           <h1 className={classes.name}>{currentItem.name}</h1>
@@ -33,19 +39,19 @@ export const ItemStats: React.FC = () => {
             return (
               <div className={classes.featureContainer} key={key}>
                 <h3 className={classes.featureName}>{feature.featureName}</h3>
-                {feature.featureDescription.split("\n").map((value, key) => {
-                return (
-                  <DescriptionBlock key={`description-${key}`}>
-                    {value}
-                  </DescriptionBlock>
-                )
-              })}
+                {feature.featureDescription.split('\n').map((value, key) => {
+                  return (
+                    <DescriptionBlock key={`description-${key}`}>
+                      {value}
+                    </DescriptionBlock>
+                  )
+                })}
               </div>
             )
           })}
           {currentItem.mainDescription && (
             <MainDescription>
-              {currentItem.mainDescription.split("\n").map((value, key) => {
+              {currentItem.mainDescription.split('\n').map((value, key) => {
                 return (
                   <DescriptionBlock key={`description-${key}`}>
                     {value}
