@@ -14,20 +14,41 @@ export const useStyles = makeStyles((theme) => ({
       margin: '0 0 3em 0'
     }
   },
+  sortButton: {
+    margin: '0 0 2em 0'
+  },
   listItem: {
     paddingRight: 0,
-    '& > div': {
+    paddingLeft: 0,
+    margin: '0 .5em .5em 0em',
+    padding: '1em 0 1em 1em',
+    '& > *': {
       display: 'flex',
       width: 'auto',
-      margin: '0 1em'
+      paddingRight: '1em'
+    },
+    '& > p': {
+      flex: '1 1 auto'
     }
   },
   listItemBloodied: {
     background: theme.status.lightBlood
   },
   listItemDead: {
-    background: theme.palette.grey[300],
-    color: theme.palette.grey[500]
+    '&&': {
+      background: theme.palette.grey[300],
+      color: theme.palette.grey[500]
+    }
+  },
+  listItemPC: {
+    background: '#C2DEDC',
+    margin: '0 0 1em 0',
+    padding: '1em 0 1em 2em'
+  },
+  listItemPCBloodied: {
+    '&&': {
+      background: '#d1a88c'
+    }
   },
   textField: {
     '& > div': {
@@ -38,27 +59,37 @@ export const useStyles = makeStyles((theme) => ({
     }
   },
   initField: {
+    flexShrink: 0,
     '&&': {
-      width: '9em'
-    }
-  },
-  nameField: {
-    '&&': {
-      minWidth: '10em'
+      width: '4em',
+      minWidth: '4em'
+    },
+    '& label': {
+      padding: '0 0 0 4px'
+    },
+    '& input': {
+      textAlign: 'center',
+      fontSize: '1.5em',
+      padding: '18.5px 4px 12px 4px'
     }
   },
   hpField: {
     '&&': {
-      width: '4em'
+      width: '4em',
+      minWidth: '4em'
     }
   },
   hpText: {
-    width: '5em'
+    minWidth: '3em',
+    padding: '0 1em 0 0',
+    '&&': {
+      flex: '0 1 auto'
+    }
   },
   hpBarContainer: {
     '&&': {
       display: 'block',
-      flex: '0 1 20%'
+      flex: '0 0 15%'
     }
   },
   hpBar: {
@@ -74,7 +105,6 @@ export const useStyles = makeStyles((theme) => ({
   },
   dragIconContainer: {
     minWidth: 'auto',
-    flex: '1',
     justifyContent: 'end'
   },
   addContainer: {
@@ -84,6 +114,27 @@ export const useStyles = makeStyles((theme) => ({
       display: 'flex',
       width: 'auto',
       margin: '0 1em 0 0'
+    }
+  },
+  conditionList: {
+    flexWrap: 'wrap',
+    lineHeight: '0.1em',
+    '& .MuiIcon-root': {
+      width: '1.8em',
+      height: '1.8em',
+      display: 'inline-block',
+      textAlign: 'center',
+      lineHeight: '1.8em',
+      margin: '0.3rem 0.3rem 0.3rem 0'
+    }
+  },
+  autocomplete: {
+    flex: '0 0 170px',
+    '& .MuiTextField-root > div': {
+      marginTop: 0
+    },
+    '& .MuiAutocomplete-tag': {
+      display: 'none'
     }
   }
 }))

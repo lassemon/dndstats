@@ -5,7 +5,10 @@ export const useStyles = makeStyles((theme) => ({
     width: '50%'
   },
   mediumContainer: {
-    width: '70%'
+    width: '80%'
+  },
+  printContainer: {
+    width: '100%'
   },
   imageContainer: {
     display: 'flex',

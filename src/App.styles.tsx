@@ -2,21 +2,26 @@ import { makeStyles } from '@material-ui/core'
 
 export const useStyles = makeStyles((theme) => ({
   main: {
-    padding: "0 1em 2em 1em",
-    maxWidth: "98vw",
-    margin: "0 auto",
+    margin: 0,
+    padding: 0,
+    width: '100%'
   },
   appBar: {
-    margin: "0 0 1em 0",
+    margin: '0',
+    minHeight: '100%'
   },
   tabs: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   printIcon: {
-    whiteSpace: "nowrap",
-    minWidth: "auto",
-    margin: "0 0 0 1em"
+    whiteSpace: 'nowrap',
+    minWidth: 'auto',
+    margin: '0 0 0 1em'
   },
+  toolbar: {
+    flexDirection: 'column',
+    margin: '2em 0 0 0'
+  }
 }))
 
 export default useStyles

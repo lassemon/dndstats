@@ -1,6 +1,7 @@
 import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
+import { Character, CharacterType, Condition } from 'interfaces'
 import React from 'react'
 import { atom } from 'recoil'
 
@@ -12,8 +13,7 @@ export const weaponState = atom({
       src: mjolnirImage
     }),
     name: 'Mjölnir',
-    shortDescription:
-      'Whoever holds this hammer shall posess the power of Thor.',
+    shortDescription: 'Whoever holds this hammer shall posess the power of Thor.',
     mainDescription: `This hammer has the finesse property.
 While attuned to this weapon the hammer deals additional 12 (4d6) thunder damage.`,
     features: [
@@ -89,8 +89,7 @@ export const monsterState = atom({
     CHA: '22 (+6)',
     skills: 'Intimidation +6',
     savingthrows: 'Str +14, Con +12, Cha +12',
-    resistance:
-      'Cold, Lightning, Bludgeoning, Piercing and Slashing from nonmagical Attacks',
+    resistance: 'Cold, Lightning, Bludgeoning, Piercing and Slashing from nonmagical Attacks',
     damageimmunities: 'Fire, Poison',
     conditionimmunities: 'Poisoned',
     senses: 'Truesight 120 ft., Passive Perception 13',
@@ -107,8 +106,7 @@ export const monsterState = atom({
       },
       {
         name: 'Magic Resistance',
-        description:
-          'The balor has advantage on saving throws againts spells and other magical effects.'
+        description: 'The balor has advantage on saving throws againts spells and other magical effects.'
       },
       {
         name: 'Magic Weapons',
@@ -118,8 +116,7 @@ export const monsterState = atom({
     actions: [
       {
         name: 'Multiattack',
-        description:
-          'The balor makes two attacks: one with its longsword and one with its whip.'
+        description: 'The balor makes two attacks: one with its longsword and one with its whip.'
       },
       {
         name: 'Longsword',
@@ -133,8 +130,7 @@ export const monsterState = atom({
       },
       {
         name: 'Teleport',
-        description:
-          'The balor magically teleports, along with any equipment it is wearing or carrying, up to 120 feet to an unoccupied space it can see.'
+        description: 'The balor magically teleports, along with any equipment it is wearing or carrying, up to 120 feet to an unoccupied space it can see.'
       }
     ],
     reactions: [
@@ -147,22 +143,18 @@ export const monsterState = atom({
   }
 })
 
-export enum Status {
-  Bloodied = 'bloodied',
-  Dead = 'dead'
-}
-
 export const combatTrackerState = atom({
   key: 'combatTrackerState',
   default: {
-    enemies: [
+    characters: [
       {
         init: 15,
         name: 'Orc',
         orig_hit_points: 15,
         current_hit_points: 15,
         damage: '',
-        conditions: [] as string[]
+        conditions: [] as Condition[],
+        type: CharacterType.Enemy
       },
       {
         init: 9,
@@ -170,8 +162,9 @@ export const combatTrackerState = atom({
         orig_hit_points: 15,
         current_hit_points: 15,
         damage: '',
-        conditions: [] as string[]
+        conditions: [] as Condition[],
+        type: CharacterType.Enemy
       }
-    ]
+    ] as Character[]
   }
 })

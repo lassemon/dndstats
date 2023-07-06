@@ -4,6 +4,7 @@ import React, { Fragment } from 'react'
 import { useRecoilValue } from 'recoil'
 import { weaponState } from 'recoil/atoms'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import classNames from 'classnames/bind'
 
 import useStyles from './WeaponStats.styles'
 
@@ -15,14 +16,18 @@ const DescriptionBlock: React.FC = (props) => {
 
 export const WeaponStats: React.FC = () => {
   const classes = useStyles()
+  const cx = classNames.bind(classes)
   const currentWeapon = useRecoilValue(weaponState)
   const isMedium = useMediaQuery('(max-width:80em)')
+  const isPrint = useMediaQuery('print')
 
   return (
     <StatsContainer
-      className={`${classes.container} ${
-        isMedium ? classes.mediumContainer : ''
-      }`}
+      className={cx({
+        [classes.container]: true,
+        [classes.mediumContainer]: isMedium,
+        [classes.printContainer]: isPrint
+      })}
     >
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>

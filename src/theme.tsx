@@ -32,7 +32,7 @@ const theme = createMuiTheme({
   },
   status: {
     blood: '#922610',
-    lightBlood: '#d0a189',
+    lightBlood: '#dfc1a6',
     light: '#f6efdc'
   },
   palette: {
@@ -58,6 +58,10 @@ const theme = createMuiTheme({
           color: '#1b1b1b',
           whiteSpace: 'nowrap'
         },
+        '& legend': {
+          fontSize: '1.5rem',
+          fontWeight: 'bold'
+        },
         '& > label.Mui-focused.Mui-focused': {
           color: '#c77b09'
         },
@@ -71,7 +75,7 @@ const theme = createMuiTheme({
     },
     MuiTabs: {
       indicator: {
-        height: '6px'
+        width: '6px'
       }
     },
     MuiTab: {

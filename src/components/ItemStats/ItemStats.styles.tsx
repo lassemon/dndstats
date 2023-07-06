@@ -2,10 +2,13 @@ import { makeStyles } from '@material-ui/core'
 
 export const useStyles = makeStyles((theme) => ({
   container: {
-    width: '45%'
+    width: '55%'
   },
   mediumContainer: {
-    width: '85%'
+    width: '75%'
+  },
+  printContainer: {
+    width: '100%'
   },
   root: {
     display: 'flex'

@@ -3,6 +3,7 @@ import React from 'react'
 import { useRecoilValue } from 'recoil'
 import { itemState } from 'recoil/atoms'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import classNames from 'classnames/bind'
 
 import useStyles from './ItemStats.styles'
 
@@ -20,14 +21,18 @@ const MainDescription: React.FC = (props) => {
 
 export const ItemStats: React.FC = () => {
   const classes = useStyles()
+  const cx = classNames.bind(classes)
   const currentItem = useRecoilValue(itemState)
   const isMedium = useMediaQuery('(max-width:80em)')
+  const isPrint = useMediaQuery('print')
 
   return (
     <StatsContainer
-      className={`${classes.container} ${
-        isMedium ? classes.mediumContainer : ''
-      }`}
+      className={cx({
+        [classes.container]: true,
+        [classes.mediumContainer]: isMedium,
+        [classes.printContainer]: isPrint
+      })}
     >
       <div className={classes.root}>
         <div className={classes.textContainer}>

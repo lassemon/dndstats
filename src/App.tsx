@@ -4,7 +4,6 @@ import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'
 import MinusButton from 'components/MinusButton'
 import PlusButton from 'components/PlusButton'
-import TabPanel from 'components/TabPanel'
 import ToggleButton from 'components/ToggleButton'
 import AboutLayout from 'layouts/AboutLayout'
 import CombatTrackerLayout from 'layouts/CombatTrackerLayout'
@@ -15,22 +14,31 @@ import WeaponStatsLayout from 'layouts/WeaponStatsLayout'
 import React, { useState } from 'react'
 import { RecoilRoot } from 'recoil'
 import theme from 'theme'
+import { Routes, Route, Outlet, Link } from 'react-router-dom'
 
 import useStyles from './App.styles'
+
+const TABS = {
+  '/item': 'Item Stats',
+  '/spell': 'Spell Stats',
+  '/weapon': 'Weapon Stats',
+  '/monster': 'Monster Stats',
+  '/combattracker': 'Combat Tracker',
+  '/about': 'About'
+} as { [key: string]: string }
 
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`
   }
 }
 
 const App: React.FC = () => {
   const classes = useStyles()
-  const [value, setValue] = useState(0)
-  const [bgValue, setBgValue] = useState('normal')
+  const [value, setValue] = useState(Object.keys(TABS).includes(window.location.pathname) ? window.location.pathname : '/item')
 
-  const handleChange = (event: any, newValue: number) => {
+  const handleChange = (event: any, newValue: string) => {
     setValue(newValue)
   }
 
@@ -39,98 +47,83 @@ const App: React.FC = () => {
   }
 
   const onFontSizeLarger = (event: any) => {
-    const statsContainers = document.getElementsByClassName("stats-container")
+    const statsContainers = document.getElementsByClassName('stats-container')
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
       const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
       element.style.fontSize = `${fontSize + 1}px`
-   }
+    }
   }
 
   const onFontSizeSmaller = (event: any) => {
-    const statsContainers = document.getElementsByClassName("stats-container")
+    const statsContainers = document.getElementsByClassName('stats-container')
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
       const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
       element.style.fontSize = `${fontSize - 1}px`
-   }
+    }
   }
 
   const onToggleBg = (event: any) => {
-    const statsContainers = document.getElementsByClassName("stats-background")
-    if(bgValue === 'normal') {
-      setBgValue('white')
-    }else {
-      setBgValue('normal')
-    }
+    const statsContainers = document.getElementsByClassName('stats-background')
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
-      if(bgValue === 'white') {
+      if (element.style.backgroundImage.includes('white')) {
         element.style.backgroundImage = 'url(' + statblockparch + ')'
-      }else {
+      } else {
         element.style.backgroundImage = 'url(' + statblockparchwhite + ')'
       }
-   }
+    }
+  }
+
+  const Main = () => {
+    return (
+      <RecoilRoot>
+        <ThemeProvider theme={theme}>
+          <Box display="block" displayPrint="none">
+            <AppBar position="static" className={classes.appBar}>
+              <Toolbar disableGutters className={classes.toolbar}>
+                <Tabs className={classes.tabs} value={value} onChange={handleChange} aria-label="dnd stats tabs" variant="scrollable" orientation="vertical">
+                  {Object.keys(TABS).map((tab) => {
+                    return <Tab label={TABS[tab]} value={`${tab}`} component={Link} to={tab} key={tab} {...a11yProps(5)} />
+                  })}
+                </Tabs>
+                <Toolbar disableGutters>
+                  <ToggleButton onClick={onToggleBg} />
+                  <PlusButton onClick={onFontSizeLarger} />
+                  <MinusButton onClick={onFontSizeSmaller} />
+                </Toolbar>
+                <Button className={classes.printIcon} variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
+                  Print page
+                </Button>
+              </Toolbar>
+            </AppBar>
+          </Box>
+          <main className={classes.main}>
+            <Outlet />
+          </main>
+        </ThemeProvider>
+      </RecoilRoot>
+    )
   }
 
   return (
-    <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        <Box display="block" displayPrint="none">
-          <AppBar position="static" className={classes.appBar}>
-            <Toolbar>
-              <Tabs
-                className={classes.tabs}
-                value={value}
-                onChange={handleChange}
-                aria-label="dnd stats tabs"
-                variant="scrollable"
-                scrollButtons="on"
-              >
-                <Tab label="Item Stats" {...a11yProps(0)} />
-                <Tab label="Spell Stats" {...a11yProps(1)} />
-                <Tab label="Weapon Stats" {...a11yProps(2)} />
-                <Tab label="Monster Stats" {...a11yProps(3)} />
-                <Tab label="Combat Tracker" {...a11yProps(4)} />
-                <Tab label="About" {...a11yProps(5)} />
-              </Tabs>
-              <ToggleButton onClick={onToggleBg} />
-              <PlusButton onClick={onFontSizeLarger} />
-              <MinusButton onClick={onFontSizeSmaller} />
-              <Button
-                className={classes.printIcon}
-                variant="contained"
-                color="primary"
-                onClick={onPrint}
-                endIcon={<PrintIcon />}
-              >
-                Print page
-              </Button>
-            </Toolbar>
-          </AppBar>
-        </Box>
-        <main className={classes.main}>
-          <TabPanel value={value} index={0}>
-            <ItemStatsLayout />
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <SpellStatsLayout />
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            <WeaponStatsLayout />
-          </TabPanel>
-          <TabPanel value={value} index={3}>
-            <MonsterStatsLayout />
-          </TabPanel>
-          <TabPanel value={value} index={4}>
-            <CombatTrackerLayout />
-          </TabPanel>
-          <TabPanel value={value} index={5}>
-            <AboutLayout />
-          </TabPanel>
-        </main>
-      </ThemeProvider>
-    </RecoilRoot>
+    <Routes>
+      <Route path="/" element={<Main />}>
+        <Route index element={<ItemStatsLayout />} />
+        <Route path="item" element={<ItemStatsLayout />} />
+        <Route path="spell" element={<SpellStatsLayout />} />
+        <Route path="weapon" element={<WeaponStatsLayout />} />
+        <Route path="monster" element={<MonsterStatsLayout />} />
+        <Route path="combattracker" element={<CombatTrackerLayout />} />
+        <Route path="about" element={<AboutLayout />} />
+
+        {/* Using path="*"" means "match anything", so this route
+                    acts like a catch-all for URLs that we don't have explicit
+                    routes for. */}
+        <Route path="*" element={<ItemStatsLayout />} />
+      </Route>
+    </Routes>
   )
 }
 

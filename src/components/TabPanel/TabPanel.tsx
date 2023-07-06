@@ -6,6 +6,7 @@ interface TabPanelProps {
   index: number
 }
 
+// TODO NOT USED ANYMORE, DELETE COMPONENT
 const TabPanel: React.FC<TabPanelProps> = (props) => {
   const { children, value, index } = props
 
