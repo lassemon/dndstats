@@ -1,5 +1,5 @@
 import { withStyles } from 'tss-react/mui'
-import { Button, LinearProgress, TextField, Typography } from '@mui/material'
+import { Button, LinearProgress, Paper, TextField, Typography } from '@mui/material'
 import { Container, Draggable } from 'react-smooth-dnd'
 import List from '@mui/material/List'
 import { arrayMoveImmutable } from 'array-move'
@@ -72,6 +72,22 @@ const BorderLinearProgress = withStyles(LinearProgress, (theme) => ({
   bar: {
     borderRadius: 5,
     backgroundColor: theme.status.blood
+  }
+}))
+
+const AutoCompleteItem = withStyles(Paper, (theme) => ({
+  root: {
+    '& .MuiAutocomplete-listbox': {
+      "& .MuiAutocomplete-option[aria-selected='true']": {
+        background: theme.palette.secondary.main,
+        '&.Mui-focused': {
+          background: theme.palette.secondary.main
+        }
+      }
+    },
+    '& .MuiAutocomplete-listbox .MuiAutocomplete-option.Mui-focused': {
+      background: theme.palette.primary.dark
+    }
   }
 }))
 
@@ -248,9 +264,14 @@ export const CombatTracker: React.FC = () => {
 
   const onSetCondition = (index: number) => (event: any, conditions: Condition[]) => {
     setCurrentCombat((combat) => {
+      const toRemove = _.first(_.difference(combat.characters[index].conditions, conditions))
+      let newConditions = setCondition(combat.characters[index].conditions, conditions)
+      if (toRemove) {
+        newConditions = removeCondition(combat.characters[index].conditions, toRemove)
+      }
       const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
         ...combat.characters[index],
-        conditions: setCondition(combat.characters[index].conditions, conditions)
+        conditions: newConditions
       })
       return {
         ...combat,
@@ -267,16 +288,6 @@ export const CombatTracker: React.FC = () => {
       <List>
         <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
           {currentCombat.characters.map((character, key) => {
-            console.log(
-              'classes',
-              cx({
-                [classes.listItem]: true,
-                [classes.listItemBloodied]: character.conditions.includes(Condition.Bloodied),
-                [classes.listItemDead]: character.conditions.includes(Condition.Dead),
-                [classes.listItemPC]: character.type === CharacterType.PC,
-                [classes.listItemPCBloodied]: character.type === CharacterType.PC && character.conditions.includes(Condition.Bloodied)
-              })
-            )
             return (
               <Draggable key={key}>
                 <ListItem
@@ -349,6 +360,7 @@ export const CombatTracker: React.FC = () => {
                     onChange={onSetCondition(key)}
                     getOptionLabel={(option) => option.replaceAll('_', ' ')}
                     style={{ width: 300 }}
+                    PaperComponent={AutoCompleteItem}
                     renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" />}
                   />
                 </ListItem>

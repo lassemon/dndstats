@@ -138,6 +138,9 @@ export const useStyles = makeStyles()((theme) => ({
     },
     '& .MuiAutocomplete-tag': {
       display: 'none'
+    },
+    '&& .MuiAutocomplete-option[aria-selected="true"]': {
+      backgroundColor: theme.palette.secondary.main
     }
   }
 }))
