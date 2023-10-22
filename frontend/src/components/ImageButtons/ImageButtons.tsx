@@ -1,20 +1,18 @@
-import { Button } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import PublishIcon from '@material-ui/icons/Publish'
+import { Button } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import PublishIcon from '@mui/icons-material/Publish'
 import React from 'react'
 
 import useStyles from './ImageButtons.styles'
 
 interface ImageButtonsProps {
   onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void
-  onDeleteImage: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => void
+  onDeleteImage: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
   const { onUpload, onDeleteImage } = props
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <div className={classes.bottomButtons}>
@@ -27,7 +25,7 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
           id="file"
           onChange={onUpload}
           style={{
-            display: "none",
+            display: 'none'
           }}
         />
         <PublishIcon fontSize="large" />

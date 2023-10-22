@@ -1,6 +1,6 @@
-import { createMuiTheme } from '@material-ui/core'
+import { createTheme } from '@mui/material'
 
-declare module '@material-ui/core/styles/createMuiTheme' {
+declare module '@mui/material/styles' {
   interface Theme {
     status: {
       blood: React.CSSProperties['color']
@@ -23,7 +23,7 @@ declare module '@material-ui/core/styles/createMuiTheme' {
   }
 }
 
-const theme = createMuiTheme({
+const theme = createTheme({
   custom: {
     boxShadow: '0.1rem 0 0.2rem #afaba5, -0.1rem 0 0.2rem #afaba5'
   },
@@ -44,48 +44,62 @@ const theme = createMuiTheme({
       main: '#c77b09'
     }
   },
-  overrides: {
+  components: {
     MuiFormControl: {
-      root: {
-        width: '100%'
+      styleOverrides: {
+        root: {
+          width: '100%'
+        }
       }
     },
     MuiTextField: {
-      root: {
-        '& > label': {
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-          color: '#1b1b1b',
-          whiteSpace: 'nowrap'
-        },
-        '& legend': {
-          fontSize: '1.5rem',
-          fontWeight: 'bold'
-        },
-        '& > label.Mui-focused.Mui-focused': {
-          color: '#c77b09'
-        },
-        '& > .MuiInput-underline:after': {
-          borderBottom: `2px solid #c77b09`
-        },
-        '& > div': {
-          marginTop: '24px'
+      defaultProps: {
+        variant: 'standard'
+      },
+      styleOverrides: {
+        root: {
+          '& > label.MuiInputLabel-standard': {
+            fontSize: '1.3rem',
+            fontWeight: 'bold',
+            color: '#1b1b1b',
+            whiteSpace: 'nowrap'
+          },
+          '& legend': {
+            fontSize: '1.5rem',
+            fontWeight: 'bold'
+          },
+          '& > label.Mui-focused.Mui-focused': {
+            color: '#c77b09'
+          },
+          '& > .MuiInput-underline:after': {
+            borderBottom: `2px solid #c77b09`
+          },
+          '& label..MuiInputLabel-standard+div': {
+            marginTop: '18px'
+          }
         }
       }
     },
     MuiTabs: {
-      indicator: {
-        width: '6px'
+      styleOverrides: {
+        indicator: {
+          width: '6px'
+        }
       }
     },
     MuiTab: {
-      wrapper: {
-        fontWeight: 'bold'
+      styleOverrides: {
+        root: {
+          fontWeight: 'bold'
+        }
       }
     },
     MuiButton: {
-      label: {
-        fontWeight: 'bold'
+      styleOverrides: {
+        text: {
+          fontWeight: 'bold',
+          color: 'rgba(0, 0, 0, 0.87)'
+        }
       }
     }
   }

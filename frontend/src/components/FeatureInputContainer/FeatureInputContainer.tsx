@@ -9,7 +9,7 @@ interface FeatureInputContainerProps {
 
 const FeatureInputContainer: React.FC<FeatureInputContainerProps> = (props) => {
   const { children, onDelete } = props
-  const classes = useStyles()
+  const { classes } = useStyles()
   return (
     <div className={classes.featureContainer}>
       {children}

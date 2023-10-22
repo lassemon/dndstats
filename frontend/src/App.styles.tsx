@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core'
+import { makeStyles } from 'tss-react/mui'
 
-export const useStyles = makeStyles((theme) => ({
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export const useStyles = makeStyles()((theme) => ({
   main: {
     margin: 0,
     padding: 0,
@@ -11,12 +12,8 @@ export const useStyles = makeStyles((theme) => ({
     minHeight: '100%'
   },
   tabs: {
-    flexGrow: 1
-  },
-  printIcon: {
-    whiteSpace: 'nowrap',
-    minWidth: 'auto',
-    margin: '0 0 0 1em'
+    flexGrow: 1,
+    minWidth: '170px'
   },
   toolbar: {
     flexDirection: 'column',
@@ -24,4 +21,5 @@ export const useStyles = makeStyles((theme) => ({
   }
 }))
 
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export default useStyles

@@ -1,4 +1,4 @@
-import { Box, Grid, GridSize } from '@material-ui/core'
+import { Box, Grid, GridSize } from '@mui/material'
 import React from 'react'
 
 interface StatsLayoutProps {
@@ -13,7 +13,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
     <Grid
       container={true}
       spacing={4}
-      justify="center"
+      //justify="center"
       style={{
         margin: 0,
         width: '100%'

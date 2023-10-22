@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core'
+import { makeStyles } from 'tss-react/mui';
 
-export const useStyles = makeStyles((theme) => ({
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export const useStyles = makeStyles()((theme) => ({
   taperedRule: {
     display: "block",
     width: "100%",
@@ -10,6 +11,7 @@ export const useStyles = makeStyles((theme) => ({
     fill: theme.status.blood,
     margin: "0.5em 0",
   },
-}))
+}));
 
-export default useStyles
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export default useStyles;

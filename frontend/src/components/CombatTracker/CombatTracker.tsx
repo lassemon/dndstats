@@ -1,17 +1,18 @@
-import { Button, LinearProgress, TextField, Typography, withStyles } from '@material-ui/core'
+import { withStyles } from 'tss-react/mui'
+import { Button, LinearProgress, TextField, Typography } from '@mui/material'
 import { Container, Draggable } from 'react-smooth-dnd'
-import List from '@material-ui/core/List'
+import List from '@mui/material/List'
 import { arrayMoveImmutable } from 'array-move'
-import ListItem from '@material-ui/core/ListItem'
-import DragHandleIcon from '@material-ui/icons/DragHandle'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItem from '@mui/material/ListItem'
+import DragHandleIcon from '@mui/icons-material/DragHandle'
+import ListItemIcon from '@mui/material/ListItemIcon'
 import React from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { combatTrackerState } from 'recoil/atoms'
 import _ from 'lodash'
 import classNames from 'classnames/bind'
 
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
@@ -60,7 +61,7 @@ const removeCondition = (conditions: Condition[], condition: Condition) => {
   return _.uniq(_.without(conditions, condition))
 }
 
-const BorderLinearProgress = withStyles((theme) => ({
+const BorderLinearProgress = withStyles(LinearProgress, (theme) => ({
   root: {
     height: 10,
     borderRadius: 5
@@ -72,10 +73,10 @@ const BorderLinearProgress = withStyles((theme) => ({
     borderRadius: 5,
     backgroundColor: theme.status.blood
   }
-}))(LinearProgress)
+}))
 
 export const CombatTracker: React.FC = () => {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const cx = classNames.bind(classes)
   const currentCombat = useRecoilValue(combatTrackerState)
   const setCurrentCombat = useSetRecoilState(combatTrackerState)
@@ -266,6 +267,16 @@ export const CombatTracker: React.FC = () => {
       <List>
         <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
           {currentCombat.characters.map((character, key) => {
+            console.log(
+              'classes',
+              cx({
+                [classes.listItem]: true,
+                [classes.listItemBloodied]: character.conditions.includes(Condition.Bloodied),
+                [classes.listItemDead]: character.conditions.includes(Condition.Dead),
+                [classes.listItemPC]: character.type === CharacterType.PC,
+                [classes.listItemPCBloodied]: character.type === CharacterType.PC && character.conditions.includes(Condition.Bloodied)
+              })
+            )
             return (
               <Draggable key={key}>
                 <ListItem

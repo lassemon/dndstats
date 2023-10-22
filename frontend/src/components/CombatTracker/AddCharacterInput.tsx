@@ -1,4 +1,4 @@
-import { Button, TextField } from '@material-ui/core'
+import { Button, TextField } from '@mui/material'
 import React, { useState } from 'react'
 
 import useStyles from './AddCharacterInput.styles'
@@ -19,7 +19,7 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
   const { onAdd } = props
   const [character, setCharacter] = useState(blankCharacter)
   const [characterInputError, setCharacterInputError] = useState(false)
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const internalOnAdd = () => {
     const hp = parseInt(character.hp) | 0

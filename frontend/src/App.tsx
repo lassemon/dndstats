@@ -1,5 +1,5 @@
-import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar } from '@material-ui/core'
-import PrintIcon from '@material-ui/icons/Print'
+import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar } from '@mui/material'
+import PrintIcon from '@mui/icons-material/Print'
 import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'
 import MinusButton from 'components/MinusButton'
@@ -35,18 +35,18 @@ function a11yProps(index: number) {
 }
 
 const App: React.FC = () => {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const [value, setValue] = useState(Object.keys(TABS).includes(window.location.pathname) ? window.location.pathname : '/item')
 
   const handleChange = (event: any, newValue: string) => {
     setValue(newValue)
   }
 
-  const onPrint = (event: any) => {
+  const onPrint = () => {
     window.print()
   }
 
-  const onFontSizeLarger = (event: any) => {
+  const onFontSizeLarger = () => {
     const statsContainers = document.getElementsByClassName('stats-container')
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
@@ -55,7 +55,7 @@ const App: React.FC = () => {
     }
   }
 
-  const onFontSizeSmaller = (event: any) => {
+  const onFontSizeSmaller = () => {
     const statsContainers = document.getElementsByClassName('stats-container')
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
@@ -64,7 +64,7 @@ const App: React.FC = () => {
     }
   }
 
-  const onToggleBg = (event: any) => {
+  const onToggleBg = () => {
     const statsContainers = document.getElementsByClassName('stats-background')
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
@@ -83,7 +83,16 @@ const App: React.FC = () => {
           <Box display="block" displayPrint="none">
             <AppBar position="static" className={classes.appBar}>
               <Toolbar disableGutters className={classes.toolbar}>
-                <Tabs className={classes.tabs} value={value} onChange={handleChange} aria-label="dnd stats tabs" variant="scrollable" orientation="vertical">
+                <Tabs
+                  textColor="secondary"
+                  indicatorColor="secondary"
+                  className={classes.tabs}
+                  value={value}
+                  onChange={handleChange}
+                  aria-label="dnd stats tabs"
+                  variant="scrollable"
+                  orientation="vertical"
+                >
                   {Object.keys(TABS).map((tab) => {
                     return <Tab label={TABS[tab]} value={`${tab}`} component={Link} to={tab} key={tab} {...a11yProps(5)} />
                   })}
@@ -93,7 +102,7 @@ const App: React.FC = () => {
                   <PlusButton onClick={onFontSizeLarger} />
                   <MinusButton onClick={onFontSizeSmaller} />
                 </Toolbar>
-                <Button className={classes.printIcon} variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
+                <Button variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
                   Print page
                 </Button>
               </Toolbar>

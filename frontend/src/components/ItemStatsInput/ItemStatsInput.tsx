@@ -1,4 +1,4 @@
-import { Button, TextField } from '@material-ui/core'
+import { Button, TextField } from '@mui/material'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
@@ -27,10 +27,10 @@ export const ItemStatsInput: React.FC = () => {
         features: [
           ...item.features,
           {
-            featureName: "Feature name",
-            featureDescription: "Feature description",
-          },
-        ],
+            featureName: 'Feature name',
+            featureDescription: 'Feature description'
+          }
+        ]
       }
     })
   }
@@ -39,11 +39,11 @@ export const ItemStatsInput: React.FC = () => {
     setCurrentItem((item) => {
       const featuresCopy = replaceItemAtIndex(item.features, index, {
         featureName: event.target.value,
-        featureDescription: item.features[index].featureDescription,
+        featureDescription: item.features[index].featureDescription
       })
       return {
         ...item,
-        features: featuresCopy,
+        features: featuresCopy
       }
     })
   }
@@ -52,11 +52,11 @@ export const ItemStatsInput: React.FC = () => {
     setCurrentItem((item) => {
       const featuresCopy = replaceItemAtIndex(item.features, index, {
         featureName: item.features[index].featureName,
-        featureDescription: event.target.value,
+        featureDescription: event.target.value
       })
       return {
         ...item,
-        features: featuresCopy,
+        features: featuresCopy
       }
     })
   }
@@ -67,7 +67,7 @@ export const ItemStatsInput: React.FC = () => {
       featuresCopy.splice(index, 1)
       return {
         ...item,
-        features: featuresCopy,
+        features: featuresCopy
       }
     })
   }
@@ -76,11 +76,11 @@ export const ItemStatsInput: React.FC = () => {
     setCurrentItem((item) => {
       return {
         ...item,
-        image: React.createElement("img", {
+        image: React.createElement('img', {
           width: 200,
-          alt: "",
-          src: "",
-        }),
+          alt: '',
+          src: ''
+        })
       }
     })
   }
@@ -93,16 +93,16 @@ export const ItemStatsInput: React.FC = () => {
 
       reader.onload = (event) => {
         if (event && event.target) {
-          const imgtag = React.createElement("img", {
+          const imgtag = React.createElement('img', {
             width: 200,
             alt: imageFile.name,
-            src: (event.target.result || "") as string,
+            src: (event.target.result || '') as string
           })
 
           setCurrentItem((item) => {
             return {
               ...item,
-              image: imgtag,
+              image: imgtag
             }
           })
         }
@@ -115,35 +115,20 @@ export const ItemStatsInput: React.FC = () => {
   return (
     <StatsInputContainer>
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
-      <TextField
-        id="item-name"
-        label="Name"
-        value={currentItem.name}
-        onChange={onChange("name")}
-      />
-      <TextField
-        id="item-short-description"
-        label="Short Description"
-        value={currentItem.shortDescription}
-        onChange={onChange("shortDescription")}
-      />
+      <TextField id="item-name" label="Name" value={currentItem.name} onChange={onChange('name')} />
+      <TextField id="item-short-description" label="Short Description" value={currentItem.shortDescription} onChange={onChange('shortDescription')} />
       <TextField
         id="item-main-description"
         label="Main Description"
         value={currentItem.mainDescription}
         multiline={true}
-        onChange={onChange("mainDescription")}
+        onChange={onChange('mainDescription')}
       />
       {currentItem.features.map((feature, key) => {
         return (
           <Fragment key={key}>
             <FeatureInputContainer onDelete={onDeleteFeature(key)}>
-              <TextField
-                id={`item-${key}-feature-name`}
-                label="Feature Name"
-                value={feature.featureName}
-                onChange={onChangeFeatureName(key)}
-              />
+              <TextField id={`item-${key}-feature-name`} label="Feature Name" value={feature.featureName} onChange={onChangeFeatureName(key)} />
               <TextField
                 id={`item-${key}-feature-description`}
                 label="Feature Description"
@@ -152,8 +137,7 @@ export const ItemStatsInput: React.FC = () => {
                 onChange={onChangeFeatureDescription(key)}
               />
             </FeatureInputContainer>
-            {currentItem.features.length > 1 &&
-              key < currentItem.features.length - 1 && <TaperedRule />}
+            {currentItem.features.length > 1 && key < currentItem.features.length - 1 && <TaperedRule />}
           </Fragment>
         )
       })}

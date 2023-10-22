@@ -1,6 +1,6 @@
-import { TextField, Typography } from '@material-ui/core'
+import { TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import Tooltip from '@material-ui/core/Tooltip'
+import Tooltip from '@mui/material/Tooltip'
 
 import useStyles from './EditableText.styles'
 
@@ -13,7 +13,7 @@ interface EditableTextProps {
 const EditableText: React.FC<EditableTextProps> = (props) => {
   const { value, disabled, onChange } = props
   const [isText, setIsText] = useState(true)
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const onDoubleClick = () => {
     if (isText && !disabled) {

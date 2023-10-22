@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core'
+import { makeStyles } from 'tss-react/mui';
 
-export const useStyles = makeStyles((theme) => ({
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export const useStyles = makeStyles()((theme) => ({
   addContainer: {
     margin: '0 0 1em 0',
     flex: '0 0 100%',
@@ -34,6 +35,7 @@ export const useStyles = makeStyles((theme) => ({
       width: '10em'
     }
   }
-}))
+}));
 
-export default useStyles
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export default useStyles;

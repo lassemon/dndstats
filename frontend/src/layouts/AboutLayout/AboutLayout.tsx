@@ -1,10 +1,10 @@
-import { Typography } from '@material-ui/core'
+import { Typography } from '@mui/material'
 import React from 'react'
 
 import useStyles from './AboutLayout.styles'
 
 const AboutLayout: React.FC = () => {
-  const classes = useStyles()
+  const { classes } = useStyles()
   return (
     <div className={classes.root}>
       <Typography variant="h3">About</Typography>

@@ -8,27 +8,25 @@ import useStyles from './MonsterStats.styles'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
-  const classes = useStyles()
+  const { classes } = useStyles()
   return <p className={classes.blockDescription}>{children}</p>
 }
 
 const DescriptionInline: React.FC = (props) => {
   const { children } = props
-  const classes = useStyles()
+  const { classes } = useStyles()
   return <p className={classes.inlineDescription}>{children}</p>
 }
 
 export const MonsterStats: React.FC = () => {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const currentMonster = useRecoilValue(monsterState)
 
   return (
     <div className={classes.root}>
       <StatsContainer className={classes.monsterContainer}>
         <h1 className={classes.name}>{currentMonster.name}</h1>
-        <h2 className={classes.shortDescription}>
-          {currentMonster.shortDescription}
-        </h2>
+        <h2 className={classes.shortDescription}>{currentMonster.shortDescription}</h2>
         <TaperedRule />
         <div className={classes.baseStatsContainer}>
           <div>
@@ -78,65 +76,49 @@ export const MonsterStats: React.FC = () => {
             {currentMonster.skills && (
               <div>
                 <span className={classes.statHeader}>Skills</span>
-                <span className={classes.statValue}>
-                  {currentMonster.skills}
-                </span>
+                <span className={classes.statValue}>{currentMonster.skills}</span>
               </div>
             )}
             {currentMonster.savingthrows && (
               <div>
                 <span className={classes.statHeader}>Saving Throws</span>
-                <span className={classes.statValue}>
-                  {currentMonster.savingthrows}
-                </span>
+                <span className={classes.statValue}>{currentMonster.savingthrows}</span>
               </div>
             )}
             {currentMonster.resistance && (
               <div>
                 <span className={classes.statHeader}>Damage Resistance</span>
-                <span className={classes.statValue}>
-                  {currentMonster.resistance}
-                </span>
+                <span className={classes.statValue}>{currentMonster.resistance}</span>
               </div>
             )}
             {currentMonster.damageimmunities && (
               <div>
                 <span className={classes.statHeader}>Damage Immunities</span>
-                <span className={classes.statValue}>
-                  {currentMonster.damageimmunities}
-                </span>
+                <span className={classes.statValue}>{currentMonster.damageimmunities}</span>
               </div>
             )}
             {currentMonster.conditionimmunities && (
               <div>
                 <span className={classes.statHeader}>Condition Immunities</span>
-                <span className={classes.statValue}>
-                  {currentMonster.conditionimmunities}
-                </span>
+                <span className={classes.statValue}>{currentMonster.conditionimmunities}</span>
               </div>
             )}
             {currentMonster.senses && (
               <div>
                 <span className={classes.statHeader}>Senses</span>
-                <span className={classes.statValue}>
-                  {currentMonster.senses}
-                </span>
+                <span className={classes.statValue}>{currentMonster.senses}</span>
               </div>
             )}
             {currentMonster.languages && (
               <div>
                 <span className={classes.statHeader}>Languages</span>
-                <span className={classes.statValue}>
-                  {currentMonster.languages}
-                </span>
+                <span className={classes.statValue}>{currentMonster.languages}</span>
               </div>
             )}
             {currentMonster.challenge && (
               <div>
                 <span className={classes.statHeader}>Challenge</span>
-                <span className={classes.statValue}>
-                  {currentMonster.challenge}
-                </span>
+                <span className={classes.statValue}>{currentMonster.challenge}</span>
               </div>
             )}
           </div>
@@ -175,9 +157,7 @@ export const MonsterStats: React.FC = () => {
                     <h3 key={`header-${key}`} className={classes.actionName}>
                       {reaction.name}
                     </h3>
-                    <DescriptionInline>
-                      {reaction.description}
-                    </DescriptionInline>
+                    <DescriptionInline>{reaction.description}</DescriptionInline>
                   </div>
                 )
               })}
@@ -189,12 +169,8 @@ export const MonsterStats: React.FC = () => {
         {currentMonster.image}
         {currentMonster.mainDescription && (
           <div className={classes.mainDescription}>
-            {currentMonster.mainDescription.split("\n").map((value, key) => {
-              return (
-                <DescriptionBlock key={`description-${key}`}>
-                  {value}
-                </DescriptionBlock>
-              )
+            {currentMonster.mainDescription.split('\n').map((value, key) => {
+              return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
             })}
           </div>
         )}

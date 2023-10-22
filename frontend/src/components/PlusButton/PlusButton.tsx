@@ -1,5 +1,5 @@
-import { IconButton } from '@material-ui/core'
-import PlusIcon from '@material-ui/icons/AddBox'
+import { IconButton } from '@mui/material'
+import PlusIcon from '@mui/icons-material/AddBox'
 import React from 'react'
 
 import useStyles from './PlusButton.styles'
@@ -10,13 +10,9 @@ interface PlusButtonProps {
 
 const PlusButton: React.FC<PlusButtonProps> = (props) => {
   const { onClick } = props
-  const classes = useStyles()
+  const { classes } = useStyles()
   return (
-    <IconButton
-      aria-label="plus"
-      className={classes.plusButton}
-      onClick={onClick}
-    >
+    <IconButton aria-label="plus" className={classes.plusButton} onClick={onClick}>
       <PlusIcon fontSize="large" />
     </IconButton>
   )

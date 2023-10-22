@@ -1,6 +1,6 @@
 import React from 'react'
-import Tooltip from '@material-ui/core/Tooltip'
-import { Typography } from '@material-ui/core'
+import Tooltip from '@mui/material/Tooltip'
+import { Typography } from '@mui/material'
 
 import Bloodied from 'assets/Bloodied.png'
 import Blinded from 'assets/Blinded.png'

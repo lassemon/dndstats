@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core'
+import { makeStyles } from 'tss-react/mui'
 
-export const useStyles = makeStyles((theme) => ({
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export const useStyles = makeStyles()((theme) => ({
   root: {
     background: theme.status.light,
     padding: '1em 1em',
@@ -51,6 +52,7 @@ export const useStyles = makeStyles((theme) => ({
     }
   },
   textField: {
+    paddingRight: '1em',
     '& > div': {
       marginTop: '0'
     },
@@ -93,6 +95,7 @@ export const useStyles = makeStyles((theme) => ({
     }
   },
   hpBar: {
+    width: '100%',
     '& .MuiLinearProgress-bar1Determinate': {
       transition: 'transform .15s linear'
     }
@@ -139,4 +142,5 @@ export const useStyles = makeStyles((theme) => ({
   }
 }))
 
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export default useStyles

@@ -1,7 +1,8 @@
-import { makeStyles } from '@material-ui/core'
+import { makeStyles } from 'tss-react/mui';
 import statblockbar from 'assets/statblockbar.jpg'
 
-export const useStyles = makeStyles((theme) => ({
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export const useStyles = makeStyles()((theme) => ({
   orangeBorder: {
     position: "relative",
     zIndex: 1,
@@ -16,6 +17,7 @@ export const useStyles = makeStyles((theme) => ({
     margin: "0 3px",
     boxSizing: "initial",
   },
-}))
+}));
 
-export default useStyles
+// TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
+export default useStyles;
