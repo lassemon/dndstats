@@ -3,40 +3,52 @@ import React, { useState } from 'react'
 
 import useStyles from './AddCharacterInput.styles'
 
-const blankCharacter = { init: '', name: '', hp: '' }
+const blankCharacter = { init: '', AC: '', name: '', hp: '' }
 
 export interface CharacterInput {
   init: number
+  AC: number
   name: string
   hp: number
 }
 
 interface AddCharacterInputProps {
   onAdd: (character: CharacterInput) => void
+  requireHp?: boolean
 }
 
 const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
-  const { onAdd } = props
+  const { onAdd, requireHp } = props
   const [character, setCharacter] = useState(blankCharacter)
   const [characterInputError, setCharacterInputError] = useState(false)
   const { classes } = useStyles()
 
   const internalOnAdd = () => {
-    const hp = parseInt(character.hp) | 0
-    if (!hp || hp <= 0) {
+    if (!character.name) {
       setCharacterInputError(true)
     } else {
       onAdd({
         init: parseInt(character.init) && parseInt(character.init) > 0 ? parseInt(character.init) : 0,
+        AC: parseInt(character.AC) || 0,
         name: character.name,
-        hp: parseInt(character.hp) | 0
+        hp: parseInt(character.hp) || 0
       })
 
       setCharacter({ ...blankCharacter })
     }
   }
 
-  const onEnemyInitChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onCharacterACChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    event.persist()
+    setCharacter((character) => {
+      return {
+        ...character,
+        AC: event.target.value
+      }
+    })
+  }
+
+  const onCharacterInitChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     event.persist()
     setCharacter((character) => {
       return {
@@ -46,7 +58,7 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     })
   }
 
-  const onEnemyNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onCharacterNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     event.persist()
     setCharacter((character) => {
       return {
@@ -56,7 +68,7 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     })
   }
 
-  const onEnemyHpChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const onCharacterHpChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     event.persist()
     setCharacterInputError(false)
     setCharacter((character) => {
@@ -70,31 +82,37 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
   return (
     <div className={classes.addContainer}>
       <TextField
-        id="character-init-input"
+        className={`${classes.textField} ${classes.initField}`}
+        value={character.AC}
+        placeholder="AC"
+        onChange={onCharacterACChange}
+        variant="standard"
+      />
+      <TextField
         className={`${classes.textField} ${classes.initField}`}
         value={character.init}
         placeholder="init"
-        onChange={onEnemyInitChange}
-        variant="outlined"
+        onChange={onCharacterInitChange}
+        variant="standard"
       />
       <TextField
-        id="character-name-input"
         className={`${classes.textField} ${classes.nameField}`}
         value={character.name}
-        placeholder="name"
-        onChange={onEnemyNameChange}
-        variant="outlined"
-      />
-      <TextField
-        id="character-hp-input"
-        className={`${classes.textField} ${classes.hpField}`}
-        value={character.hp}
         error={characterInputError}
-        placeholder="max HP"
-        onChange={onEnemyHpChange}
-        onBlur={() => setCharacterInputError(false)}
-        variant="outlined"
+        placeholder="name"
+        onChange={onCharacterNameChange}
+        variant="standard"
       />
+      {requireHp !== false && (
+        <TextField
+          className={`${classes.textField} ${classes.hpField}`}
+          value={character.hp}
+          placeholder="HP"
+          onChange={onCharacterHpChange}
+          onBlur={() => setCharacterInputError(false)}
+          variant="standard"
+        />
+      )}
       <Button variant="contained" color="primary" onClick={internalOnAdd}>
         {props.children}
       </Button>

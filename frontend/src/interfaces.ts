@@ -37,11 +37,13 @@ export enum Condition {
 
 export enum CharacterType {
   Enemy = 'enemy',
-  PC = 'pc'
+  Player = 'player',
+  NPC = 'npc'
 }
 
 export interface Character {
   init: number
+  AC: number
   name: string
   orig_hit_points: number
   current_hit_points: number

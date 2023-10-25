@@ -148,7 +148,58 @@ export const combatTrackerState = atom({
   default: {
     characters: [
       {
+        init: 12,
+        AC: 15,
+        name: 'Ogi',
+        orig_hit_points: 35,
+        current_hit_points: 35,
+        damage: '',
+        conditions: [] as Condition[],
+        type: CharacterType.Player
+      },
+      {
+        init: 5,
+        AC: 16,
+        name: 'Thoongk',
+        orig_hit_points: 55,
+        current_hit_points: 55,
+        damage: '',
+        conditions: [] as Condition[],
+        type: CharacterType.Player
+      },
+      {
+        init: 3,
+        AC: 15,
+        name: 'Erig',
+        orig_hit_points: 19,
+        current_hit_points: 19,
+        damage: '',
+        conditions: [] as Condition[],
+        type: CharacterType.NPC
+      },
+      {
+        init: 19,
+        AC: 16,
+        name: 'Klani',
+        orig_hit_points: 61,
+        current_hit_points: 61,
+        damage: '',
+        conditions: [] as Condition[],
+        type: CharacterType.NPC
+      },
+      {
         init: 15,
+        AC: 15,
+        name: 'Beor',
+        orig_hit_points: 57,
+        current_hit_points: 57,
+        damage: '',
+        conditions: [] as Condition[],
+        type: CharacterType.NPC
+      },
+      {
+        init: 15,
+        AC: 13,
         name: 'Orc',
         orig_hit_points: 15,
         current_hit_points: 15,
@@ -157,10 +208,11 @@ export const combatTrackerState = atom({
         type: CharacterType.Enemy
       },
       {
-        init: 9,
+        init: 4,
+        AC: 15,
         name: 'Goblin',
-        orig_hit_points: 15,
-        current_hit_points: 15,
+        orig_hit_points: 7,
+        current_hit_points: 7,
         damage: '',
         conditions: [] as Condition[],
         type: CharacterType.Enemy

@@ -1,10 +1,14 @@
 import { makeStyles } from 'tss-react/mui'
+import bg_player from 'assets/bg_player.png'
+import bg_npc from 'assets/bg_npc.png'
+import bg_enemy from 'assets/bg_enemy.png'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
   root: {
     background: theme.status.light,
     padding: '1em 1em',
+    margin: '0 0 1em 0',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     boxShadow: theme.custom.boxShadow,
@@ -21,16 +25,17 @@ export const useStyles = makeStyles()((theme) => ({
   listItem: {
     paddingRight: 0,
     paddingLeft: 0,
-    margin: '0 .5em .5em 0em',
-    padding: '1em 0 1em 1em',
-    '& > *': {
+    margin: '0 .2em .3em 0em',
+    padding: '0.5em 0 0.3em 0.5em',
+    '&& > *': {
       display: 'flex',
-      width: 'auto',
-      paddingRight: '1em'
+      marginRight: '.4em'
     },
-    '& > p': {
-      flex: '1 1 auto'
-    }
+    border: '1px solid transparent'
+  },
+  listItemCurrent: {
+    filter: 'brightness(93%)',
+    border: '1px solid rgba(0, 0, 0, .2)'
   },
   listItemBloodied: {
     background: theme.status.lightBlood
@@ -41,18 +46,18 @@ export const useStyles = makeStyles()((theme) => ({
       color: theme.palette.grey[500]
     }
   },
-  listItemPC: {
-    background: '#C2DEDC',
-    margin: '0 0 1em 0',
-    padding: '1em 0 1em 2em'
+  listItemPlayer: {
+    background: '#c9e5c9'
   },
-  listItemPCBloodied: {
+  listItemPlayerBloodied: {
     '&&': {
       background: '#d1a88c'
     }
   },
+  listItemNPC: {
+    background: '#C2DEDC'
+  },
   textField: {
-    paddingRight: '1em',
     '& > div': {
       marginTop: '0'
     },
@@ -60,19 +65,31 @@ export const useStyles = makeStyles()((theme) => ({
       borderWidth: '3px'
     }
   },
+  editableTextField: {
+    '& > div': {
+      marginTop: '0'
+    },
+    '& > .Mui-error .MuiOutlinedInput-notchedOutline': {
+      borderWidth: '3px'
+    },
+    '& .MuiInputBase-input': {
+      padding: '8.5px 0 8.5px 8px'
+    }
+  },
   initField: {
     flexShrink: 0,
     '&&': {
-      width: '4em',
-      minWidth: '4em'
+      width: '3em',
+      minWidth: '3em'
     },
     '& label': {
-      padding: '0 0 0 4px'
+      padding: '0 0 0 4px',
+      transform: 'translate(10px, -9px) scale(0.75)'
     },
     '& input': {
       textAlign: 'center',
-      fontSize: '1.5em',
-      padding: '18.5px 4px 12px 4px'
+      fontSize: '1.3em',
+      padding: '4.5px 0 3px 0'
     }
   },
   hpField: {
@@ -91,7 +108,7 @@ export const useStyles = makeStyles()((theme) => ({
   hpBarContainer: {
     '&&': {
       display: 'block',
-      flex: '0 0 15%'
+      flex: '0 0 12%'
     }
   },
   hpBar: {
@@ -104,11 +121,17 @@ export const useStyles = makeStyles()((theme) => ({
     minWidth: 'auto',
     '& > button': {
       padding: '0'
+    },
+    '& > button > svg': {
+      fontSize: '1em'
     }
   },
   dragIconContainer: {
     minWidth: 'auto',
-    justifyContent: 'end'
+    justifyContent: 'end',
+    '& > svg': {
+      fontSize: '1.5em'
+    }
   },
   addContainer: {
     flex: '0 0 100%',
@@ -120,28 +143,71 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   conditionList: {
+    position: 'relative',
     flexWrap: 'wrap',
+    flex: '1 1 auto',
+    zIndex: '1',
+    minHeight: '2em',
     lineHeight: '0.1em',
     '& .MuiIcon-root': {
       width: '1.8em',
       height: '1.8em',
       display: 'inline-block',
       textAlign: 'center',
-      lineHeight: '1.8em',
-      margin: '0.3rem 0.3rem 0.3rem 0'
+      lineHeight: '1.8em'
+    },
+    '&:before': {
+      content: '" "',
+      opacity: '.1',
+      position: 'absolute',
+      top: '60%',
+      left: '40%',
+      width: '12em',
+      height: '2em',
+      zIndex: '-1',
+      backgroundRepeat: 'no-repeat',
+      transform: 'translate(-55%, -50%) rotate(-10deg)'
     }
+  },
+  player: {
+    '&:before': {
+      backgroundImage: `url(${bg_player})`
+    }
+  },
+  npc: {
+    '&:before': {
+      backgroundImage: `url(${bg_npc})`
+    }
+  },
+  enemy: {
+    '&:before': {
+      backgroundImage: `url(${bg_enemy})`
+    }
+  },
+  rowType: {
+    position: 'absolute',
+    left: '50%',
+    top: '45%',
+    transform: 'translate(-50%, -50%) rotate(-10deg)',
+    opacity: '0.1',
+    fontWeight: 600,
+    fontSize: '1.5em',
+    textTransform: 'uppercase'
   },
   autocomplete: {
     flex: '0 0 170px',
-    '& .MuiTextField-root > div': {
-      marginTop: 0
-    },
     '& .MuiAutocomplete-tag': {
       display: 'none'
-    },
-    '&& .MuiAutocomplete-option[aria-selected="true"]': {
-      backgroundColor: theme.palette.secondary.main
     }
+  },
+  actionsContainer: {
+    display: 'flex',
+    '& > button': {
+      margin: '0 1em 0 0'
+    }
+  },
+  actionsSpread: {
+    flex: '1 1 auto'
   }
 }))
 

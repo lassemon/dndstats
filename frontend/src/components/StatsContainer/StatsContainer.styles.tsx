@@ -1,4 +1,4 @@
-import { makeStyles } from 'tss-react/mui';
+import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
@@ -16,14 +16,14 @@ export const useStyles = makeStyles()((theme) => ({
     background: '#fdf1dc',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    boxShadow: theme.custom.boxShadow,
-    '-webkit-print-color-adjust': 'exact',
-    '-webkit-filter': 'opacity(1)'
+    boxShadow: theme.custom.boxShadow
+    //'-webkit-print-color-adjust': 'exact',
+    //'-webkit-filter': 'opacity(1)'
   },
   margins: {
     padding: '1em'
   }
-}));
+}))
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
-export default useStyles;
+export default useStyles

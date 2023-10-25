@@ -1,4 +1,4 @@
-import { makeStyles } from 'tss-react/mui';
+import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
@@ -9,7 +9,7 @@ export const useStyles = makeStyles()((theme) => ({
       margin: 0,
       padding: '0 1rem 0 2rem'
     },
-    '&& > *:first-child': {
+    '&& > *:first-of-type': {
       paddingTop: '1rem'
     },
     '&& > *:last-child': {
@@ -19,7 +19,7 @@ export const useStyles = makeStyles()((theme) => ({
       margin: '2em 0 0 0'
     }
   }
-}));
+}))
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
-export default useStyles;
+export default useStyles

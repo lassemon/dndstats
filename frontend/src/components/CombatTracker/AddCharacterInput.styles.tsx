@@ -1,4 +1,4 @@
-import { makeStyles } from 'tss-react/mui';
+import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
@@ -22,7 +22,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   initField: {
     '&&': {
-      width: '6.5em'
+      width: '2em'
     }
   },
   nameField: {
@@ -32,10 +32,10 @@ export const useStyles = makeStyles()((theme) => ({
   },
   hpField: {
     '&&': {
-      width: '10em'
+      width: '3em'
     }
   }
-}));
+}))
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
-export default useStyles;
+export default useStyles
