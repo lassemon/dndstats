@@ -113,6 +113,9 @@ export const useStyles = makeStyles()((theme) => ({
       fontSize: '0.8em'
     }
   },
+  nameText: {
+    width: '7em'
+  },
   initField: {
     flexShrink: 0,
     '&&': {

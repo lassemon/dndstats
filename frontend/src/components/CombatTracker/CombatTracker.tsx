@@ -412,6 +412,7 @@ export const CombatTracker: React.FC = () => {
                         tooltip={character.name}
                         className={`${classes.editableTextField}`}
                         textFieldClass={`${classes.editableTextField}`}
+                        textClass={`${classes.nameText}`}
                         value={character.name}
                         textWidth={120}
                         editWidth={10}
