@@ -24,6 +24,13 @@ const AboutLayout: React.FC = () => {
         <br />
         Use the "clear image" -button to remove the image entirely. This will also remove the space the image occupies and leave more room for text.
       </Typography>
+      <Typography variant="h6">Combat Tracker</Typography>
+      <Typography>
+        Most of the features should be self explanatory for any DM. <br />
+        Check tooltips for more info by hovering.
+        <br />
+        Tip: You can remove a condition by either reselecting it from the list <strong>or by mouse wheel clicking</strong>
+      </Typography>
       <Typography variant="h6">Printing</Typography>
       <Typography>
         The generator has printing optimized css built in. You can attempt to print any of the generatod stat pages and it should hide the input fields and only
