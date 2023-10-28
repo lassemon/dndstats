@@ -62,6 +62,12 @@ export const useStyles = makeStyles()((theme) => ({
     '& > div': {
       marginTop: '0'
     },
+    '& label': {
+      opacity: '0.3'
+    },
+    '&  .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'rgba(0, 0, 0, 0.1)'
+    },
     '& > .Mui-error .MuiOutlinedInput-notchedOutline': {
       borderWidth: '3px'
     }
@@ -83,7 +89,7 @@ export const useStyles = makeStyles()((theme) => ({
     padding: '0.5em',
     '&:after': {
       background: `url(${ArmorClass})`,
-      opacity: '0.2',
+      opacity: '0.1',
       backgroundRepeat: 'no-repeat',
       backgroundSize: 'contain',
       content: '" "',
@@ -105,7 +111,7 @@ export const useStyles = makeStyles()((theme) => ({
     '&:before': {
       content: '"HP"',
       position: 'absolute',
-      opacity: '0.3',
+      opacity: '0.1',
       top: 0,
       left: 0,
       margin: '-10px 0 0px -10px',
@@ -188,6 +194,7 @@ export const useStyles = makeStyles()((theme) => ({
     flex: '1 1 auto',
     zIndex: '1',
     minHeight: '2em',
+    minWidth: '8em',
     lineHeight: '0.1em',
     '& .MuiIcon-root': {
       width: '1.8em',
