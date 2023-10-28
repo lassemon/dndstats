@@ -8,7 +8,7 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import CurrentTurnIcon from '@mui/icons-material/ArrowForwardIos'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import React, { useState } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { combatTrackerState } from 'recoil/atoms'
 import _ from 'lodash'
 import classNames from 'classnames/bind'
@@ -19,7 +19,7 @@ import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
 import { Character, CharacterType, Condition } from 'interfaces'
 import EditableText from './EditableText'
-import { ConditionToIconMap } from './Conditions'
+import { ConditionToIconMap, calculateEffect, calculateEffectTooltip, getConditionEffects } from './Conditions'
 
 const replaceItemAtIndex = <T,>(arr: T[], index: number, newValue: T) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
@@ -95,8 +95,7 @@ const AutoCompleteItem = withStyles(Paper, (theme) => ({
 export const CombatTracker: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
-  const currentCombat = useRecoilValue(combatTrackerState)
-  const setCurrentCombat = useSetRecoilState(combatTrackerState)
+  const [currentCombat, setCurrentCombat] = useRecoilState(combatTrackerState)
   const [combatOngoing, setCombatOngoing] = useState(false)
   const [currentTurn, _setCurrentTurn] = useState(0)
   const [currentRound, setCurrentRound] = useState(1)
@@ -231,7 +230,8 @@ export const CombatTracker: React.FC = () => {
         current_hit_points: characterInput.hp,
         damage: '',
         conditions: [],
-        type
+        type,
+        effects: {}
       })
       return {
         ...combat,
@@ -279,9 +279,11 @@ export const CombatTracker: React.FC = () => {
     if (event.button === 1 && ![Condition.Dead, Condition.Bloodied].includes(condition)) {
       // Mouse middle button
       setCurrentCombat((combat) => {
+        const newConditions = removeCondition(combat.characters[index].conditions, condition)
         const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
           ...combat.characters[index],
-          conditions: removeCondition(combat.characters[index].conditions, condition)
+          conditions: newConditions,
+          effects: getConditionEffects(newConditions)
         })
         return {
           ...combat,
@@ -295,12 +297,13 @@ export const CombatTracker: React.FC = () => {
     setCurrentCombat((combat) => {
       const toRemove = _.first(_.difference(combat.characters[index].conditions, conditions))
       let newConditions = setCondition(combat.characters[index].conditions, conditions)
-      if (toRemove) {
+      if (toRemove && toRemove !== Condition.Bloodied && toRemove !== Condition.Dead) {
         newConditions = removeCondition(combat.characters[index].conditions, toRemove)
       }
       const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
         ...combat.characters[index],
-        conditions: newConditions
+        conditions: newConditions,
+        effects: getConditionEffects(newConditions)
       })
       return {
         ...combat,
@@ -309,234 +312,238 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  return (
-    <>
-      <div className={`${classes.root}`}>
-        {!combatOngoing ? (
-          <Button variant="contained" color="primary" onClick={onSort} className={`${classes.sortButton}`}>
-            Sort by init
-          </Button>
-        ) : (
-          <Typography
-            variant="body2"
-            sx={{
-              flex: '1 1 auto',
-              textAlign: 'end'
-            }}
-          >
-            <span
-              style={{
-                fontSize: '1.2em'
-              }}
-            >
-              Round
-            </span>
+  if (currentCombat) {
+    return (
+      <>
+        <div className={`${classes.root}`}>
+          {!combatOngoing ? (
+            <Button variant="contained" color="primary" onClick={onSort} className={`${classes.sortButton}`}>
+              Sort by init
+            </Button>
+          ) : (
             <Typography
-              variant="caption"
+              variant="body2"
               sx={{
-                fontSize: '2em',
-                margin: '0 0 0 .1em'
+                flex: '1 1 auto',
+                textAlign: 'end'
               }}
             >
-              {currentRound}
+              <span
+                style={{
+                  fontSize: '1.2em'
+                }}
+              >
+                Round
+              </span>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontSize: '2em',
+                  margin: '0 0 0 .1em'
+                }}
+              >
+                {currentRound}
+              </Typography>
+              <br />
+              <Typography variant="caption" sx={{ fontSize: '0.8em' }}>
+                Time elapsed {currentRound * 6 - 6} seconds
+              </Typography>
             </Typography>
-            <br />
-            <Typography variant="caption" sx={{ fontSize: '0.8em' }}>
-              Time elapsed {currentRound * 6 - 6} seconds
-            </Typography>
-          </Typography>
-        )}
-        <List>
-          <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
-            {currentCombat.characters.map((character, index) => {
-              return (
-                <Draggable key={index}>
-                  <ListItem
-                    dense
-                    disableGutters
-                    disabled={character.conditions.includes(Condition.Dead)}
-                    className={cx({
-                      [classes.listItem]: true,
-                      [classes.listItemCurrent]: currentTurn === index && combatOngoing,
-                      [classes.listItemBloodied]: character.conditions.includes(Condition.Bloodied),
-                      [classes.listItemDead]: character.conditions.includes(Condition.Dead),
-                      [classes.listItemPlayer]: character.type === CharacterType.Player,
-                      [classes.listItemNPC]: character.type === CharacterType.NPC,
-                      [classes.listItemPlayerBloodied]:
-                        (character.type === CharacterType.Player || character.type === CharacterType.NPC) && character.conditions.includes(Condition.Bloodied)
-                    })}
-                  >
-                    {combatOngoing && (
-                      <ListItemIcon className={`${character.conditions.includes(Condition.Dead) ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
-                        {currentTurn === index ? <CurrentTurnIcon fontSize="large" /> : <span style={{ width: '1.5em' }}>&nbsp;</span>}
-                      </ListItemIcon>
-                    )}
-                    {!combatOngoing && (
-                      <>
-                        <ListItemIcon className={`${character.conditions.includes(Condition.Dead) ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
-                          <DragHandleIcon fontSize="large" />
-                        </ListItemIcon>
-                        <ListItemIcon className={`${classes.deleteIconContainer}`}>
-                          <DeleteButton onClick={onDeleteCharacter(index)} />
-                        </ListItemIcon>
-                      </>
-                    )}
-                    <EditableText
-                      id={`character-ac-${index}`}
-                      tooltip={`AC ${character.AC}`}
-                      className={`${classes.editableTextField}`}
-                      textfieldClass={`${classes.editableTextField}`}
-                      value={character.AC}
-                      textWidth={25}
-                      editWidth={4}
+          )}
+          <List>
+            <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
+              {currentCombat.characters.map((character, index) => {
+                return (
+                  <Draggable key={index}>
+                    <ListItem
+                      dense
+                      disableGutters
                       disabled={character.conditions.includes(Condition.Dead)}
-                      onChange={onChangeCharacterAC(index)}
-                    />
-                    <TextField
-                      id={`character-init-${index}`}
-                      className={`${classes.textField} ${classes.initField}`}
-                      value={character.init}
-                      label="init"
-                      disabled={character.conditions.includes(Condition.Dead)}
-                      onChange={onChangeCharacterInit(index)}
-                      variant="outlined"
-                      size="small"
-                    />
-                    <EditableText
-                      id={`character-name-${index}`}
-                      tooltip={character.name}
-                      className={`${classes.editableTextField}`}
-                      textfieldClass={`${classes.editableTextField}`}
-                      value={character.name}
-                      textWidth={120}
-                      editWidth={10}
-                      disabled={character.conditions.includes(Condition.Dead)}
-                      onChange={onChangeCharacterName(index)}
-                      key={index}
-                    />
-                    <EditableText
-                      id={`character-hp-${index}`}
-                      tooltip={`HP ${character.current_hit_points} / ${character.orig_hit_points}`}
-                      className={`${classes.editableTextField}`}
-                      textfieldClass={`${classes.editableTextField}`}
-                      value={character.current_hit_points}
-                      textWidth={30}
-                      editWidth={4}
-                      disabled={false}
-                      onChange={onChangeCharacterHP(index)}
-                    />
-                    <div className={classes.hpBarContainer}>
-                      <BorderLinearProgress
-                        className={classes.hpBar}
-                        variant="determinate"
-                        value={Math.round((character.current_hit_points / character.orig_hit_points) * 100)}
-                      />
-                    </div>
-                    <TextField
-                      id={`character-hit-points-${index}`}
-                      className={`${classes.textField} ${classes.hpField}`}
-                      value={character.damage}
-                      onChange={onStoreCharacterDamage(index)}
-                      onKeyDown={onDamageCharacter(index)}
-                      variant="outlined"
-                      size="small"
-                    />
-                    <Typography
                       className={cx({
-                        [classes.conditionList]: true,
-                        [classes.player]: character.type === CharacterType.Player,
-                        [classes.npc]: character.type === CharacterType.NPC,
-                        [classes.enemy]: character.type === CharacterType.Enemy
+                        [classes.listItem]: true,
+                        [classes.listItemCurrent]: currentTurn === index && combatOngoing,
+                        [classes.listItemBloodied]: character.conditions.includes(Condition.Bloodied),
+                        [classes.listItemDead]: character.conditions.includes(Condition.Dead),
+                        [classes.listItemPlayer]: character.type === CharacterType.Player,
+                        [classes.listItemNPC]: character.type === CharacterType.NPC,
+                        [classes.listItemPlayerBloodied]:
+                          (character.type === CharacterType.Player || character.type === CharacterType.NPC) && character.conditions.includes(Condition.Bloodied)
                       })}
                     >
-                      &nbsp;
-                      {character.conditions.map((condition, index) => {
-                        return (
-                          <React.Fragment key={index}>
-                            <span onMouseUp={onRemoveCondition(index, condition)}>{ConditionToIconMap[condition] || null}</span>
-                          </React.Fragment>
-                        )
-                      })}
-                    </Typography>
-                    <Autocomplete
-                      id={`conditions-${index}`}
-                      multiple
-                      clearOnBlur
-                      disabled={character.conditions.includes(Condition.Dead)}
-                      disableClearable
-                      value={_.without(character.conditions, Condition.Dead, Condition.Bloodied)}
-                      className={`${classes.autocomplete}`}
-                      options={_.without(Object.values(Condition), Condition.Dead, Condition.Bloodied) as Condition[]}
-                      onChange={onSetCondition(index)}
-                      getOptionLabel={(option) => option.replaceAll('_', ' ')}
-                      style={{ width: 300 }}
-                      PaperComponent={AutoCompleteItem}
-                      renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
-                    />
-                  </ListItem>
-                </Draggable>
-              )
-            })}
-          </Container>
-        </List>
-        {!combatOngoing && (
-          <>
-            <AddCharacterInput onAdd={onAddCharacter(CharacterType.Enemy)}>Add Enemy</AddCharacterInput>
-            <AddCharacterInput onAdd={onAddCharacter(CharacterType.NPC)}>Add NPC</AddCharacterInput>
-            <AddCharacterInput onAdd={onAddCharacter(CharacterType.Player)} requireHp={false}>
-              Add Player
-            </AddCharacterInput>
-          </>
-        )}
-      </div>
-      <div className={`${classes.actionsContainer}`}>
-        {combatOngoing ? (
-          <Button variant="contained" color="warning" onClick={() => setCombatOngoing(false)}>
-            End combat
-          </Button>
-        ) : (
-          <Button variant="contained" onClick={() => setCombatOngoing(true)}>
-            Start combat
-          </Button>
-        )}
-        {combatOngoing && (
-          <>
+                      {combatOngoing && (
+                        <ListItemIcon className={`${character.conditions.includes(Condition.Dead) ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
+                          {currentTurn === index ? <CurrentTurnIcon fontSize="large" /> : <span style={{ width: '1.5em' }}>&nbsp;</span>}
+                        </ListItemIcon>
+                      )}
+                      {!combatOngoing && (
+                        <>
+                          <ListItemIcon className={`${character.conditions.includes(Condition.Dead) ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
+                            <DragHandleIcon fontSize="large" />
+                          </ListItemIcon>
+                          <ListItemIcon className={`${classes.deleteIconContainer}`}>
+                            <DeleteButton onClick={onDeleteCharacter(index)} />
+                          </ListItemIcon>
+                        </>
+                      )}
+                      <EditableText
+                        id={`character-ac-${index}`}
+                        tooltip={`AC ${calculateEffectTooltip('AC', character)}`}
+                        className={`${classes.editableTextField}`}
+                        textFieldClass={`${classes.editableTextField}`}
+                        textClass={`${classes.ACText}`}
+                        value={calculateEffect('AC', character)}
+                        textWidth={25}
+                        editWidth={4}
+                        disabled={character.conditions.includes(Condition.Dead)}
+                        onChange={onChangeCharacterAC(index)}
+                      />
+                      <TextField
+                        id={`character-init-${index}`}
+                        className={`${classes.textField} ${classes.initField}`}
+                        value={character.init}
+                        label="init"
+                        disabled={character.conditions.includes(Condition.Dead)}
+                        onChange={onChangeCharacterInit(index)}
+                        variant="outlined"
+                        size="small"
+                      />
+                      <EditableText
+                        id={`character-name-${index}`}
+                        tooltip={character.name}
+                        className={`${classes.editableTextField}`}
+                        textFieldClass={`${classes.editableTextField}`}
+                        value={character.name}
+                        textWidth={120}
+                        editWidth={10}
+                        disabled={character.conditions.includes(Condition.Dead)}
+                        onChange={onChangeCharacterName(index)}
+                        key={index}
+                      />
+                      <EditableText
+                        id={`character-hp-${index}`}
+                        tooltip={`HP ${character.current_hit_points} / ${character.orig_hit_points}`}
+                        className={`${classes.editableTextField} ${classes.HPText}`}
+                        textFieldClass={`${classes.editableTextField}`}
+                        value={character.current_hit_points}
+                        textWidth={30}
+                        editWidth={4}
+                        disabled={false}
+                        onChange={onChangeCharacterHP(index)}
+                      />
+                      <div className={classes.hpBarContainer}>
+                        <BorderLinearProgress
+                          className={classes.hpBar}
+                          variant="determinate"
+                          value={Math.round((character.current_hit_points / character.orig_hit_points) * 100)}
+                        />
+                      </div>
+                      <TextField
+                        id={`character-hit-points-${index}`}
+                        className={`${classes.textField} ${classes.hpField}`}
+                        value={character.damage}
+                        onChange={onStoreCharacterDamage(index)}
+                        onKeyDown={onDamageCharacter(index)}
+                        variant="outlined"
+                        size="small"
+                      />
+                      <Typography
+                        className={cx({
+                          [classes.conditionList]: true,
+                          [classes.player]: character.type === CharacterType.Player,
+                          [classes.npc]: character.type === CharacterType.NPC,
+                          [classes.enemy]: character.type === CharacterType.Enemy
+                        })}
+                      >
+                        &nbsp;
+                        {character.conditions.map((condition, conditionIndex) => {
+                          return (
+                            <React.Fragment key={conditionIndex}>
+                              <span onMouseUp={onRemoveCondition(index, condition)}>{ConditionToIconMap[condition] || null}</span>
+                            </React.Fragment>
+                          )
+                        })}
+                      </Typography>
+                      <Autocomplete
+                        id={`conditions-${index}`}
+                        multiple
+                        clearOnBlur
+                        disabled={character.conditions.includes(Condition.Dead)}
+                        disableClearable
+                        value={_.without(character.conditions, Condition.Dead, Condition.Bloodied)}
+                        className={`${classes.autocomplete}`}
+                        options={_.without(Object.values(Condition), Condition.Dead, Condition.Bloodied) as Condition[]}
+                        onChange={onSetCondition(index)}
+                        getOptionLabel={(option) => option.replaceAll('_', ' ')}
+                        style={{ width: 300 }}
+                        PaperComponent={AutoCompleteItem}
+                        renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
+                      />
+                    </ListItem>
+                  </Draggable>
+                )
+              })}
+            </Container>
+          </List>
+          {!combatOngoing && (
+            <>
+              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Enemy)}>Add Enemy</AddCharacterInput>
+              <AddCharacterInput onAdd={onAddCharacter(CharacterType.NPC)}>Add NPC</AddCharacterInput>
+              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Player)} requireHp={false}>
+                Add Player
+              </AddCharacterInput>
+            </>
+          )}
+        </div>
+        <div className={`${classes.actionsContainer}`}>
+          {combatOngoing ? (
+            <Button variant="contained" color="warning" onClick={() => setCombatOngoing(false)}>
+              End combat
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={() => setCombatOngoing(true)}>
+              Start combat
+            </Button>
+          )}
+          {combatOngoing && (
+            <>
+              <Button
+                variant="contained"
+                color="info"
+                onClick={() => {
+                  setCurrentTurn(false)
+                }}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="contained"
+                color="info"
+                onClick={() => {
+                  setCurrentTurn(true)
+                }}
+              >
+                Next
+              </Button>
+            </>
+          )}
+          <div className={`${classes.actionsSpread}`}></div>
+          {combatOngoing && (
             <Button
               variant="contained"
-              color="info"
               onClick={() => {
-                setCurrentTurn(false)
+                setCurrentRound(1)
+                _setCurrentTurn(0)
               }}
             >
-              Previous
+              Reset combat
             </Button>
-            <Button
-              variant="contained"
-              color="info"
-              onClick={() => {
-                setCurrentTurn(true)
-              }}
-            >
-              Next
-            </Button>
-          </>
-        )}
-        <div className={`${classes.actionsSpread}`}></div>
-        {combatOngoing && (
-          <Button
-            variant="contained"
-            onClick={() => {
-              setCurrentRound(1)
-              _setCurrentTurn(0)
-            }}
-          >
-            Reset combat
-          </Button>
-        )}
-        <Button variant="contained">Save combat</Button>
-      </div>
-    </>
-  )
+          )}
+        </div>
+      </>
+    )
+  } else {
+    return null
+  }
 }
 
 export default CombatTracker

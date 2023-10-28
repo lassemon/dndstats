@@ -4,6 +4,7 @@ import { Typography } from '@mui/material'
 
 import Baned from 'assets/Baned.png'
 import Blessed from 'assets/Blessed.png'
+import BlessedByBard from 'assets/BlessedByBard.png'
 import Blinded from 'assets/Blinded.png'
 import Bloodied from 'assets/Bloodied.png'
 import Burning from 'assets/Burning.png'
@@ -37,11 +38,12 @@ import Stabilized from 'assets/Stabilized.png'
 import Stunned from 'assets/Stunned.png'
 import Unconscious from 'assets/Unconcious.png'
 
-import { Condition } from 'interfaces'
+import { Character, Condition } from 'interfaces'
 
 const Icons: { [key in Condition]?: string } = {
   [Condition.Baned]: Baned,
   [Condition.Blessed]: Blessed,
+  [Condition.BlessedByBard]: BlessedByBard,
   [Condition.Blinded]: Blinded,
   [Condition.Bloodied]: Bloodied,
   [Condition.Blur]: Blur,
@@ -153,6 +155,21 @@ export const ConditionDescription: { [key in Condition]?: string } = {
   [Condition.Baned]: `Whenever a target that fails this saving throw makes an attack roll or a saving throw before the spell ends, the target must roll a d4 and subtract the number rolled from the attack roll or saving throw.`
 }
 
+export const ConditionEffects = {
+  [Condition.Slowed]: {
+    AC: '-2'
+  },
+  [Condition.Hasted]: {
+    AC: '+2'
+  },
+  [Condition.Shield_of_Faith]: {
+    AC: '+2'
+  },
+  [Condition.Mage_Armor]: {
+    AC: '13 + Dexterity modifier'
+  }
+} as { [key in Condition]: any }
+
 export const ConditionToIconMap = Object.values(Condition).reduce((accumulator, key) => {
   accumulator[key] = (
     <Tooltip
@@ -166,10 +183,61 @@ export const ConditionToIconMap = Object.values(Condition).reduce((accumulator, 
       }
       placement="top"
     >
-      <span className="MuiIcon-root">
-        <img alt={key[0].toUpperCase() + key.slice(1)} src={Icons[key]} height="30px" />
+      <span
+        style={{
+          width: '2.5em',
+          height: '2.5em',
+          display: 'block',
+          textAlign: 'center',
+          lineHeight: '2.5em'
+        }}
+      >
+        <img alt={key[0].toUpperCase() + key.slice(1)} src={Icons[key]} height="35px" />
       </span>
     </Tooltip>
   )
   return accumulator
 }, {} as { [key in Condition]: JSX.Element })
+
+export const getConditionEffects = (conditions: Condition[]) => {
+  const effects: any = {}
+  conditions.forEach((key) => {
+    const effectObject = ConditionEffects[key]
+    for (const key in effectObject) {
+      if (!effects[key]) {
+        effects[key] = effectObject[key]
+      } else {
+        effects[key] = `${effects[key]}${effectObject[key]}`
+      }
+    }
+  })
+
+  return effects
+}
+
+export const calculateEffect = (value: string, character: Character) => {
+  if (Object.keys(character.effects).includes(value)) {
+    return parseEffectString(`${character[value as keyof Character]}${character.effects[value]}`)
+  } else {
+    return character[value as keyof Character]
+  }
+}
+
+export const calculateEffectTooltip = (value: string, character: Character) => {
+  if (Object.keys(character.effects).includes(value)) {
+    if (character.conditions.includes(Condition.Mage_Armor)) {
+      return ConditionEffects[Condition.Mage_Armor][value]
+    }
+    return `${character[value as keyof Character]} ${character.effects[value]}`
+  } else {
+    return character[value as keyof Character]
+  }
+}
+
+const parseEffectString = (calculation: string) => {
+  try {
+    return new Function('return ' + calculation)()
+  } catch (error: any) {
+    return '?'
+  }
+}

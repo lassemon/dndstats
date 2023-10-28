@@ -1,12 +1,11 @@
 import { Grid, TextField } from '@mui/material'
 import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { spellState } from 'recoil/atoms'
 
 export const SpellStatsInput: React.FC = () => {
-  const currentSpell = useRecoilValue(spellState)
-  const setCurrentSpell = useSetRecoilState(spellState)
+  const [currentSpell, setCurrentSpell] = useRecoilState(spellState)
 
   const onChange = (name: string) => (event: any) =>
     setCurrentSpell((spell) => {

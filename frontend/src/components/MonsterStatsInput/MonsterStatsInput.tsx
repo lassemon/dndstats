@@ -3,7 +3,7 @@ import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { monsterState } from 'recoil/atoms'
 
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
@@ -11,8 +11,7 @@ const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
 }
 
 export const MonsterStatsInput: React.FC = () => {
-  const currentMonster = useRecoilValue(monsterState)
-  const setCurrentMonster = useSetRecoilState(monsterState)
+  const [currentMonster, setCurrentMonster] = useRecoilState(monsterState)
 
   const onChange = (name: string) => (event: any) =>
     setCurrentMonster((monster) => {
@@ -182,7 +181,8 @@ export const MonsterStatsInput: React.FC = () => {
         image: React.createElement('img', {
           width: 200,
           alt: '',
-          src: ''
+          src: '',
+          hash: 0
         })
       }
     })
@@ -199,7 +199,8 @@ export const MonsterStatsInput: React.FC = () => {
           const imgtag = React.createElement('img', {
             width: 200,
             alt: imageFile.name,
-            src: (event.target.result || '') as string
+            src: (event.target.result || '') as string,
+            hash: Date.now()
           })
 
           setCurrentMonster((monster) => {

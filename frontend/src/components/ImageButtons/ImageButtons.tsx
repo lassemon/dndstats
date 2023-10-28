@@ -14,6 +14,12 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
   const { onUpload, onDeleteImage } = props
   const { classes } = useStyles()
 
+  const internalOnUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.persist()
+    onUpload(event)
+    event.target.value = ''
+  }
+
   return (
     <div className={classes.bottomButtons}>
       <Button component="label">
@@ -23,7 +29,7 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
           accept="image/*"
           name="image"
           id="file"
-          onChange={onUpload}
+          onChange={internalOnUpload}
           style={{
             display: 'none'
           }}

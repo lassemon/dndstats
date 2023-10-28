@@ -1,10 +1,11 @@
 import { Button, TextField } from '@mui/material'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
+import LoadingIndicator from 'components/LoadingIndicator'
 import StatsInputContainer from 'components/StatsInputContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { Fragment } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { itemState } from 'recoil/atoms'
 
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
@@ -12,8 +13,7 @@ const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
 }
 
 export const ItemStatsInput: React.FC = () => {
-  const currentItem = useRecoilValue(itemState)
-  const setCurrentItem = useSetRecoilState(itemState)
+  const [currentItem, setCurrentItem] = useRecoilState(itemState)
 
   const onChange = (name: string) => (event: any) =>
     setCurrentItem((item) => {
@@ -79,7 +79,8 @@ export const ItemStatsInput: React.FC = () => {
         image: React.createElement('img', {
           width: 200,
           alt: '',
-          src: ''
+          src: '',
+          hash: 0
         })
       }
     })
@@ -96,7 +97,8 @@ export const ItemStatsInput: React.FC = () => {
           const imgtag = React.createElement('img', {
             width: 200,
             alt: imageFile.name,
-            src: (event.target.result || '') as string
+            src: (event.target.result || '') as string,
+            hash: Date.now()
           })
 
           setCurrentItem((item) => {
@@ -112,40 +114,44 @@ export const ItemStatsInput: React.FC = () => {
     }
   }
 
-  return (
-    <StatsInputContainer>
-      <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
-      <TextField id="item-name" label="Name" value={currentItem.name} onChange={onChange('name')} />
-      <TextField id="item-short-description" label="Short Description" value={currentItem.shortDescription} onChange={onChange('shortDescription')} />
-      <TextField
-        id="item-main-description"
-        label="Main Description"
-        value={currentItem.mainDescription}
-        multiline={true}
-        onChange={onChange('mainDescription')}
-      />
-      {currentItem.features.map((feature, key) => {
-        return (
-          <Fragment key={key}>
-            <FeatureInputContainer onDelete={onDeleteFeature(key)}>
-              <TextField id={`item-${key}-feature-name`} label="Feature Name" value={feature.featureName} onChange={onChangeFeatureName(key)} />
-              <TextField
-                id={`item-${key}-feature-description`}
-                label="Feature Description"
-                value={feature.featureDescription}
-                multiline={true}
-                onChange={onChangeFeatureDescription(key)}
-              />
-            </FeatureInputContainer>
-            {currentItem.features.length > 1 && key < currentItem.features.length - 1 && <TaperedRule />}
-          </Fragment>
-        )
-      })}
-      <Button variant="contained" color="primary" onClick={onAddFeature}>
-        Add feature
-      </Button>
-    </StatsInputContainer>
-  )
+  if (currentItem) {
+    return (
+      <StatsInputContainer>
+        <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
+        <TextField id="item-name" label="Name" value={currentItem.name} onChange={onChange('name')} />
+        <TextField id="item-short-description" label="Short Description" value={currentItem.shortDescription} onChange={onChange('shortDescription')} />
+        <TextField
+          id="item-main-description"
+          label="Main Description"
+          value={currentItem.mainDescription}
+          multiline={true}
+          onChange={onChange('mainDescription')}
+        />
+        {currentItem.features.map((feature, key) => {
+          return (
+            <Fragment key={key}>
+              <FeatureInputContainer onDelete={onDeleteFeature(key)}>
+                <TextField id={`item-${key}-feature-name`} label="Feature Name" value={feature.featureName} onChange={onChangeFeatureName(key)} />
+                <TextField
+                  id={`item-${key}-feature-description`}
+                  label="Feature Description"
+                  value={feature.featureDescription}
+                  multiline={true}
+                  onChange={onChangeFeatureDescription(key)}
+                />
+              </FeatureInputContainer>
+              {currentItem.features.length > 1 && key < currentItem.features.length - 1 && <TaperedRule />}
+            </Fragment>
+          )
+        })}
+        <Button variant="contained" color="primary" onClick={onAddFeature}>
+          Add feature
+        </Button>
+      </StatsInputContainer>
+    )
+  } else {
+    return <LoadingIndicator />
+  }
 }
 
 export default ItemStatsInput

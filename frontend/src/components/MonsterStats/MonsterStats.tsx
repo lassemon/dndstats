@@ -166,7 +166,7 @@ export const MonsterStats: React.FC = () => {
         </div>
       </StatsContainer>
       <div className={classes.imageContainer}>
-        {currentMonster.image}
+        <img alt={currentMonster.image.props.alt} src={`${currentMonster.image.props.src}`} />
         {currentMonster.mainDescription && (
           <div className={classes.mainDescription}>
             {currentMonster.mainDescription.split('\n').map((value, key) => {

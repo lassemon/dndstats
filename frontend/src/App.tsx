@@ -17,6 +17,7 @@ import theme from 'theme'
 import { Routes, Route, Outlet, Link } from 'react-router-dom'
 
 import useStyles from './App.styles'
+import LoadingIndicator from 'components/LoadingIndicator'
 
 const TABS = {
   '/item': 'Item Stats',
@@ -109,7 +110,9 @@ const App: React.FC = () => {
             </AppBar>
           </Box>
           <main className={classes.main}>
-            <Outlet />
+            <React.Suspense fallback={<LoadingIndicator />}>
+              <Outlet />
+            </React.Suspense>
           </main>
         </ThemeProvider>
       </RecoilRoot>

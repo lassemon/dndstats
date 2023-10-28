@@ -1,6 +1,7 @@
 export enum Condition {
   Baned = 'baned',
   Blessed = 'blessed',
+  BlessedByBard = 'blessed_by_bard',
   Blinded = 'blinded',
   Bloodied = 'bloodied',
   Burning = 'burning',
@@ -50,4 +51,5 @@ export interface Character {
   damage: string
   conditions: Condition[]
   type: CharacterType
+  effects: any
 }

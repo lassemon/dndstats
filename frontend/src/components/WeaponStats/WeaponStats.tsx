@@ -49,7 +49,9 @@ export const WeaponStats: React.FC = () => {
             )
           })}
         </div>
-        <div className={classes.imageContainer}>{currentWeapon.image}</div>
+        <div className={classes.imageContainer}>
+          <img alt={currentWeapon.image.props.alt} src={`${currentWeapon.image.props.src}`} />
+        </div>
       </div>
       <div>
         <TaperedRule />

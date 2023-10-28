@@ -5,22 +5,31 @@ interface StatsLayoutProps {
   statsComponent?: React.ReactNode
   inputComponent: React.ReactNode
   widthPoint?: GridSize
+  sx?: any
 }
 
 const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
-  const { statsComponent, inputComponent } = props
+  const { statsComponent, inputComponent, sx } = props
   return (
     <Grid
       container={true}
-      spacing={4}
-      //justify="center"
+      columnSpacing={0}
+      rowSpacing={2}
       style={{
         margin: 0,
         width: '100%'
       }}
+      sx={sx ? sx : {}}
     >
       {statsComponent && (
-        <Grid item={true} xs={12} md={12}>
+        <Grid
+          item={true}
+          xs={12}
+          md={12}
+          sx={{
+            margin: '0 1em'
+          }}
+        >
           {statsComponent}
         </Grid>
       )}

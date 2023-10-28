@@ -4,7 +4,7 @@ import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { Fragment } from 'react'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { weaponState } from 'recoil/atoms'
 
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
@@ -12,8 +12,7 @@ const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
 }
 
 export const WeaponStatsInput: React.FC = () => {
-  const currentWeapon = useRecoilValue(weaponState)
-  const setCurrentWeapon = useSetRecoilState(weaponState)
+  const [currentWeapon, setCurrentWeapon] = useRecoilState(weaponState)
 
   const onChange = (name: string) => (event: any) =>
     setCurrentWeapon((weapon) => {
@@ -79,7 +78,8 @@ export const WeaponStatsInput: React.FC = () => {
         image: React.createElement('img', {
           width: 200,
           alt: '',
-          src: ''
+          src: '',
+          hash: 0
         })
       }
     })
@@ -96,7 +96,8 @@ export const WeaponStatsInput: React.FC = () => {
           const imgtag = React.createElement('img', {
             width: 200,
             alt: imageFile.name,
-            src: (event.target.result || '') as string
+            src: (event.target.result || '') as string,
+            hash: Date.now()
           })
 
           setCurrentWeapon((weapon) => {

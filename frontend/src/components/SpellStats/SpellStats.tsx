@@ -33,59 +33,63 @@ export const SpellStats: React.FC = () => {
   const isMedium = useMediaQuery('(max-width:80em)')
   const isPrint = useMediaQuery('print')
 
-  return (
-    <StatsContainer
-      className={cx({
-        [classes.container]: true,
-        [classes.mediumContainer]: isMedium,
-        [classes.printContainer]: isPrint
-      })}
-    >
-      <div className={classes.topContainer}>
-        <div className={classes.headerContainer}>
-          <h1 className={classes.name}>{currentSpell.name}</h1>
-          <h2 className={classes.shortDescription}>{currentSpell.shortDescription}</h2>
-          <div>
-            <h3 className={classes.featureName}>Casting Time</h3>
-            <DescriptionInline>{currentSpell.castingtime}</DescriptionInline>
-          </div>
-          <div>
-            <h3 className={classes.featureName}>Range</h3>
-            <DescriptionInline>{currentSpell.range}</DescriptionInline>
-          </div>
-          <div>
-            <h3 className={classes.featureName}>Components</h3>
-            <DescriptionInline>{currentSpell.components}</DescriptionInline>
-          </div>
-          <div>
-            <h3 className={classes.featureName}>Duration</h3>
-            <DescriptionInline>{currentSpell.duration}</DescriptionInline>
-          </div>
-          <div>
-            <h3 className={classes.featureName}>Classes</h3>
-            <DescriptionInline>{currentSpell.classes}</DescriptionInline>
+  if (currentSpell) {
+    return (
+      <StatsContainer
+        className={cx({
+          [classes.container]: true,
+          [classes.mediumContainer]: isMedium,
+          [classes.printContainer]: isPrint
+        })}
+      >
+        <div className={classes.topContainer}>
+          <div className={classes.headerContainer}>
+            <h1 className={classes.name}>{currentSpell.name}</h1>
+            <h2 className={classes.shortDescription}>{currentSpell.shortDescription}</h2>
+            <div>
+              <h3 className={classes.featureName}>Casting Time</h3>
+              <DescriptionInline>{currentSpell.castingtime}</DescriptionInline>
+            </div>
+            <div>
+              <h3 className={classes.featureName}>Range</h3>
+              <DescriptionInline>{currentSpell.range}</DescriptionInline>
+            </div>
+            <div>
+              <h3 className={classes.featureName}>Components</h3>
+              <DescriptionInline>{currentSpell.components}</DescriptionInline>
+            </div>
+            <div>
+              <h3 className={classes.featureName}>Duration</h3>
+              <DescriptionInline>{currentSpell.duration}</DescriptionInline>
+            </div>
+            <div>
+              <h3 className={classes.featureName}>Classes</h3>
+              <DescriptionInline>{currentSpell.classes}</DescriptionInline>
+            </div>
           </div>
         </div>
-      </div>
 
-      {currentSpell.mainDescription && (
-        <MainDescription>
-          {currentSpell.mainDescription.split('\n').map((value, key) => {
-            return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
-          })}
-        </MainDescription>
-      )}
-      {currentSpell.athigherlevels && (
-        <>
-          <TaperedRule />
+        {currentSpell.mainDescription && (
           <MainDescription>
-            <h3 className={classes.featureName}>At higher levels</h3>
-            <DescriptionInline>{currentSpell.athigherlevels}</DescriptionInline>
+            {currentSpell.mainDescription.split('\n').map((value, key) => {
+              return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
+            })}
           </MainDescription>
-        </>
-      )}
-    </StatsContainer>
-  )
+        )}
+        {currentSpell.athigherlevels && (
+          <>
+            <TaperedRule />
+            <MainDescription>
+              <h3 className={classes.featureName}>At higher levels</h3>
+              <DescriptionInline>{currentSpell.athigherlevels}</DescriptionInline>
+            </MainDescription>
+          </>
+        )}
+      </StatsContainer>
+    )
+  } else {
+    return null
+  }
 }
 
 export default SpellStats

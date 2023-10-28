@@ -7,7 +7,8 @@ import useStyles from './EditableText.styles'
 interface EditableTextProps {
   id: string
   className: string
-  textfieldClass: string
+  textFieldClass: string
+  textClass?: string
   value: string | number
   disabled: boolean
   tooltip?: string
@@ -17,7 +18,7 @@ interface EditableTextProps {
 }
 
 const EditableText: React.FC<EditableTextProps> = (props) => {
-  const { id, className, textfieldClass, value, disabled, onChange, tooltip = '', textWidth = 0, editWidth = 12 } = props
+  const { id, className, textClass, textFieldClass, value, disabled, onChange, tooltip = '', textWidth = 0, editWidth = 12 } = props
   const [isText, setIsText] = useState(true)
   const [_value, setValue] = useState(value)
   const { classes } = useStyles()
@@ -64,14 +65,14 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     <div className={className} style={{ flex: `0 1 ${textWidth}px` }}>
       {isText ? (
         <Tooltip title={tooltip} placement="top-start">
-          <Typography onDoubleClick={onDoubleClick} className={classes.textMode}>
-            {_value}
+          <Typography onDoubleClick={onDoubleClick} className={`${classes.textMode}${textClass ? ' ' + textClass : ''}`}>
+            <span>{_value}</span>
           </Typography>
         </Tooltip>
       ) : (
         <TextField
           id={id}
-          className={textfieldClass}
+          className={textFieldClass}
           value={_value}
           placeholder="name"
           disabled={disabled}

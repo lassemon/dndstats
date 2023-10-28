@@ -2,6 +2,7 @@ import { makeStyles } from 'tss-react/mui'
 import bg_player from 'assets/bg_player.png'
 import bg_npc from 'assets/bg_npc.png'
 import bg_enemy from 'assets/bg_enemy.png'
+import ArmorClass from 'assets/ArmorClass.png'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
@@ -11,7 +12,7 @@ export const useStyles = makeStyles()((theme) => ({
     margin: '0 0 1em 0',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    boxShadow: theme.custom.boxShadow,
+    boxShadow: '0.1rem 0 0.2rem #afaba5, 0.2rem 0 0.2rem #afaba5',
     display: 'flex',
     flexWrap: 'wrap',
     '&& > ul': {
@@ -74,6 +75,42 @@ export const useStyles = makeStyles()((theme) => ({
     },
     '& .MuiInputBase-input': {
       padding: '8.5px 0 8.5px 8px'
+    }
+  },
+  ACText: {
+    position: 'relative',
+    display: 'flex',
+    padding: '0.5em',
+    '&:after': {
+      background: `url(${ArmorClass})`,
+      opacity: '0.2',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'contain',
+      content: '" "',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      display: 'block',
+      width: '100%',
+      height: '100%'
+    },
+    '& > span': {
+      margin: '0 2px 0 0',
+      textAlign: 'center',
+      width: '1em'
+    }
+  },
+  HPText: {
+    position: 'relative',
+    '&:before': {
+      content: '"HP"',
+      position: 'absolute',
+      opacity: '0.3',
+      top: 0,
+      left: 0,
+      margin: '-10px 0 0px -10px',
+      fontWeight: 600,
+      fontSize: '0.8em'
     }
   },
   initField: {
@@ -202,6 +239,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   actionsContainer: {
     display: 'flex',
+    margin: '0 1em',
     '& > button': {
       margin: '0 1em 0 0'
     }
