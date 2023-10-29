@@ -54,7 +54,7 @@ export const useStyles = makeStyles()((theme) => ({
       backgroundSize: 'contain',
       backgroundRepeat: 'no-repeat',
       width: '100%',
-      height: '40%',
+      height: '2em',
       position: 'absolute',
       top: 0,
       left: 0,
@@ -186,7 +186,9 @@ export const useStyles = makeStyles()((theme) => ({
   hpBarContainer: {
     '&&': {
       display: 'block',
-      flex: '0 0 12%'
+      flex: '0 0 18%',
+      alignItems: 'center',
+      height: '3em'
     }
   },
   hpBar: {

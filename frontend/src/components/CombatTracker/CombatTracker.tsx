@@ -1,5 +1,5 @@
 import { withStyles } from 'tss-react/mui'
-import { Button, IconButton, LinearProgress, Paper, TextField, Typography } from '@mui/material'
+import { Button, IconButton, LinearProgress, Paper, TextField, Tooltip, Typography } from '@mui/material'
 import { Container, Draggable } from 'react-smooth-dnd'
 import List from '@mui/material/List'
 import { arrayMoveImmutable } from 'array-move'
@@ -456,14 +456,16 @@ export const CombatTracker: React.FC = () => {
                         disabled={false}
                         onChange={onChangeCharacterHP(index)}
                       />
-                      <div className={classes.hpBarContainer}>
-                        <BorderLinearProgress
-                          className={classes.hpBar}
-                          variant="determinate"
-                          color={character.conditions.includes(Condition.Bloodied) ? 'warning' : 'primary'}
-                          value={Math.round((character.current_hit_points / character.orig_hit_points) * 100)}
-                        />
-                      </div>
+                      <Tooltip title={`HP ${character.current_hit_points} / ${character.orig_hit_points}`} placement="top-start">
+                        <div className={classes.hpBarContainer}>
+                          <BorderLinearProgress
+                            className={classes.hpBar}
+                            variant="determinate"
+                            color={character.conditions.includes(Condition.Bloodied) ? 'warning' : 'primary'}
+                            value={Math.round((character.current_hit_points / character.orig_hit_points) * 100)}
+                          />
+                        </div>
+                      </Tooltip>
                       <TextField
                         id={`character-hit-points-${index}`}
                         className={`${classes.textField} ${classes.hpField}`}
