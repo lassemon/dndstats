@@ -1,5 +1,5 @@
 import { withStyles } from 'tss-react/mui'
-import { Button, IconButton, LinearProgress, Paper, TextField, Tooltip, Typography } from '@mui/material'
+import { Button, IconButton, LinearProgress, MenuItem, Paper, Popover, Select, TextField, Tooltip, Typography } from '@mui/material'
 import { Container, Draggable } from 'react-smooth-dnd'
 import List from '@mui/material/List'
 import { arrayMoveImmutable } from 'array-move'
@@ -21,6 +21,7 @@ import { Character, CharacterType, Condition } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap, calculateEffect, calculateEffectTooltip, getConditionEffects } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
+import Settings from '@mui/icons-material/Settings'
 
 const replaceItemAtIndex = <T,>(arr: T[], index: number, newValue: T) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
@@ -104,6 +105,19 @@ export const CombatTracker: React.FC = () => {
   const [combatOngoing, setCombatOngoing] = useState(false)
   const [currentTurn, _setCurrentTurn] = useState(0)
   const [currentRound, setCurrentRound] = useState(1)
+  const [settingsAnchors, setSettingsAnchors] = React.useState<Array<HTMLButtonElement | null>>(currentCombat.characters.map(() => null))
+
+  const openSettings = (index: number, event: React.MouseEvent<HTMLButtonElement>) => {
+    setSettingsAnchors((anchors) => {
+      return replaceItemAtIndex<HTMLButtonElement | null>(anchors, index, event.currentTarget)
+    })
+  }
+
+  const closeSettings = (index: number) => {
+    setSettingsAnchors((anchors) => {
+      return replaceItemAtIndex<HTMLButtonElement | null>(anchors, index, null)
+    })
+  }
 
   useEffect(() => {
     _setCurrentTurn(0)
@@ -333,6 +347,20 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
+  const onChangeType = (index: number) => (event: any) => {
+    setCurrentCombat((combat) => {
+      const character = combat.characters[index]
+      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+        ...character,
+        type: event.target.value
+      })
+      return {
+        ...combat,
+        characters: charactersCopy
+      }
+    })
+  }
+
   const duplicateCharacter = (index: number) => {
     setCurrentCombat((combat) => {
       const charactersCopy = [...combat.characters]
@@ -399,6 +427,8 @@ export const CombatTracker: React.FC = () => {
           <List>
             <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
               {currentCombat.characters.map((character, index) => {
+                const settingsAnchor = settingsAnchors[index]
+                const settingsOpen = Boolean(settingsAnchors[index])
                 return (
                   <Draggable key={index} className={`${classes.draggableContainer}`}>
                     <ListItem
@@ -532,9 +562,38 @@ export const CombatTracker: React.FC = () => {
                         PaperComponent={AutoCompleteItem}
                         renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
                       />
-                      <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)' }} onClick={() => duplicateCharacter(index)}>
+                      <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)', marginRight: 0 }} onClick={() => duplicateCharacter(index)}>
                         <AddBox />
                       </IconButton>
+                      <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)', marginRight: 0 }} onClick={(event: any) => openSettings(index, event)}>
+                        <Settings />
+                      </IconButton>
+                      <Popover
+                        id={settingsOpen ? `settings-${index}` : undefined}
+                        open={settingsOpen}
+                        anchorEl={settingsAnchor}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right'
+                        }}
+                        transformOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'right'
+                        }}
+                        onClose={() => closeSettings(index)}
+                      >
+                        <List className={`${classes.settingsList}`}>
+                          <Typography variant="h5">{character.name}</Typography>
+                          <ListItem className={`${classes.settingsListItem}`}>
+                            <Typography>Type:</Typography>
+                            <Select size="small" labelId={`type-${index}`} id="type-select" value={character.type} label="Age" onChange={onChangeType(index)}>
+                              <MenuItem value={CharacterType.Player}>Player</MenuItem>
+                              <MenuItem value={CharacterType.NPC}>NPC</MenuItem>
+                              <MenuItem value={CharacterType.Enemy}>Enemy</MenuItem>
+                            </Select>
+                          </ListItem>
+                        </List>
+                      </Popover>
                     </ListItem>
                   </Draggable>
                 )

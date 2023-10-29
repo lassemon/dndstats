@@ -295,6 +295,14 @@ export const useStyles = makeStyles()((theme) => ({
   },
   actionsSpread: {
     flex: '1 1 auto'
+  },
+  settingsList: {
+    padding: '0.5em'
+  },
+  settingsListItem: {
+    display: 'flex',
+    gap: '1em',
+    padding: '0.5em'
   }
 }))
 
