@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import React, { useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { combatTrackerState } from 'recoil/atoms'
-import _ from 'lodash'
+import _, { cond } from 'lodash'
 import classNames from 'classnames/bind'
 
 import Autocomplete from '@mui/material/Autocomplete'
@@ -61,6 +61,10 @@ const setCondition = (conditions: Condition[], addCondition: Condition[] | Condi
 
 const removeCondition = (conditions: Condition[], condition: Condition) => {
   return _.uniq(_.without(conditions, condition))
+}
+
+const removeConditions = (conditions: Condition[], toRemove: Condition[]) => {
+  return _.uniq(_.without(conditions, ...toRemove))
 }
 
 const BorderLinearProgress = withStyles(LinearProgress, (theme) => ({
@@ -294,14 +298,14 @@ export const CombatTracker: React.FC = () => {
     }
   }
 
-  const onSetCondition = (index: number) => (event: any, conditions: Condition[]) => {
+  const onChangeCondition = (index: number) => (event: any, conditions: Condition[]) => {
     setCurrentCombat((combat) => {
       const toRemove = _.difference(combat.characters[index].conditions, conditions).filter((condition) => {
         return condition !== Condition.Bloodied && condition !== Condition.Dead
       })
       let newConditions = setCondition(combat.characters[index].conditions, conditions)
-      if (!_.isEmpty(toRemove) && toRemove[0] !== Condition.Bloodied && toRemove[0] !== Condition.Dead) {
-        newConditions = removeCondition(combat.characters[index].conditions, toRemove[0])
+      if (!_.isEmpty(toRemove)) {
+        newConditions = removeConditions(combat.characters[index].conditions, toRemove)
       }
       const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
         ...combat.characters[index],
@@ -489,12 +493,11 @@ export const CombatTracker: React.FC = () => {
                         multiple
                         clearOnBlur
                         disabled={character.conditions.includes(Condition.Dead)}
-                        disableClearable
                         disableCloseOnSelect
                         value={_.without(character.conditions, Condition.Dead, Condition.Bloodied)}
                         className={`${classes.autocomplete}`}
                         options={_.without(Object.values(Condition), Condition.Dead, Condition.Bloodied) as Condition[]}
-                        onChange={onSetCondition(index)}
+                        onChange={onChangeCondition(index)}
                         getOptionLabel={(option) => option.replaceAll('_', ' ')}
                         style={{ width: 300 }}
                         PaperComponent={AutoCompleteItem}
