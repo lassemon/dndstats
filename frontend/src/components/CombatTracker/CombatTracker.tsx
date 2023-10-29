@@ -1,5 +1,5 @@
 import { withStyles } from 'tss-react/mui'
-import { Button, LinearProgress, Paper, TextField, Typography } from '@mui/material'
+import { Button, IconButton, LinearProgress, Paper, TextField, Typography } from '@mui/material'
 import { Container, Draggable } from 'react-smooth-dnd'
 import List from '@mui/material/List'
 import { arrayMoveImmutable } from 'array-move'
@@ -20,6 +20,7 @@ import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
 import { Character, CharacterType, Condition } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap, calculateEffect, calculateEffectTooltip, getConditionEffects } from './Conditions'
+import AddBox from '@mui/icons-material/AddBox'
 
 const replaceItemAtIndex = <T,>(arr: T[], index: number, newValue: T) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
@@ -314,6 +315,20 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
+  const duplicateCharacter = (index: number) => {
+    setCurrentCombat((combat) => {
+      const charactersCopy = [...combat.characters]
+      const characterCopy = charactersCopy[index]
+
+      const indexToInsert = index >= 0 ? index : charactersCopy.length
+      charactersCopy.splice(indexToInsert + 1, 0, characterCopy)
+      return {
+        ...combat,
+        characters: charactersCopy
+      }
+    })
+  }
+
   if (currentCombat) {
     return (
       <>
@@ -484,6 +499,9 @@ export const CombatTracker: React.FC = () => {
                         PaperComponent={AutoCompleteItem}
                         renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
                       />
+                      <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)' }} onClick={() => duplicateCharacter(index)}>
+                        <AddBox />
+                      </IconButton>
                     </ListItem>
                   </Draggable>
                 )
