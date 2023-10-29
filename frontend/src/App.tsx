@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar, Tooltip } from '@mui/material'
+import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar, Tooltip, Typography } from '@mui/material'
 import PrintIcon from '@mui/icons-material/Print'
 import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'
@@ -117,7 +117,15 @@ const App: React.FC = () => {
                 <Button variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
                   Print page
                 </Button>
-                <Tooltip title={`Resets everything to default values`} placement="top-end">
+                <Tooltip
+                  title={
+                    <>
+                      <Typography variant="h6">WARNING!</Typography>
+                      <Typography variant="body1">Resets everything in ALL VIEWS to default values</Typography>
+                    </>
+                  }
+                  placement="top-end"
+                >
                   <Button
                     variant="contained"
                     onClick={async () => {
