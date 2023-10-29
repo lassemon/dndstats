@@ -11,8 +11,12 @@ export const load = async (key: string) => {
 }
 
 export const clear = async (key: string) => {
-  return await new Promise<void>((resolve, reject) => {
+  return await new Promise<void>((resolve) => {
     localStorage.removeItem(key)
     resolve()
   })
+}
+
+export const clearAll = async () => {
+  return await Promise.resolve(localStorage.clear())
 }

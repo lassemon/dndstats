@@ -7,7 +7,7 @@ import ListItem from '@mui/material/ListItem'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import CurrentTurnIcon from '@mui/icons-material/ArrowForwardIos'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { combatTrackerState } from 'recoil/atoms'
 import _ from 'lodash'
@@ -105,6 +105,10 @@ export const CombatTracker: React.FC = () => {
   const [currentTurn, _setCurrentTurn] = useState(0)
   const [currentRound, setCurrentRound] = useState(1)
 
+  useEffect(() => {
+    _setCurrentTurn(0)
+  }, [currentCombat.characters.length])
+
   const setCurrentTurn = (next: boolean) => {
     if (next) {
       if (currentTurn === currentCombat.characters.length - 1) {
@@ -139,6 +143,16 @@ export const CombatTracker: React.FC = () => {
       return {
         ...combat,
         characters: sortedCharacters
+      }
+    })
+  }
+
+  const clearCombat = (type?: CharacterType) => {
+    setCurrentCombat((combat) => {
+      const charactersCopy = type ? [...combat.characters].filter((character) => character.type !== type) : []
+      return {
+        ...combat,
+        characters: charactersCopy
       }
     })
   }
@@ -338,9 +352,20 @@ export const CombatTracker: React.FC = () => {
       <>
         <div className={`${classes.root}`}>
           {!combatOngoing ? (
-            <Button variant="contained" color="primary" onClick={onSort} className={`${classes.sortButton}`}>
-              Sort by init
-            </Button>
+            <div className={`${classes.topActionsContainer}`}>
+              <Button variant="contained" color="primary" onClick={onSort} className={`${classes.sortButton}`}>
+                Sort by init
+              </Button>
+              <Button variant="contained" color="primary" onClick={() => clearCombat(CharacterType.NPC)} className={`${classes.sortButton}`}>
+                Clear NPCs
+              </Button>
+              <Button variant="contained" color="primary" onClick={() => clearCombat(CharacterType.Enemy)} className={`${classes.sortButton}`}>
+                Clear Enemies
+              </Button>
+              <Button variant="contained" color="primary" onClick={() => clearCombat()} className={`${classes.sortButton}`}>
+                Clear All
+              </Button>
+            </div>
           ) : (
             <Typography
               variant="body2"

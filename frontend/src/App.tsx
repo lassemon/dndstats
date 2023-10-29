@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar } from '@mui/material'
+import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar, Tooltip } from '@mui/material'
 import PrintIcon from '@mui/icons-material/Print'
 import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'
@@ -18,6 +18,7 @@ import { Routes, Route, Outlet, Link } from 'react-router-dom'
 
 import useStyles from './App.styles'
 import LoadingIndicator from 'components/LoadingIndicator'
+import { clearAll } from 'services/store'
 
 const TABS = {
   '/item': 'Item Stats',
@@ -98,7 +99,17 @@ const App: React.FC = () => {
                     return <Tab label={TABS[tab]} value={`${tab}`} component={Link} to={tab} key={tab} {...a11yProps(5)} />
                   })}
                 </Tabs>
-                <Toolbar disableGutters>
+                <Toolbar
+                  disableGutters
+                  sx={{
+                    '&&': {
+                      minHeight: 'auto'
+                    },
+                    '& button': {
+                      padding: 0
+                    }
+                  }}
+                >
                   <ToggleButton onClick={onToggleBg} />
                   <PlusButton onClick={onFontSizeLarger} />
                   <MinusButton onClick={onFontSizeSmaller} />
@@ -106,6 +117,17 @@ const App: React.FC = () => {
                 <Button variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
                   Print page
                 </Button>
+                <Tooltip title={`Resets everything to default values`} placement="top-end">
+                  <Button
+                    variant="contained"
+                    onClick={async () => {
+                      await clearAll()
+                      window.location.reload()
+                    }}
+                  >
+                    Reset All
+                  </Button>
+                </Tooltip>
               </Toolbar>
             </AppBar>
           </Box>

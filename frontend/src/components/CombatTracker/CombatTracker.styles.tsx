@@ -22,6 +22,10 @@ export const useStyles = makeStyles()((theme) => ({
       margin: '0 0 3em 0'
     }
   },
+  topActionsContainer: {
+    display: 'flex',
+    gap: '1em'
+  },
   sortButton: {
     margin: '0 0 2em 0'
   },

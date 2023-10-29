@@ -17,7 +17,8 @@ export const useStyles = makeStyles()(() => ({
   },
   toolbar: {
     flexDirection: 'column',
-    margin: '2em 0 0 0'
+    margin: '2em 0 0 0',
+    gap: '1em'
   }
 }))
 
