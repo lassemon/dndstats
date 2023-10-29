@@ -523,7 +523,13 @@ export const CombatTracker: React.FC = () => {
               End combat
             </Button>
           ) : (
-            <Button variant="contained" onClick={() => setCombatOngoing(true)}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                onSort()
+                setCombatOngoing(true)
+              }}
+            >
               Start combat
             </Button>
           )}

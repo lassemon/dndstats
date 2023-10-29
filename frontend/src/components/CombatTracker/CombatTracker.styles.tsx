@@ -45,7 +45,7 @@ export const useStyles = makeStyles()((theme) => ({
     border: '1px solid rgba(0, 0, 0, .2)'
   },
   listItemBloodied: {
-    boxShadow: `1px 6px 6px 0px rgba(223,193,166,0.5)`
+    borderLeft: `2px solid ${theme.status.blood}`
   },
   listItemDead: {
     '&&': {
@@ -85,7 +85,8 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   nameTextContainer: {
-    margin: '0 0 0 0.6em'
+    margin: '0 0 0 0.6em',
+    padding: '0 1em 0 0'
   },
   nameText: {
     width: '7em'
@@ -273,6 +274,7 @@ export const useStyles = makeStyles()((theme) => ({
   actionsContainer: {
     display: 'flex',
     margin: '0 1em',
+    padding: '0 0 8em  0',
     '& > button': {
       margin: '0 1em 0 0'
     }
