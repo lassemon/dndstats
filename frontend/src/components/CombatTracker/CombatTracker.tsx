@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import React, { useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { combatTrackerState } from 'recoil/atoms'
-import _, { cond } from 'lodash'
+import _ from 'lodash'
 import classNames from 'classnames/bind'
 
 import Autocomplete from '@mui/material/Autocomplete'
@@ -386,7 +386,9 @@ export const CombatTracker: React.FC = () => {
                         [classes.listItemBloodied]: character.conditions.includes(Condition.Bloodied),
                         [classes.listItemDead]: character.conditions.includes(Condition.Dead),
                         [classes.listItemPlayer]: character.type === CharacterType.Player,
-                        [classes.listItemNPC]: character.type === CharacterType.NPC
+                        [classes.listItemPlayerBloodied]: character.type === CharacterType.Player && character.conditions.includes(Condition.Bloodied),
+                        [classes.listItemNPC]: character.type === CharacterType.NPC,
+                        [classes.listItemNPCBloodied]: character.type === CharacterType.NPC && character.conditions.includes(Condition.Bloodied)
                       })}
                     >
                       {combatOngoing && (

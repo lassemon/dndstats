@@ -4,6 +4,7 @@ import bg_npc from 'assets/bg_npc.png'
 import bg_enemy from 'assets/bg_enemy.png'
 import ArmorClass from 'assets/ArmorClass.png'
 import BloodDrop from 'assets/BloodDrop.png'
+import { alpha } from '@mui/material'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
@@ -45,7 +46,20 @@ export const useStyles = makeStyles()((theme) => ({
     border: '1px solid rgba(0, 0, 0, .2)'
   },
   listItemBloodied: {
-    borderLeft: `2px solid ${theme.status.blood}`
+    background: `linear-gradient(90deg, ${alpha(theme.status.blood || '', 0.3)}, 10%, rgba(255, 255, 255, 0) 40%)`,
+    position: 'relative',
+    '&:before': {
+      content: '" "',
+      background: `url(${BloodDrop})`,
+      backgroundSize: 'contain',
+      backgroundRepeat: 'no-repeat',
+      width: '100%',
+      height: '40%',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      transform: 'translate(-0.5%, -50%)'
+    }
   },
   listItemDead: {
     '&&': {
@@ -56,8 +70,14 @@ export const useStyles = makeStyles()((theme) => ({
   listItemPlayer: {
     background: '#c9e5c9'
   },
+  listItemPlayerBloodied: {
+    background: `linear-gradient(90deg, ${alpha(theme.status.blood || '', 0.3)}, 10%, #c9e5c9 40%)`
+  },
   listItemNPC: {
     background: '#C2DEDC'
+  },
+  listItemNPCBloodied: {
+    background: `linear-gradient(90deg, ${alpha(theme.status.blood || '', 0.3)}, 10%, #C2DEDC 40%)`
   },
   textField: {
     '& > div': {
@@ -96,18 +116,6 @@ export const useStyles = makeStyles()((theme) => ({
     '& span': {
       color: theme.status.blood,
       fontWeight: 600
-    },
-    '& > p:after': {
-      content: '" "',
-      background: `url(${BloodDrop})`,
-      backgroundSize: 'contain',
-      backgroundRepeat: 'no-repeat',
-      width: '100%',
-      height: '70%',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      transform: 'translate(-9%, -50%)'
     }
   },
   ACText: {
