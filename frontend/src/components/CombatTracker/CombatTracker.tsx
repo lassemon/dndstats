@@ -295,10 +295,12 @@ export const CombatTracker: React.FC = () => {
 
   const onSetCondition = (index: number) => (event: any, conditions: Condition[]) => {
     setCurrentCombat((combat) => {
-      const toRemove = _.first(_.difference(combat.characters[index].conditions, conditions))
+      const toRemove = _.difference(combat.characters[index].conditions, conditions).filter((condition) => {
+        return condition !== Condition.Bloodied && condition !== Condition.Dead
+      })
       let newConditions = setCondition(combat.characters[index].conditions, conditions)
-      if (toRemove && toRemove !== Condition.Bloodied && toRemove !== Condition.Dead) {
-        newConditions = removeCondition(combat.characters[index].conditions, toRemove)
+      if (!_.isEmpty(toRemove) && toRemove[0] !== Condition.Bloodied && toRemove[0] !== Condition.Dead) {
+        newConditions = removeCondition(combat.characters[index].conditions, toRemove[0])
       }
       const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
         ...combat.characters[index],
@@ -354,7 +356,7 @@ export const CombatTracker: React.FC = () => {
             <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
               {currentCombat.characters.map((character, index) => {
                 return (
-                  <Draggable key={index}>
+                  <Draggable key={index} className={`${classes.draggableContainer}`}>
                     <ListItem
                       dense
                       disableGutters
@@ -365,9 +367,7 @@ export const CombatTracker: React.FC = () => {
                         [classes.listItemBloodied]: character.conditions.includes(Condition.Bloodied),
                         [classes.listItemDead]: character.conditions.includes(Condition.Dead),
                         [classes.listItemPlayer]: character.type === CharacterType.Player,
-                        [classes.listItemNPC]: character.type === CharacterType.NPC,
-                        [classes.listItemPlayerBloodied]:
-                          (character.type === CharacterType.Player || character.type === CharacterType.NPC) && character.conditions.includes(Condition.Bloodied)
+                        [classes.listItemNPC]: character.type === CharacterType.NPC
                       })}
                     >
                       {combatOngoing && (
@@ -410,7 +410,11 @@ export const CombatTracker: React.FC = () => {
                       <EditableText
                         id={`character-name-${index}`}
                         tooltip={character.name}
-                        className={`${classes.editableTextField}`}
+                        className={cx({
+                          [classes.editableTextField]: true,
+                          [classes.nameTextContainer]: true,
+                          [classes.nameBloodied]: character.conditions.includes(Condition.Bloodied)
+                        })}
                         textFieldClass={`${classes.editableTextField}`}
                         textClass={`${classes.nameText}`}
                         value={character.name}
@@ -435,6 +439,7 @@ export const CombatTracker: React.FC = () => {
                         <BorderLinearProgress
                           className={classes.hpBar}
                           variant="determinate"
+                          color={character.conditions.includes(Condition.Bloodied) ? 'warning' : 'primary'}
                           value={Math.round((character.current_hit_points / character.orig_hit_points) * 100)}
                         />
                       </div>
@@ -489,9 +494,7 @@ export const CombatTracker: React.FC = () => {
             <>
               <AddCharacterInput onAdd={onAddCharacter(CharacterType.Enemy)}>Add Enemy</AddCharacterInput>
               <AddCharacterInput onAdd={onAddCharacter(CharacterType.NPC)}>Add NPC</AddCharacterInput>
-              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Player)} requireHp={false}>
-                Add Player
-              </AddCharacterInput>
+              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Player)}>Add Player</AddCharacterInput>
             </>
           )}
         </div>

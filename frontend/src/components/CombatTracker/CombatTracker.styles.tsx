@@ -3,6 +3,7 @@ import bg_player from 'assets/bg_player.png'
 import bg_npc from 'assets/bg_npc.png'
 import bg_enemy from 'assets/bg_enemy.png'
 import ArmorClass from 'assets/ArmorClass.png'
+import BloodDrop from 'assets/BloodDrop.png'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
@@ -23,6 +24,11 @@ export const useStyles = makeStyles()((theme) => ({
   sortButton: {
     margin: '0 0 2em 0'
   },
+  draggableContainer: {
+    '&&&': {
+      overflow: 'initial'
+    }
+  },
   listItem: {
     paddingRight: 0,
     paddingLeft: 0,
@@ -39,7 +45,7 @@ export const useStyles = makeStyles()((theme) => ({
     border: '1px solid rgba(0, 0, 0, .2)'
   },
   listItemBloodied: {
-    background: theme.status.lightBlood
+    boxShadow: `1px 6px 6px 0px rgba(223,193,166,0.5)`
   },
   listItemDead: {
     '&&': {
@@ -49,11 +55,6 @@ export const useStyles = makeStyles()((theme) => ({
   },
   listItemPlayer: {
     background: '#c9e5c9'
-  },
-  listItemPlayerBloodied: {
-    '&&': {
-      background: '#d1a88c'
-    }
   },
   listItemNPC: {
     background: '#C2DEDC'
@@ -81,6 +82,31 @@ export const useStyles = makeStyles()((theme) => ({
     },
     '& .MuiInputBase-input': {
       padding: '8.5px 0 8.5px 8px'
+    }
+  },
+  nameTextContainer: {
+    margin: '0 0 0 0.6em'
+  },
+  nameText: {
+    width: '7em'
+  },
+  nameBloodied: {
+    position: 'relative',
+    '& span': {
+      color: theme.status.blood,
+      fontWeight: 600
+    },
+    '& > p:after': {
+      content: '" "',
+      background: `url(${BloodDrop})`,
+      backgroundSize: 'contain',
+      backgroundRepeat: 'no-repeat',
+      width: '100%',
+      height: '70%',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      transform: 'translate(-9%, -50%)'
     }
   },
   ACText: {
@@ -118,9 +144,6 @@ export const useStyles = makeStyles()((theme) => ({
       fontWeight: 600,
       fontSize: '0.8em'
     }
-  },
-  nameText: {
-    width: '7em'
   },
   initField: {
     flexShrink: 0,
