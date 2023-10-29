@@ -490,6 +490,7 @@ export const CombatTracker: React.FC = () => {
                         clearOnBlur
                         disabled={character.conditions.includes(Condition.Dead)}
                         disableClearable
+                        disableCloseOnSelect
                         value={_.without(character.conditions, Condition.Dead, Condition.Bloodied)}
                         className={`${classes.autocomplete}`}
                         options={_.without(Object.values(Condition), Condition.Dead, Condition.Bloodied) as Condition[]}
