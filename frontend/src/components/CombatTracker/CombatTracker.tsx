@@ -17,7 +17,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
-import { Character, CharacterType, Condition } from 'interfaces'
+import { Character, CharacterType, Condition, DamageType } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap, calculateEffect, calculateEffectTooltip, getConditionEffects } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
@@ -263,6 +263,7 @@ export const CombatTracker: React.FC = () => {
         current_hit_points: characterInput.hp,
         damage: '',
         conditions: [],
+        resistances: [],
         type,
         effects: {}
       })
@@ -339,6 +340,20 @@ export const CombatTracker: React.FC = () => {
         ...combat.characters[index],
         conditions: newConditions,
         effects: getConditionEffects(newConditions)
+      })
+      return {
+        ...combat,
+        characters: charactersCopy
+      }
+    })
+  }
+
+  const onChangeResistance = (index: number) => (event: any, resistances: DamageType[]) => {
+    setCurrentCombat((combat) => {
+      let newResistances = [...resistances]
+      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+        ...combat.characters[index],
+        resistances: newResistances
       })
       return {
         ...combat,
@@ -428,7 +443,7 @@ export const CombatTracker: React.FC = () => {
             <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
               {currentCombat.characters.map((character, index) => {
                 const settingsAnchor = settingsAnchors[index]
-                const settingsOpen = Boolean(settingsAnchors[index])
+                const settingsOpen = Boolean(settingsAnchor)
                 return (
                   <Draggable key={index} className={`${classes.draggableContainer}`}>
                     <ListItem
@@ -521,15 +536,34 @@ export const CombatTracker: React.FC = () => {
                           />
                         </div>
                       </Tooltip>
-                      <TextField
-                        id={`character-hit-points-${index}`}
-                        className={`${classes.textField} ${classes.hpField}`}
-                        value={character.damage}
-                        onChange={onStoreCharacterDamage(index)}
-                        onKeyDown={onDamageCharacter(index)}
-                        variant="outlined"
-                        size="small"
-                      />
+                      <Tooltip
+                        title={
+                          <>
+                            Resistances:{' '}
+                            {(character.resistances || []).map((resistance, resistanceIndex) => {
+                              return (
+                                <React.Fragment key={resistanceIndex}>
+                                  <Typography variant="body2">
+                                    <span>{resistance}</span>
+                                    <br />
+                                  </Typography>
+                                </React.Fragment>
+                              )
+                            })}
+                          </>
+                        }
+                        placement="right"
+                      >
+                        <TextField
+                          id={`character-hit-points-${index}`}
+                          className={`${classes.textField} ${classes.hpField}`}
+                          value={character.damage}
+                          onChange={onStoreCharacterDamage(index)}
+                          onKeyDown={onDamageCharacter(index)}
+                          variant="outlined"
+                          size="small"
+                        />
+                      </Tooltip>
                       <Typography
                         className={cx({
                           [classes.conditionList]: true,
@@ -558,7 +592,7 @@ export const CombatTracker: React.FC = () => {
                         options={_.without(Object.values(Condition), Condition.Dead, Condition.Bloodied) as Condition[]}
                         onChange={onChangeCondition(index)}
                         getOptionLabel={(option) => option.replaceAll('_', ' ')}
-                        style={{ width: 300 }}
+                        style={{ width: '10em' }}
                         PaperComponent={AutoCompleteItem}
                         renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
                       />
@@ -591,6 +625,23 @@ export const CombatTracker: React.FC = () => {
                               <MenuItem value={CharacterType.NPC}>NPC</MenuItem>
                               <MenuItem value={CharacterType.Enemy}>Enemy</MenuItem>
                             </Select>
+                          </ListItem>
+                          <ListItem className={`${classes.settingsListItem}`}>
+                            <Typography>Resistance:</Typography>
+                            <Autocomplete
+                              id={`resistances-${index}`}
+                              multiple
+                              clearOnBlur
+                              disableCloseOnSelect
+                              value={character.resistances}
+                              className={`${classes.autocomplete}`}
+                              options={Object.values(DamageType)}
+                              onChange={onChangeResistance(index)}
+                              getOptionLabel={(option) => option.replaceAll('_', ' ')}
+                              style={{ width: '9em' }}
+                              PaperComponent={AutoCompleteItem}
+                              renderInput={(params) => <TextField {...params} label="Resistances" variant="outlined" size="small" />}
+                            />
                           </ListItem>
                         </List>
                       </Popover>

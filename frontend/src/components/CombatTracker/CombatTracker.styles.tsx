@@ -280,7 +280,6 @@ export const useStyles = makeStyles()((theme) => ({
     textTransform: 'uppercase'
   },
   autocomplete: {
-    flex: '0 0 170px',
     '& .MuiAutocomplete-tag': {
       display: 'none'
     }
@@ -301,6 +300,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   settingsListItem: {
     display: 'flex',
+    justifyContent: 'space-between',
     gap: '1em',
     padding: '0.5em'
   }

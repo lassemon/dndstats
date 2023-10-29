@@ -14,11 +14,10 @@ export interface CharacterInput {
 
 interface AddCharacterInputProps {
   onAdd: (character: CharacterInput) => void
-  requireHp?: boolean
 }
 
 const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
-  const { onAdd, requireHp } = props
+  const { onAdd } = props
   const [character, setCharacter] = useState(blankCharacter)
   const [characterInputError, setCharacterInputError] = useState(false)
   const { classes } = useStyles()
@@ -103,16 +102,14 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
         onChange={onCharacterNameChange}
         variant="standard"
       />
-      {requireHp !== false && (
-        <TextField
-          className={`${classes.textField} ${classes.hpField}`}
-          value={character.hp}
-          placeholder="HP"
-          onChange={onCharacterHpChange}
-          onBlur={() => setCharacterInputError(false)}
-          variant="standard"
-        />
-      )}
+      <TextField
+        className={`${classes.textField} ${classes.hpField}`}
+        value={character.hp}
+        placeholder="HP"
+        onChange={onCharacterHpChange}
+        onBlur={() => setCharacterInputError(false)}
+        variant="standard"
+      />
       <Button variant="contained" color="primary" onClick={internalOnAdd}>
         {props.children}
       </Button>

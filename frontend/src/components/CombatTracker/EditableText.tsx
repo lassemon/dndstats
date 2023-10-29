@@ -22,7 +22,6 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
   const [isText, setIsText] = useState(true)
   const [_value, setValue] = useState(value)
   const { classes } = useStyles()
-  const focusRef = React.createRef<HTMLDivElement>()
 
   useEffect(() => {
     setValue(value)
@@ -31,13 +30,6 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
   const onDoubleClick = () => {
     if (isText && !disabled) {
       setIsText(false)
-
-      setTimeout(() => {
-        if (focusRef.current) {
-          // does not work, this is always null
-          focusRef.current.focus()
-        }
-      }, 300)
     }
   }
 
@@ -82,7 +74,10 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
           onBlur={onBlur}
           variant="outlined"
           size="small"
-          ref={focusRef}
+          autoFocus
+          onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
+            event.target.select()
+          }}
           sx={{
             width: `${editWidth}em`
           }}

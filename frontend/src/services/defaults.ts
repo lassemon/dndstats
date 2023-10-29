@@ -1,7 +1,7 @@
 import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
-import { Character, CharacterType, Condition } from 'interfaces'
+import { Character, CharacterType, Condition, DamageType } from 'interfaces'
 import React from 'react'
 
 export const defaultItem = {
@@ -133,6 +133,19 @@ export const defaultMonster = {
   ]
 }
 
+const defaultCharacter: Character = {
+  init: 10,
+  AC: 10,
+  name: '',
+  orig_hit_points: 10,
+  current_hit_points: 10,
+  damage: '',
+  conditions: [] as Condition[],
+  resistances: [] as DamageType[],
+  type: CharacterType.Player,
+  effects: {}
+}
+
 export const defaultCombat = {
   characters: [
     {
@@ -212,5 +225,10 @@ export const defaultCombat = {
       type: CharacterType.Enemy,
       effects: {}
     }
-  ] as Character[]
+  ].map((character) => {
+    return {
+      ...defaultCharacter,
+      ...character
+    }
+  })
 }
