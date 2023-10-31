@@ -1,4 +1,4 @@
-import { TextField, Typography } from '@mui/material'
+import { TextField, TextFieldProps, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Tooltip from '@mui/material/Tooltip'
 
@@ -14,11 +14,12 @@ interface EditableTextProps {
   tooltip?: string
   textWidth?: number
   editWidth?: number
+  type?: TextFieldProps['type']
   onChange: (event: any) => void
 }
 
 const EditableText: React.FC<EditableTextProps> = (props) => {
-  const { id, className, textClass, textFieldClass, value, disabled, onChange, tooltip = '', textWidth = 0, editWidth = 12 } = props
+  const { id, className, textClass, textFieldClass, value, disabled, onChange, tooltip = '', textWidth = 0, editWidth = 12, type = 'text' } = props
   const [isText, setIsText] = useState(true)
   const [_value, setValue] = useState(value)
   const { classes } = useStyles()
@@ -66,7 +67,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
           id={id}
           className={textFieldClass}
           value={_value}
-          placeholder="name"
+          type={type}
           disabled={disabled}
           onChange={internalOnChange}
           onDoubleClick={onDoubleClick}

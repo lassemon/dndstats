@@ -48,6 +48,8 @@ export interface Character {
   name: string
   orig_hit_points: number
   current_hit_points: number
+  temporary_hit_points: number
+  temp_hp_placeholder: number
   damage: string
   conditions: Condition[]
   resistances: DamageType[]

@@ -133,12 +133,14 @@ export const defaultMonster = {
   ]
 }
 
-const defaultCharacter: Character = {
+export const defaultCharacter: Character = {
   init: 10,
   AC: 10,
   name: '',
   orig_hit_points: 10,
   current_hit_points: 10,
+  temporary_hit_points: 0,
+  temp_hp_placeholder: 0,
   damage: '',
   conditions: [] as Condition[],
   resistances: [] as DamageType[],

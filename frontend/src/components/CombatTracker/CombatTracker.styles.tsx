@@ -84,6 +84,7 @@ export const useStyles = makeStyles()((theme) => ({
     background: `linear-gradient(90deg, ${alpha(theme.status.blood || '', 0.3)}, 10%, #C2DEDC 40%)`
   },
   textField: {
+    width: 'auto',
     '& > div': {
       marginTop: '0'
     },

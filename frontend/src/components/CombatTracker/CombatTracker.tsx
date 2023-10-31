@@ -18,6 +18,7 @@ import useStyles from './CombatTracker.styles'
 import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
 import { Character, CharacterType, Condition, DamageType } from 'interfaces'
+import { defaultCharacter } from 'services/defaults'
 import EditableText from './EditableText'
 import { ConditionToIconMap, calculateEffect, calculateEffectTooltip, getConditionEffects } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
@@ -68,19 +69,31 @@ const removeConditions = (conditions: Condition[], toRemove: Condition[]) => {
   return _.uniq(_.without(conditions, ...toRemove))
 }
 
-const BorderLinearProgress = withStyles(LinearProgress, (theme) => ({
-  root: {
-    height: 10,
-    borderRadius: 5
-  },
-  colorPrimary: {
-    backgroundColor: theme.palette.primary.dark
-  },
-  bar: {
-    borderRadius: 5,
-    backgroundColor: theme.status.blood
+const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
+  return {
+    root: {
+      height: 10,
+      borderRadius: 5
+    },
+    colorPrimary: {
+      backgroundColor: theme.palette.secondary.main
+    },
+    bar: {
+      borderRadius: 5,
+      backgroundColor: theme.status.blood
+    },
+    bar1Buffer: {
+      border: '1px solid black'
+    },
+    dashed: {
+      backgroundImage: 'none'
+    },
+    buffer: {
+      borderRadius: 5,
+      backgroundColor: theme.palette.grey[400]
+    }
   }
-}))
+})
 
 const AutoCompleteItem = withStyles(Paper, (theme) => ({
   root: {
@@ -107,6 +120,10 @@ export const CombatTracker: React.FC = () => {
   const [currentRound, setCurrentRound] = useState(1)
   const [settingsAnchors, setSettingsAnchors] = React.useState<Array<HTMLButtonElement | null>>(currentCombat.characters.map(() => null))
 
+  useEffect(() => {
+    _setCurrentTurn(0)
+  }, [currentCombat.characters.length])
+
   const openSettings = (index: number, event: React.MouseEvent<HTMLButtonElement>) => {
     setSettingsAnchors((anchors) => {
       return replaceItemAtIndex<HTMLButtonElement | null>(anchors, index, event.currentTarget)
@@ -118,10 +135,6 @@ export const CombatTracker: React.FC = () => {
       return replaceItemAtIndex<HTMLButtonElement | null>(anchors, index, null)
     })
   }
-
-  useEffect(() => {
-    _setCurrentTurn(0)
-  }, [currentCombat.characters.length])
 
   const setCurrentTurn = (next: boolean) => {
     if (next) {
@@ -201,9 +214,18 @@ export const CombatTracker: React.FC = () => {
   const onChangeCharacterHP = (index: number) => (value: string) => {
     setCurrentCombat((combat) => {
       const newMaxHP = parseInt(value)
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+      const characterCopy = {
         ...combat.characters[index],
-        orig_hit_points: newMaxHP || 0
+        orig_hit_points: newMaxHP || 0,
+        current_hit_points: newMaxHP || 0,
+        temporary_hit_points: 0,
+        temp_hp_placeholder: 0
+      }
+      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+        ...characterCopy,
+        conditions: parseConditions({
+          ...characterCopy
+        })
       })
       return {
         ...combat,
@@ -217,19 +239,6 @@ export const CombatTracker: React.FC = () => {
       const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
         ...combat.characters[index],
         name: value
-      })
-      return {
-        ...combat,
-        characters: charactersCopy
-      }
-    })
-  }
-
-  const onStoreCharacterDamage = (index: number) => (event: any) => {
-    setCurrentCombat((combat) => {
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        damage: event.target.value
       })
       return {
         ...combat,
@@ -256,6 +265,7 @@ export const CombatTracker: React.FC = () => {
       })
       const indexToInsert = index >= 0 ? index : charactersCopy.length
       charactersCopy.splice(indexToInsert, 0, {
+        ...defaultCharacter,
         init: characterInput.init,
         AC: characterInput.AC,
         name: characterInput.name,
@@ -285,20 +295,83 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onDamageCharacter = (index: number) => (event: any) => {
+  const onWriteTemporaryHitPoints = (index: number) => (event: any) => {
+    setCurrentCombat((combat) => {
+      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+        ...combat.characters[index],
+        temp_hp_placeholder: parseInt(event.target.value) || 0
+      })
+      return {
+        ...combat,
+        characters: charactersCopy
+      }
+    })
+  }
+
+  const onChangeTemporaryHitPoints = (index: number) => (event: any) => {
     if (event.keyCode === 13) {
       setCurrentCombat((combat) => {
         const character = combat.characters[index]
-        const HPafterDamage = character.current_hit_points + parseInt(character.damage)
-        const HPinBound = HPafterDamage >= 0 ? (HPafterDamage > character.orig_hit_points ? character.orig_hit_points : HPafterDamage) : 0
-
         const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
           ...character,
+          orig_hit_points: character.orig_hit_points + character.temp_hp_placeholder,
+          temporary_hit_points: character.temp_hp_placeholder,
+          temp_hp_placeholder: 0
+        })
+        return {
+          ...combat,
+          characters: charactersCopy
+        }
+      })
+    }
+  }
+
+  const onWriteCharacterDamage = (index: number) => (event: any) => {
+    setCurrentCombat((combat) => {
+      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+        ...combat.characters[index],
+        damage: event.target.value
+      })
+      return {
+        ...combat,
+        characters: charactersCopy
+      }
+    })
+  }
+
+  const onDamageCharacter = (index: number) => (event: any) => {
+    if (event.keyCode === 13) {
+      setCurrentCombat((combat) => {
+        const character = { ...combat.characters[index] }
+        let HPafterDamage = character.current_hit_points
+        let TempHPAfterDamage = character.temporary_hit_points
+        if (character.temporary_hit_points > 0) {
+          TempHPAfterDamage = TempHPAfterDamage + parseInt(character.damage)
+          if (TempHPAfterDamage < 0) {
+            const test = HPafterDamage + TempHPAfterDamage
+            HPafterDamage = test
+          }
+        } else {
+          HPafterDamage = HPafterDamage + parseInt(character.damage)
+        }
+
+        const TempHPAfterDamage_clean =
+          TempHPAfterDamage >= 0 ? (TempHPAfterDamage > character.orig_hit_points ? character.orig_hit_points : TempHPAfterDamage) : 0
+        const HPafterDamage_clean = HPafterDamage >= 0 ? (HPafterDamage > character.orig_hit_points ? character.orig_hit_points : HPafterDamage) : 0
+
+        const damagedCharacter = {
+          ...character,
+          orig_hit_points:
+            character.temporary_hit_points && TempHPAfterDamage >= 0 ? HPafterDamage_clean + TempHPAfterDamage_clean : character.current_hit_points,
+          current_hit_points: HPafterDamage_clean,
+          temporary_hit_points: TempHPAfterDamage_clean
+        }
+
+        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+          ...damagedCharacter,
           conditions: parseConditions({
-            ...character,
-            current_hit_points: HPinBound
+            ...damagedCharacter
           }),
-          current_hit_points: HPinBound,
           damage: '' // reset stored damage
         })
         return {
@@ -444,6 +517,11 @@ export const CombatTracker: React.FC = () => {
               {currentCombat.characters.map((character, index) => {
                 const settingsAnchor = settingsAnchors[index]
                 const settingsOpen = Boolean(settingsAnchor)
+
+                const totalHP = character.current_hit_points + (character.temporary_hit_points || 0)
+                const HPOf100 = (character.current_hit_points / character.orig_hit_points) * 100
+                const totalHPOf100 = (totalHP / character.orig_hit_points) * 100
+
                 return (
                   <Draggable key={index} className={`${classes.draggableContainer}`}>
                     <ListItem
@@ -477,6 +555,7 @@ export const CombatTracker: React.FC = () => {
                         </>
                       )}
                       <EditableText
+                        type="number"
                         id={`character-ac-${index}`}
                         tooltip={`AC ${calculateEffectTooltip('AC', character)}`}
                         className={`${classes.editableTextField}`}
@@ -484,7 +563,7 @@ export const CombatTracker: React.FC = () => {
                         textClass={`${classes.ACText}`}
                         value={calculateEffect('AC', character)}
                         textWidth={25}
-                        editWidth={4}
+                        editWidth={3}
                         disabled={character.conditions.includes(Condition.Dead)}
                         onChange={onChangeCharacterAC(index)}
                       />
@@ -492,6 +571,7 @@ export const CombatTracker: React.FC = () => {
                         id={`character-init-${index}`}
                         className={`${classes.textField} ${classes.initField}`}
                         value={character.init}
+                        type="number"
                         label="init"
                         disabled={character.conditions.includes(Condition.Dead)}
                         onChange={onChangeCharacterInit(index)}
@@ -517,48 +597,61 @@ export const CombatTracker: React.FC = () => {
                       />
                       <EditableText
                         id={`character-hp-${index}`}
-                        tooltip={`HP ${character.current_hit_points} / ${character.orig_hit_points}`}
+                        type="number"
+                        tooltip={`HP ${character.current_hit_points}${character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''} / ${
+                          character.orig_hit_points
+                        }`}
                         className={`${classes.editableTextField} ${classes.HPText}`}
                         textFieldClass={`${classes.editableTextField}`}
-                        value={character.current_hit_points}
+                        value={character.current_hit_points + (character.temporary_hit_points || 0)}
                         textWidth={30}
                         editWidth={4}
                         disabled={false}
                         onChange={onChangeCharacterHP(index)}
                       />
-                      <Tooltip title={`HP ${character.current_hit_points} / ${character.orig_hit_points}`} placement="top-start">
+                      <Tooltip
+                        title={`HP ${character.current_hit_points}${character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''} / ${
+                          character.orig_hit_points
+                        }`}
+                        placement="top-start"
+                      >
                         <div className={classes.hpBarContainer}>
                           <BorderLinearProgress
                             className={classes.hpBar}
-                            variant="determinate"
+                            variant="buffer"
                             color={character.conditions.includes(Condition.Bloodied) ? 'warning' : 'primary'}
-                            value={Math.round((character.current_hit_points / character.orig_hit_points) * 100)}
+                            value={HPOf100}
+                            valueBuffer={totalHPOf100}
                           />
                         </div>
                       </Tooltip>
                       <Tooltip
                         title={
-                          <>
-                            Resistances:{' '}
-                            {(character.resistances || []).map((resistance, resistanceIndex) => {
-                              return (
-                                <React.Fragment key={resistanceIndex}>
-                                  <Typography variant="body2">
-                                    <span>{resistance}</span>
-                                    <br />
-                                  </Typography>
-                                </React.Fragment>
-                              )
-                            })}
-                          </>
+                          character.resistances &&
+                          !_.isEmpty(character.resistances) && (
+                            <>
+                              Resistances:{' '}
+                              {(character.resistances || []).map((resistance, resistanceIndex) => {
+                                return (
+                                  <React.Fragment key={resistanceIndex}>
+                                    <Typography variant="body2">
+                                      <span>{resistance}</span>
+                                      <br />
+                                    </Typography>
+                                  </React.Fragment>
+                                )
+                              })}
+                            </>
+                          )
                         }
                         placement="right"
                       >
                         <TextField
                           id={`character-hit-points-${index}`}
+                          type="number"
                           className={`${classes.textField} ${classes.hpField}`}
                           value={character.damage}
-                          onChange={onStoreCharacterDamage(index)}
+                          onChange={onWriteCharacterDamage(index)}
                           onKeyDown={onDamageCharacter(index)}
                           variant="outlined"
                           size="small"
@@ -596,9 +689,11 @@ export const CombatTracker: React.FC = () => {
                         PaperComponent={AutoCompleteItem}
                         renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
                       />
-                      <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)', marginRight: 0 }} onClick={() => duplicateCharacter(index)}>
-                        <AddBox />
-                      </IconButton>
+                      {!combatOngoing && (
+                        <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)', marginRight: 0 }} onClick={() => duplicateCharacter(index)}>
+                          <AddBox />
+                        </IconButton>
+                      )}
                       <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)', marginRight: 0 }} onClick={(event: any) => openSettings(index, event)}>
                         <Settings />
                       </IconButton>
@@ -620,7 +715,19 @@ export const CombatTracker: React.FC = () => {
                           <Typography variant="h5">{character.name}</Typography>
                           <ListItem className={`${classes.settingsListItem}`}>
                             <Typography>Type:</Typography>
-                            <Select size="small" labelId={`type-${index}`} id="type-select" value={character.type} label="Age" onChange={onChangeType(index)}>
+                            <Select
+                              size="small"
+                              labelId={`type-${index}`}
+                              id="type-select"
+                              value={character.type}
+                              label="Age"
+                              onChange={onChangeType(index)}
+                              sx={{
+                                '&': {
+                                  width: '8.9em'
+                                }
+                              }}
+                            >
                               <MenuItem value={CharacterType.Player}>Player</MenuItem>
                               <MenuItem value={CharacterType.NPC}>NPC</MenuItem>
                               <MenuItem value={CharacterType.Enemy}>Enemy</MenuItem>
@@ -638,9 +745,27 @@ export const CombatTracker: React.FC = () => {
                               options={Object.values(DamageType)}
                               onChange={onChangeResistance(index)}
                               getOptionLabel={(option) => option.replaceAll('_', ' ')}
-                              style={{ width: '9em' }}
+                              style={{ width: '10em' }}
                               PaperComponent={AutoCompleteItem}
                               renderInput={(params) => <TextField {...params} label="Resistances" variant="outlined" size="small" />}
+                            />
+                          </ListItem>
+                          <ListItem className={`${classes.settingsListItem}`}>
+                            <Typography>Temporary HP:</Typography>
+                            <TextField
+                              id={`temporary-hp-${index}`}
+                              type="number"
+                              //className={`${classes.textField}`}
+                              value={character.temp_hp_placeholder || character.temporary_hit_points}
+                              onChange={onWriteTemporaryHitPoints(index)}
+                              onKeyDown={onChangeTemporaryHitPoints(index)}
+                              variant="outlined"
+                              size="small"
+                              sx={{
+                                '&': {
+                                  width: '10em'
+                                }
+                              }}
                             />
                           </ListItem>
                         </List>
