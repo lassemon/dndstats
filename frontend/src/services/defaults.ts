@@ -137,11 +137,11 @@ export const defaultCharacter: Character = {
   init: 10,
   AC: 10,
   name: '',
-  orig_hit_points: 10,
+  max_hp: 10,
+  hp_cap: 10 + 0, // max_hp + temporary_hit_points
   current_hit_points: 10,
   temporary_hit_points: 0,
-  temp_hp_placeholder: 0,
-  damage: '',
+  regeneration: 0,
   conditions: [] as Condition[],
   resistances: [] as DamageType[],
   type: CharacterType.Player,
@@ -154,9 +154,8 @@ export const defaultCombat = {
       init: 12,
       AC: 15,
       name: 'Ogi',
-      orig_hit_points: 35,
+      max_hp: 35,
       current_hit_points: 35,
-      damage: '',
       conditions: [] as Condition[],
       type: CharacterType.Player,
       effects: {}
@@ -165,9 +164,8 @@ export const defaultCombat = {
       init: 5,
       AC: 16,
       name: 'Thoongk',
-      orig_hit_points: 55,
+      max_hp: 55,
       current_hit_points: 55,
-      damage: '',
       conditions: [] as Condition[],
       type: CharacterType.Player,
       effects: {}
@@ -176,9 +174,8 @@ export const defaultCombat = {
       init: 3,
       AC: 15,
       name: 'Erig',
-      orig_hit_points: 19,
+      max_hp: 19,
       current_hit_points: 19,
-      damage: '',
       conditions: [] as Condition[],
       type: CharacterType.NPC,
       effects: {}
@@ -187,9 +184,8 @@ export const defaultCombat = {
       init: 19,
       AC: 16,
       name: 'Klani',
-      orig_hit_points: 61,
+      max_hp: 61,
       current_hit_points: 61,
-      damage: '',
       conditions: [] as Condition[],
       type: CharacterType.NPC,
       effects: {}
@@ -198,9 +194,8 @@ export const defaultCombat = {
       init: 15,
       AC: 15,
       name: 'Beor',
-      orig_hit_points: 57,
+      max_hp: 57,
       current_hit_points: 57,
-      damage: '',
       conditions: [] as Condition[],
       type: CharacterType.NPC,
       effects: {}
@@ -209,9 +204,8 @@ export const defaultCombat = {
       init: 15,
       AC: 13,
       name: 'Orc',
-      orig_hit_points: 15,
+      max_hp: 15,
       current_hit_points: 15,
-      damage: '',
       conditions: [] as Condition[],
       type: CharacterType.Enemy,
       effects: {}
@@ -220,9 +214,8 @@ export const defaultCombat = {
       init: 4,
       AC: 15,
       name: 'Goblin',
-      orig_hit_points: 7,
+      max_hp: 7,
       current_hit_points: 7,
-      damage: '',
       conditions: [] as Condition[],
       type: CharacterType.Enemy,
       effects: {}
@@ -230,6 +223,7 @@ export const defaultCombat = {
   ].map((character) => {
     return {
       ...defaultCharacter,
+      hp_cap: character.max_hp,
       ...character
     }
   })

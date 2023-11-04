@@ -46,11 +46,11 @@ export interface Character {
   init: number
   AC: number
   name: string
-  orig_hit_points: number
+  max_hp: number
+  hp_cap: number
   current_hit_points: number
   temporary_hit_points: number
-  temp_hp_placeholder: number
-  damage: string
+  regeneration: number
   conditions: Condition[]
   resistances: DamageType[]
   type: CharacterType
@@ -70,5 +70,6 @@ export enum DamageType {
   Lightning = 'lightning',
   Thunder = 'thunder',
   Force = 'force',
-  Psychic = 'psychic'
+  Psychic = 'psychic',
+  All_nonmagical = 'all_nonmagical'
 }

@@ -4,6 +4,7 @@ import bg_npc from 'assets/bg_npc.png'
 import bg_enemy from 'assets/bg_enemy.png'
 import ArmorClass from 'assets/ArmorClass.png'
 import BloodDrop from 'assets/BloodDrop.png'
+import Regeneration from 'assets/Regeneration.png'
 import { alpha } from '@mui/material'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
@@ -188,6 +189,22 @@ export const useStyles = makeStyles()((theme) => ({
       flex: '0 1 auto'
     }
   },
+  regeneration: {
+    position: 'relative',
+    flex: '0 1 0',
+    width: '1em',
+    '& .regenIcon': {
+      background: `url(${Regeneration})`,
+      backgroundSize: 'contain',
+      backgroundRepeat: 'no-repeat',
+      width: '1.5em',
+      height: '1.5em',
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      transform: 'translate(-40%, -150%)'
+    }
+  },
   hpBarContainer: {
     '&&': {
       display: 'block',
@@ -246,13 +263,14 @@ export const useStyles = makeStyles()((theme) => ({
       content: '" "',
       opacity: '.1',
       position: 'absolute',
-      top: '60%',
-      left: '40%',
-      width: '12em',
+      top: '45%',
+      left: '50%',
+      width: '6em',
       height: '2em',
       zIndex: '-1',
       backgroundRepeat: 'no-repeat',
-      transform: 'translate(-55%, -50%) rotate(-10deg)'
+      backgroundPosition: 'center',
+      transform: 'translate(-50%, -50%) rotate(-10deg)'
     }
   },
   player: {

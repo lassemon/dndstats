@@ -1,5 +1,21 @@
 import { withStyles } from 'tss-react/mui'
-import { Button, IconButton, LinearProgress, MenuItem, Paper, Popover, Select, TextField, Tooltip, Typography } from '@mui/material'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  LinearProgress,
+  MenuItem,
+  Paper,
+  Popover,
+  Select,
+  Slide,
+  TextField,
+  Tooltip,
+  Typography
+} from '@mui/material'
 import { Container, Draggable } from 'react-smooth-dnd'
 import List from '@mui/material/List'
 import { arrayMoveImmutable } from 'array-move'
@@ -23,6 +39,7 @@ import EditableText from './EditableText'
 import { ConditionToIconMap, calculateEffect, calculateEffectTooltip, getConditionEffects } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
 import Settings from '@mui/icons-material/Settings'
+import { TransitionProps } from '@mui/material/transitions'
 
 const replaceItemAtIndex = <T,>(arr: T[], index: number, newValue: T) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
@@ -42,7 +59,7 @@ const isDead = (character: Character) => {
 }
 
 const isBloodied = (character: Character) => {
-  return character.current_hit_points < character.orig_hit_points / 2
+  return character.current_hit_points + character.temporary_hit_points < character.max_hp / 2
 }
 
 const setCondition = (conditions: Condition[], addCondition: Condition[] | Condition) => {
@@ -111,6 +128,15 @@ const AutoCompleteItem = withStyles(Paper, (theme) => ({
   }
 }))
 
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />
+})
+
 export const CombatTracker: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
@@ -119,10 +145,46 @@ export const CombatTracker: React.FC = () => {
   const [currentTurn, _setCurrentTurn] = useState(0)
   const [currentRound, setCurrentRound] = useState(1)
   const [settingsAnchors, setSettingsAnchors] = React.useState<Array<HTMLButtonElement | null>>(currentCombat.characters.map(() => null))
+  const [incomingDamages, setIncomingDamages] = React.useState<string[]>(currentCombat.characters.map(() => ''))
+  const [incomingTempHPs, setIncomingTempHPs] = React.useState<string[]>(currentCombat.characters.map(() => ''))
+  const [incomingRegenerations, setIncomingRegenerations] = React.useState<string[]>(currentCombat.characters.map(() => ''))
+  const [regenDialogsOpen, setRegenDialogsOpen] = React.useState<boolean[]>(currentCombat.characters.map(() => false))
+
+  useEffect(() => {
+    const currentCharacter = currentCombat.characters[currentTurn]
+    const canRegenerate = currentCharacter.current_hit_points < currentCharacter.max_hp
+    if (currentCharacter.regeneration > 0 && canRegenerate) {
+      setRegenDialogsOpen((regenDialogs) => {
+        return replaceItemAtIndex<boolean>(regenDialogs, currentTurn, true)
+      })
+    }
+  }, [currentTurn, currentCombat.characters])
+
+  useEffect(() => {
+    setRegenDialogsOpen((regenDialogs) => {
+      return regenDialogs.map(() => false)
+    })
+    setIncomingDamages((damages) => {
+      return damages.map(() => '')
+    })
+    setIncomingTempHPs((tempHPs) => {
+      return tempHPs.map(() => '')
+    })
+  }, [currentCombat.characters])
 
   useEffect(() => {
     _setCurrentTurn(0)
   }, [currentCombat.characters.length])
+
+  const closeRegenDialog = (index: number, regenCharacter?: boolean) => {
+    if (regenCharacter === true) {
+      onRegenerateCharacter(index)
+    } else {
+      setRegenDialogsOpen((regenDialogs) => {
+        return replaceItemAtIndex<boolean>(regenDialogs, currentTurn, false)
+      })
+    }
+  }
 
   const openSettings = (index: number, event: React.MouseEvent<HTMLButtonElement>) => {
     setSettingsAnchors((anchors) => {
@@ -211,29 +273,6 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeCharacterHP = (index: number) => (value: string) => {
-    setCurrentCombat((combat) => {
-      const newMaxHP = parseInt(value)
-      const characterCopy = {
-        ...combat.characters[index],
-        orig_hit_points: newMaxHP || 0,
-        current_hit_points: newMaxHP || 0,
-        temporary_hit_points: 0,
-        temp_hp_placeholder: 0
-      }
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...characterCopy,
-        conditions: parseConditions({
-          ...characterCopy
-        })
-      })
-      return {
-        ...combat,
-        characters: charactersCopy
-      }
-    })
-  }
-
   const onChangeCharacterName = (index: number) => (value: string) => {
     setCurrentCombat((combat) => {
       const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
@@ -269,9 +308,9 @@ export const CombatTracker: React.FC = () => {
         init: characterInput.init,
         AC: characterInput.AC,
         name: characterInput.name,
-        orig_hit_points: characterInput.hp,
+        max_hp: characterInput.hp,
+        hp_cap: characterInput.hp,
         current_hit_points: characterInput.hp,
-        damage: '',
         conditions: [],
         resistances: [],
         type,
@@ -295,28 +334,80 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onWriteTemporaryHitPoints = (index: number) => (event: any) => {
+  const onChangeCharacterHP = (index: number) => (value: string) => {
     setCurrentCombat((combat) => {
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        temp_hp_placeholder: parseInt(event.target.value) || 0
-      })
-      return {
-        ...combat,
-        characters: charactersCopy
+      const newMaxHP = parseInt(value)
+      if (
+        newMaxHP !== combat.characters[index].max_hp ||
+        newMaxHP !== combat.characters[index].hp_cap ||
+        newMaxHP !== combat.characters[index].current_hit_points
+      ) {
+        const characterCopy = {
+          ...combat.characters[index],
+          max_hp: newMaxHP || 0,
+          hp_cap: newMaxHP || 0,
+          current_hit_points: newMaxHP || 0,
+          temporary_hit_points: 0,
+          temp_hp_placeholder: ''
+        }
+        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+          ...characterCopy,
+          conditions: parseConditions({
+            ...characterCopy
+          })
+        })
+        return {
+          ...combat,
+          characters: charactersCopy
+        }
+      } else {
+        return combat
       }
     })
   }
 
-  const onChangeTemporaryHitPoints = (index: number) => (event: any) => {
-    if (event.keyCode === 13) {
+  const onWriteTemporaryHitPoints = (index: number) => (event: any) => {
+    setIncomingTempHPs((tempHPs) => {
+      return replaceItemAtIndex<string>(tempHPs, index, event.target.value)
+    })
+  }
+
+  const onChangeTemporaryHitPoints = (index: number) => (event: any, reason?: string) => {
+    if (event.keyCode === 13 || reason === 'backdropClick') {
       setCurrentCombat((combat) => {
         const character = combat.characters[index]
-        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+        let newTempHp = character.temporary_hit_points
+        //console.log(character)
+
+        const incomingTempHp = parseInt(incomingTempHPs[index]) || 0
+        //const decreasingTempHp = character.temporary_hit_points > 0 && character.temporary_hit_points > incomingTempHp
+        //const increasingTempHp = character.temporary_hit_points < incomingTempHp
+        const changingTempHp = incomingTempHp !== 0
+        //const characterIsMissingHp = character.current_hit_points + character.temporary_hit_points < character.max_hp
+
+        /*
+        console.log('incomingTempHp', incomingTempHp)
+        console.log('decreasingTempHp', decreasingTempHp)
+        console.log('increasingTempHp', increasingTempHp)
+        console.log('changingTempHp', increasingTempHp)
+        console.log('characterIsMissingHp', characterIsMissingHp)
+        */
+
+        if (changingTempHp) {
+          newTempHp = incomingTempHp
+        }
+
+        const characterCopy = {
           ...character,
-          orig_hit_points: character.orig_hit_points + character.temp_hp_placeholder,
-          temporary_hit_points: character.temp_hp_placeholder,
-          temp_hp_placeholder: 0
+          temporary_hit_points: newTempHp,
+          hp_cap: character.max_hp + newTempHp,
+          temp_hp_placeholder: ''
+        }
+        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+          ...characterCopy,
+          conditions: parseConditions({
+            ...characterCopy
+          })
         })
         return {
           ...combat,
@@ -326,11 +417,47 @@ export const CombatTracker: React.FC = () => {
     }
   }
 
-  const onWriteCharacterDamage = (index: number) => (event: any) => {
+  const onWriteRegeneration = (index: number) => (event: any) => {
+    setIncomingRegenerations((regenations) => {
+      return replaceItemAtIndex<string>(regenations, index, event.target.value)
+    })
+  }
+
+  const onChangeRegeneration = (index: number) => (event: any, reason?: string) => {
+    if (event.keyCode === 13 || reason === 'backdropClick') {
+      setCurrentCombat((combat) => {
+        const character = combat.characters[index]
+        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+          ...character,
+          regeneration: parseInt(incomingRegenerations[index]) || 0
+        })
+
+        return {
+          ...combat,
+          characters: charactersCopy
+        }
+      })
+    }
+  }
+
+  const onRegenerateCharacter = (index: number) => {
     setCurrentCombat((combat) => {
+      const character = combat.characters[index]
+      const incomingRegeneration = character.regeneration || 0
+      let newHp = character.current_hit_points + incomingRegeneration
+      if (newHp > character.max_hp) {
+        newHp = character.max_hp
+      }
+
+      const characterCopy = {
+        ...character,
+        current_hit_points: newHp
+      }
       const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        damage: event.target.value
+        ...characterCopy,
+        conditions: parseConditions({
+          ...characterCopy
+        })
       })
       return {
         ...combat,
@@ -339,40 +466,105 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onDamageCharacter = (index: number) => (event: any) => {
+  const onSetIncomingDamage = (index: number) => (event: any) => {
+    setIncomingDamages((damages) => {
+      return replaceItemAtIndex<string>(damages, index, event.target.value || '')
+    })
+  }
+
+  const onDamageOrHealCharacter = (index: number) => (event: any) => {
     if (event.keyCode === 13) {
       setCurrentCombat((combat) => {
         const character = { ...combat.characters[index] }
-        let HPafterDamage = character.current_hit_points
-        let TempHPAfterDamage = character.temporary_hit_points
-        if (character.temporary_hit_points > 0) {
-          TempHPAfterDamage = TempHPAfterDamage + parseInt(character.damage)
-          if (TempHPAfterDamage < 0) {
-            const test = HPafterDamage + TempHPAfterDamage
-            HPafterDamage = test
+        let newHp = character.current_hit_points
+        let newTempHp = character.temporary_hit_points
+        //let newMaxHp = character.max_hp
+        let changeToHp = 0
+        let changeToTempHp = 0
+
+        const incomingHpChange = parseInt(incomingDamages[index]) || 0
+        const canIncreaseHp = character.current_hit_points + character.temporary_hit_points < character.hp_cap
+        const canDecreaseHp = character.current_hit_points + character.temporary_hit_points > 0
+        const canChangeHp = canIncreaseHp || canDecreaseHp
+        const canDecreaseTempHp = character.temporary_hit_points > 0
+
+        /*
+        console.log(character)
+        console.log('incomingHpChange', incomingHpChange)
+        console.log('canIncreaseHp', canIncreaseHp)
+        console.log('canDecreaseHp', canDecreaseHp)
+        console.log('canChangeHp', canChangeHp)
+        console.log('canDecreaseTempHp', canDecreaseTempHp)
+        */
+
+        if (canDecreaseTempHp && incomingHpChange < 0) {
+          changeToTempHp = incomingHpChange
+          if (character.temporary_hit_points + changeToTempHp < 0) {
+            const overflowDamage = character.temporary_hit_points + changeToTempHp
+            changeToHp = overflowDamage
           }
-        } else {
-          HPafterDamage = HPafterDamage + parseInt(character.damage)
+        } else if (canChangeHp) {
+          changeToHp = incomingHpChange
         }
 
-        const TempHPAfterDamage_clean =
-          TempHPAfterDamage >= 0 ? (TempHPAfterDamage > character.orig_hit_points ? character.orig_hit_points : TempHPAfterDamage) : 0
-        const HPafterDamage_clean = HPafterDamage >= 0 ? (HPafterDamage > character.orig_hit_points ? character.orig_hit_points : HPafterDamage) : 0
+        const tryingToIncreaseHp = changeToHp > 0
+        const tryingToDecreaseHp = changeToHp < 0
+        const tryingToDecreaseTempHp = changeToTempHp < 0
+        /*
+        console.log('tryingToIncreaseHp', tryingToIncreaseHp)
+        console.log('tryingToDecreaseHp', tryingToDecreaseHp)
+        console.log('tryingToDecreaseTempHp', tryingToDecreaseTempHp)
+        */
+
+        if ((tryingToIncreaseHp && canIncreaseHp) || (tryingToDecreaseHp && canDecreaseHp)) {
+          newHp = character.current_hit_points + changeToHp
+          if (newHp > character.max_hp) {
+            newHp = character.max_hp
+          }
+          if (newHp < 0) {
+            newHp = 0
+          }
+        }
+        if (tryingToDecreaseTempHp && canDecreaseTempHp) {
+          newTempHp = character.temporary_hit_points + changeToTempHp
+          //newMaxHp = character.max_hp + changeToTempHp
+          //console.log('newTempHp', newTempHp)
+          if (newTempHp < 0) {
+            newTempHp = 0
+            //newMaxHp = character.current_hit_points
+          }
+        }
+
+        /*
+        if (newHp + newTempHp > newMaxHp) {
+          console.log('---')
+
+          console.log('newMaxHp', newMaxHp)
+          console.log('newHp', newHp)
+          console.log('newTempHp', newTempHp)
+          newMaxHp = character.max_hp + newTempHp
+          newHp = newMaxHp - newTempHp
+          console.log('---')
+        }
+        */
+
+        //console.log('newHp', newHp)
+        //console.log('newTempHp', newTempHp)
 
         const damagedCharacter = {
           ...character,
-          orig_hit_points:
-            character.temporary_hit_points && TempHPAfterDamage >= 0 ? HPafterDamage_clean + TempHPAfterDamage_clean : character.current_hit_points,
-          current_hit_points: HPafterDamage_clean,
-          temporary_hit_points: TempHPAfterDamage_clean
+          //max_hp: newMaxHp,
+          hp_cap: character.max_hp + newTempHp,
+          current_hit_points: newHp,
+          temporary_hit_points: newTempHp,
+          temp_hp_placeholder: String(newTempHp)
         }
 
         const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
           ...damagedCharacter,
           conditions: parseConditions({
             ...damagedCharacter
-          }),
-          damage: '' // reset stored damage
+          })
         })
         return {
           ...combat,
@@ -518,9 +710,14 @@ export const CombatTracker: React.FC = () => {
                 const settingsAnchor = settingsAnchors[index]
                 const settingsOpen = Boolean(settingsAnchor)
 
-                const totalHP = character.current_hit_points + (character.temporary_hit_points || 0)
-                const HPOf100 = (character.current_hit_points / character.orig_hit_points) * 100
-                const totalHPOf100 = (totalHP / character.orig_hit_points) * 100
+                const HPOf100 = (character.current_hit_points / character.hp_cap) * 100
+                const totalHPOf100 = ((character.current_hit_points + character.temporary_hit_points) / character.hp_cap) * 100
+
+                //console.log('character', character.name)
+                //console.log(character)
+                //console.log('HPOf100', HPOf100)
+                //console.log('totalHPOf100', totalHPOf100)
+                //console.log('\n\n')
 
                 return (
                   <Draggable key={index} className={`${classes.draggableContainer}`}>
@@ -539,6 +736,27 @@ export const CombatTracker: React.FC = () => {
                         [classes.listItemNPCBloodied]: character.type === CharacterType.NPC && character.conditions.includes(Condition.Bloodied)
                       })}
                     >
+                      <Dialog open={regenDialogsOpen[index]} onClose={() => closeRegenDialog(index)} TransitionComponent={Transition}>
+                        <DialogTitle id={`regen-dialog-title-${index}`}>{`Regen ${character.name} for ${character.regeneration} HP this turn?`}</DialogTitle>
+                        <DialogContent>
+                          <Typography variant="body2" paragraph={false}>
+                            Conditions for {character.name}:
+                          </Typography>
+                          <ul>
+                            {character.conditions.map((condition, index) => {
+                              return <li key={index}>{condition}</li>
+                            })}
+                          </ul>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button variant="contained" onClick={() => closeRegenDialog(index)} autoFocus>
+                            No
+                          </Button>
+                          <Button variant="contained" color="success" onClick={() => closeRegenDialog(index, true)}>
+                            Yes
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
                       {combatOngoing && (
                         <ListItemIcon className={`${character.conditions.includes(Condition.Dead) ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
                           {currentTurn === index ? <CurrentTurnIcon fontSize="large" /> : <span style={{ width: '1.5em' }}>&nbsp;</span>}
@@ -595,13 +813,23 @@ export const CombatTracker: React.FC = () => {
                         onChange={onChangeCharacterName(index)}
                         key={index}
                       />
+                      <div className={`${classes.regeneration}`}>
+                        {character.regeneration > 0 && (
+                          <Tooltip title={`regeneration ${character.regeneration} per turn`} placement="top-end">
+                            <span className="regenIcon"></span>
+                          </Tooltip>
+                        )}
+                      </div>
                       <EditableText
                         id={`character-hp-${index}`}
                         type="number"
                         tooltip={`HP ${character.current_hit_points}${character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''} / ${
-                          character.orig_hit_points
+                          character.hp_cap
                         }`}
-                        className={`${classes.editableTextField} ${classes.HPText}`}
+                        className={cx({
+                          [classes.editableTextField]: true,
+                          [classes.HPText]: true
+                        })}
                         textFieldClass={`${classes.editableTextField}`}
                         value={character.current_hit_points + (character.temporary_hit_points || 0)}
                         textWidth={30}
@@ -611,18 +839,12 @@ export const CombatTracker: React.FC = () => {
                       />
                       <Tooltip
                         title={`HP ${character.current_hit_points}${character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''} / ${
-                          character.orig_hit_points
+                          character.hp_cap
                         }`}
                         placement="top-start"
                       >
                         <div className={classes.hpBarContainer}>
-                          <BorderLinearProgress
-                            className={classes.hpBar}
-                            variant="buffer"
-                            color={character.conditions.includes(Condition.Bloodied) ? 'warning' : 'primary'}
-                            value={HPOf100}
-                            valueBuffer={totalHPOf100}
-                          />
+                          <BorderLinearProgress className={classes.hpBar} variant="buffer" value={HPOf100} valueBuffer={totalHPOf100} />
                         </div>
                       </Tooltip>
                       <Tooltip
@@ -650,9 +872,9 @@ export const CombatTracker: React.FC = () => {
                           id={`character-hit-points-${index}`}
                           type="number"
                           className={`${classes.textField} ${classes.hpField}`}
-                          value={character.damage}
-                          onChange={onWriteCharacterDamage(index)}
-                          onKeyDown={onDamageCharacter(index)}
+                          value={incomingDamages[index]}
+                          onChange={onSetIncomingDamage(index)}
+                          onKeyDown={onDamageOrHealCharacter(index)}
                           variant="outlined"
                           size="small"
                         />
@@ -709,7 +931,11 @@ export const CombatTracker: React.FC = () => {
                           vertical: 'bottom',
                           horizontal: 'right'
                         }}
-                        onClose={() => closeSettings(index)}
+                        onClose={(event, reason) => {
+                          onChangeTemporaryHitPoints(index)(event, reason)
+                          onChangeRegeneration(index)(event, reason)
+                          closeSettings(index)
+                        }}
                       >
                         <List className={`${classes.settingsList}`}>
                           <Typography variant="h5">{character.name}</Typography>
@@ -755,10 +981,26 @@ export const CombatTracker: React.FC = () => {
                             <TextField
                               id={`temporary-hp-${index}`}
                               type="number"
-                              //className={`${classes.textField}`}
-                              value={character.temp_hp_placeholder || character.temporary_hit_points}
+                              value={incomingTempHPs[index] || character.temporary_hit_points}
                               onChange={onWriteTemporaryHitPoints(index)}
                               onKeyDown={onChangeTemporaryHitPoints(index)}
+                              variant="outlined"
+                              size="small"
+                              sx={{
+                                '&': {
+                                  width: '10em'
+                                }
+                              }}
+                            />
+                          </ListItem>
+                          <ListItem className={`${classes.settingsListItem}`}>
+                            <Typography>Regeneration:</Typography>
+                            <TextField
+                              id={`regeneration-${index}`}
+                              type="number"
+                              value={incomingRegenerations[index] || character.regeneration}
+                              onChange={onWriteRegeneration(index)}
+                              onKeyDown={onChangeRegeneration(index)}
                               variant="outlined"
                               size="small"
                               sx={{

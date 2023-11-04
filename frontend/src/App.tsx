@@ -1,10 +1,5 @@
 import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar, Tooltip, Typography } from '@mui/material'
 import PrintIcon from '@mui/icons-material/Print'
-import statblockparch from 'assets/statblockparch.jpg'
-import statblockparchwhite from 'assets/statblockparch_white.jpg'
-import MinusButton from 'components/MinusButton'
-import PlusButton from 'components/PlusButton'
-import ToggleButton from 'components/ToggleButton'
 import AboutLayout from 'layouts/AboutLayout'
 import CombatTrackerLayout from 'layouts/CombatTrackerLayout'
 import ItemStatsLayout from 'layouts/ItemStatsLayout'
@@ -48,36 +43,6 @@ const App: React.FC = () => {
     window.print()
   }
 
-  const onFontSizeLarger = () => {
-    const statsContainers = document.getElementsByClassName('stats-container')
-    for (var i = 0; i < statsContainers.length; i++) {
-      const element = statsContainers.item(i) as HTMLElement
-      const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
-      element.style.fontSize = `${fontSize + 1}px`
-    }
-  }
-
-  const onFontSizeSmaller = () => {
-    const statsContainers = document.getElementsByClassName('stats-container')
-    for (var i = 0; i < statsContainers.length; i++) {
-      const element = statsContainers.item(i) as HTMLElement
-      const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
-      element.style.fontSize = `${fontSize - 1}px`
-    }
-  }
-
-  const onToggleBg = () => {
-    const statsContainers = document.getElementsByClassName('stats-background')
-    for (var i = 0; i < statsContainers.length; i++) {
-      const element = statsContainers.item(i) as HTMLElement
-      if (element.style.backgroundImage.includes('white')) {
-        element.style.backgroundImage = 'url(' + statblockparch + ')'
-      } else {
-        element.style.backgroundImage = 'url(' + statblockparchwhite + ')'
-      }
-    }
-  }
-
   const Main = () => {
     return (
       <RecoilRoot>
@@ -99,21 +64,7 @@ const App: React.FC = () => {
                     return <Tab label={TABS[tab]} value={`${tab}`} component={Link} to={tab} key={tab} {...a11yProps(5)} />
                   })}
                 </Tabs>
-                <Toolbar
-                  disableGutters
-                  sx={{
-                    '&&': {
-                      minHeight: 'auto'
-                    },
-                    '& button': {
-                      padding: 0
-                    }
-                  }}
-                >
-                  <ToggleButton onClick={onToggleBg} />
-                  <PlusButton onClick={onFontSizeLarger} />
-                  <MinusButton onClick={onFontSizeSmaller} />
-                </Toolbar>
+
                 <Button variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
                   Print page
                 </Button>
