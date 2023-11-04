@@ -39,7 +39,7 @@ export const useStyles = makeStyles()((theme) => ({
     paddingRight: 0,
     paddingLeft: 0,
     margin: '0 .2em .3em 0em',
-    padding: '0.5em 0 0.3em 0.5em',
+    padding: '0.2em 0 0.2em 0.5em',
     '&& > *': {
       display: 'flex',
       marginRight: '.4em'
@@ -115,7 +115,7 @@ export const useStyles = makeStyles()((theme) => ({
     padding: '0 1em 0 0'
   },
   nameText: {
-    width: '7em'
+    width: '5em'
   },
   nameBloodied: {
     position: 'relative',
@@ -147,19 +147,6 @@ export const useStyles = makeStyles()((theme) => ({
       width: '1em'
     }
   },
-  HPText: {
-    position: 'relative',
-    '&:before': {
-      content: '"HP"',
-      position: 'absolute',
-      opacity: '0.1',
-      top: 0,
-      left: 0,
-      margin: '-10px 0 0px -10px',
-      fontWeight: 600,
-      fontSize: '0.8em'
-    }
-  },
   initField: {
     flexShrink: 0,
     '&&': {
@@ -189,6 +176,19 @@ export const useStyles = makeStyles()((theme) => ({
       flex: '0 1 auto'
     }
   },
+  HPText: {
+    position: 'relative',
+    '&:before': {
+      content: '"HP"',
+      position: 'absolute',
+      opacity: '0.1',
+      top: 0,
+      left: 0,
+      margin: '-10px 0 0px -10px',
+      fontWeight: 600,
+      fontSize: '0.8em'
+    }
+  },
   regeneration: {
     position: 'relative',
     flex: '0 1 0',
@@ -202,7 +202,42 @@ export const useStyles = makeStyles()((theme) => ({
       position: 'absolute',
       top: 0,
       right: 0,
-      transform: 'translate(-40%, -150%)'
+      transform: 'translate(-40%, -70%)'
+    }
+  },
+  damageModifiers: {
+    flex: '1 1 68px',
+    flexWrap: 'wrap',
+    maxWidth: '68px',
+    minWidth: '45px',
+    '&&&': {
+      marginRight: '1em'
+    }
+  },
+  resistance: {
+    position: 'relative',
+    '&:after': {
+      content: '"/"',
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      color: theme.status.blood,
+      fontSize: '1.2em',
+      fontWeight: '900',
+      transform: 'translate(-50%, -50%)'
+    }
+  },
+  immunity: {
+    position: 'relative',
+    '&:after': {
+      content: '"X"',
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      color: theme.status.blood,
+      fontSize: '1.2em',
+      fontWeight: '900',
+      transform: 'translate(-50%, -50%)'
     }
   },
   hpBarContainer: {
@@ -250,7 +285,7 @@ export const useStyles = makeStyles()((theme) => ({
     flex: '1 1 auto',
     zIndex: '1',
     minHeight: '2em',
-    minWidth: '8em',
+    width: '12em',
     lineHeight: '0.1em',
     '& .MuiIcon-root': {
       width: '1.8em',

@@ -53,23 +53,29 @@ export interface Character {
   regeneration: number
   conditions: Condition[]
   resistances: DamageType[]
+  vulnerabilities: DamageType[]
+  immunities: DamageType[]
   type: CharacterType
-  effects: any
+  effects: any // effects of conditions, e.g. -2 AC
 }
 
 export enum DamageType {
+  Adamantine = 'adamantine',
   Slashing = 'slashing',
   Piercing = 'piercing',
   Bludgeoning = 'bludgeoning',
   Poison = 'poison',
   Acid = 'acid',
   Fire = 'fire',
+  Elemental = 'elemental',
   Cold = 'cold',
   Radiant = 'radiant',
   Necrotic = 'necrotic',
   Lightning = 'lightning',
+  Silver = 'silver',
   Thunder = 'thunder',
   Force = 'force',
   Psychic = 'psychic',
-  All_nonmagical = 'all_nonmagical'
+  Physical = 'physical',
+  Magical = 'magical'
 }

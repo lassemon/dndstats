@@ -144,6 +144,8 @@ export const defaultCharacter: Character = {
   regeneration: 0,
   conditions: [] as Condition[],
   resistances: [] as DamageType[],
+  vulnerabilities: [] as DamageType[],
+  immunities: [] as DamageType[],
   type: CharacterType.Player,
   effects: {}
 }

@@ -40,6 +40,8 @@ import { ConditionToIconMap, calculateEffect, calculateEffectTooltip, getConditi
 import AddBox from '@mui/icons-material/AddBox'
 import Settings from '@mui/icons-material/Settings'
 import { TransitionProps } from '@mui/material/transitions'
+import { DamageTypeToIconMap } from './DamageTypes'
+import StatusModifiers from './StatusModifiers'
 
 const replaceItemAtIndex = <T,>(arr: T[], index: number, newValue: T) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
@@ -313,8 +315,10 @@ export const CombatTracker: React.FC = () => {
         current_hit_points: characterInput.hp,
         conditions: [],
         resistances: [],
+        vulnerabilities: [],
+        immunities: [],
         type,
-        effects: {}
+        effects: {} // effects of conditions, e.g. -2 AC
       })
       return {
         ...combat,
@@ -627,6 +631,34 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
+  const onChangeVulnerability = (index: number) => (event: any, vulnerabilities: DamageType[]) => {
+    setCurrentCombat((combat) => {
+      let newVulnerabilities = [...vulnerabilities]
+      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+        ...combat.characters[index],
+        vulnerabilities: newVulnerabilities
+      })
+      return {
+        ...combat,
+        characters: charactersCopy
+      }
+    })
+  }
+
+  const onChangeImmunity = (index: number) => (event: any, immunities: DamageType[]) => {
+    setCurrentCombat((combat) => {
+      let newImmunities = [...immunities]
+      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
+        ...combat.characters[index],
+        immunities: newImmunities
+      })
+      return {
+        ...combat,
+        characters: charactersCopy
+      }
+    })
+  }
+
   const onChangeType = (index: number) => (event: any) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index]
@@ -736,6 +768,13 @@ export const CombatTracker: React.FC = () => {
                         [classes.listItemNPCBloodied]: character.type === CharacterType.NPC && character.conditions.includes(Condition.Bloodied)
                       })}
                     >
+                      <div className={`${classes.regeneration}`}>
+                        {character.regeneration > 0 && (
+                          <Tooltip title={`regeneration ${character.regeneration} per turn`} placement="top-end">
+                            <span className="regenIcon"></span>
+                          </Tooltip>
+                        )}
+                      </div>
                       <Dialog open={regenDialogsOpen[index]} onClose={() => closeRegenDialog(index)} TransitionComponent={Transition}>
                         <DialogTitle id={`regen-dialog-title-${index}`}>{`Regen ${character.name} for ${character.regeneration} HP this turn?`}</DialogTitle>
                         <DialogContent>
@@ -813,13 +852,32 @@ export const CombatTracker: React.FC = () => {
                         onChange={onChangeCharacterName(index)}
                         key={index}
                       />
-                      <div className={`${classes.regeneration}`}>
-                        {character.regeneration > 0 && (
-                          <Tooltip title={`regeneration ${character.regeneration} per turn`} placement="top-end">
-                            <span className="regenIcon"></span>
-                          </Tooltip>
-                        )}
-                      </div>
+                      <Tooltip
+                        title={
+                          <StatusModifiers resistances={character.resistances} vulnerabilities={character.vulnerabilities} immunities={character.immunities} />
+                        }
+                        placement="right"
+                      >
+                        <div className={`${classes.damageModifiers}`}>
+                          {(character.immunities || []).map((immunity, immunityIndex) => {
+                            return (
+                              <span className={`${classes.immunity}`} key={immunityIndex}>
+                                {DamageTypeToIconMap[immunity] || null}
+                              </span>
+                            )
+                          })}
+                          {(character.resistances || []).map((resistance, resistanceIndex) => {
+                            return (
+                              <span className={`${classes.resistance}`} key={resistanceIndex}>
+                                {DamageTypeToIconMap[resistance] || null}
+                              </span>
+                            )
+                          })}
+                          {(character.vulnerabilities || []).map((vulnerability, vulnerabilityIndex) => {
+                            return <span key={vulnerabilityIndex}>{DamageTypeToIconMap[vulnerability] || null}</span>
+                          })}
+                        </div>
+                      </Tooltip>
                       <EditableText
                         id={`character-hp-${index}`}
                         type="number"
@@ -849,22 +907,7 @@ export const CombatTracker: React.FC = () => {
                       </Tooltip>
                       <Tooltip
                         title={
-                          character.resistances &&
-                          !_.isEmpty(character.resistances) && (
-                            <>
-                              Resistances:{' '}
-                              {(character.resistances || []).map((resistance, resistanceIndex) => {
-                                return (
-                                  <React.Fragment key={resistanceIndex}>
-                                    <Typography variant="body2">
-                                      <span>{resistance}</span>
-                                      <br />
-                                    </Typography>
-                                  </React.Fragment>
-                                )
-                              })}
-                            </>
-                          )
+                          <StatusModifiers resistances={character.resistances} vulnerabilities={character.vulnerabilities} immunities={character.immunities} />
                         }
                         placement="right"
                       >
@@ -907,7 +950,7 @@ export const CombatTracker: React.FC = () => {
                         options={_.without(Object.values(Condition), Condition.Dead, Condition.Bloodied) as Condition[]}
                         onChange={onChangeCondition(index)}
                         getOptionLabel={(option) => option.replaceAll('_', ' ')}
-                        style={{ width: '10em' }}
+                        style={{ width: '14em' }}
                         PaperComponent={AutoCompleteItem}
                         renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
                       />
@@ -960,7 +1003,7 @@ export const CombatTracker: React.FC = () => {
                             </Select>
                           </ListItem>
                           <ListItem className={`${classes.settingsListItem}`}>
-                            <Typography>Resistance:</Typography>
+                            <Typography>Resistances:</Typography>
                             <Autocomplete
                               id={`resistances-${index}`}
                               multiple
@@ -974,6 +1017,40 @@ export const CombatTracker: React.FC = () => {
                               style={{ width: '10em' }}
                               PaperComponent={AutoCompleteItem}
                               renderInput={(params) => <TextField {...params} label="Resistances" variant="outlined" size="small" />}
+                            />
+                          </ListItem>
+                          <ListItem className={`${classes.settingsListItem}`}>
+                            <Typography>Vulnerabilities:</Typography>
+                            <Autocomplete
+                              id={`vulnerabilitiers-${index}`}
+                              multiple
+                              clearOnBlur
+                              disableCloseOnSelect
+                              value={character.vulnerabilities}
+                              className={`${classes.autocomplete}`}
+                              options={Object.values(DamageType)}
+                              onChange={onChangeVulnerability(index)}
+                              getOptionLabel={(option) => option.replaceAll('_', ' ')}
+                              style={{ width: '10em' }}
+                              PaperComponent={AutoCompleteItem}
+                              renderInput={(params) => <TextField {...params} label="Vulnerabilities" variant="outlined" size="small" />}
+                            />
+                          </ListItem>
+                          <ListItem className={`${classes.settingsListItem}`}>
+                            <Typography>Immunities:</Typography>
+                            <Autocomplete
+                              id={`immunities-${index}`}
+                              multiple
+                              clearOnBlur
+                              disableCloseOnSelect
+                              value={character.immunities}
+                              className={`${classes.autocomplete}`}
+                              options={Object.values(DamageType)}
+                              onChange={onChangeImmunity(index)}
+                              getOptionLabel={(option) => option.replaceAll('_', ' ')}
+                              style={{ width: '10em' }}
+                              PaperComponent={AutoCompleteItem}
+                              renderInput={(params) => <TextField {...params} label="Immunities" variant="outlined" size="small" />}
                             />
                           </ListItem>
                           <ListItem className={`${classes.settingsListItem}`}>
