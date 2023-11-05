@@ -215,6 +215,10 @@ export const getConditionEffects = (conditions: Condition[]) => {
   return effects
 }
 
+export const printConditions = (conditions: Condition[]) => {
+  return conditions.map((condition) => condition.replaceAll('_', ' '))
+}
+
 export const calculateEffect = (value: string, character: Character) => {
   if (Object.keys(character.effects).includes(value)) {
     return parseEffectString(`${character[value as keyof Character]}${character.effects[value]}`)

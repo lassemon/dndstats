@@ -16,45 +16,36 @@ const StatusModifiers: React.FC<StatusModifierProps> = (props) => {
     <Grid container={true} columnSpacing={2} rowSpacing={0}>
       {resistances && !_.isEmpty(resistances) && (
         <Grid item={true}>
-          Resistances:{' '}
+          <Typography variant="body2">Resistances:</Typography>
           {(resistances || []).map((resistance, resistanceIndex) => {
             return (
-              <React.Fragment key={resistanceIndex}>
-                <Typography variant="body2">
-                  <span>{resistance}</span>
-                  <br />
-                </Typography>
-              </React.Fragment>
+              <span key={resistanceIndex} style={{ textTransform: 'capitalize', display: 'block', padding: '0 0 0 4px' }}>
+                {resistance}
+              </span>
             )
           })}
         </Grid>
       )}
       {vulnerabilities && !_.isEmpty(vulnerabilities) && (
         <Grid item={true}>
-          Vulnerabilities:{' '}
+          <Typography variant="body2">Vulnerabilities:</Typography>
           {(vulnerabilities || []).map((vulnerability, vulnerabilityIndex) => {
             return (
-              <React.Fragment key={vulnerabilityIndex}>
-                <Typography variant="body2">
-                  <span>{vulnerability}</span>
-                  <br />
-                </Typography>
-              </React.Fragment>
+              <span key={vulnerabilityIndex} style={{ textTransform: 'capitalize', display: 'block', padding: '0 0 0 4px' }}>
+                {vulnerability}
+              </span>
             )
           })}
         </Grid>
       )}
       {immunities && !_.isEmpty(immunities) && (
         <Grid item={true}>
-          Immunities:{' '}
+          <Typography variant="body2">Immunities:</Typography>
           {(immunities || []).map((immunity, immunityIndex) => {
             return (
-              <React.Fragment key={immunityIndex}>
-                <Typography variant="body2">
-                  <span>{immunity}</span>
-                  <br />
-                </Typography>
-              </React.Fragment>
+              <span key={immunityIndex} style={{ textTransform: 'capitalize', display: 'block', padding: '0 0 0 4px' }}>
+                {immunity}
+              </span>
             )
           })}
         </Grid>

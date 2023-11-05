@@ -42,6 +42,7 @@ import Settings from '@mui/icons-material/Settings'
 import { TransitionProps } from '@mui/material/transitions'
 import { DamageTypeToIconMap } from './DamageTypes'
 import StatusModifiers from './StatusModifiers'
+import CharacterCard from './CharacterCard'
 
 const replaceItemAtIndex = <T,>(arr: T[], index: number, newValue: T) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
@@ -834,7 +835,9 @@ export const CombatTracker: React.FC = () => {
                       />
                       <EditableText
                         id={`character-name-${index}`}
-                        tooltip={character.name}
+                        tooltip={<CharacterCard character={character} />}
+                        disableInteractiveTooltip={true}
+                        tooltipClass={`${classes.nameTextTooltip}`}
                         className={cx({
                           [classes.editableTextField]: true,
                           [classes.nameTextContainer]: true,
@@ -853,7 +856,7 @@ export const CombatTracker: React.FC = () => {
                         title={
                           <StatusModifiers resistances={character.resistances} vulnerabilities={character.vulnerabilities} immunities={character.immunities} />
                         }
-                        placement="right"
+                        placement="top"
                       >
                         <div className={`${classes.damageModifiers}`}>
                           {(character.immunities || []).map((immunity, immunityIndex) => {
@@ -904,7 +907,13 @@ export const CombatTracker: React.FC = () => {
                       </Tooltip>
                       <Tooltip
                         title={
-                          <StatusModifiers resistances={character.resistances} vulnerabilities={character.vulnerabilities} immunities={character.immunities} />
+                          (!_.isEmpty(character.resistances) || !_.isEmpty(character.vulnerabilities) || !_.isEmpty(character.immunities)) && (
+                            <StatusModifiers
+                              resistances={character.resistances}
+                              vulnerabilities={character.vulnerabilities}
+                              immunities={character.immunities}
+                            />
+                          )
                         }
                         placement="right"
                       >

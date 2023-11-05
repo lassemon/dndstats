@@ -52,6 +52,13 @@ const theme = createTheme({
         }
       }
     },
+    MuiAutocomplete: {
+      styleOverrides: {
+        option: {
+          textTransform: 'capitalize'
+        }
+      }
+    },
     MuiTextField: {
       defaultProps: {
         variant: 'standard'

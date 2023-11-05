@@ -22,6 +22,12 @@ export const useStyles = makeStyles()((theme) => ({
   },
   margins: {
     padding: '1em'
+  },
+  marginsSmall: {
+    padding: '0.5em',
+    '& .tapered-rule': {
+      margin: '0 0 .2em 0'
+    }
   }
 }))
 

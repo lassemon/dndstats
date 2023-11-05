@@ -87,7 +87,7 @@ export const MonsterStats: React.FC = () => {
             )}
             {currentMonster.resistance && (
               <div>
-                <span className={classes.statHeader}>Damage Resistance</span>
+                <span className={classes.statHeader}>Damage Resistances</span>
                 <span className={classes.statValue}>{currentMonster.resistance}</span>
               </div>
             )}

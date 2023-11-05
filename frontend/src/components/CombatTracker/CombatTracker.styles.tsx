@@ -112,10 +112,15 @@ export const useStyles = makeStyles()((theme) => ({
   },
   nameTextContainer: {
     margin: '0 0 0 0.6em',
-    padding: '0 1em 0 0'
+    padding: '0 0 0 0'
   },
   nameText: {
     width: '5em'
+  },
+  nameTextTooltip: {
+    '& .MuiTooltip-tooltip': {
+      backgroundColor: 'transparent'
+    }
   },
   nameBloodied: {
     position: 'relative',
