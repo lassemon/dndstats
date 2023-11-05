@@ -386,16 +386,14 @@ export const CombatTracker: React.FC = () => {
         const incomingTempHp = parseInt(incomingTempHPs[index]) || 0
         //const decreasingTempHp = character.temporary_hit_points > 0 && character.temporary_hit_points > incomingTempHp
         //const increasingTempHp = character.temporary_hit_points < incomingTempHp
-        const changingTempHp = incomingTempHp !== 0
+        const changingTempHp = incomingTempHPs[index] !== ''
         //const characterIsMissingHp = character.current_hit_points + character.temporary_hit_points < character.max_hp
 
-        /*
-        console.log('incomingTempHp', incomingTempHp)
-        console.log('decreasingTempHp', decreasingTempHp)
-        console.log('increasingTempHp', increasingTempHp)
-        console.log('changingTempHp', increasingTempHp)
-        console.log('characterIsMissingHp', characterIsMissingHp)
-        */
+        //console.log('incomingTempHp', incomingTempHp)
+        //console.log('decreasingTempHp', decreasingTempHp)
+        //console.log('increasingTempHp', increasingTempHp)
+        //console.log('changingTempHp', increasingTempHp)
+        //console.log('characterIsMissingHp', characterIsMissingHp)
 
         if (changingTempHp) {
           newTempHp = incomingTempHp
@@ -404,8 +402,7 @@ export const CombatTracker: React.FC = () => {
         const characterCopy = {
           ...character,
           temporary_hit_points: newTempHp,
-          hp_cap: character.max_hp + newTempHp,
-          temp_hp_placeholder: ''
+          hp_cap: character.max_hp + newTempHp
         }
         const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
           ...characterCopy,

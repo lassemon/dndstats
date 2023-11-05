@@ -59,7 +59,7 @@ export const useStyles = makeStyles()((theme) => ({
       backgroundSize: 'contain',
       backgroundRepeat: 'no-repeat',
       width: '100%',
-      height: '2em',
+      height: '1.5em',
       position: 'absolute',
       top: 0,
       left: 0,
@@ -202,7 +202,7 @@ export const useStyles = makeStyles()((theme) => ({
       position: 'absolute',
       top: 0,
       right: 0,
-      transform: 'translate(-40%, -70%)'
+      transform: 'translate(10%, -55%)'
     }
   },
   damageModifiers: {
