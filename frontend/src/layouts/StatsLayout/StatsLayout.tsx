@@ -5,6 +5,8 @@ import statblockparchwhite from 'assets/statblockparch_white.jpg'
 import ToggleButton from 'components/ToggleButton'
 import MinusButton from 'components/MinusButton'
 import PlusButton from 'components/PlusButton'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTheme } from '@mui/material/styles'
 
 interface StatsLayoutProps {
   statsComponent?: React.ReactNode
@@ -15,6 +17,9 @@ interface StatsLayoutProps {
 
 const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
   const { statsComponent, inputComponent, sx } = props
+
+  const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
 
   const onToggleBg = () => {
     const statsContainers = document.getElementsByClassName('stats-background')
@@ -64,7 +69,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
           md={12}
           sx={{
             '&&': {
-              margin: '0 1em',
+              margin: `0${isSmall ? '' : ' 1em'}`,
               paddingTop: 0
             }
           }}
@@ -74,7 +79,9 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
             sx={{
               '&&': {
                 minHeight: 'auto',
-                padding: '0.5em 0'
+                padding: '0.5em 0',
+                margin: '0 auto',
+                width: '95%'
               },
               '& button': {
                 padding: 0

@@ -15,13 +15,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PingController = void 0;
+exports.PingController2 = exports.PingController = void 0;
 const tsoa_1 = require("tsoa");
 let PingController = class PingController extends tsoa_1.Controller {
     ping() {
         return __awaiter(this, void 0, void 0, function* () {
             return {
-                ping: "pong",
+                ping: 'pong'
             };
         });
     }
@@ -31,5 +31,21 @@ __decorate([
     (0, tsoa_1.Get)()
 ], PingController.prototype, "ping", null);
 exports.PingController = PingController = __decorate([
-    (0, tsoa_1.Route)("/")
+    (0, tsoa_1.Route)('/')
 ], PingController);
+let PingController2 = class PingController2 extends tsoa_1.Controller {
+    ping() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return {
+                apiPing: 'pong'
+            };
+        });
+    }
+};
+exports.PingController2 = PingController2;
+__decorate([
+    (0, tsoa_1.Get)()
+], PingController2.prototype, "ping", null);
+exports.PingController2 = PingController2 = __decorate([
+    (0, tsoa_1.Route)('/api')
+], PingController2);

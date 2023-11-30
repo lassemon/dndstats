@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar, Tooltip, Typography } from '@mui/material'
+import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar, Tooltip, Typography, useMediaQuery } from '@mui/material'
 import PrintIcon from '@mui/icons-material/Print'
 import AboutLayout from 'layouts/AboutLayout'
 import CombatTrackerLayout from 'layouts/CombatTrackerLayout'
@@ -35,6 +35,8 @@ const App: React.FC = () => {
   const { classes } = useStyles()
   const [value, setValue] = useState(Object.keys(TABS).includes(window.location.pathname) ? window.location.pathname : '/item')
 
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+
   const handleChange = (event: any, newValue: string) => {
     setValue(newValue)
   }
@@ -61,7 +63,19 @@ const App: React.FC = () => {
                   orientation="vertical"
                 >
                   {Object.keys(TABS).map((tab) => {
-                    return <Tab label={TABS[tab]} value={`${tab}`} component={Link} to={tab} key={tab} {...a11yProps(5)} />
+                    return (
+                      <Tab
+                        label={TABS[tab]}
+                        value={`${tab}`}
+                        component={Link}
+                        to={tab}
+                        key={tab}
+                        {...a11yProps(5)}
+                        sx={{
+                          padding: isSmall ? '0.3em' : ''
+                        }}
+                      />
+                    )
                   })}
                 </Tabs>
 

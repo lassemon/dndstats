@@ -29,7 +29,11 @@ const routes_1 = require("./routes");
 exports.app = (0, express_1.default)();
 // Use body parser to read sent json payloads
 exports.app.use((0, express_1.urlencoded)({
-    extended: true,
+    extended: true
 }));
 exports.app.use((0, express_1.json)());
+exports.app.get('/dm_backend/', (req, res) => {
+    console.log('req came');
+    res.send({ message: 'Works222!' });
+});
 (0, routes_1.RegisterRoutes)(exports.app);

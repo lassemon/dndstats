@@ -7,6 +7,7 @@ import classNames from 'classnames/bind'
 
 import useStyles from './ItemStats.styles'
 import LoadingIndicator from 'components/LoadingIndicator'
+import { useTheme } from '@mui/material/styles'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -21,10 +22,13 @@ const MainDescription: React.FC = (props) => {
 }
 
 export const ItemStats: React.FC = () => {
+  const theme = useTheme()
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
   const currentItem = useRecoilValue(itemState)
-  const isMedium = useMediaQuery('(max-width:80em)')
+
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const isMedium = useMediaQuery(theme.breakpoints.up('md'))
   const isPrint = useMediaQuery('print')
 
   if (currentItem) {
@@ -32,6 +36,7 @@ export const ItemStats: React.FC = () => {
       <StatsContainer
         className={cx({
           [classes.container]: true,
+          [classes.smallContainer]: isSmall,
           [classes.mediumContainer]: isMedium,
           [classes.printContainer]: isPrint
         })}

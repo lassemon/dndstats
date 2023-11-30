@@ -102,6 +102,23 @@
 				"security": [],
 				"parameters": []
 			}
+		},
+		"/api": {
+			"get": {
+				"operationId": "Ping",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
 		}
 	},
 	"servers": [

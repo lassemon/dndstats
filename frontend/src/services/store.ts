@@ -7,7 +7,7 @@ export const store = async (key: string, data: any) => {
 export const load = async (key: string) => {
   const storedItem = JSON.parse(localStorage.getItem(key) || '{}')
   return await Promise.resolve(!_.isEmpty(storedItem) ? storedItem : null)
-  //return await new Promise((resolve) => setTimeout(resolve, 500, !_.isEmpty(storedItem) ? storedItem : null))
+  //return await new Promise((resolve) => setTimeout(resolve, 1500, !_.isEmpty(storedItem) ? storedItem : null))
 }
 
 export const clear = async (key: string) => {

@@ -1,14 +1,15 @@
+import Character from 'domain/entities/Character'
 import { atom } from 'recoil'
 import { defaultCombat, defaultItem, defaultMonster, defaultSpell, defaultWeapon } from 'services/defaults'
 import { clear, load, store } from 'services/store'
 
 const localStorageEffect =
-  (key: string, defaultState: any) =>
+  (key: string, defaultState: any, loadParser?: any, saveParser?: any) =>
   ({ setSelf, onSet }: { setSelf: any; onSet: any }) => {
-    setSelf(load(key).then((savedState) => (savedState ? savedState : defaultState)))
+    setSelf(load(key).then((savedState) => (savedState ? (loadParser ? loadParser(savedState) : savedState) : defaultState)))
 
     onSet((newValue: any, _: any, isReset: boolean) => {
-      isReset ? clear(key) : store(key, newValue)
+      isReset ? clear(key) : store(key, saveParser ? saveParser(newValue) : newValue)
     })
   }
 
@@ -34,5 +35,26 @@ export const monsterState = atom<typeof defaultMonster>({
 
 export const combatTrackerState = atom<typeof defaultCombat>({
   key: 'combatTrackerState',
-  effects: [localStorageEffect('combatTrackerState', defaultCombat)]
+  effects: [
+    localStorageEffect(
+      'combatTrackerState',
+      defaultCombat,
+      (state: any) => {
+        //console.log('in localStorage', state.characters[0])
+        //console.log('after conversion', Character.fromJSON(state.characters[0]))
+        return {
+          ...state,
+          characters: state.characters.map((character: any) => Character.fromJSON(character))
+        }
+      },
+      (state: any) => {
+        //console.log('in localStorage', state.characters[0])
+        //console.log('after conversion', Character.fromJSON(JSON.stringify(state.characters[0])))
+        return {
+          ...state,
+          characters: state.characters.map((character: Character) => character.toJSON())
+        }
+      }
+    )
+  ]
 })

@@ -108,6 +108,12 @@ const theme = createTheme({
           color: 'rgba(0, 0, 0, 0.87)'
         }
       }
+    },
+    MuiTooltip: {
+      defaultProps: {
+        enterTouchDelay: 50,
+        leaveTouchDelay: 600000 // 10 minutes
+      }
     }
   }
 })

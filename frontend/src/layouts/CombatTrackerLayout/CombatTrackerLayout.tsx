@@ -12,7 +12,7 @@ const MonsterStatsLayout: React.FC = () => {
         margin: 0,
         width: '100%'
       }}
-      sx={{ '& > .MuiGrid-item': { paddingTop: '0' } }}
+      sx={{ '& > .MuiGrid-item': { paddingTop: '0', maxWidth: 'none' } }}
     >
       <Grid item={true} xs={12}>
         <Box display="block" displayPrint="none">

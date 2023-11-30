@@ -1,11 +1,11 @@
 import StatsContainer from 'components/StatsContainer'
-import { Character } from 'interfaces'
 import React from 'react'
 
 import useStyles from './CharacterCard.styles'
 import TaperedRule from 'components/TaperedRule'
 import _ from 'lodash'
 import { printConditions } from './Conditions'
+import Character from 'domain/entities/Character'
 
 interface CharacterCardProps {
   character: Character
@@ -23,12 +23,12 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
       <div className={classes.baseStatsContainer}>
         <div>
           <span className={classes.statHeader}>Armor Class</span>
-          <span className={classes.statValue}>{character.AC}</span>
+          <span className={classes.statValue}>{character.armor_class_label}</span>
         </div>
         <div>
           <span className={classes.statHeader}>Hit Points</span>
           <span className={classes.statValue}>
-            {character.current_hit_points + (character.temporary_hit_points || 0)} / {character.hp_cap}
+            {character.current_hit_points + (character.temporary_hit_points || 0)} / {character.hit_points_cap}
           </span>
         </div>
         {/*

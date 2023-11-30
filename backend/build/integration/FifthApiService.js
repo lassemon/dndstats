@@ -10,15 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FifthApiService = void 0;
-const fetch_1 = require("../util/fetch");
-const fifthApiUrl = "https://www.dnd5eapi.co/api";
+const fetch_1 = require("../utils/fetch");
+const fifthApiUrl = 'https://www.dnd5eapi.co/api';
 class FifthApiService {
     get(path, nameQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("path inside", path);
-            console.log("nameQuery", nameQuery);
-            console.log("gettin url", `${fifthApiUrl}${path}${nameQuery ? `/?name=${nameQuery}` : ""}`);
-            const items = yield (0, fetch_1.get)(`${fifthApiUrl}${path}${nameQuery ? `/?name=${nameQuery}` : ""}`);
+            console.log('path inside', path);
+            console.log('nameQuery', nameQuery);
+            console.log('gettin url', `${fifthApiUrl}${path}${nameQuery ? `/?name=${nameQuery}` : ''}`);
+            const items = yield (0, fetch_1.get)(`${fifthApiUrl}${path}${nameQuery ? `/?name=${nameQuery}` : ''}`);
             return items;
         });
     }

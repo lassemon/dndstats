@@ -14,10 +14,11 @@ export interface CharacterInput {
 
 interface AddCharacterInputProps {
   onAdd: (character: CharacterInput) => void
+  text: string
 }
 
 const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
-  const { onAdd } = props
+  const { onAdd, text } = props
   const [character, setCharacter] = useState(blankCharacter)
   const [characterInputError, setCharacterInputError] = useState(false)
   const { classes } = useStyles()
@@ -111,8 +112,9 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
         variant="standard"
       />
       <Button variant="contained" color="primary" onClick={internalOnAdd}>
-        {props.children}
+        {text}
       </Button>
+      {props.children}
     </div>
   )
 }

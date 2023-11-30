@@ -1,11 +1,20 @@
-<IfModule mod_rewrite.c>
+cPanel autogenerates under api -folder:
+====
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/viitevhg/dm_backend"
+PassengerBaseURI "/"
+PassengerNodejs "/home/viitevhg/nodevenv/dm_backend/18/bin/node"
+PassengerAppType node
+PassengerStartupFile build/server.js
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
 
+needs to be manually set to web app root folder:
+======
+<IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-l
   RewriteRule . /index.html [L]
-
 </IfModule>

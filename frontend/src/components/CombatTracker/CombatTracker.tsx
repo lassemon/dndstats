@@ -1,6 +1,7 @@
 import { withStyles } from 'tss-react/mui'
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -33,61 +34,26 @@ import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
-import { Character, CharacterType, Condition, DamageType } from 'interfaces'
-import { defaultCharacter } from 'services/defaults'
+import { CharacterType, Condition, DamageType } from 'interfaces'
 import EditableText from './EditableText'
-import { ConditionToIconMap, calculateEffect, calculateEffectTooltip, getConditionEffects } from './Conditions'
+import { ConditionToIconMap } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
 import Settings from '@mui/icons-material/Settings'
 import { TransitionProps } from '@mui/material/transitions'
 import { DamageTypeToIconMap } from './DamageTypes'
 import StatusModifiers from './StatusModifiers'
 import CharacterCard from './CharacterCard'
+import { getMonster, getMonsterList } from 'api/monsters'
+import Character from 'domain/entities/Character'
+import { replaceItemAtIndex } from 'utils/utils'
 
-const replaceItemAtIndex = <T,>(arr: T[], index: number, newValue: T) => {
-  return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
+interface MonsterListOption {
+  index: string
+  name: string
+  url: string
 }
 
-const parseConditions = (character: Character) => {
-  let conditions = [...character.conditions]
-
-  conditions = isBloodied(character) ? setCondition(conditions, Condition.Bloodied) : removeCondition(conditions, Condition.Bloodied)
-  conditions = isDead(character) ? setCondition(conditions, Condition.Dead) : removeCondition(conditions, Condition.Dead)
-
-  return conditions
-}
-
-const isDead = (character: Character) => {
-  return character.current_hit_points <= 0
-}
-
-const isBloodied = (character: Character) => {
-  return character.current_hit_points + character.temporary_hit_points < character.max_hp / 2
-}
-
-const setCondition = (conditions: Condition[], addCondition: Condition[] | Condition) => {
-  let newConditions = [...conditions]
-  if (_.isArray(addCondition) && addCondition.includes(Condition.Dead)) {
-    newConditions = [Condition.Dead]
-  } else if (_.isArray(addCondition)) {
-    newConditions = newConditions.concat(addCondition)
-  } else {
-    if (addCondition === Condition.Dead) {
-      newConditions = [Condition.Dead]
-    } else {
-      newConditions.push(addCondition)
-    }
-  }
-  return _.uniq(newConditions)
-}
-
-const removeCondition = (conditions: Condition[], condition: Condition) => {
-  return _.uniq(_.without(conditions, condition))
-}
-
-const removeConditions = (conditions: Condition[], toRemove: Condition[]) => {
-  return _.uniq(_.without(conditions, ...toRemove))
-}
+const emptyMonster = { index: '', name: '', url: '' }
 
 const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
   return {
@@ -147,15 +113,33 @@ export const CombatTracker: React.FC = () => {
   const [combatOngoing, setCombatOngoing] = useState(false)
   const [currentTurn, _setCurrentTurn] = useState(0)
   const [currentRound, setCurrentRound] = useState(1)
+  const [monsterList, setMonsterList] = useState<MonsterListOption[]>([emptyMonster] as MonsterListOption[])
+  const [loadingMonsterList, setLoadingMonsterList] = useState(false)
+  const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
   const [settingsAnchors, setSettingsAnchors] = React.useState<Array<HTMLButtonElement | null>>(currentCombat.characters.map(() => null))
   const [incomingDamages, setIncomingDamages] = React.useState<string[]>(currentCombat.characters.map(() => ''))
-  const [incomingTempHPs, setIncomingTempHPs] = React.useState<string[]>(currentCombat.characters.map(() => ''))
-  const [incomingRegenerations, setIncomingRegenerations] = React.useState<string[]>(currentCombat.characters.map(() => ''))
+  const [incomingTempHPs, setIncomingTempHPs] = React.useState<string[]>(
+    currentCombat.characters.map((character) => String(character.temporary_hit_points || '') || '')
+  )
+  const [incomingRegenerations, setIncomingRegenerations] = React.useState<string[]>(
+    currentCombat.characters.map((character) => String(character.regeneration || '') || '')
+  )
   const [regenDialogsOpen, setRegenDialogsOpen] = React.useState<boolean[]>(currentCombat.characters.map(() => false))
 
   useEffect(() => {
+    const fetchData = async () => {
+      setLoadingMonsterList(true)
+      const monsters = await getMonsterList()
+      setMonsterList([emptyMonster, ...monsters.results])
+      setLoadingMonsterList(false)
+    }
+
+    fetchData().catch(console.error)
+  }, [])
+
+  useEffect(() => {
     const currentCharacter = currentCombat.characters[currentTurn]
-    const canRegenerate = currentCharacter.current_hit_points < currentCharacter.max_hp
+    const canRegenerate = currentCharacter.current_hit_points < currentCharacter.hit_points
     if (currentCharacter.regeneration > 0 && canRegenerate) {
       setRegenDialogsOpen((regenDialogs) => {
         return replaceItemAtIndex<boolean>(regenDialogs, currentTurn, true)
@@ -169,9 +153,6 @@ export const CombatTracker: React.FC = () => {
     })
     setIncomingDamages((damages) => {
       return damages.map(() => '')
-    })
-    setIncomingTempHPs((tempHPs) => {
-      return tempHPs.map(() => '')
     })
   }, [currentCombat.characters])
 
@@ -241,7 +222,7 @@ export const CombatTracker: React.FC = () => {
 
   const clearCombat = (type?: CharacterType) => {
     setCurrentCombat((combat) => {
-      const charactersCopy = type ? [...combat.characters].filter((character) => character.type !== type) : []
+      const charactersCopy = type ? [...combat.characters].filter((character) => character.player_type !== type) : []
       return {
         ...combat,
         characters: charactersCopy
@@ -249,42 +230,35 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeCharacterInit = (index: number) => (event: any) => {
+  const onChangeCharacterInit = (index: number) => (value: string) => {
     setCurrentCombat((combat) => {
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        init: parseInt(event.target.value) || 0
-      })
+      const character = combat.characters[index].clone()
+      character.init = parseInt(value) || 0
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
 
   const onChangeCharacterAC = (index: number) => (value: string) => {
     setCurrentCombat((combat) => {
-      const AC = parseInt(value)
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        AC: AC || 0
-      })
+      const character = combat.characters[index].clone()
+      character.armor_classes = [{ type: 'natural', value: parseInt(value) || 0 }]
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
 
   const onChangeCharacterName = (index: number) => (value: string) => {
     setCurrentCombat((combat) => {
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        name: value
-      })
+      const character = combat.characters[index].clone()
+      character.name = value
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
@@ -299,6 +273,9 @@ export const CombatTracker: React.FC = () => {
   }
 
   const onAddCharacter = (type: CharacterType) => (characterInput: CharacterInput) => {
+    setRegenDialogsOpen((regenDialogs) => {
+      return [...regenDialogs, false]
+    })
     setCurrentCombat((combat) => {
       const charactersCopy = [...combat.characters]
 
@@ -306,26 +283,30 @@ export const CombatTracker: React.FC = () => {
         return _character.init < characterInput.init
       })
       const indexToInsert = index >= 0 ? index : charactersCopy.length
-      charactersCopy.splice(indexToInsert, 0, {
-        ...defaultCharacter,
-        init: characterInput.init,
-        AC: characterInput.AC,
-        name: characterInput.name,
-        max_hp: characterInput.hp,
-        hp_cap: characterInput.hp,
-        current_hit_points: characterInput.hp,
-        conditions: [],
-        resistances: [],
-        vulnerabilities: [],
-        immunities: [],
-        type,
-        effects: {} // effects of conditions, e.g. -2 AC
-      })
+      charactersCopy.splice(
+        indexToInsert,
+        0,
+        new Character({
+          init: characterInput.init,
+          armor_classes: [{ type: 'natural', value: characterInput.AC }],
+          name: characterInput.name,
+          hit_points: characterInput.hp,
+          player_type: type
+        })
+      )
       return {
         ...combat,
         characters: charactersCopy
       }
     })
+  }
+
+  const onAddMonster = async (event: React.SyntheticEvent, selected: MonsterListOption | null | string) => {
+    if (selected && typeof selected !== 'string') {
+      const monster = await getMonster(selected.url)
+      onAddCharacter(CharacterType.Enemy)({ init: 0, AC: monster?.armor_class[0]?.value ?? 0, name: selected.name, hp: monster.hit_points ?? 0 })
+    }
+    setSelectedMonster(emptyMonster)
   }
 
   const onDeleteCharacter = (index: number) => () => {
@@ -343,27 +324,15 @@ export const CombatTracker: React.FC = () => {
     setCurrentCombat((combat) => {
       const newMaxHP = parseInt(value)
       if (
-        newMaxHP !== combat.characters[index].max_hp ||
-        newMaxHP !== combat.characters[index].hp_cap ||
+        newMaxHP !== combat.characters[index].hit_points ||
+        newMaxHP !== combat.characters[index].hit_points_cap ||
         newMaxHP !== combat.characters[index].current_hit_points
       ) {
-        const characterCopy = {
-          ...combat.characters[index],
-          max_hp: newMaxHP || 0,
-          hp_cap: newMaxHP || 0,
-          current_hit_points: newMaxHP || 0,
-          temporary_hit_points: 0,
-          temp_hp_placeholder: ''
-        }
-        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-          ...characterCopy,
-          conditions: parseConditions({
-            ...characterCopy
-          })
-        })
+        const character = combat.characters[index].clone()
+        character.hit_points = newMaxHP || 0
         return {
           ...combat,
-          characters: charactersCopy
+          characters: replaceItemAtIndex<Character>(combat.characters, index, character)
         }
       } else {
         return combat
@@ -378,42 +347,13 @@ export const CombatTracker: React.FC = () => {
   }
 
   const onChangeTemporaryHitPoints = (index: number) => (event: any, reason?: string) => {
-    if (event.keyCode === 13 || reason === 'backdropClick') {
+    if (event.keyCode === 13 || (reason === 'backdropClick' && incomingTempHPs[index] !== '')) {
       setCurrentCombat((combat) => {
-        const character = combat.characters[index]
-        let newTempHp = character.temporary_hit_points
-        //console.log(character)
-
-        const incomingTempHp = parseInt(incomingTempHPs[index]) || 0
-        //const decreasingTempHp = character.temporary_hit_points > 0 && character.temporary_hit_points > incomingTempHp
-        //const increasingTempHp = character.temporary_hit_points < incomingTempHp
-        const changingTempHp = incomingTempHPs[index] !== ''
-        //const characterIsMissingHp = character.current_hit_points + character.temporary_hit_points < character.max_hp
-
-        //console.log('incomingTempHp', incomingTempHp)
-        //console.log('decreasingTempHp', decreasingTempHp)
-        //console.log('increasingTempHp', increasingTempHp)
-        //console.log('changingTempHp', increasingTempHp)
-        //console.log('characterIsMissingHp', characterIsMissingHp)
-
-        if (changingTempHp) {
-          newTempHp = incomingTempHp
-        }
-
-        const characterCopy = {
-          ...character,
-          temporary_hit_points: newTempHp,
-          hp_cap: character.max_hp + newTempHp
-        }
-        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-          ...characterCopy,
-          conditions: parseConditions({
-            ...characterCopy
-          })
-        })
+        const character = combat.characters[index].clone()
+        character.temporary_hit_points = parseInt(incomingTempHPs[index]) || 0
         return {
           ...combat,
-          characters: charactersCopy
+          characters: replaceItemAtIndex<Character>(combat.characters, index, character)
         }
       })
     }
@@ -426,17 +366,13 @@ export const CombatTracker: React.FC = () => {
   }
 
   const onChangeRegeneration = (index: number) => (event: any, reason?: string) => {
-    if (event.keyCode === 13 || reason === 'backdropClick') {
+    if (event.keyCode === 13 || (reason === 'backdropClick' && incomingRegenerations[index] !== '')) {
       setCurrentCombat((combat) => {
-        const character = combat.characters[index]
-        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-          ...character,
-          regeneration: parseInt(incomingRegenerations[index]) || 0
-        })
-
+        const character = combat.characters[index].clone()
+        character.regeneration = parseInt(incomingRegenerations[index]) || 0
         return {
           ...combat,
-          characters: charactersCopy
+          characters: replaceItemAtIndex<Character>(combat.characters, index, character)
         }
       })
     }
@@ -444,26 +380,17 @@ export const CombatTracker: React.FC = () => {
 
   const onRegenerateCharacter = (index: number) => {
     setCurrentCombat((combat) => {
-      const character = combat.characters[index]
+      const character = combat.characters[index].clone()
       const incomingRegeneration = character.regeneration || 0
       let newHp = character.current_hit_points + incomingRegeneration
-      if (newHp > character.max_hp) {
-        newHp = character.max_hp
+      if (newHp > character.hit_points) {
+        newHp = character.hit_points
       }
 
-      const characterCopy = {
-        ...character,
-        current_hit_points: newHp
-      }
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...characterCopy,
-        conditions: parseConditions({
-          ...characterCopy
-        })
-      })
+      character.damage = character.hit_points - newHp
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
@@ -475,120 +402,39 @@ export const CombatTracker: React.FC = () => {
   }
 
   const onDamageOrHealCharacter = (index: number) => (event: any) => {
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13 || event.type === 'blur') {
       setCurrentCombat((combat) => {
-        const character = { ...combat.characters[index] }
-        let newHp = character.current_hit_points
-        let newTempHp = character.temporary_hit_points
-        //let newMaxHp = character.max_hp
-        let changeToHp = 0
-        let changeToTempHp = 0
+        const character = combat.characters[index].clone()
 
         const incomingHpChange = parseInt(incomingDamages[index]) || 0
-        const canIncreaseHp = character.current_hit_points + character.temporary_hit_points < character.hp_cap
-        const canDecreaseHp = character.current_hit_points + character.temporary_hit_points > 0
-        const canChangeHp = canIncreaseHp || canDecreaseHp
-        const canDecreaseTempHp = character.temporary_hit_points > 0
+        const changingHp = incomingHpChange !== 0
+        const tryingToHeal = incomingHpChange > 0
 
-        /*
-        console.log(character)
-        console.log('incomingHpChange', incomingHpChange)
-        console.log('canIncreaseHp', canIncreaseHp)
-        console.log('canDecreaseHp', canDecreaseHp)
-        console.log('canChangeHp', canChangeHp)
-        console.log('canDecreaseTempHp', canDecreaseTempHp)
-        */
-
-        if (canDecreaseTempHp && incomingHpChange < 0) {
-          changeToTempHp = incomingHpChange
-          if (character.temporary_hit_points + changeToTempHp < 0) {
-            const overflowDamage = character.temporary_hit_points + changeToTempHp
-            changeToHp = overflowDamage
-          }
-        } else if (canChangeHp) {
-          changeToHp = incomingHpChange
-        }
-
-        const tryingToIncreaseHp = changeToHp > 0
-        const tryingToDecreaseHp = changeToHp < 0
-        const tryingToDecreaseTempHp = changeToTempHp < 0
-        /*
-        console.log('tryingToIncreaseHp', tryingToIncreaseHp)
-        console.log('tryingToDecreaseHp', tryingToDecreaseHp)
-        console.log('tryingToDecreaseTempHp', tryingToDecreaseTempHp)
-        */
-
-        if ((tryingToIncreaseHp && canIncreaseHp) || (tryingToDecreaseHp && canDecreaseHp)) {
-          newHp = character.current_hit_points + changeToHp
-          if (newHp > character.max_hp) {
-            newHp = character.max_hp
-          }
-          if (newHp < 0) {
-            newHp = 0
-          }
-        }
-        if (tryingToDecreaseTempHp && canDecreaseTempHp) {
-          newTempHp = character.temporary_hit_points + changeToTempHp
-          //newMaxHp = character.max_hp + changeToTempHp
-          //console.log('newTempHp', newTempHp)
-          if (newTempHp < 0) {
-            newTempHp = 0
-            //newMaxHp = character.current_hit_points
-          }
-        }
-
-        /*
-        if (newHp + newTempHp > newMaxHp) {
-          console.log('---')
-
-          console.log('newMaxHp', newMaxHp)
-          console.log('newHp', newHp)
-          console.log('newTempHp', newTempHp)
-          newMaxHp = character.max_hp + newTempHp
-          newHp = newMaxHp - newTempHp
-          console.log('---')
-        }
-        */
-
-        //console.log('newHp', newHp)
-        //console.log('newTempHp', newTempHp)
-
-        const damagedCharacter = {
-          ...character,
-          //max_hp: newMaxHp,
-          hp_cap: character.max_hp + newTempHp,
-          current_hit_points: newHp,
-          temporary_hit_points: newTempHp,
-          temp_hp_placeholder: String(newTempHp)
-        }
-
-        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-          ...damagedCharacter,
-          conditions: parseConditions({
-            ...damagedCharacter
+        if (changingHp) {
+          tryingToHeal ? character.heal(incomingHpChange) : character.takeDamage(incomingHpChange)
+          // setting temp hp input field value to be same as characters after taking damage
+          setIncomingTempHPs((tempHPs) => {
+            return replaceItemAtIndex<string>(tempHPs, index, String(character.temporary_hit_points || ''))
           })
-        })
+        }
+
         return {
           ...combat,
-          characters: charactersCopy
+          characters: replaceItemAtIndex<Character>(combat.characters, index, character)
         }
       })
     }
   }
 
   const onRemoveCondition = (index: number, condition: Condition) => (event: any) => {
-    if (event.button === 1 && ![Condition.Dead, Condition.Bloodied].includes(condition)) {
-      // Mouse middle button
+    // Mouse middle button
+    if (event.button === 1) {
       setCurrentCombat((combat) => {
-        const newConditions = removeCondition(combat.characters[index].conditions, condition)
-        const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-          ...combat.characters[index],
-          conditions: newConditions,
-          effects: getConditionEffects(newConditions)
-        })
+        const character = combat.characters[index].clone()
+        character.removeCondition(condition)
         return {
           ...combat,
-          characters: charactersCopy
+          characters: replaceItemAtIndex<Character>(combat.characters, index, character)
         }
       })
     }
@@ -596,77 +442,55 @@ export const CombatTracker: React.FC = () => {
 
   const onChangeCondition = (index: number) => (event: any, conditions: Condition[]) => {
     setCurrentCombat((combat) => {
-      const toRemove = _.difference(combat.characters[index].conditions, conditions).filter((condition) => {
-        return condition !== Condition.Bloodied && condition !== Condition.Dead
-      })
-      let newConditions = setCondition(combat.characters[index].conditions, conditions)
-      if (!_.isEmpty(toRemove)) {
-        newConditions = removeConditions(combat.characters[index].conditions, toRemove)
-      }
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        conditions: newConditions,
-        effects: getConditionEffects(newConditions)
-      })
+      const character = combat.characters[index].clone()
+      character.conditions = conditions
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
 
   const onChangeResistance = (index: number) => (event: any, resistances: DamageType[]) => {
     setCurrentCombat((combat) => {
-      let newResistances = [...resistances]
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        resistances: newResistances
-      })
+      const character = combat.characters[index].clone()
+      character.resistances = [...resistances]
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
 
   const onChangeVulnerability = (index: number) => (event: any, vulnerabilities: DamageType[]) => {
     setCurrentCombat((combat) => {
-      let newVulnerabilities = [...vulnerabilities]
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        vulnerabilities: newVulnerabilities
-      })
+      const character = combat.characters[index].clone()
+      character.vulnerabilities = [...vulnerabilities]
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
 
   const onChangeImmunity = (index: number) => (event: any, immunities: DamageType[]) => {
     setCurrentCombat((combat) => {
-      let newImmunities = [...immunities]
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...combat.characters[index],
-        immunities: newImmunities
-      })
+      const character = combat.characters[index].clone()
+      character.immunities = [...immunities]
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
 
   const onChangeType = (index: number) => (event: any) => {
     setCurrentCombat((combat) => {
-      const character = combat.characters[index]
-      const charactersCopy = replaceItemAtIndex<Character>(combat.characters, index, {
-        ...character,
-        type: event.target.value
-      })
+      const character = combat.characters[index].clone()
+      character.player_type = event.target.value
       return {
         ...combat,
-        characters: charactersCopy
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
   }
@@ -675,7 +499,6 @@ export const CombatTracker: React.FC = () => {
     setCurrentCombat((combat) => {
       const charactersCopy = [...combat.characters]
       const characterCopy = charactersCopy[index]
-
       const indexToInsert = index >= 0 ? index : charactersCopy.length
       charactersCopy.splice(indexToInsert + 1, 0, characterCopy)
       return {
@@ -740,30 +563,32 @@ export const CombatTracker: React.FC = () => {
                 const settingsAnchor = settingsAnchors[index]
                 const settingsOpen = Boolean(settingsAnchor)
 
-                const HPOf100 = (character.current_hit_points / character.hp_cap) * 100
-                const totalHPOf100 = ((character.current_hit_points + character.temporary_hit_points) / character.hp_cap) * 100
+                const HPOf100 = (character.current_hit_points / character.hit_points_cap) * 100
+                const totalHPOf100 = ((character.current_hit_points + character.temporary_hit_points) / character.hit_points_cap) * 100
 
-                //console.log('character', character.name)
+                /*console.log('character', character.name)
+                console.log(character)
+                console.log('HPOf100', HPOf100)
+                console.log('totalHPOf100', totalHPOf100)
+                console.log('\n\n')*/
+
                 //console.log(character)
-                //console.log('HPOf100', HPOf100)
-                //console.log('totalHPOf100', totalHPOf100)
-                //console.log('\n\n')
 
                 return (
                   <Draggable key={index} className={`${classes.draggableContainer}`}>
                     <ListItem
                       dense
                       disableGutters
-                      disabled={character.conditions.includes(Condition.Dead)}
+                      disabled={character.isUnconscious()}
                       className={cx({
                         [classes.listItem]: true,
                         [classes.listItemCurrent]: currentTurn === index && combatOngoing,
-                        [classes.listItemBloodied]: character.conditions.includes(Condition.Bloodied),
-                        [classes.listItemDead]: character.conditions.includes(Condition.Dead),
-                        [classes.listItemPlayer]: character.type === CharacterType.Player,
-                        [classes.listItemPlayerBloodied]: character.type === CharacterType.Player && character.conditions.includes(Condition.Bloodied),
-                        [classes.listItemNPC]: character.type === CharacterType.NPC,
-                        [classes.listItemNPCBloodied]: character.type === CharacterType.NPC && character.conditions.includes(Condition.Bloodied)
+                        [classes.listItemBloodied]: character.isBloodied(),
+                        [classes.listItemUnconscious]: character.isUnconscious(),
+                        [classes.listItemPlayer]: character.player_type === CharacterType.Player,
+                        [classes.listItemPlayerBloodied]: character.player_type === CharacterType.Player && character.isBloodied(),
+                        [classes.listItemNPC]: character.player_type === CharacterType.NPC,
+                        [classes.listItemNPCBloodied]: character.player_type === CharacterType.NPC && character.isBloodied()
                       })}
                     >
                       <div className={`${classes.regeneration}`}>
@@ -795,13 +620,13 @@ export const CombatTracker: React.FC = () => {
                         </DialogActions>
                       </Dialog>
                       {combatOngoing && (
-                        <ListItemIcon className={`${character.conditions.includes(Condition.Dead) ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
+                        <ListItemIcon className={`${character.isUnconscious() ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
                           {currentTurn === index ? <CurrentTurnIcon fontSize="large" /> : <span style={{ width: '1.5em' }}>&nbsp;</span>}
                         </ListItemIcon>
                       )}
                       {!combatOngoing && (
                         <>
-                          <ListItemIcon className={`${character.conditions.includes(Condition.Dead) ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
+                          <ListItemIcon className={`${character.isUnconscious() ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
                             <DragHandleIcon fontSize="large" />
                           </ListItemIcon>
                           <ListItemIcon className={`${classes.deleteIconContainer}`}>
@@ -812,26 +637,28 @@ export const CombatTracker: React.FC = () => {
                       <EditableText
                         type="number"
                         id={`character-ac-${index}`}
-                        tooltip={`AC ${calculateEffectTooltip('AC', character)}`}
+                        tooltip={`AC ${character.armor_class_label}`}
                         className={`${classes.editableTextField}`}
                         textFieldClass={`${classes.editableTextField}`}
                         textClass={`${classes.ACText}`}
-                        value={calculateEffect('AC', character)}
+                        value={character.armor_class}
                         textWidth={25}
                         editWidth={3}
-                        disabled={character.conditions.includes(Condition.Dead)}
+                        disabled={character.isUnconscious()}
                         onChange={onChangeCharacterAC(index)}
                       />
-                      <TextField
+                      <EditableText
                         id={`character-init-${index}`}
-                        className={`${classes.textField} ${classes.initField}`}
+                        className={cx({
+                          [classes.editableTextField]: true,
+                          [classes.initField]: true,
+                          [classes.initText]: true
+                        })}
+                        textFieldClass={`${classes.editableTextField}`}
                         value={character.init}
                         type="number"
-                        label="init"
-                        disabled={character.conditions.includes(Condition.Dead)}
+                        disabled={character.isUnconscious()}
                         onChange={onChangeCharacterInit(index)}
-                        variant="outlined"
-                        size="small"
                       />
                       <EditableText
                         id={`character-name-${index}`}
@@ -841,14 +668,14 @@ export const CombatTracker: React.FC = () => {
                         className={cx({
                           [classes.editableTextField]: true,
                           [classes.nameTextContainer]: true,
-                          [classes.nameBloodied]: character.conditions.includes(Condition.Bloodied)
+                          [classes.nameBloodied]: character.isBloodied()
                         })}
                         textFieldClass={`${classes.editableTextField}`}
                         textClass={`${classes.nameText}`}
                         value={character.name}
                         textWidth={120}
                         editWidth={10}
-                        disabled={character.conditions.includes(Condition.Dead)}
+                        disabled={character.isUnconscious()}
                         onChange={onChangeCharacterName(index)}
                         key={index}
                       />
@@ -882,7 +709,7 @@ export const CombatTracker: React.FC = () => {
                         id={`character-hp-${index}`}
                         type="number"
                         tooltip={`HP ${character.current_hit_points}${character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''} / ${
-                          character.hp_cap
+                          character.hit_points_cap
                         }`}
                         className={cx({
                           [classes.editableTextField]: true,
@@ -897,7 +724,7 @@ export const CombatTracker: React.FC = () => {
                       />
                       <Tooltip
                         title={`HP ${character.current_hit_points}${character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''} / ${
-                          character.hp_cap
+                          character.hit_points_cap
                         }`}
                         placement="top-start"
                       >
@@ -919,11 +746,12 @@ export const CombatTracker: React.FC = () => {
                       >
                         <TextField
                           id={`character-hit-points-${index}`}
-                          type="number"
+                          type="tel"
                           className={`${classes.textField} ${classes.hpField}`}
                           value={incomingDamages[index]}
                           onChange={onSetIncomingDamage(index)}
                           onKeyDown={onDamageOrHealCharacter(index)}
+                          onBlur={onDamageOrHealCharacter(index)}
                           variant="outlined"
                           size="small"
                         />
@@ -931,9 +759,9 @@ export const CombatTracker: React.FC = () => {
                       <Typography
                         className={cx({
                           [classes.conditionList]: true,
-                          [classes.player]: character.type === CharacterType.Player,
-                          [classes.npc]: character.type === CharacterType.NPC,
-                          [classes.enemy]: character.type === CharacterType.Enemy
+                          [classes.player]: character.player_type === CharacterType.Player,
+                          [classes.npc]: character.player_type === CharacterType.NPC,
+                          [classes.enemy]: character.player_type === CharacterType.Enemy
                         })}
                       >
                         &nbsp;
@@ -949,11 +777,12 @@ export const CombatTracker: React.FC = () => {
                         id={`conditions-${index}`}
                         multiple
                         clearOnBlur
-                        disabled={character.conditions.includes(Condition.Dead)}
+                        limitTags={0}
+                        disabled={character.isUnconscious()}
                         disableCloseOnSelect
-                        value={_.without(character.conditions, Condition.Dead, Condition.Bloodied)}
+                        value={_.without(character.conditions, Condition.Dead, Condition.Unconscious, Condition.Bloodied)}
                         className={`${classes.autocomplete}`}
-                        options={_.without(Object.values(Condition), Condition.Dead, Condition.Bloodied) as Condition[]}
+                        options={_.without(Object.values(Condition), Condition.Dead, Condition.Unconscious, Condition.Bloodied) as Condition[]}
                         onChange={onChangeCondition(index)}
                         getOptionLabel={(option) => option.replaceAll('_', ' ')}
                         style={{ width: '14em' }}
@@ -994,7 +823,7 @@ export const CombatTracker: React.FC = () => {
                               size="small"
                               labelId={`type-${index}`}
                               id="type-select"
-                              value={character.type}
+                              value={character.player_type}
                               label="Age"
                               onChange={onChangeType(index)}
                               sx={{
@@ -1063,8 +892,8 @@ export const CombatTracker: React.FC = () => {
                             <Typography>Temporary HP:</Typography>
                             <TextField
                               id={`temporary-hp-${index}`}
-                              type="number"
-                              value={incomingTempHPs[index] || character.temporary_hit_points}
+                              type="text"
+                              value={incomingTempHPs[index]}
                               onChange={onWriteTemporaryHitPoints(index)}
                               onKeyDown={onChangeTemporaryHitPoints(index)}
                               variant="outlined"
@@ -1081,7 +910,7 @@ export const CombatTracker: React.FC = () => {
                             <TextField
                               id={`regeneration-${index}`}
                               type="number"
-                              value={incomingRegenerations[index] || character.regeneration}
+                              value={incomingRegenerations[index]}
                               onChange={onWriteRegeneration(index)}
                               onKeyDown={onChangeRegeneration(index)}
                               variant="outlined"
@@ -1103,16 +932,54 @@ export const CombatTracker: React.FC = () => {
           </List>
           {!combatOngoing && (
             <>
-              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Enemy)}>Add Enemy</AddCharacterInput>
-              <AddCharacterInput onAdd={onAddCharacter(CharacterType.NPC)}>Add NPC</AddCharacterInput>
-              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Player)}>Add Player</AddCharacterInput>
+              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Enemy)} text={'Add Enemy'}>
+                <Autocomplete
+                  id={`add-monster-dropdown`}
+                  blurOnSelect
+                  clearOnBlur
+                  disableClearable
+                  filterSelectedOptions
+                  className={`${classes.autocomplete}`}
+                  value={selectedMonster}
+                  loading={loadingMonsterList}
+                  options={monsterList}
+                  onChange={onAddMonster}
+                  getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
+                  style={{ width: '14em' }}
+                  PaperComponent={AutoCompleteItem}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Add Monster"
+                      variant="outlined"
+                      size="small"
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <React.Fragment>
+                            {loadingMonsterList ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </React.Fragment>
+                        )
+                      }}
+                    />
+                  )}
+                  sx={{
+                    '&&': {
+                      margin: '0 0 0 2em'
+                    }
+                  }}
+                />
+              </AddCharacterInput>
+              <AddCharacterInput onAdd={onAddCharacter(CharacterType.NPC)} text={'Add NPC'} />
+              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Player)} text={'Add Player'} />
             </>
           )}
         </div>
         <div className={`${classes.actionsContainer}`}>
           {combatOngoing ? (
             <Button variant="contained" color="warning" onClick={() => setCombatOngoing(false)}>
-              End combat
+              Pause combat
             </Button>
           ) : (
             <Button

@@ -1,7 +1,7 @@
 export enum Condition {
   Baned = 'baned',
   Blessed = 'blessed',
-  BlessedByBard = 'blessed_by_bard',
+  InspiredByBard = 'inspired_by_bard',
   Blinded = 'blinded',
   Bloodied = 'bloodied',
   Burning = 'burning',
@@ -11,6 +11,7 @@ export enum Condition {
   Confused = 'confused',
   Dead = 'dead',
   Deafened = 'deafened',
+  Diseased = 'diseased',
   Exhausted = 'exhausted',
   Frightened = 'frightened',
   Grappled = 'grabbled',
@@ -40,23 +41,6 @@ export enum CharacterType {
   Enemy = 'enemy',
   Player = 'player',
   NPC = 'npc'
-}
-
-export interface Character {
-  init: number
-  AC: number
-  name: string
-  max_hp: number
-  hp_cap: number
-  current_hit_points: number
-  temporary_hit_points: number
-  regeneration: number
-  conditions: Condition[]
-  resistances: DamageType[]
-  vulnerabilities: DamageType[]
-  immunities: DamageType[]
-  type: CharacterType
-  effects: any // effects of conditions, e.g. -2 AC
 }
 
 export enum DamageType {

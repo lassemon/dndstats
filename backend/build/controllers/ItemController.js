@@ -21,7 +21,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemController = void 0;
 const ItemService_1 = require("../services/ItemService");
 const tsoa_1 = require("tsoa");
-const url_1 = require("../util/url");
+const url_1 = require("../utils/url");
 let ItemController = class ItemController extends tsoa_1.Controller {
     get(category, itemType) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -38,15 +38,15 @@ let ItemController = class ItemController extends tsoa_1.Controller {
 };
 exports.ItemController = ItemController;
 __decorate([
-    (0, tsoa_1.Get)("{category}/{itemType}"),
+    (0, tsoa_1.Get)('{category}/{itemType}'),
     __param(0, (0, tsoa_1.Path)()),
     __param(1, (0, tsoa_1.Path)())
 ], ItemController.prototype, "get", null);
 __decorate([
-    (0, tsoa_1.Get)("{category}/"),
+    (0, tsoa_1.Get)('{category}/'),
     __param(0, (0, tsoa_1.Path)()),
     __param(1, (0, tsoa_1.Query)())
 ], ItemController.prototype, "search", null);
 exports.ItemController = ItemController = __decorate([
-    (0, tsoa_1.Route)("api")
+    (0, tsoa_1.Route)('/api')
 ], ItemController);

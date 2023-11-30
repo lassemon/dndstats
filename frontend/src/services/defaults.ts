@@ -1,7 +1,8 @@
 import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
-import { Character, CharacterType, Condition, DamageType } from 'interfaces'
+import Character from 'domain/entities/Character'
+import { CharacterType } from 'interfaces'
 import React from 'react'
 
 export const defaultItem = {
@@ -133,100 +134,54 @@ export const defaultMonster = {
   ]
 }
 
-export const defaultCharacter: Character = {
-  init: 10,
-  AC: 10,
-  name: '',
-  max_hp: 10,
-  hp_cap: 10 + 0, // max_hp + temporary_hit_points
-  current_hit_points: 10,
-  temporary_hit_points: 0,
-  regeneration: 0,
-  conditions: [] as Condition[],
-  resistances: [] as DamageType[],
-  vulnerabilities: [] as DamageType[],
-  immunities: [] as DamageType[],
-  type: CharacterType.Player,
-  effects: {}
-}
-
 export const defaultCombat = {
   characters: [
-    {
-      init: 12,
-      AC: 15,
+    new Character({
       name: 'Ogi',
-      max_hp: 35,
-      current_hit_points: 35,
-      conditions: [] as Condition[],
-      type: CharacterType.Player,
-      effects: {}
-    },
-    {
-      init: 5,
-      AC: 16,
+      init: 12,
+      armor_classes: [{ type: 'natural', value: 15 }],
+      hit_points: 35,
+      player_type: CharacterType.Player
+    }),
+    new Character({
       name: 'Thoongk',
-      max_hp: 55,
-      current_hit_points: 55,
-      conditions: [] as Condition[],
-      type: CharacterType.Player,
-      effects: {}
-    },
-    {
-      init: 3,
-      AC: 15,
+      init: 5,
+      armor_classes: [{ type: 'natural', value: 16 }],
+      hit_points: 55,
+      player_type: CharacterType.Player
+    }),
+    new Character({
       name: 'Erig',
-      max_hp: 19,
-      current_hit_points: 19,
-      conditions: [] as Condition[],
-      type: CharacterType.NPC,
-      effects: {}
-    },
-    {
-      init: 19,
-      AC: 16,
+      init: 3,
+      armor_classes: [{ type: 'natural', value: 15 }],
+      hit_points: 19,
+      player_type: CharacterType.NPC
+    }),
+    new Character({
       name: 'Klani',
-      max_hp: 61,
-      current_hit_points: 61,
-      conditions: [] as Condition[],
-      type: CharacterType.NPC,
-      effects: {}
-    },
-    {
-      init: 15,
-      AC: 15,
+      init: 19,
+      armor_classes: [{ type: 'natural', value: 16 }],
+      hit_points: 61,
+      player_type: CharacterType.NPC
+    }),
+    new Character({
       name: 'Beor',
-      max_hp: 57,
-      current_hit_points: 57,
-      conditions: [] as Condition[],
-      type: CharacterType.NPC,
-      effects: {}
-    },
-    {
       init: 15,
-      AC: 13,
+      armor_classes: [{ type: 'natural', value: 15 }],
+      hit_points: 57,
+      player_type: CharacterType.NPC
+    }),
+    new Character({
       name: 'Orc',
-      max_hp: 15,
-      current_hit_points: 15,
-      conditions: [] as Condition[],
-      type: CharacterType.Enemy,
-      effects: {}
-    },
-    {
-      init: 4,
-      AC: 15,
+      init: 15,
+      armor_classes: [{ type: 'natural', value: 13 }],
+      hit_points: 15
+    }),
+    new Character({
       name: 'Goblin',
-      max_hp: 7,
-      current_hit_points: 7,
-      conditions: [] as Condition[],
-      type: CharacterType.Enemy,
-      effects: {}
-    }
-  ].map((character) => {
-    return {
-      ...defaultCharacter,
-      hp_cap: character.max_hp,
-      ...character
-    }
-  })
+      init: 4,
+      armor_classes: [{ type: 'natural', value: 15 }],
+      hit_points: 7
+    })
+  ]
 }

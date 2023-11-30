@@ -47,6 +47,7 @@ export const useStyles = makeStyles()((theme) => ({
     border: '1px solid transparent'
   },
   listItemCurrent: {
+    backdropFilter: 'brightness(93%)',
     filter: 'brightness(93%)',
     border: '1px solid rgba(0, 0, 0, .2)'
   },
@@ -66,7 +67,7 @@ export const useStyles = makeStyles()((theme) => ({
       transform: 'translate(-0.5%, -50%)'
     }
   },
-  listItemDead: {
+  listItemUnconscious: {
     '&&': {
       background: theme.palette.grey[300],
       color: theme.palette.grey[500]
@@ -156,7 +157,7 @@ export const useStyles = makeStyles()((theme) => ({
     flexShrink: 0,
     '&&': {
       width: '3em',
-      minWidth: '3em'
+      marginLeft: '1em'
     },
     '& label': {
       padding: '0 0 0 4px',
@@ -166,6 +167,20 @@ export const useStyles = makeStyles()((theme) => ({
       textAlign: 'center',
       fontSize: '1.3em',
       padding: '4.5px 0 3px 0'
+    }
+  },
+  initText: {
+    position: 'relative',
+    minWidth: '1.5em',
+    '&:before': {
+      content: '"init"',
+      position: 'absolute',
+      opacity: '0.2',
+      top: 0,
+      left: 0,
+      margin: '-10px 0 0px -10px',
+      fontWeight: 600,
+      fontSize: '0.8em'
     }
   },
   hpField: {
@@ -186,7 +201,7 @@ export const useStyles = makeStyles()((theme) => ({
     '&:before': {
       content: '"HP"',
       position: 'absolute',
-      opacity: '0.1',
+      opacity: '0.2',
       top: 0,
       left: 0,
       margin: '-10px 0 0px -10px',
@@ -341,6 +356,12 @@ export const useStyles = makeStyles()((theme) => ({
   autocomplete: {
     '& .MuiAutocomplete-tag': {
       display: 'none'
+    },
+    '& .MuiInputLabel-animated': {
+      transform: 'translate(14px, -9px) scale(0.75)'
+    },
+    '& legend': {
+      maxWidth: '100%'
     }
   },
   actionsContainer: {

@@ -4,7 +4,7 @@ import { Typography } from '@mui/material'
 
 import Baned from 'assets/Baned.png'
 import Blessed from 'assets/Blessed.png'
-import BlessedByBard from 'assets/BlessedByBard.png'
+import InspiredByBard from 'assets/BlessedByBard.png'
 import Blinded from 'assets/Blinded.png'
 import Bloodied from 'assets/Bloodied.png'
 import Burning from 'assets/Burning.png'
@@ -14,6 +14,7 @@ import Concentration from 'assets/Concentration.png'
 import Confused from 'assets/Confused.png'
 import Dead from 'assets/Dead.png'
 import Deafened from 'assets/Deafened.png'
+import Diseased from 'assets/Diseased.png'
 import Exhausted from 'assets/Exhausted.png'
 import Frightened from 'assets/Frightened.png'
 import Grappled from 'assets/Grappled.png'
@@ -38,12 +39,13 @@ import Stabilized from 'assets/Stabilized.png'
 import Stunned from 'assets/Stunned.png'
 import Unconscious from 'assets/Unconcious.png'
 
-import { Character, Condition } from 'interfaces'
+import { Condition } from 'interfaces'
+import Character from 'domain/entities/Character'
 
 const Icons: { [key in Condition]?: string } = {
   [Condition.Baned]: Baned,
   [Condition.Blessed]: Blessed,
-  [Condition.BlessedByBard]: BlessedByBard,
+  [Condition.InspiredByBard]: InspiredByBard,
   [Condition.Blinded]: Blinded,
   [Condition.Bloodied]: Bloodied,
   [Condition.Blur]: Blur,
@@ -53,6 +55,7 @@ const Icons: { [key in Condition]?: string } = {
   [Condition.Confused]: Confused,
   [Condition.Dead]: Dead,
   [Condition.Deafened]: Deafened,
+  [Condition.Diseased]: Diseased,
   [Condition.Exhausted]: Exhausted,
   [Condition.Frightened]: Frightened,
   [Condition.Grappled]: Grappled,
@@ -111,6 +114,8 @@ export const ConditionDescription: { [key in Condition]?: string } = {
   [Condition.Charmed]: `A charmed creature can’t attack the charmer or target the charmer with harmful abilities or magical effects.<br/>
   The charmer has advantage on any ability check to interact socially with the creature.`,
   [Condition.Deafened]: 'A deafened creature can’t hear and automatically fails any ability check that requires hearing.',
+  [Condition.Diseased]:
+    'A disease can have varying effect depending on the source. This character might be able to repeat a saving throw to get rid of the disease during or at the end of their turn.',
   [Condition.Frightened]: `A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.<br/>
   The creature can’t willingly move closer to the source of its fear.`,
   [Condition.Grappled]: `A grappled creature’s speed becomes 0, and it can’t benefit from any bonus to its speed.<br/>
@@ -157,16 +162,16 @@ export const ConditionDescription: { [key in Condition]?: string } = {
 
 export const ConditionEffects = {
   [Condition.Slowed]: {
-    AC: '-2'
+    AC: -2
   },
   [Condition.Hasted]: {
-    AC: '+2'
+    AC: 2
   },
   [Condition.Shield_of_Faith]: {
-    AC: '+2'
+    AC: +2
   },
   [Condition.Mage_Armor]: {
-    AC: '13 + Dexterity modifier'
+    AC: '(13 + Dexterity modifier)'
   }
 } as { [key in Condition]: any }
 
