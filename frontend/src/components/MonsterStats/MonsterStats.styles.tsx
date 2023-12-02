@@ -17,8 +17,6 @@ export const useStyles = makeStyles()((theme) => ({
     borderTop: '3px solid #1b1b1b',
     borderBottom: '3px solid #1b1b1b',
     boxShadow: theme.custom.boxShadow
-    //"-webkit-print-color-adjust": "exact",
-    //"-webkit-filter": "opacity(1)",
   },
   monsterContainer: {
     flex: '1 0 60%'

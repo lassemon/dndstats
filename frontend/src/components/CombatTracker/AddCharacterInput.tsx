@@ -3,13 +3,13 @@ import React, { useState } from 'react'
 
 import useStyles from './AddCharacterInput.styles'
 
-const blankCharacter = { init: '', AC: '', name: '', hp: '' }
+const blankCharacter = { init: '', armorClass: '', name: '', hit_points: '' }
 
 export interface CharacterInput {
   init: number
-  AC: number
+  armorClass: number
   name: string
-  hp: number
+  hit_points: number
 }
 
 interface AddCharacterInputProps {
@@ -29,9 +29,9 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     } else {
       onAdd({
         init: parseInt(character.init) && parseInt(character.init) > 0 ? parseInt(character.init) : 0,
-        AC: parseInt(character.AC) || 0,
+        armorClass: parseInt(character.armorClass) || 0,
         name: character.name,
-        hp: parseInt(character.hp) || 0
+        hit_points: parseInt(character.hit_points) || 0
       })
 
       setCharacter({ ...blankCharacter })
@@ -43,7 +43,7 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     setCharacter((character) => {
       return {
         ...character,
-        AC: event.target.value
+        armorClass: event.target.value
       }
     })
   }
@@ -74,7 +74,7 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     setCharacter((character) => {
       return {
         ...character,
-        hp: event.target.value
+        hit_points: event.target.value
       }
     })
   }
@@ -83,7 +83,7 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     <div className={classes.addContainer}>
       <TextField
         className={`${classes.textField} ${classes.initField}`}
-        value={character.AC}
+        value={character.armorClass}
         placeholder="AC"
         onChange={onCharacterACChange}
         variant="standard"
@@ -105,7 +105,7 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
       />
       <TextField
         className={`${classes.textField} ${classes.hpField}`}
-        value={character.hp}
+        value={character.hit_points}
         placeholder="HP"
         onChange={onCharacterHpChange}
         onBlur={() => setCharacterInputError(false)}

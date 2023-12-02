@@ -1,4 +1,4 @@
-import { CharacterType, Condition, DamageType } from 'interfaces'
+import { APIReference, CharacterType, Condition, DamageType, FifthESRDMonster } from 'interfaces'
 import ValueObject from './ValueObject'
 import _ from 'lodash'
 import { ConditionEffects, getConditionEffects } from 'components/CombatTracker/Conditions'
@@ -7,9 +7,9 @@ import { getNumberWithSign, upsertToArray } from 'utils/utils'
 export interface ArmorClassObject {
   type: string
   value: number
+  armor?: APIReference[] // Equipment
 }
-
-export interface ICharacter {
+export interface ICharacter extends Partial<FifthESRDMonster> {
   name: string
   init: number
   armor_classes: ArmorClassObject[]
@@ -20,13 +20,13 @@ export interface ICharacter {
   conditions?: Condition[]
   resistances?: DamageType[]
   vulnerabilities?: DamageType[]
-  immunities?: DamageType[]
+  damage_immunities?: DamageType[]
   player_type?: CharacterType
   effects?: any
 }
 
 class Character extends ValueObject {
-  private _name
+  private _name = ''
   private _init
   private _armor_classes
   private _hit_points
@@ -36,9 +36,18 @@ class Character extends ValueObject {
   private _conditions
   private _resistances
   private _vulnerabilities
-  private _immunities
+  private _damage_immunities
   private _player_type
   private _effects
+
+  private _strength
+  private _dexterity
+  private _constitution
+  private _intelligence
+  private _wisdom
+  private _charisma
+
+  private _speed
 
   constructor(character: ICharacter) {
     const {
@@ -52,9 +61,17 @@ class Character extends ValueObject {
       conditions = [],
       resistances = [],
       vulnerabilities = [],
-      immunities = [],
+      damage_immunities = [],
       player_type = CharacterType.Enemy,
-      effects = {}
+      effects = {},
+
+      strength,
+      dexterity,
+      constitution,
+      intelligence,
+      wisdom,
+      charisma,
+      speed
     } = character
     super()
     this._name = name
@@ -67,9 +84,18 @@ class Character extends ValueObject {
     this._conditions = conditions
     this._resistances = resistances
     this._vulnerabilities = vulnerabilities
-    this._immunities = immunities
+    this._damage_immunities = damage_immunities
     this._player_type = player_type
     this._effects = effects
+
+    this._strength = strength
+    this._dexterity = dexterity
+    this._constitution = constitution
+    this._intelligence = intelligence
+    this._wisdom = wisdom
+    this._charisma = charisma
+
+    this._speed = speed
   }
 
   private getArmorClassesFromConditions(conditions: Condition[]) {
@@ -139,10 +165,28 @@ class Character extends ValueObject {
     return acSum
   }
   public get armor_class_label(): string {
-    const acsCopy = [...this.armor_classes]
-    const baseAC = _.remove(acsCopy, (acObject) => acObject.type === 'natural') || acsCopy.splice(0, 1) || [{ type: 'natural', value: 0 }]
+    const baseArmorClass = _.find(this.armor_classes, { type: 'natural' }) || _.get(this.armor_classes, 0) || [{ type: 'natural', value: 0 }]
+    const armorClassesWithoutBase = _.without(this.armor_classes, baseArmorClass)
 
-    return `${baseAC[0].value} ${acsCopy.length > 0 ? acsCopy.reduce((sum, current) => (sum += ' ' + getNumberWithSign(current.value)), '') : ''}`
+    return `${this.parseArmorClassLabel(baseArmorClass)} ${
+      armorClassesWithoutBase.length > 0 ? armorClassesWithoutBase.reduce((sum, current) => (sum += ' ' + this.parseArmorClassLabelWithSign(current)), '') : ''
+    }`
+  }
+
+  private parseArmorClassLabel = (armorClass: ArmorClassObject): string => {
+    let armorClassLabel = String(armorClass.value)
+    if (armorClass.armor) {
+      armorClassLabel += ` (${_.get(armorClass.armor, 0).name})` // TODO, why is this an array, can there be more than one?
+    }
+    return armorClassLabel
+  }
+
+  private parseArmorClassLabelWithSign = (armorClass: ArmorClassObject): string => {
+    let armorClassLabel = getNumberWithSign(armorClass.value)
+    if (armorClass.armor) {
+      armorClassLabel += ` (${_.get(armorClass.armor, 0).name})` // TODO, why is this an array, can there be more than one?
+    }
+    return armorClassLabel
   }
 
   public set armor_classes(value: ArmorClassObject[]) {
@@ -286,11 +330,11 @@ class Character extends ValueObject {
     this._vulnerabilities = value
   }
 
-  public get immunities() {
-    return this._immunities
+  public get damage_immunities() {
+    return this._damage_immunities
   }
-  public set immunities(value) {
-    this._immunities = value
+  public set damage_immunities(value) {
+    this._damage_immunities = value
   }
 
   public get player_type() {
@@ -334,6 +378,82 @@ class Character extends ValueObject {
       }
       this.parseConditions()
     }
+  }
+
+  public get speed() {
+    return this._speed
+  }
+  public set speed(value) {
+    this._speed = value
+  }
+
+  public get strength() {
+    return this._strength
+  }
+  public get strenght_label() {
+    return `${this._strength} (${this.calculateAbilityScoreModifier(this._strength)})`
+  }
+  public set strength(value) {
+    this._strength = value
+  }
+
+  public get dexterity() {
+    return this._dexterity
+  }
+  public get dexterity_label() {
+    return `${this._dexterity} (${this.calculateAbilityScoreModifier(this._dexterity)})`
+  }
+  public set dexterity(value) {
+    this._dexterity = value
+  }
+
+  public get constitution() {
+    return this._constitution
+  }
+  public get constitution_label() {
+    return `${this._constitution} (${this.calculateAbilityScoreModifier(this._constitution)})`
+  }
+  public set constitution(value) {
+    this._constitution = value
+  }
+
+  public get intelligence() {
+    return this._intelligence
+  }
+  public get intelligence_label() {
+    return `${this._intelligence} (${this.calculateAbilityScoreModifier(this._intelligence)})`
+  }
+  public set intelligence(value) {
+    this._intelligence = value
+  }
+
+  public get wisdom() {
+    return this._wisdom
+  }
+  public get wisdom_label() {
+    return `${this._wisdom} (${this.calculateAbilityScoreModifier(this._wisdom)})`
+  }
+  public set wisdom(value) {
+    this._wisdom = value
+  }
+
+  public get charisma() {
+    return this._charisma
+  }
+  public get charisma_label() {
+    return `${this._charisma} (${this.calculateAbilityScoreModifier(this._charisma)})`
+  }
+  public set charisma(value) {
+    this._charisma = value
+  }
+
+  private calculateAbilityScoreModifier = (score?: number): string => {
+    const modifier = Math.floor(((score || 0) - 10) / 2)
+    return getNumberWithSign(modifier)
+  }
+
+  public hasAbilityScores = () => {
+    return this.strength || this.dexterity || this.constitution || this.intelligence || this.wisdom || this.charisma
   }
 
   public isUnconscious = () => {

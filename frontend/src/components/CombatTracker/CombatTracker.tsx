@@ -34,7 +34,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
-import { CharacterType, Condition, DamageType } from 'interfaces'
+import { CharacterType, Condition, DamageType, FifthESRDMonster } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
@@ -288,9 +288,9 @@ export const CombatTracker: React.FC = () => {
         0,
         new Character({
           init: characterInput.init,
-          armor_classes: [{ type: 'natural', value: characterInput.AC }],
+          armor_classes: [{ type: 'natural', value: characterInput.armorClass }],
           name: characterInput.name,
-          hit_points: characterInput.hp,
+          hit_points: characterInput.hit_points,
           player_type: type
         })
       )
@@ -303,8 +303,32 @@ export const CombatTracker: React.FC = () => {
 
   const onAddMonster = async (event: React.SyntheticEvent, selected: MonsterListOption | null | string) => {
     if (selected && typeof selected !== 'string') {
-      const monster = await getMonster(selected.url)
-      onAddCharacter(CharacterType.Enemy)({ init: 0, AC: monster?.armor_class[0]?.value ?? 0, name: selected.name, hp: monster.hit_points ?? 0 })
+      const monster: FifthESRDMonster = await getMonster(selected.url)
+      if (monster) {
+        setRegenDialogsOpen((regenDialogs) => {
+          return [...regenDialogs, false]
+        })
+
+        setCurrentCombat((combat) => {
+          const charactersCopy = [...combat.characters]
+
+          const indexToInsert = charactersCopy.length
+          charactersCopy.splice(
+            indexToInsert,
+            0,
+            new Character({
+              ...monster,
+              init: 0,
+              armor_classes: monster.armor_class,
+              player_type: CharacterType.Enemy
+            })
+          )
+          return {
+            ...combat,
+            characters: charactersCopy
+          }
+        })
+      }
     }
     setSelectedMonster(emptyMonster)
   }
@@ -476,7 +500,7 @@ export const CombatTracker: React.FC = () => {
   const onChangeImmunity = (index: number) => (event: any, immunities: DamageType[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
-      character.immunities = [...immunities]
+      character.damage_immunities = [...immunities]
       return {
         ...combat,
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
@@ -572,7 +596,7 @@ export const CombatTracker: React.FC = () => {
                 console.log('totalHPOf100', totalHPOf100)
                 console.log('\n\n')*/
 
-                //console.log(character)
+                console.log(character)
 
                 return (
                   <Draggable key={index} className={`${classes.draggableContainer}`}>
@@ -681,12 +705,16 @@ export const CombatTracker: React.FC = () => {
                       />
                       <Tooltip
                         title={
-                          <StatusModifiers resistances={character.resistances} vulnerabilities={character.vulnerabilities} immunities={character.immunities} />
+                          <StatusModifiers
+                            resistances={character.resistances}
+                            vulnerabilities={character.vulnerabilities}
+                            immunities={character.damage_immunities}
+                          />
                         }
                         placement="top"
                       >
                         <div className={`${classes.damageModifiers}`}>
-                          {(character.immunities || []).map((immunity, immunityIndex) => {
+                          {(character.damage_immunities || []).map((immunity, immunityIndex) => {
                             return (
                               <span className={`${classes.immunity}`} key={immunityIndex}>
                                 {DamageTypeToIconMap[immunity] || null}
@@ -734,11 +762,11 @@ export const CombatTracker: React.FC = () => {
                       </Tooltip>
                       <Tooltip
                         title={
-                          (!_.isEmpty(character.resistances) || !_.isEmpty(character.vulnerabilities) || !_.isEmpty(character.immunities)) && (
+                          (!_.isEmpty(character.resistances) || !_.isEmpty(character.vulnerabilities) || !_.isEmpty(character.damage_immunities)) && (
                             <StatusModifiers
                               resistances={character.resistances}
                               vulnerabilities={character.vulnerabilities}
-                              immunities={character.immunities}
+                              immunities={character.damage_immunities}
                             />
                           )
                         }
@@ -878,7 +906,7 @@ export const CombatTracker: React.FC = () => {
                               multiple
                               clearOnBlur
                               disableCloseOnSelect
-                              value={character.immunities}
+                              value={character.damage_immunities}
                               className={`${classes.autocomplete}`}
                               options={Object.values(DamageType)}
                               onChange={onChangeImmunity(index)}

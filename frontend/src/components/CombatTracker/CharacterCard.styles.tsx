@@ -2,12 +2,9 @@ import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
-  statsContainer: {
+  root: {
     '& .stats-background': {
       backgroundPositionY: 'top'
-    },
-    '& .tapered-rule': {
-      width: '14em'
     }
   },
   name: {
@@ -15,7 +12,7 @@ export const useStyles = makeStyles()((theme) => ({
     fontFamily:
       '"Libre Baskerville", "Lora", "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif',
     color: theme.status.blood,
-    fontSize: '1.7em',
+    fontSize: '2em',
     letterSpacing: '1px',
     fontVariant: 'small-caps'
   },
@@ -23,29 +20,37 @@ export const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     '& > div': {
-      margin: '0 0 0.3em 0'
-    },
-    '& > div > span:first-of-type': {
-      padding: '0 .5em 0 0'
+      margin: '0 0 0.2em 0'
     }
   },
-  stats: {
+  baseStat: {
+    textTransform: 'capitalize'
+  },
+  abilityScores: {
     display: 'flex',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    '& > div': {
+      marginInlineStart: '0',
+      textAlign: 'center'
+    }
   },
   statHeader: {
     color: theme.status.blood,
-    fontSize: '1.1em',
+    fontSize: '1.2em',
     fontWeight: 'bold',
-    lineHeight: '1.2em'
-  },
-  statHeaderNewLine: {
-    display: 'block'
+    flexBasis: '16.6%',
+    textAlign: 'center'
   },
   statValue: {
     color: theme.status.blood,
+    flexBasis: '16.6%',
+    textTransform: 'capitalize',
     display: 'inline-block',
-    textTransform: 'capitalize'
+    marginInlineStart: '0.5em'
+  },
+  rowBreak: {
+    flexBasis: '100%',
+    height: 0
   }
 }))
 

@@ -17,17 +17,12 @@ export const useStyles = makeStyles()((theme) => ({
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     boxShadow: theme.custom.boxShadow
-    //'-webkit-print-color-adjust': 'exact',
-    //'-webkit-filter': 'opacity(1)'
   },
   margins: {
     padding: '1em'
   },
   marginsSmall: {
-    padding: '0.5em',
-    '& .tapered-rule': {
-      margin: '0 0 .2em 0'
-    }
+    padding: '0.7em'
   }
 }))
 
