@@ -1,26 +1,30 @@
-import { APIReference, CharacterType, Condition, DamageType, FifthESRDMonster } from 'interfaces'
+import { CharacterType, Condition, DamageType } from 'interfaces'
 import ValueObject from './ValueObject'
 import _ from 'lodash'
 import { ConditionEffects, getConditionEffects } from 'components/CombatTracker/Conditions'
 import { getNumberWithSign, upsertToArray } from 'utils/utils'
+import { Action, ArmorClass, FifthESRDMonster, FifthESRDService, Proficiency, Sense } from 'domain/services/FifthESRDService'
 
-export interface ArmorClassObject {
-  type: string
-  value: number
-  armor?: APIReference[] // Equipment
-}
 export interface ICharacter extends Partial<FifthESRDMonster> {
   name: string
   init: number
-  armor_classes: ArmorClassObject[]
+  armor_classes: ArmorClass[]
   hit_points: number
   temporary_hit_points?: number
   damage?: number
   regeneration?: number
   conditions?: Condition[]
-  resistances?: DamageType[]
-  vulnerabilities?: DamageType[]
+  damage_resistances?: DamageType[]
+  damage_vulnerabilities?: DamageType[]
   damage_immunities?: DamageType[]
+  skills?: Proficiency[]
+  senses?: Sense
+  languages?: string
+  proficiency_bonus?: number
+  challenge_rating?: number
+  xp?: number
+  actions?: Action[]
+  saving_throws?: Proficiency[]
   player_type?: CharacterType
   effects?: any
 }
@@ -34,9 +38,17 @@ class Character extends ValueObject {
   private _damage
   private _regeneration
   private _conditions
-  private _resistances
-  private _vulnerabilities
+  private _damage_resistances
+  private _damage_vulnerabilities
   private _damage_immunities
+  private _skills
+  private _saving_throws
+  private _senses
+  private _languages
+  private _proficiency_bonus
+  private _challenge_rating
+  private _xp
+  private _actions
   private _player_type
   private _effects
 
@@ -59,9 +71,17 @@ class Character extends ValueObject {
       damage = 0,
       regeneration = 0,
       conditions = [],
-      resistances = [],
-      vulnerabilities = [],
+      damage_resistances = [],
+      damage_vulnerabilities = [],
       damage_immunities = [],
+      skills = [],
+      saving_throws = [],
+      senses = {},
+      languages = '',
+      proficiency_bonus = 0,
+      challenge_rating = 0,
+      xp = 0,
+      actions = [],
       player_type = CharacterType.Enemy,
       effects = {},
 
@@ -82,9 +102,17 @@ class Character extends ValueObject {
     this._damage = Math.abs(damage) // turn damage always into positive integer
     this._regeneration = regeneration
     this._conditions = conditions
-    this._resistances = resistances
-    this._vulnerabilities = vulnerabilities
+    this._damage_resistances = damage_resistances
+    this._damage_vulnerabilities = damage_vulnerabilities
     this._damage_immunities = damage_immunities
+    this._skills = _.isEmpty(skills) ? FifthESRDService.parseSkills(character.proficiencies) : skills
+    this._saving_throws = _.isEmpty(saving_throws) ? FifthESRDService.parseSavingThrows(character.proficiencies) : saving_throws
+    this._senses = senses
+    this._languages = languages
+    this._proficiency_bonus = proficiency_bonus
+    this._challenge_rating = challenge_rating
+    this._xp = xp
+    this._actions = actions
     this._player_type = player_type
     this._effects = effects
 
@@ -106,37 +134,6 @@ class Character extends ValueObject {
       }
       return acsFromConditions
     }, [] as ICharacter['armor_classes'])
-  }
-
-  public static fromJSON(character: { [key: string]: any }) {
-    character = Object.entries(character).reduce((object, entry) => {
-      object[entry[0][0] === '_' ? entry[0].replace('_', '') : entry[0]] = entry[1]
-      return object
-    }, {} as { [key: string]: string })
-
-    if (typeof character.AC === 'number') {
-      character.armor_classes = [{ type: 'natural', value: character.AC }]
-      delete character.AC
-    }
-    if (typeof character.current_hit_points === 'number') {
-      character.damage = character.max_hp - character.current_hit_points
-      character.hit_points = character.max_hp
-      delete character.current_hit_points
-      delete character.current_hit_points
-      delete character.max_hp
-    }
-    if (typeof character.type === 'string') {
-      character.player_type = character.type
-      delete character.type
-    }
-    if (character.effects['AC']) {
-      character.effects['armor_class'] = character.effects.AC
-      delete character.effects.AC
-    }
-
-    character.damage = Math.abs(character.damage) // turn damage always into positive integer
-
-    return new Character(character as ICharacter)
   }
 
   public clone(attributes?: Partial<ICharacter>) {
@@ -173,7 +170,7 @@ class Character extends ValueObject {
     }`
   }
 
-  private parseArmorClassLabel = (armorClass: ArmorClassObject): string => {
+  private parseArmorClassLabel = (armorClass: ArmorClass): string => {
     let armorClassLabel = String(armorClass.value)
     if (armorClass.armor) {
       armorClassLabel += ` (${_.get(armorClass.armor, 0).name})` // TODO, why is this an array, can there be more than one?
@@ -181,7 +178,7 @@ class Character extends ValueObject {
     return armorClassLabel
   }
 
-  private parseArmorClassLabelWithSign = (armorClass: ArmorClassObject): string => {
+  private parseArmorClassLabelWithSign = (armorClass: ArmorClass): string => {
     let armorClassLabel = getNumberWithSign(armorClass.value)
     if (armorClass.armor) {
       armorClassLabel += ` (${_.get(armorClass.armor, 0).name})` // TODO, why is this an array, can there be more than one?
@@ -189,10 +186,10 @@ class Character extends ValueObject {
     return armorClassLabel
   }
 
-  public set armor_classes(value: ArmorClassObject[]) {
+  public set armor_classes(value: ArmorClass[]) {
     value.forEach(({ value, type }) => {
       if (type) {
-        this._armor_classes = upsertToArray<ArmorClassObject>(this.armor_classes, { type, value }, type as keyof ArmorClassObject)
+        this._armor_classes = upsertToArray<ArmorClass>(this.armor_classes, { type, value }, type as keyof ArmorClass)
       } else {
         // if no type is given, let's update the natural armor
         let element
@@ -206,7 +203,7 @@ class Character extends ValueObject {
         if (element) {
           element.value = value
         } else {
-          this._armor_classes = upsertToArray<ArmorClassObject>(this.armor_classes, { type: 'natural', value }, 'natural' as keyof ArmorClassObject)
+          this._armor_classes = upsertToArray<ArmorClass>(this.armor_classes, { type: 'natural', value }, 'natural' as keyof ArmorClass)
         }
       }
     })
@@ -316,18 +313,18 @@ class Character extends ValueObject {
     this._regeneration = value
   }
 
-  public get resistances() {
-    return this._resistances
+  public get damage_resistances() {
+    return this._damage_resistances
   }
-  public set resistances(value) {
-    this._resistances = value
+  public set damage_resistances(value) {
+    this._damage_resistances = value
   }
 
-  public get vulnerabilities() {
-    return this._vulnerabilities
+  public get damage_vulnerabilities() {
+    return this._damage_vulnerabilities
   }
-  public set vulnerabilities(value) {
-    this._vulnerabilities = value
+  public set damage_vulnerabilities(value) {
+    this._damage_vulnerabilities = value
   }
 
   public get damage_immunities() {
@@ -456,12 +453,116 @@ class Character extends ValueObject {
     return this.strength || this.dexterity || this.constitution || this.intelligence || this.wisdom || this.charisma
   }
 
+  public get skills() {
+    return this._skills
+  }
+  public get skills_label() {
+    return FifthESRDService.parseProficiencyLabel(this.skills)
+  }
+  public set skills(value) {
+    this._skills = value
+  }
+
+  public get saving_throws() {
+    return this._saving_throws
+  }
+  public get saving_throws_label() {
+    return FifthESRDService.parseProficiencyLabel(this.saving_throws)
+  }
+  public set saving_throws(value) {
+    this._saving_throws = value
+  }
+
+  public get senses() {
+    return this._senses
+  }
+  public get senses_label() {
+    return Object.entries(this._senses)
+      .map(([key, value]) => `${key.replace('_', ' ')} ${value}`)
+      .join(', ')
+  }
+  public set senses(value) {
+    this._senses = value
+  }
+
+  public get languages() {
+    return this._languages
+  }
+  public set languages(value) {
+    this._languages = value
+  }
+
+  public get proficiency_bonus() {
+    return this._proficiency_bonus
+  }
+  public get proficiency_bonus_label() {
+    return getNumberWithSign(this.proficiency_bonus)
+  }
+  public set proficiency_bonus(value) {
+    this._proficiency_bonus = value
+  }
+
+  public get challenge_rating() {
+    return this._challenge_rating
+  }
+  public get challenge_rating_label() {
+    return `${this._challenge_rating}${this.xp ? ` (${this.xp} XP)` : ''}`
+  }
+  public set challenge_rating(value) {
+    this._challenge_rating = value
+  }
+
+  public get xp() {
+    return this._xp
+  }
+  public set xp(value) {
+    this._xp = value
+  }
+
+  public get actions() {
+    return this._actions
+  }
+  public set actions(value) {
+    this._actions = value
+  }
+
   public isUnconscious = () => {
     return this.current_hit_points <= 0
   }
 
   public isBloodied = () => {
     return this.current_hit_points + this.temporary_hit_points < this.hit_points / 2
+  }
+
+  public static fromJSON(character: { [key: string]: any }) {
+    character = Object.entries(character).reduce((object, entry) => {
+      object[entry[0][0] === '_' ? entry[0].replace('_', '') : entry[0]] = entry[1]
+      return object
+    }, {} as { [key: string]: string })
+
+    if (typeof character.AC === 'number') {
+      character.armor_classes = [{ type: 'natural', value: character.AC }]
+      delete character.AC
+    }
+    if (typeof character.current_hit_points === 'number') {
+      character.damage = character.max_hp - character.current_hit_points
+      character.hit_points = character.max_hp
+      delete character.current_hit_points
+      delete character.current_hit_points
+      delete character.max_hp
+    }
+    if (typeof character.type === 'string') {
+      character.player_type = character.type
+      delete character.type
+    }
+    if (character.effects['AC']) {
+      character.effects['armor_class'] = character.effects.AC
+      delete character.effects.AC
+    }
+
+    character.damage = Math.abs(character.damage) // turn damage always into positive integer
+
+    return new Character(character as ICharacter)
   }
 
   public toJSON(): ICharacter {

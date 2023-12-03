@@ -34,7 +34,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
-import { CharacterType, Condition, DamageType, FifthESRDMonster } from 'interfaces'
+import { CharacterType, Condition, DamageType } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
@@ -46,6 +46,7 @@ import CharacterCard from './CharacterCard'
 import { getMonster, getMonsterList } from 'api/monsters'
 import Character from 'domain/entities/Character'
 import { replaceItemAtIndex } from 'utils/utils'
+import { FifthESRDMonster } from 'domain/services/FifthESRDService'
 
 interface MonsterListOption {
   index: string
@@ -478,7 +479,7 @@ export const CombatTracker: React.FC = () => {
   const onChangeResistance = (index: number) => (event: any, resistances: DamageType[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
-      character.resistances = [...resistances]
+      character.damage_resistances = [...resistances]
       return {
         ...combat,
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
@@ -489,7 +490,7 @@ export const CombatTracker: React.FC = () => {
   const onChangeVulnerability = (index: number) => (event: any, vulnerabilities: DamageType[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
-      character.vulnerabilities = [...vulnerabilities]
+      character.damage_vulnerabilities = [...vulnerabilities]
       return {
         ...combat,
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
@@ -596,7 +597,7 @@ export const CombatTracker: React.FC = () => {
                 console.log('totalHPOf100', totalHPOf100)
                 console.log('\n\n')*/
 
-                console.log(character)
+                //console.log(character)
 
                 return (
                   <Draggable key={index} className={`${classes.draggableContainer}`}>
@@ -706,8 +707,8 @@ export const CombatTracker: React.FC = () => {
                       <Tooltip
                         title={
                           <StatusModifiers
-                            resistances={character.resistances}
-                            vulnerabilities={character.vulnerabilities}
+                            resistances={character.damage_resistances}
+                            vulnerabilities={character.damage_vulnerabilities}
                             immunities={character.damage_immunities}
                           />
                         }
@@ -721,14 +722,14 @@ export const CombatTracker: React.FC = () => {
                               </span>
                             )
                           })}
-                          {(character.resistances || []).map((resistance, resistanceIndex) => {
+                          {(character.damage_resistances || []).map((resistance, resistanceIndex) => {
                             return (
                               <span className={`${classes.resistance}`} key={resistanceIndex}>
                                 {DamageTypeToIconMap[resistance] || null}
                               </span>
                             )
                           })}
-                          {(character.vulnerabilities || []).map((vulnerability, vulnerabilityIndex) => {
+                          {(character.damage_vulnerabilities || []).map((vulnerability, vulnerabilityIndex) => {
                             return <span key={vulnerabilityIndex}>{DamageTypeToIconMap[vulnerability] || null}</span>
                           })}
                         </div>
@@ -762,10 +763,12 @@ export const CombatTracker: React.FC = () => {
                       </Tooltip>
                       <Tooltip
                         title={
-                          (!_.isEmpty(character.resistances) || !_.isEmpty(character.vulnerabilities) || !_.isEmpty(character.damage_immunities)) && (
+                          (!_.isEmpty(character.damage_resistances) ||
+                            !_.isEmpty(character.damage_vulnerabilities) ||
+                            !_.isEmpty(character.damage_immunities)) && (
                             <StatusModifiers
-                              resistances={character.resistances}
-                              vulnerabilities={character.vulnerabilities}
+                              resistances={character.damage_resistances}
+                              vulnerabilities={character.damage_vulnerabilities}
                               immunities={character.damage_immunities}
                             />
                           )
@@ -872,7 +875,7 @@ export const CombatTracker: React.FC = () => {
                               multiple
                               clearOnBlur
                               disableCloseOnSelect
-                              value={character.resistances}
+                              value={character.damage_resistances}
                               className={`${classes.autocomplete}`}
                               options={Object.values(DamageType)}
                               onChange={onChangeResistance(index)}
@@ -889,7 +892,7 @@ export const CombatTracker: React.FC = () => {
                               multiple
                               clearOnBlur
                               disableCloseOnSelect
-                              value={character.vulnerabilities}
+                              value={character.damage_vulnerabilities}
                               className={`${classes.autocomplete}`}
                               options={Object.values(DamageType)}
                               onChange={onChangeVulnerability(index)}

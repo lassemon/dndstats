@@ -40,16 +40,12 @@ export const combatTrackerState = atom<typeof defaultCombat>({
       'combatTrackerState',
       defaultCombat,
       (state: any) => {
-        //console.log('in localStorage', state.characters[0])
-        //console.log('after conversion', Character.fromJSON(state.characters[0]))
         return {
           ...state,
           characters: state.characters.map((character: any) => Character.fromJSON(character))
         }
       },
       (state: any) => {
-        //console.log('in localStorage', state.characters[0])
-        //console.log('after conversion', Character.fromJSON(JSON.stringify(state.characters[0])))
         return {
           ...state,
           characters: state.characters.map((character: Character) => character.toJSON())

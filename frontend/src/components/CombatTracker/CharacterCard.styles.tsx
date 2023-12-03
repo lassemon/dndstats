@@ -7,20 +7,36 @@ export const useStyles = makeStyles()((theme) => ({
       backgroundPositionY: 'top'
     }
   },
-  name: {
-    margin: '0',
+  rootFlex: {
+    display: 'flex'
+  },
+  statsColumnLeft: {
+    maxWidth: '38em'
+  },
+  statsColumnRight: {
+    maxWidth: '40em'
+  },
+  header: {
     fontFamily:
       '"Libre Baskerville", "Lora", "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif',
+    margin: '0',
     color: theme.status.blood,
-    fontSize: '2em',
-    letterSpacing: '1px',
+    letterSpacing: '0.02em',
     fontVariant: 'small-caps'
+  },
+  name: {
+    fontSize: '2.3em'
   },
   baseStatsContainer: {
     display: 'flex',
     flexDirection: 'column',
     '& > div': {
       margin: '0 0 0.2em 0'
+    }
+  },
+  statsContainer: {
+    '& > div': {
+      margin: '0 0 0.3em 0'
     }
   },
   baseStat: {
@@ -36,13 +52,14 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statHeader: {
     color: theme.status.blood,
-    fontSize: '1.2em',
+    fontSize: '1.4em',
     fontWeight: 'bold',
     flexBasis: '16.6%',
     textAlign: 'center'
   },
   statValue: {
     color: theme.status.blood,
+    fontSize: '1.3em',
     flexBasis: '16.6%',
     textTransform: 'capitalize',
     display: 'inline-block',
@@ -51,7 +68,21 @@ export const useStyles = makeStyles()((theme) => ({
   rowBreak: {
     flexBasis: '100%',
     height: 0
-  }
+  },
+  actionsHeader: {
+    fontSize: '1.8em',
+    margin: '0.5em 0',
+    borderBottom: `1px solid ${theme.status.blood}`
+  },
+  actionContainer: {
+    margin: '0 0 0.5em 0'
+  },
+  actionName: {
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    padding: '0 0.5em 0 0'
+  },
+  actionDescription: {}
 }))
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.

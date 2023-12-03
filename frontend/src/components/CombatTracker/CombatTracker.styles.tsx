@@ -120,7 +120,9 @@ export const useStyles = makeStyles()((theme) => ({
   },
   nameTextTooltip: {
     '& .MuiTooltip-tooltip': {
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
+      maxWidth: 'initial',
+      color: 'rgb(0,0,0)'
     }
   },
   nameBloodied: {
