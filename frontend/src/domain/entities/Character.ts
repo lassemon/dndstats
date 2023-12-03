@@ -3,7 +3,7 @@ import ValueObject from './ValueObject'
 import _ from 'lodash'
 import { ConditionEffects, getConditionEffects } from 'components/CombatTracker/Conditions'
 import { getNumberWithSign, upsertToArray } from 'utils/utils'
-import { Action, ArmorClass, FifthESRDMonster, FifthESRDService, Proficiency, Sense } from 'domain/services/FifthESRDService'
+import { Action, ArmorClass, FifthESRDMonster, FifthESRDService, Proficiency, Sense, SpecialAbility } from 'domain/services/FifthESRDService'
 
 export interface ICharacter extends Partial<FifthESRDMonster> {
   name: string
@@ -18,6 +18,7 @@ export interface ICharacter extends Partial<FifthESRDMonster> {
   damage_vulnerabilities?: DamageType[]
   damage_immunities?: DamageType[]
   skills?: Proficiency[]
+  special_abilities?: SpecialAbility[]
   senses?: Sense
   languages?: string
   proficiency_bonus?: number
@@ -41,16 +42,6 @@ class Character extends ValueObject {
   private _damage_resistances
   private _damage_vulnerabilities
   private _damage_immunities
-  private _skills
-  private _saving_throws
-  private _senses
-  private _languages
-  private _proficiency_bonus
-  private _challenge_rating
-  private _xp
-  private _actions
-  private _player_type
-  private _effects
 
   private _strength
   private _dexterity
@@ -59,7 +50,18 @@ class Character extends ValueObject {
   private _wisdom
   private _charisma
 
+  private _skills
+  private _saving_throws
+  private _senses
   private _speed
+  private _special_abilities
+  private _languages
+  private _proficiency_bonus
+  private _challenge_rating
+  private _xp
+  private _actions
+  private _player_type
+  private _effects
 
   constructor(character: ICharacter) {
     const {
@@ -76,6 +78,7 @@ class Character extends ValueObject {
       damage_immunities = [],
       skills = [],
       saving_throws = [],
+      special_abilities = [],
       senses = {},
       languages = '',
       proficiency_bonus = 0,
@@ -108,6 +111,7 @@ class Character extends ValueObject {
     this._skills = _.isEmpty(skills) ? FifthESRDService.parseSkills(character.proficiencies) : skills
     this._saving_throws = _.isEmpty(saving_throws) ? FifthESRDService.parseSavingThrows(character.proficiencies) : saving_throws
     this._senses = senses
+    this._special_abilities = special_abilities
     this._languages = languages
     this._proficiency_bonus = proficiency_bonus
     this._challenge_rating = challenge_rating
@@ -524,6 +528,13 @@ class Character extends ValueObject {
   }
   public set actions(value) {
     this._actions = value
+  }
+
+  public get special_abilities() {
+    return this._special_abilities
+  }
+  public set special_abilities(value) {
+    this._special_abilities = value
   }
 
   public isUnconscious = () => {

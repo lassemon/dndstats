@@ -1,6 +1,7 @@
 import { TextField, TextFieldProps, Typography } from '@mui/material'
 import React, { ReactNode, useEffect, useState } from 'react'
-import Tooltip from '@mui/material/Tooltip'
+import { styled } from '@mui/material/styles'
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 
 import useStyles from './EditableText.styles'
 
@@ -14,6 +15,8 @@ interface EditableTextProps {
   tooltip?: string | ReactNode
   disableInteractiveTooltip?: boolean
   tooltipClass?: string
+  tooltipPlacement?: TooltipProps['placement']
+  tooltipMaxWidth?: string
   textWidth?: number
   editWidth?: number
   type?: TextFieldProps['type']
@@ -32,10 +35,22 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     tooltip = '',
     disableInteractiveTooltip = false,
     tooltipClass = '',
+    tooltipMaxWidth = '300',
     textWidth = 0,
     editWidth = 12,
-    type = 'text'
+    type = 'text',
+    tooltipPlacement = 'top-start'
   } = props
+
+  const EditableTextTooltip =
+    tooltipMaxWidth !== '300'
+      ? styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)({
+          [`& .${tooltipClasses.tooltip}`]: {
+            maxWidth: tooltipMaxWidth
+          }
+        })
+      : Tooltip
+
   const [isText, setIsText] = useState(true)
   const [_value, setValue] = useState(value)
   const { classes } = useStyles()
@@ -73,11 +88,16 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
   return (
     <div className={className} style={{ flex: `0 1 ${textWidth}px` }}>
       {isText ? (
-        <Tooltip PopperProps={{ className: tooltipClass }} title={tooltip} disableInteractive={disableInteractiveTooltip} placement="top-start">
+        <EditableTextTooltip
+          PopperProps={{ className: tooltipClass }}
+          title={tooltip}
+          disableInteractive={disableInteractiveTooltip}
+          placement={tooltipPlacement}
+        >
           <Typography onDoubleClick={onDoubleClick} className={`${classes.textMode}${textClass ? ' ' + textClass : ''}`}>
             <span>{_value}</span>
           </Typography>
-        </Tooltip>
+        </EditableTextTooltip>
       ) : (
         <TextField
           id={id}

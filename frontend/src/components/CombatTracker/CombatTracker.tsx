@@ -688,7 +688,7 @@ export const CombatTracker: React.FC = () => {
                       <EditableText
                         id={`character-name-${index}`}
                         tooltip={<CharacterCard character={character} />}
-                        disableInteractiveTooltip={true}
+                        tooltipPlacement="bottom-start"
                         tooltipClass={`${classes.nameTextTooltip}`}
                         className={cx({
                           [classes.editableTextField]: true,

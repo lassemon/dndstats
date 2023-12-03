@@ -95,6 +95,45 @@ export type Sense = {
   truesight?: string
 }
 
+type SpecialAbilityUsage = {
+  _id?: boolean
+  type: string
+  times?: number
+  rest_types?: string[]
+}
+
+type SpecialAbilitySpell = {
+  _id?: boolean
+  name: string
+  level: number
+  url: string
+  notes?: string
+  usage?: SpecialAbilityUsage
+}
+
+type SpecialAbilitySpellcasting = {
+  _id?: boolean
+  level?: number
+  ability: APIReference
+  dc?: number
+  modifier?: number
+  components_required: string[]
+  school?: string
+  slots?: Record<string, number>
+  spells: SpecialAbilitySpell[]
+}
+
+export type SpecialAbility = {
+  _id?: boolean
+  name: string
+  desc: string
+  attack_bonus?: number
+  damage?: ActionDamage[]
+  dc?: DifficultyClass
+  spellcasting?: SpecialAbilitySpellcasting
+  usage: SpecialAbilityUsage
+}
+
 type Speed = {
   burrow?: string
   climb?: string
@@ -129,6 +168,7 @@ export type FifthESRDMonster = {
   reactions?: Reaction[]
   senses: Sense
   size: string
+  special_abilities?: SpecialAbility[]
   speed: Speed
   strength: number
   subtype?: string

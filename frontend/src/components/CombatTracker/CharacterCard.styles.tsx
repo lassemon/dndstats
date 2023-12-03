@@ -7,14 +7,15 @@ export const useStyles = makeStyles()((theme) => ({
       backgroundPositionY: 'top'
     }
   },
-  rootFlex: {
-    display: 'flex'
+  staticWidthMedium: {
+    width: '30vw'
   },
-  statsColumnLeft: {
-    maxWidth: '38em'
+  staticWidthLarge: {
+    width: '50vw'
   },
-  statsColumnRight: {
-    maxWidth: '40em'
+  columns: {
+    columnCount: '2',
+    columnFill: 'balance'
   },
   header: {
     fontFamily:
@@ -29,14 +30,12 @@ export const useStyles = makeStyles()((theme) => ({
   },
   baseStatsContainer: {
     display: 'flex',
-    flexDirection: 'column',
-    '& > div': {
-      margin: '0 0 0.2em 0'
-    }
+    flexDirection: 'column'
   },
   statsContainer: {
+    breakInside: 'avoid',
     '& > div': {
-      margin: '0 0 0.3em 0'
+      margin: '0.2em 0'
     }
   },
   baseStat: {
@@ -52,7 +51,9 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statHeader: {
     color: theme.status.blood,
-    fontSize: '1.4em',
+    fontSize: '1.3em',
+    fontFamily: '"Helvetica", "Arial", sans-serif',
+    lineHeight: '1.4em',
     fontWeight: 'bold',
     flexBasis: '16.6%',
     textAlign: 'center'
@@ -60,6 +61,7 @@ export const useStyles = makeStyles()((theme) => ({
   statValue: {
     color: theme.status.blood,
     fontSize: '1.3em',
+    fontFamily: '"Helvetica", "Arial", sans-serif',
     flexBasis: '16.6%',
     textTransform: 'capitalize',
     display: 'inline-block',
@@ -74,15 +76,21 @@ export const useStyles = makeStyles()((theme) => ({
     margin: '0.5em 0',
     borderBottom: `1px solid ${theme.status.blood}`
   },
+  actionsContainer: {
+    breakInside: 'avoid'
+  },
   actionContainer: {
     margin: '0 0 0.5em 0'
   },
   actionName: {
     fontWeight: 'bold',
     fontStyle: 'italic',
+    fontFamily: '"Helvetica", "Arial", sans-serif',
     padding: '0 0.5em 0 0'
   },
-  actionDescription: {}
+  actionDescription: {
+    fontFamily: '"Helvetica", "Arial", sans-serif'
+  }
 }))
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.

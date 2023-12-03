@@ -116,12 +116,11 @@ export const useStyles = makeStyles()((theme) => ({
     padding: '0 0 0 0'
   },
   nameText: {
-    width: '5em'
+    width: '6em'
   },
   nameTextTooltip: {
     '& .MuiTooltip-tooltip': {
       backgroundColor: 'transparent',
-      maxWidth: 'initial',
       color: 'rgb(0,0,0)'
     }
   },
