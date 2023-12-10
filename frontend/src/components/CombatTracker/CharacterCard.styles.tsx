@@ -62,7 +62,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statValue: {
     color: theme.status.blood,
-    fontSize: '1.1em',
+    fontSize: '1em',
     fontFamily: '"Helvetica", "Arial", sans-serif',
     flexBasis: '16.6%',
     textTransform: 'capitalize',
