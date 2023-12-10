@@ -1,9 +1,9 @@
-import { makeStyles } from 'tss-react/mui';
+import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
   container: {
-    width: '50%'
+    width: '60%'
   },
   mediumContainer: {
     width: '80%'
@@ -75,7 +75,7 @@ export const useStyles = makeStyles()((theme) => ({
       padding: '4px'
     }
   }
-}));
+}))
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
-export default useStyles;
+export default useStyles

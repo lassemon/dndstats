@@ -7,7 +7,7 @@ export const useStyles = makeStyles()((theme) => {
       width: '55%'
     },
     mediumContainer: {
-      width: '75%'
+      width: '65%'
     },
     smallContainer: {
       width: '95%'
