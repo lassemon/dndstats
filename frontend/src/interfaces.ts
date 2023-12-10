@@ -68,3 +68,16 @@ export enum DamageType {
   Physical = 'physical',
   Magical = 'magical'
 }
+
+export interface Spell {
+  name: string
+  shortDescription: string
+  mainDescription: string
+  features: Array<{ featureName: string; featureDescription: string }>
+  athigherlevels: string
+  castingtime: string
+  range: string
+  components: string
+  duration: string
+  classes: string
+}

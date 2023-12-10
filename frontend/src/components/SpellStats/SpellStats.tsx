@@ -1,12 +1,13 @@
 import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { useRecoilValue } from 'recoil'
 import { spellState } from 'recoil/atoms'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import classNames from 'classnames/bind'
 
 import useStyles from './SpellStats.styles'
+import _ from 'lodash'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -71,11 +72,23 @@ export const SpellStats: React.FC = () => {
 
         {currentSpell.mainDescription && (
           <MainDescription>
-            {currentSpell.mainDescription.split('\n').map((value, key) => {
-              return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
+            {currentSpell.mainDescription.split('\n').map((value, index) => {
+              return <DescriptionBlock key={`description-${index}`}>{value}</DescriptionBlock>
             })}
           </MainDescription>
         )}
+        {!_.isEmpty(currentSpell.features) &&
+          currentSpell.features.map((feature, index) => {
+            return (
+              <Fragment key={index}>
+                <TaperedRule />
+                <MainDescription>
+                  {feature.featureName && <h3 className={classes.featureName}>{feature.featureName}</h3>}
+                  {feature.featureDescription && <DescriptionInline>{feature.featureDescription}</DescriptionInline>}
+                </MainDescription>
+              </Fragment>
+            )
+          })}
         {currentSpell.athigherlevels && (
           <>
             <TaperedRule />

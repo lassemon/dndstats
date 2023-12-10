@@ -2,7 +2,7 @@ import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
 import Character from 'domain/entities/Character'
-import { CharacterType, Condition, DamageType, Source } from 'interfaces'
+import { CharacterType, Condition, DamageType, Source, Spell } from 'interfaces'
 import React from 'react'
 
 export const defaultItem = {
@@ -36,7 +36,7 @@ export const defaultSpell = {
   components: 'V, S',
   duration: 'Instantaneous',
   classes: 'Warlock'
-}
+} as Spell
 
 export const defaultWeapon = {
   image: React.createElement('img', {
