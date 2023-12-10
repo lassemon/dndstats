@@ -15,64 +15,60 @@ export const MonsterStatsInput: React.FC = () => {
 
   const onChange = (name: string) => (event: any) =>
     setCurrentMonster((monster) => {
-      return { ...monster, [name]: event.target.value }
+      return monster.clone({ [name]: event.target.value })
     })
 
   const onAddFeature = () => {
     setCurrentMonster((monster) => {
-      return {
-        ...monster,
-        features: [
-          ...monster.features,
+      return monster.clone({
+        special_abilities: [
+          ...monster.special_abilities,
           {
             name: 'Feature name',
-            description: 'Feature description'
+            desc: 'Feature description'
           }
         ]
-      }
+      })
     })
   }
 
   const onAddAction = () => {
     setCurrentMonster((monster) => {
-      return {
-        ...monster,
+      return monster.clone({
         actions: [
           ...monster.actions,
           {
             name: 'Action name',
-            description: 'Action description'
+            desc: 'Action description'
           }
         ]
-      }
+      })
     })
   }
 
   const onAddReaction = () => {
     setCurrentMonster((monster) => {
-      return {
-        ...monster,
+      return monster.clone({
         reactions: [
           ...monster.reactions,
           {
             name: 'Reaction name',
-            description: 'Reaction description'
+            desc: 'Reaction description'
           }
         ]
-      }
+      })
     })
   }
 
   const onChangeFeatureName = (index: number) => (event: any) => {
     setCurrentMonster((monster) => {
-      const featuresCopy = replaceItemAtIndex(monster.features, index, {
+      const specialAbilitiesCopy = replaceItemAtIndex(monster.special_abilities, index, {
         name: event.target.value,
-        description: monster.features[index].description
+        description: monster.special_abilities[index].desc
       })
-      return {
-        ...monster,
-        features: featuresCopy
-      }
+      return monster.clone({
+        special_abilities: specialAbilitiesCopy
+      })
     })
   }
 
@@ -80,12 +76,11 @@ export const MonsterStatsInput: React.FC = () => {
     setCurrentMonster((monster) => {
       const actionsCopy = replaceItemAtIndex(monster.actions, index, {
         name: event.target.value,
-        description: monster.actions[index].description
+        description: monster.actions[index].desc
       })
-      return {
-        ...monster,
+      return monster.clone({
         actions: actionsCopy
-      }
+      })
     })
   }
 
@@ -93,25 +88,23 @@ export const MonsterStatsInput: React.FC = () => {
     setCurrentMonster((monster) => {
       const reactionsCopy = replaceItemAtIndex(monster.reactions, index, {
         name: event.target.value,
-        description: monster.reactions[index].description
+        description: monster.reactions[index].desc
       })
-      return {
-        ...monster,
+      return monster.clone({
         reactions: reactionsCopy
-      }
+      })
     })
   }
 
   const onChangeFeatureDescription = (index: number) => (event: any) => {
     setCurrentMonster((monster) => {
-      const featuresCopy = replaceItemAtIndex(monster.features, index, {
-        name: monster.features[index].name,
-        description: event.target.value
+      const specialAbilitiesCopy = replaceItemAtIndex(monster.special_abilities, index, {
+        name: monster.special_abilities[index].name,
+        desc: event.target.value
       })
-      return {
-        ...monster,
-        features: featuresCopy
-      }
+      return monster.clone({
+        special_abilities: specialAbilitiesCopy
+      })
     })
   }
 
@@ -119,12 +112,11 @@ export const MonsterStatsInput: React.FC = () => {
     setCurrentMonster((monster) => {
       const actionsCopy = replaceItemAtIndex(monster.actions, index, {
         name: monster.actions[index].name,
-        description: event.target.value
+        desc: event.target.value
       })
-      return {
-        ...monster,
+      return monster.clone({
         actions: actionsCopy
-      }
+      })
     })
   }
 
@@ -132,23 +124,21 @@ export const MonsterStatsInput: React.FC = () => {
     setCurrentMonster((monster) => {
       const reactionsCopy = replaceItemAtIndex(monster.reactions, index, {
         name: monster.actions[index].name,
-        description: event.target.value
+        desc: event.target.value
       })
-      return {
-        ...monster,
+      return monster.clone({
         reactions: reactionsCopy
-      }
+      })
     })
   }
 
   const onDeleteFeature = (index: number) => () => {
     setCurrentMonster((monster) => {
-      const featuresCopy = [...monster.features]
-      featuresCopy.splice(index, 1)
-      return {
-        ...monster,
-        features: featuresCopy
-      }
+      const specialAbilitiesCopy = [...monster.special_abilities]
+      specialAbilitiesCopy.splice(index, 1)
+      return monster.clone({
+        special_abilities: specialAbilitiesCopy
+      })
     })
   }
 
@@ -156,10 +146,9 @@ export const MonsterStatsInput: React.FC = () => {
     setCurrentMonster((monster) => {
       const actionsCopy = [...monster.actions]
       actionsCopy.splice(index, 1)
-      return {
-        ...monster,
+      return monster.clone({
         actions: actionsCopy
-      }
+      })
     })
   }
 
@@ -167,24 +156,22 @@ export const MonsterStatsInput: React.FC = () => {
     setCurrentMonster((monster) => {
       const reactionsCopy = [...monster.reactions]
       reactionsCopy.splice(index, 1)
-      return {
-        ...monster,
+      return monster.clone({
         reactions: reactionsCopy
-      }
+      })
     })
   }
 
   const onDeleteImage = () => {
     setCurrentMonster((monster) => {
-      return {
-        ...monster,
-        image: React.createElement('img', {
+      return monster.clone({
+        imageElement: React.createElement('img', {
           width: 200,
           alt: '',
           src: '',
           hash: 0
         })
-      }
+      })
     })
   }
 
@@ -204,10 +191,9 @@ export const MonsterStatsInput: React.FC = () => {
           })
 
           setCurrentMonster((monster) => {
-            return {
-              ...monster,
-              image: imgtag
-            }
+            return monster.clone({
+              imageElement: imgtag
+            })
           })
         }
       }
@@ -220,21 +206,21 @@ export const MonsterStatsInput: React.FC = () => {
     <StatsInputContainer>
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
       <TextField id="monster-name" label="Name" value={currentMonster.name} onChange={onChange('name')} />
-      <TextField id="monster-short-description" label="Short Description" value={currentMonster.shortDescription} onChange={onChange('shortDescription')} />
+      <TextField id="monster-short-description" label="Short Description" value={currentMonster.short_description} onChange={onChange('shortDescription')} />
       <TextField
         id="monster-main-description"
         label="Main Description"
         multiline={true}
-        value={currentMonster.mainDescription}
+        value={currentMonster.description}
         onChange={onChange('mainDescription')}
       />
       {/* BASE STATS */}
       <Grid container={true} spacing={2}>
         <Grid item={true} xs={12} sm={4}>
-          <TextField id="monster-AC" label="Armor Class" value={currentMonster.AC} onChange={onChange('AC')} />
+          <TextField id="monster-AC" label="Armor Class" value={currentMonster.armor_class_label} onChange={onChange('AC')} />
         </Grid>
         <Grid item={true} xs={12} sm={4}>
-          <TextField id="monster-HP" label="Hit Points" value={currentMonster.HP} onChange={onChange('HP')} />
+          <TextField id="monster-HP" label="Hit Points" value={currentMonster.hit_points} onChange={onChange('HP')} />
         </Grid>
         <Grid item={true} xs={12} sm={4}>
           <TextField id="monster-speed" label="Speed" value={currentMonster.speed} onChange={onChange('speed')} />
@@ -243,22 +229,22 @@ export const MonsterStatsInput: React.FC = () => {
       {/* STATS */}
       <Grid container={true} spacing={2}>
         <Grid item={true} xs={4} sm={2}>
-          <TextField id="monster-STR" label="STR" value={currentMonster.STR} onChange={onChange('STR')} />
+          <TextField id="monster-STR" label="STR" value={currentMonster.strenght_label} onChange={onChange('STR')} />
         </Grid>
         <Grid item={true} xs={4} sm={2}>
-          <TextField id="monster-DEX" label="DEX" value={currentMonster.DEX} onChange={onChange('DEX')} />
+          <TextField id="monster-DEX" label="DEX" value={currentMonster.dexterity_label} onChange={onChange('DEX')} />
         </Grid>
         <Grid item={true} xs={4} sm={2}>
-          <TextField id="monster-CON" label="CON" value={currentMonster.CON} onChange={onChange('CON')} />
+          <TextField id="monster-CON" label="CON" value={currentMonster.constitution_label} onChange={onChange('CON')} />
         </Grid>
         <Grid item={true} xs={4} sm={2}>
-          <TextField id="monster-INT" label="INT" value={currentMonster.INT} onChange={onChange('INT')} />
+          <TextField id="monster-INT" label="INT" value={currentMonster.intelligence_label} onChange={onChange('INT')} />
         </Grid>
         <Grid item={true} xs={4} sm={2}>
-          <TextField id="monster-WIS" label="WIS" value={currentMonster.WIS} onChange={onChange('WIS')} />
+          <TextField id="monster-WIS" label="WIS" value={currentMonster.wisdom_label} onChange={onChange('WIS')} />
         </Grid>
         <Grid item={true} xs={4} sm={2}>
-          <TextField id="monster-CHA" label="CHA" value={currentMonster.CHA} onChange={onChange('CHA')} />
+          <TextField id="monster-CHA" label="CHA" value={currentMonster.charisma_label} onChange={onChange('CHA')} />
         </Grid>
       </Grid>
       {/* EXTRA STATS */}
@@ -267,19 +253,24 @@ export const MonsterStatsInput: React.FC = () => {
           <TextField id="monster-skills" label="Skills" value={currentMonster.skills} onChange={onChange('skills')} />
         </Grid>
         <Grid item={true} xs={12} sm={4}>
-          <TextField id="monster-saving-throws" label="Saving Throws" value={currentMonster.savingthrows} onChange={onChange('savingthrows')} />
+          <TextField id="monster-saving-throws" label="Saving Throws" value={currentMonster.saving_throws_label} onChange={onChange('savingthrows')} />
         </Grid>
         <Grid item={true} xs={12} sm={4}>
-          <TextField id="monster-resistance" label="Damage Resistance" value={currentMonster.resistance} onChange={onChange('resistance')} />
+          <TextField id="monster-resistance" label="Damage Resistance" value={currentMonster.damage_resistances_label} onChange={onChange('resistance')} />
         </Grid>
         <Grid item={true} xs={12} sm={4}>
-          <TextField id="monster-damage-immunities" label="Damage Immunities" value={currentMonster.damageimmunities} onChange={onChange('damageimmunities')} />
+          <TextField
+            id="monster-damage-immunities"
+            label="Damage Immunities"
+            value={currentMonster.damage_immunities_label}
+            onChange={onChange('damageimmunities')}
+          />
         </Grid>
         <Grid item={true} xs={12} sm={4}>
           <TextField
             id="monster-condition-immunities"
             label="Condition Immunities"
-            value={currentMonster.conditionimmunities}
+            value={currentMonster.condition_immunities_label}
             onChange={onChange('conditionimmunities')}
           />
         </Grid>
@@ -290,20 +281,20 @@ export const MonsterStatsInput: React.FC = () => {
           <TextField id="monster-languages" label="Languages" value={currentMonster.languages} onChange={onChange('languages')} />
         </Grid>
         <Grid item={true} xs={12} sm={4}>
-          <TextField id="monster-challenge" label="Challenge" value={currentMonster.challenge} onChange={onChange('challenge')} />
+          <TextField id="monster-challenge" label="Challenge" value={currentMonster.challenge_rating_label} onChange={onChange('challenge')} />
         </Grid>
       </Grid>
       <Grid container={true} spacing={2}>
-        {currentMonster.features.map((feature, key) => {
+        {currentMonster.special_abilities.map((special_ability, key) => {
           return (
             <Grid key={key} item={true} xs={6}>
               <FeatureInputContainer onDelete={onDeleteFeature(key)}>
-                <TextField id={`monster-${key}-feature-name`} label="Feature Name" value={feature.name} onChange={onChangeFeatureName(key)} />
+                <TextField id={`monster-${key}-feature-name`} label="Feature Name" value={special_ability.name} onChange={onChangeFeatureName(key)} />
                 <TextField
                   id={`monster-${key}-feature-description`}
                   label="Feature Description"
                   multiline={true}
-                  value={feature.description}
+                  value={special_ability.desc}
                   onChange={onChangeFeatureDescription(key)}
                 />
               </FeatureInputContainer>
@@ -324,7 +315,7 @@ export const MonsterStatsInput: React.FC = () => {
                   id={`monster-${key}-action-description`}
                   label="Action Description"
                   multiline={true}
-                  value={action.description}
+                  value={action.desc}
                   onChange={onChangeActionDescription(key)}
                 />
               </FeatureInputContainer>
@@ -346,7 +337,7 @@ export const MonsterStatsInput: React.FC = () => {
                   id={`monster-${key}-reaction-description`}
                   label="Reaction Description"
                   multiline={true}
-                  value={reaction.description}
+                  value={reaction.desc}
                   onChange={onChangeReactionDescription(key)}
                 />
               </FeatureInputContainer>

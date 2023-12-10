@@ -2,16 +2,12 @@ import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
-  root: {
-    '& .stats-background': {
-      backgroundPositionY: 'top'
-    }
-  },
+  root: {},
   staticWidthMedium: {
-    width: '30vw'
+    width: '40vw'
   },
   staticWidthLarge: {
-    width: '50vw'
+    width: '60vw'
   },
   columns: {
     columnCount: '2',
@@ -25,8 +21,15 @@ export const useStyles = makeStyles()((theme) => ({
     letterSpacing: '0.02em',
     fontVariant: 'small-caps'
   },
+  shortDescription: {
+    marginTop: 0,
+    fontWeight: 'normal',
+    fontStyle: 'italic',
+    fontSize: '0.95em'
+  },
   name: {
-    fontSize: '2.3em'
+    fontSize: '2.3em',
+    lineHeight: 'normal'
   },
   baseStatsContainer: {
     display: 'flex',
@@ -51,16 +54,15 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statHeader: {
     color: theme.status.blood,
-    fontSize: '1.3em',
-    fontFamily: '"Helvetica", "Arial", sans-serif',
-    lineHeight: '1.4em',
+    fontSize: '1.1em',
+    lineHeight: '1.2em',
     fontWeight: 'bold',
     flexBasis: '16.6%',
     textAlign: 'center'
   },
   statValue: {
     color: theme.status.blood,
-    fontSize: '1.3em',
+    fontSize: '1.1em',
     fontFamily: '"Helvetica", "Arial", sans-serif',
     flexBasis: '16.6%',
     textTransform: 'capitalize',
@@ -83,14 +85,15 @@ export const useStyles = makeStyles()((theme) => ({
     margin: '0 0 0.5em 0'
   },
   actionName: {
-    fontWeight: 'bold',
+    fontSize: '1em',
     fontStyle: 'italic',
-    fontFamily: '"Helvetica", "Arial", sans-serif',
+    fontWeight: 'bold',
+    fontVariant: 'small-caps',
+    letterSpacing: '1px',
+    color: `${theme.palette.text.primary}`,
     padding: '0 0.5em 0 0'
   },
-  actionDescription: {
-    fontFamily: '"Helvetica", "Arial", sans-serif'
-  }
+  actionDescription: {}
 }))
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.

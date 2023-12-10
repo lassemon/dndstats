@@ -45,6 +45,13 @@ const theme = createTheme({
     }
   },
   components: {
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          fontFamily: "'Noto Sans', 'Myriad Pro', Calibri, Helvetica, Arial, sans-serif"
+        }
+      }
+    },
     MuiFormControl: {
       styleOverrides: {
         root: {

@@ -2,7 +2,7 @@ import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
 import Character from 'domain/entities/Character'
-import { CharacterType } from 'interfaces'
+import { CharacterType, Condition, DamageType, Source } from 'interfaces'
 import React from 'react'
 
 export const defaultItem = {
@@ -61,127 +61,174 @@ On a failed save you become exhausted (level of 3) for the duration of the next 
   properties: 'Light, finesse, +4d6 thunder damage'
 }
 
-export const defaultMonster = {
-  image: React.createElement('img', {
+export const defaultMonster = new Character({
+  imageElement: React.createElement('img', {
     alt: 'balor',
     src: balorImage,
     hash: 0
   }),
+  id: 'balor',
   name: 'Balor',
-  shortDescription: 'Huge fiend (demon), chaotic evil',
-  mainDescription: `Balors were imposing humanoid figures that stood about 12 feet (3.6 meters) tall and weighed 4,500 pounds (2041.1 kilograms). A powerful aura of darkness enveloped their grotesque forms, as their deep red skin was wrapped in glaring flames. A pair of massive bat-like wings allowed them to soar throughout the air with unnatural agility. Although they were naturally armed with venom-dripping fangs and fearsome claws, they were also normally armed with a sword of lightning and a multi-tailed whip of flame.`,
-  AC: '19 (Natural Armor)',
-  HP: '262 (21d12+126)',
-  speed: '40ft, fly 80 ft.',
-  STR: '26 (+8)',
-  DEX: '15 (+2)',
-  CON: '22 (+6)',
-  INT: '20 (+5)',
-  WIS: '16 (+3)',
-  CHA: '22 (+6)',
-  skills: 'Intimidation +6',
-  savingthrows: 'Str +14, Con +12, Cha +12',
-  resistance: 'Cold, Lightning, Bludgeoning, Piercing and Slashing from nonmagical Attacks',
-  damageimmunities: 'Fire, Poison',
-  conditionimmunities: 'Poisoned',
-  senses: 'Truesight 120 ft., Passive Perception 13',
+  source: Source.HomeBrew,
+  size: 'Huge',
+  type: 'fiend',
+  subtype: 'demon',
+  alignment: 'chaotic evil',
+  description: `Balors were imposing humanoid figures that stood about 12 feet (3.6 meters) tall and weighed 4,500 pounds (2041.1 kilograms). A powerful aura of darkness enveloped their grotesque forms, as their deep red skin was wrapped in glaring flames. A pair of massive bat-like wings allowed them to soar throughout the air with unnatural agility. Although they were naturally armed with venom-dripping fangs and fearsome claws, they were also normally armed with a sword of lightning and a multi-tailed whip of flame.`,
+  armor_classes: [
+    {
+      type: 'natural',
+      value: 19
+    }
+  ],
+  hit_points: 262,
+  speed: {
+    walk: '40ft',
+    fly: '80 ft.'
+  },
+  strength: 26,
+  dexterity: 15,
+  constitution: 22,
+  intelligence: 20,
+  wisdom: 16,
+  charisma: 22,
+  skills: [
+    {
+      proficiency: { index: 'skill-intimidation', name: 'Intimidation' },
+      value: 6
+    }
+  ],
+  saving_throws: [
+    { proficiency: { index: 'saving-throw-strenght', name: 'Strenght' }, value: 14 },
+    { proficiency: { index: 'saving-throw-constitution', name: 'Constitution' }, value: 12 },
+    { proficiency: { index: 'saving-throw-charisma', name: 'Charisma' }, value: 12 }
+  ],
+  damage_resistances: [
+    DamageType.Cold,
+    DamageType.Lightning,
+    DamageType.Bludgeoning,
+    DamageType.Piercing,
+    'and Slashing from nonmagical Attacks' as DamageType
+  ] as DamageType[],
+  damage_immunities: [DamageType.Fire, DamageType.Poison],
+  condition_immunities: [{ index: Condition.Poisoned, name: Condition.Poisoned }],
+  senses: {
+    truesight: '120 ft.',
+    passive_perception: 13
+  },
   languages: 'Abyssal, Telepathy 120 ft.',
-  challenge: '19 (22 000 XP)',
-  features: [
+  challenge_rating: 19,
+  xp: 22000,
+  special_abilities: [
     {
       name: 'Death Throes',
-      description: `When the balor dies, it explodes, and each creature within 30 feet of it must make a DC 20 Dexterity saving throw, taking 70 (20d6) fire damage on a failed save, or half as much damage on a successful one. The explosion ignites flammable objects in that area that aren't being worn or carried, and it destroys the balor's weapons.`
+      desc: `When the balor dies, it explodes, and each creature within 30 feet of it must make a DC 20 Dexterity saving throw, taking 70 (20d6) fire damage on a failed save, or half as much damage on a successful one. The explosion ignites flammable objects in that area that aren't being worn or carried, and it destroys the balor's weapons.`
     },
     {
       name: 'Fire Aura',
-      description: `At the start of each of the balor's turns, each creature within 5 feet of it takes 10 (3d6) fire damage, and flammable objects in the aura, that aren't being worn or carried, ignite. A creature that touches the balor or hits it with a melee attack while within 5 feet of it, takes 10 (3d6) fire damage.`
+      desc: `At the start of each of the balor's turns, each creature within 5 feet of it takes 10 (3d6) fire damage, and flammable objects in the aura, that aren't being worn or carried, ignite. A creature that touches the balor or hits it with a melee attack while within 5 feet of it, takes 10 (3d6) fire damage.`
     },
     {
       name: 'Magic Resistance',
-      description: 'The balor has advantage on saving throws againts spells and other magical effects.'
+      desc: 'The balor has advantage on saving throws againts spells and other magical effects.'
     },
     {
       name: 'Magic Weapons',
-      description: "The balor's weapon attacks are magical."
+      desc: "The balor's weapon attacks are magical."
     }
   ],
   actions: [
     {
       name: 'Multiattack',
-      description: 'The balor makes two attacks: one with its longsword and one with its whip.'
+      desc: 'The balor makes two attacks: one with its longsword and one with its whip.'
     },
     {
       name: 'Longsword',
-      description:
-        'Melee Weapon Attack, +14 to hit, reach 10ft., one target. Hit: (3d8 + 8) slashing damage plus (3d8) lightning damage. If the balor scores a critical hit, it rolls the damage dice three times, instead of twice.'
+      desc: 'Melee Weapon Attack, +14 to hit, reach 10ft., one target. Hit: (3d8 + 8) slashing damage plus (3d8) lightning damage. If the balor scores a critical hit, it rolls the damage dice three times, instead of twice.'
     },
     {
       name: 'Whip',
-      description:
-        'Melee Weapon Attack: +14 to hit, reach 30ft., one target. Hit: (2d6 + 8) slashing damage plus (3d6) fire damage. The target must succeed on a DC 20 Strenght saving throw or be pulled up to 25 feet toward the balor.'
+      desc: 'Melee Weapon Attack: +14 to hit, reach 30ft., one target. Hit: (2d6 + 8) slashing damage plus (3d6) fire damage. The target must succeed on a DC 20 Strenght saving throw or be pulled up to 25 feet toward the balor.'
     },
     {
       name: 'Teleport',
-      description: 'The balor magically teleports, along with any equipment it is wearing or carrying, up to 120 feet to an unoccupied space it can see.'
+      desc: 'The balor magically teleports, along with any equipment it is wearing or carrying, up to 120 feet to an unoccupied space it can see.'
     }
   ],
   reactions: [
     {
       name: 'Howl of the Pit',
-      description:
-        'Whenever a creature the balor can see, targets it with a spell, the balor bellows a terrible roar into the air. The spellcaster must make a DC 16 Wisdom saving throw. On a failed save the targets spell fails.'
+      desc: 'Whenever a creature the balor can see, targets it with a spell, the balor bellows a terrible roar into the air. The spellcaster must make a DC 16 Wisdom saving throw. On a failed save the targets spell fails.'
     }
   ]
-}
+})
 
 export const defaultCombat = {
   characters: [
     new Character({
+      id: 'ogi',
       name: 'Ogi',
       init: 12,
       armor_classes: [{ type: 'natural', value: 15 }],
       hit_points: 35,
-      player_type: CharacterType.Player
+      player_type: CharacterType.Player,
+      source: Source.HomeBrew
     }),
     new Character({
+      id: 'thoongk',
       name: 'Thoongk',
       init: 5,
       armor_classes: [{ type: 'natural', value: 16 }],
       hit_points: 55,
-      player_type: CharacterType.Player
+      player_type: CharacterType.Player,
+      source: Source.HomeBrew
     }),
     new Character({
+      id: 'erig',
       name: 'Erig',
       init: 3,
       armor_classes: [{ type: 'natural', value: 15 }],
       hit_points: 19,
-      player_type: CharacterType.NPC
+      player_type: CharacterType.NPC,
+      source: Source.HomeBrew
     }),
     new Character({
+      id: 'klani',
       name: 'Klani',
       init: 19,
       armor_classes: [{ type: 'natural', value: 16 }],
       hit_points: 61,
-      player_type: CharacterType.NPC
+      player_type: CharacterType.NPC,
+      source: Source.HomeBrew
     }),
     new Character({
+      id: 'beor',
       name: 'Beor',
       init: 15,
       armor_classes: [{ type: 'natural', value: 15 }],
       hit_points: 57,
-      player_type: CharacterType.NPC
+      player_type: CharacterType.NPC,
+      source: Source.HomeBrew
     }),
     new Character({
+      id: 'orc',
       name: 'Orc',
       init: 15,
       armor_classes: [{ type: 'natural', value: 13 }],
-      hit_points: 15
+      hit_points: 15,
+      source: Source.HomeBrew
     }),
     new Character({
+      id: 'goblin',
       name: 'Goblin',
       init: 4,
       armor_classes: [{ type: 'natural', value: 15 }],
-      hit_points: 7
+      hit_points: 7,
+      source: Source.HomeBrew
     })
   ]
+}
+
+export const defaultCustomCharacters = {
+  characters: [] as Character[]
 }

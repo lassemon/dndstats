@@ -21,3 +21,7 @@ export const upsertToArray = <T>(arr: T[], obj: T, key: keyof T): T[] => {
   }
   return array
 }
+
+export const uuid = (): string => {
+  return String(Date.now())
+}

@@ -9,7 +9,6 @@ import {
   IconButton,
   LinearProgress,
   MenuItem,
-  Paper,
   Popover,
   Select,
   Slide,
@@ -26,7 +25,7 @@ import CurrentTurnIcon from '@mui/icons-material/ArrowForwardIos'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import React, { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil'
-import { combatTrackerState } from 'recoil/atoms'
+import { combatTrackerState, customCharactersState } from 'recoil/atoms'
 import _ from 'lodash'
 import classNames from 'classnames/bind'
 
@@ -34,7 +33,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
-import { CharacterType, Condition, DamageType } from 'interfaces'
+import { CharacterType, Condition, DamageType, Source } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
@@ -47,14 +46,8 @@ import { getMonster, getMonsterList } from 'api/monsters'
 import Character from 'domain/entities/Character'
 import { replaceItemAtIndex } from 'utils/utils'
 import { FifthESRDMonster } from 'domain/services/FifthESRDService'
-
-interface MonsterListOption {
-  index: string
-  name: string
-  url: string
-}
-
-const emptyMonster = { index: '', name: '', url: '' }
+import { MonsterListOption, emptyMonster } from 'domain/entities/Monster'
+import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
 
 const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
   return {
@@ -82,22 +75,6 @@ const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
   }
 })
 
-const AutoCompleteItem = withStyles(Paper, (theme) => ({
-  root: {
-    '& .MuiAutocomplete-listbox': {
-      "& .MuiAutocomplete-option[aria-selected='true']": {
-        background: theme.palette.secondary.main,
-        '&.Mui-focused': {
-          background: theme.palette.secondary.main
-        }
-      }
-    },
-    '& .MuiAutocomplete-listbox .MuiAutocomplete-option.Mui-focused': {
-      background: theme.palette.primary.dark
-    }
-  }
-}))
-
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>
@@ -111,6 +88,7 @@ export const CombatTracker: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
   const [currentCombat, setCurrentCombat] = useRecoilState(combatTrackerState)
+  const [{ characters: customCharacterList }] = useRecoilState(customCharactersState)
   const [combatOngoing, setCombatOngoing] = useState(false)
   const [currentTurn, _setCurrentTurn] = useState(0)
   const [currentRound, setCurrentRound] = useState(1)
@@ -127,16 +105,38 @@ export const CombatTracker: React.FC = () => {
   )
   const [regenDialogsOpen, setRegenDialogsOpen] = React.useState<boolean[]>(currentCombat.characters.map(() => false))
 
+  // sync current combat with characters from custom character list
+  // NOTE: DO NOT change custom character list state in this file, it will cause an infinite loop
+  useEffect(() => {
+    setCurrentCombat((combat) => {
+      return {
+        ...combat,
+        characters: combat.characters.map((character) => {
+          const existingCustomcharacter = customCharacterList.find((customCharacter) => customCharacter.id === character.id)
+          return existingCustomcharacter ? existingCustomcharacter : character
+        })
+      }
+    })
+  }, [setCurrentCombat, customCharacterList])
+
   useEffect(() => {
     const fetchData = async () => {
       setLoadingMonsterList(true)
       const monsters = await getMonsterList()
-      setMonsterList([emptyMonster, ...monsters.results])
+      const customCharacterOptions: MonsterListOption[] = customCharacterList.map((customCharacter) => {
+        return {
+          id: customCharacter.id,
+          name: customCharacter.name,
+          url: undefined,
+          source: customCharacter.source
+        }
+      })
+      setMonsterList([emptyMonster, ...monsters, ...customCharacterOptions])
       setLoadingMonsterList(false)
     }
 
     fetchData().catch(console.error)
-  }, [])
+  }, [customCharacterList])
 
   useEffect(() => {
     const currentCharacter = currentCombat.characters[currentTurn]
@@ -292,7 +292,8 @@ export const CombatTracker: React.FC = () => {
           armor_classes: [{ type: 'natural', value: characterInput.armorClass }],
           name: characterInput.name,
           hit_points: characterInput.hit_points,
-          player_type: type
+          player_type: type,
+          source: Source.HomeBrew
         })
       )
       return {
@@ -303,7 +304,7 @@ export const CombatTracker: React.FC = () => {
   }
 
   const onAddMonster = async (event: React.SyntheticEvent, selected: MonsterListOption | null | string) => {
-    if (selected && typeof selected !== 'string') {
+    if (selected && typeof selected !== 'string' && selected.url) {
       const monster: FifthESRDMonster = await getMonster(selected.url)
       if (monster) {
         setRegenDialogsOpen((regenDialogs) => {
@@ -321,9 +322,27 @@ export const CombatTracker: React.FC = () => {
               ...monster,
               init: 0,
               armor_classes: monster.armor_class,
-              player_type: CharacterType.Enemy
+              player_type: CharacterType.Enemy,
+              source: Source.FifthESRD
             })
           )
+          return {
+            ...combat,
+            characters: charactersCopy
+          }
+        })
+      }
+    } else if (selected && typeof selected !== 'string') {
+      const customCharacter = customCharacterList.find((customCharacter) => customCharacter.id === selected.id)
+      if (customCharacter) {
+        setRegenDialogsOpen((regenDialogs) => {
+          return [...regenDialogs, false]
+        })
+        setCurrentCombat((combat) => {
+          const charactersCopy = [...combat.characters]
+
+          const indexToInsert = charactersCopy.length
+          charactersCopy.splice(indexToInsert, 0, customCharacter)
           return {
             ...combat,
             characters: charactersCopy
@@ -533,6 +552,15 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
+  const onChangeCharacterCard = (index: number) => (key: string, character: Character) => {
+    setCurrentCombat((combat) => {
+      return {
+        ...combat,
+        characters: replaceItemAtIndex<Character>(combat.characters, index, character)
+      }
+    })
+  }
+
   if (currentCombat) {
     return (
       <>
@@ -687,7 +715,7 @@ export const CombatTracker: React.FC = () => {
                       />
                       <EditableText
                         id={`character-name-${index}`}
-                        tooltip={<CharacterCard character={character} />}
+                        tooltip={<CharacterCard character={character} resizeable={false} onChange={onChangeCharacterCard(index)} />}
                         tooltipPlacement="bottom-start"
                         tooltipClass={`${classes.nameTextTooltip}`}
                         className={cx({
@@ -970,10 +998,11 @@ export const CombatTracker: React.FC = () => {
                   clearOnBlur
                   disableClearable
                   filterSelectedOptions
+                  groupBy={(option) => option.source}
                   className={`${classes.autocomplete}`}
                   value={selectedMonster}
                   loading={loadingMonsterList}
-                  options={monsterList}
+                  options={monsterList.sort((a, b) => b.source.localeCompare(a.source))}
                   onChange={onAddMonster}
                   getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
                   style={{ width: '14em' }}

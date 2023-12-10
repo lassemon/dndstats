@@ -22,10 +22,9 @@ export const StatsContainer: React.FC<StatsContainerProps> = (props) => {
 
   return (
     <div
-      className={cx({
+      className={cx('stats-container', {
         [classes.root]: true,
         [className]: true,
-        ['stats-container']: true,
         [classes.resizeable]: resizeable
       })}
     >

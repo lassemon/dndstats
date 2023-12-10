@@ -7,11 +7,11 @@ import useStyles from './EditableText.styles'
 
 interface EditableTextProps {
   id: string
-  className: string
-  textFieldClass: string
+  className?: string
+  textFieldClass?: string
   textClass?: string
   value: string | number
-  disabled: boolean
+  disabled?: boolean
   tooltip?: string | ReactNode
   disableInteractiveTooltip?: boolean
   tooltipClass?: string
@@ -26,11 +26,11 @@ interface EditableTextProps {
 const EditableText: React.FC<EditableTextProps> = (props) => {
   const {
     id,
-    className,
-    textClass,
-    textFieldClass,
+    className = '',
+    textClass = '',
+    textFieldClass = '',
     value,
-    disabled,
+    disabled = false,
     onChange,
     tooltip = '',
     disableInteractiveTooltip = false,

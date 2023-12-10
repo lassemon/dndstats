@@ -5,11 +5,36 @@ export const useStyles = makeStyles()((theme) => ({
   root: {
     display: 'flex'
   },
-  imageContainer: {
-    margin: '0 0 0 2em',
+  characterCardContainer: {
+    //flex: '1 1 65%'
+  },
+  rightContainer: {
+    flex: '1 0 30%',
+    display: 'flex',
+    gap: '0.5em',
+    flexDirection: 'column',
+    margin: '0 0 0 1em',
     '& > img': {
       width: '100%'
     }
+  },
+  imageContainer: {
+    '&:hover, &active': {
+      resize: 'both',
+      overflow: 'hidden'
+    },
+
+    minWidth: '150px',
+    minHeight: '150px',
+    margin: '0 auto'
+  },
+  monsterActionsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5em'
+  },
+  hidden: {
+    visibility: 'hidden'
   },
   mainDescription: {
     background: '#e0e4c3',
@@ -95,6 +120,17 @@ export const useStyles = makeStyles()((theme) => ({
   },
   inlineDescription: {
     display: 'inline'
+  },
+  autocomplete: {
+    '& .MuiAutocomplete-tag': {
+      display: 'none'
+    },
+    '& .MuiInputLabel-animated': {
+      transform: 'translate(0, -20px) scale(0.75)'
+    },
+    '& legend': {
+      maxWidth: '100%'
+    }
   }
 }))
 

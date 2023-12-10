@@ -9,11 +9,11 @@ interface DeleteButtonProps extends IconButtonProps {
 }
 
 const DeleteButton: React.FC<DeleteButtonProps> = (props) => {
-  const { onClick } = props
+  const { onClick, size } = props
   const { classes } = useStyles()
   return (
     <IconButton {...props} aria-label="delete" className={classes.deleteButton} onClick={onClick}>
-      <DeleteIcon fontSize="large" />
+      <DeleteIcon fontSize={size ? size : 'large'} />
     </IconButton>
   )
 }

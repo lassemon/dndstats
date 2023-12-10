@@ -9,7 +9,7 @@ export const useStyles = makeStyles()((theme) => ({
     border: 'none',
     color: theme.status.blood,
     fill: theme.status.blood,
-    margin: '0.3em 0 0.8em 0'
+    margin: '0.5em 0'
   }
 }))
 

@@ -6,7 +6,7 @@ import { getNumberWithSign } from 'utils/utils'
 export type APIReference = {
   index: string
   name: string
-  url: string
+  url?: string
 }
 
 type ActionDamage = {
@@ -76,9 +76,9 @@ export type Action = {
   dc?: DifficultyClass
   options?: Choice
   usage?: ActionUsage
-  multiattack_type: 'actions' | 'action_options'
-  actions: ActionOption[]
-  action_options: Choice
+  multiattack_type?: 'actions' | 'action_options'
+  actions?: ActionOption[]
+  action_options?: Choice
 }
 
 type Reaction = {
@@ -131,7 +131,7 @@ export type SpecialAbility = {
   damage?: ActionDamage[]
   dc?: DifficultyClass
   spellcasting?: SpecialAbilitySpellcasting
-  usage: SpecialAbilityUsage
+  usage?: SpecialAbilityUsage
 }
 
 type Speed = {
@@ -150,6 +150,7 @@ export type FifthESRDMonster = {
   challenge_rating: number
   charisma: number
   constitution: number
+  condition_immunities: APIReference[]
   damage_immunities: DamageType[]
   damage_resistances: DamageType[]
   damage_vulnerabilities: DamageType[]
