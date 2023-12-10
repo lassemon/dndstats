@@ -53,13 +53,16 @@ export const useStyles = makeStyles()((theme) => {
     blockDescription: {
       margin: '0.5em'
     },
+    inlineDescription: {
+      display: 'inline'
+    },
     featureContainer: {
       margin: '0 0 0.5em 0'
     },
     featureName: {
       color: '#1b1b1b',
       fontSize: '1rem',
-      display: 'block',
+      display: 'inline',
       letterSpacing: '1px',
       fontVariant: 'small-caps',
       padding: '0 4px 0 0',

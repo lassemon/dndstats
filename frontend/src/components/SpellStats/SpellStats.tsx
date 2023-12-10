@@ -1,6 +1,6 @@
 import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
-import React, { Fragment, useState } from 'react'
+import React, { CSSProperties, Fragment, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { spellState } from 'recoil/atoms'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -10,10 +10,14 @@ import useStyles from './SpellStats.styles'
 import _ from 'lodash'
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 
-const DescriptionBlock: React.FC = (props) => {
-  const { children } = props
+const DescriptionBlock: React.FC<{ style?: CSSProperties }> = (props) => {
+  const { children, style } = props
   const { classes } = useStyles()
-  return <p className={classes.blockDescription}>{children}</p>
+  return (
+    <p className={classes.blockDescription} style={style}>
+      {children}
+    </p>
+  )
 }
 
 const DescriptionInline: React.FC = (props) => {
@@ -80,7 +84,11 @@ export const SpellStats: React.FC = () => {
           {currentSpell.mainDescription && (
             <MainDescription>
               {currentSpell.mainDescription.split('\n').map((value, index) => {
-                return <DescriptionBlock key={`description-${index}`}>{value}</DescriptionBlock>
+                return (
+                  <DescriptionBlock key={`description-${index}`} style={{ margin: 0 }}>
+                    {value}
+                  </DescriptionBlock>
+                )
               })}
             </MainDescription>
           )}

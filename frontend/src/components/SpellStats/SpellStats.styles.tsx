@@ -43,7 +43,7 @@ export const useStyles = makeStyles()((theme) => ({
     margin: '0 0 0 0'
   },
   blockDescription: {
-    margin: '0'
+    margin: '0.3em 0 0.3em 0.5em'
   },
   inlineDescription: {
     display: 'inline'
