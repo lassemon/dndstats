@@ -205,6 +205,7 @@ export const MonsterStatsInput: React.FC = () => {
   return (
     <StatsInputContainer>
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
+      {/**
       <TextField id="monster-name" label="Name" value={currentMonster.name} onChange={onChange('name')} />
       <TextField id="monster-short-description" label="Short Description" value={currentMonster.short_description} onChange={onChange('shortDescription')} />
       <TextField
@@ -214,7 +215,6 @@ export const MonsterStatsInput: React.FC = () => {
         value={currentMonster.description}
         onChange={onChange('mainDescription')}
       />
-      {/* BASE STATS */}
       <Grid container={true} spacing={2}>
         <Grid item={true} xs={12} sm={4}>
           <TextField id="monster-AC" label="Armor Class" value={currentMonster.armor_class_label} onChange={onChange('AC')} />
@@ -226,7 +226,6 @@ export const MonsterStatsInput: React.FC = () => {
           <TextField id="monster-speed" label="Speed" value={currentMonster.speed} onChange={onChange('speed')} />
         </Grid>
       </Grid>
-      {/* STATS */}
       <Grid container={true} spacing={2}>
         <Grid item={true} xs={4} sm={2}>
           <TextField id="monster-STR" label="STR" value={currentMonster.strenght_label} onChange={onChange('STR')} />
@@ -247,7 +246,6 @@ export const MonsterStatsInput: React.FC = () => {
           <TextField id="monster-CHA" label="CHA" value={currentMonster.charisma_label} onChange={onChange('CHA')} />
         </Grid>
       </Grid>
-      {/* EXTRA STATS */}
       <Grid container={true} spacing={2}>
         <Grid item={true} xs={12} sm={4}>
           <TextField id="monster-skills" label="Skills" value={currentMonster.skills} onChange={onChange('skills')} />
@@ -348,6 +346,7 @@ export const MonsterStatsInput: React.FC = () => {
       <Button variant="contained" color="primary" onClick={onAddReaction}>
         Add reaction
       </Button>
+       */}
     </StatsInputContainer>
   )
 }

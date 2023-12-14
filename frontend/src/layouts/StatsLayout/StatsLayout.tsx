@@ -80,7 +80,6 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
               '&&': {
                 minHeight: 'auto',
                 padding: '0.5em 0',
-                margin: '0 auto',
                 width: '95%'
               },
               '& button': {

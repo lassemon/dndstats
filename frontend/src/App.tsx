@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar, Tooltip, Typography, useMediaQuery } from '@mui/material'
+import { AppBar, Box, Button, Tab, Tabs, ThemeProvider, Toolbar, Tooltip, Typography } from '@mui/material'
 import PrintIcon from '@mui/icons-material/Print'
 import AboutLayout from 'layouts/AboutLayout'
 import CombatTrackerLayout from 'layouts/CombatTrackerLayout'
@@ -14,6 +14,7 @@ import { Routes, Route, Outlet, Link } from 'react-router-dom'
 import useStyles from './App.styles'
 import LoadingIndicator from 'components/LoadingIndicator'
 import { clearAll } from 'services/store'
+import { useOrientation } from 'utils/hooks'
 
 const TABS = {
   '/item': 'Item Stats',
@@ -34,8 +35,8 @@ function a11yProps(index: number) {
 const App: React.FC = () => {
   const { classes } = useStyles()
   const [value, setValue] = useState(Object.keys(TABS).includes(window.location.pathname) ? window.location.pathname : '/item')
-
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const orientation = useOrientation()
+  const isPortrait = orientation === 'portrait'
 
   const handleChange = (event: any, newValue: string) => {
     setValue(newValue)
@@ -49,66 +50,68 @@ const App: React.FC = () => {
     return (
       <RecoilRoot>
         <ThemeProvider theme={theme}>
-          <Box display="block" displayPrint="none">
-            <AppBar position="static" className={classes.appBar}>
-              <Toolbar disableGutters className={classes.toolbar}>
-                <Tabs
-                  textColor="secondary"
-                  indicatorColor="secondary"
-                  className={classes.tabs}
-                  value={value}
-                  onChange={handleChange}
-                  aria-label="dnd stats tabs"
-                  variant="scrollable"
-                  orientation="vertical"
-                >
-                  {Object.keys(TABS).map((tab) => {
-                    return (
-                      <Tab
-                        label={TABS[tab]}
-                        value={`${tab}`}
-                        component={Link}
-                        to={tab}
-                        key={tab}
-                        {...a11yProps(5)}
-                        sx={{
-                          padding: isSmall ? '0.3em' : ''
-                        }}
-                      />
-                    )
-                  })}
-                </Tabs>
-
-                <Button variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
-                  Print page
-                </Button>
-                <Tooltip
-                  title={
-                    <>
-                      <Typography variant="h6">WARNING!</Typography>
-                      <Typography variant="body1">Resets everything in ALL VIEWS to default values</Typography>
-                    </>
-                  }
-                  placement="top-end"
-                >
-                  <Button
-                    variant="contained"
-                    onClick={async () => {
-                      await clearAll()
-                      window.location.reload()
-                    }}
+          <div className={classes.root} style={isPortrait ? { flexDirection: 'column' } : {}}>
+            <Box display="block" displayPrint="none">
+              <AppBar position="static" className={classes.appBar}>
+                <Toolbar disableGutters className={isPortrait ? classes.toolbarPortrait : classes.toolbarLandscape}>
+                  <Tabs
+                    textColor="secondary"
+                    indicatorColor="secondary"
+                    className={isPortrait ? classes.tabsPortrait : classes.tabsLandscape}
+                    value={value}
+                    onChange={handleChange}
+                    aria-label="dnd stats tabs"
+                    variant="scrollable"
+                    orientation={isPortrait ? 'horizontal' : 'vertical'}
                   >
-                    Reset All
+                    {Object.keys(TABS).map((tab) => {
+                      return (
+                        <Tab
+                          label={TABS[tab]}
+                          value={`${tab}`}
+                          component={Link}
+                          to={tab}
+                          key={tab}
+                          {...a11yProps(5)}
+                          sx={{
+                            padding: isPortrait ? '0.3em' : ''
+                          }}
+                        />
+                      )
+                    })}
+                  </Tabs>
+
+                  <Button variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
+                    Print page
                   </Button>
-                </Tooltip>
-              </Toolbar>
-            </AppBar>
-          </Box>
-          <main className={classes.main}>
-            <React.Suspense fallback={<LoadingIndicator />}>
-              <Outlet />
-            </React.Suspense>
-          </main>
+                  <Tooltip
+                    title={
+                      <>
+                        <Typography variant="h6">WARNING!</Typography>
+                        <Typography variant="body1">Resets everything in ALL VIEWS to default values</Typography>
+                      </>
+                    }
+                    placement="top-end"
+                  >
+                    <Button
+                      variant="contained"
+                      onClick={async () => {
+                        await clearAll()
+                        window.location.reload()
+                      }}
+                    >
+                      Reset All
+                    </Button>
+                  </Tooltip>
+                </Toolbar>
+              </AppBar>
+            </Box>
+            <main className={classes.main}>
+              <React.Suspense fallback={<LoadingIndicator />}>
+                <Outlet />
+              </React.Suspense>
+            </main>
+          </div>
         </ThemeProvider>
       </RecoilRoot>
     )

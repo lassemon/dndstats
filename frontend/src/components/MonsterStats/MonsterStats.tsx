@@ -308,14 +308,14 @@ export const MonsterStats: React.FC = () => {
               <img alt={currentMonster.imageElement?.props.alt} src={`${currentMonster.imageElement?.props.src}`} />
             </div>
           )}
+          {currentMonster.description && (
+            <div className={classes.mainDescription}>
+              {currentMonster.description.split('\n').map((value, key) => {
+                return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
+              })}
+            </div>
+          )}
           <div className={`${classes.monsterActionsContainer} ${monsterActionsVisible ? '' : classes.hidden}`}>
-            {currentMonster.description && (
-              <div className={classes.mainDescription}>
-                {currentMonster.description.split('\n').map((value, key) => {
-                  return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
-                })}
-              </div>
-            )}
             <Autocomplete
               id={`add-monster-dropdown`}
               blurOnSelect
