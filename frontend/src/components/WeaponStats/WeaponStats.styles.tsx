@@ -8,6 +8,9 @@ export const useStyles = makeStyles()((theme) => ({
   mediumContainer: {
     width: '80%'
   },
+  smallContainer: {
+    width: '95%'
+  },
   printContainer: {
     width: '100%'
   },

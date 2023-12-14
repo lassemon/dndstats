@@ -9,6 +9,7 @@ import useStyles from './ItemStats.styles'
 import LoadingIndicator from 'components/LoadingIndicator'
 import { useTheme } from '@mui/material/styles'
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material'
+import { useOrientation } from 'utils/hooks'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -29,15 +30,14 @@ const MainDescription: React.FC = (props) => {
 }
 
 export const ItemStats: React.FC = () => {
-  const theme = useTheme()
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
   const currentItem = useRecoilValue(itemState)
   const [inlineFeatures, setInlineFeatures] = useState(false)
 
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
-  const isMedium = useMediaQuery(theme.breakpoints.up('md'))
   const isPrint = useMediaQuery('print')
+  const orientation = useOrientation()
+  const isPortrait = orientation === 'portrait'
 
   const onChangeInlineFeatures = () => {
     setInlineFeatures((_inlineFeatures) => !_inlineFeatures)
@@ -49,8 +49,8 @@ export const ItemStats: React.FC = () => {
         <StatsContainer
           className={cx({
             [classes.container]: true,
-            [classes.smallContainer]: isSmall,
-            [classes.mediumContainer]: isMedium,
+            [classes.smallContainer]: isPortrait,
+            [classes.mediumContainer]: !isPortrait,
             [classes.printContainer]: isPrint
           })}
         >
@@ -61,9 +61,9 @@ export const ItemStats: React.FC = () => {
               {currentItem.features.map((feature, key) => {
                 return (
                   <div className={classes.featureContainer} key={key}>
-                    <h3 className={classes.featureName}>{feature.featureName}</h3>
+                    {feature.featureName && <h3 className={classes.featureName}>{feature.featureName}</h3>}
                     {feature.featureDescription &&
-                      (inlineFeatures ? (
+                      (inlineFeatures || !feature.featureName ? (
                         <DescriptionInline>{feature.featureDescription}</DescriptionInline>
                       ) : (
                         <div>

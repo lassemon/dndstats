@@ -7,6 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import classNames from 'classnames/bind'
 
 import useStyles from './WeaponStats.styles'
+import { useOrientation } from 'utils/hooks'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -18,14 +19,16 @@ export const WeaponStats: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
   const currentWeapon = useRecoilValue(weaponState)
-  const isMedium = useMediaQuery('(max-width:80em)')
+  const orientation = useOrientation()
+  const isPortrait = orientation === 'portrait'
   const isPrint = useMediaQuery('print')
 
   return (
     <StatsContainer
       className={cx({
         [classes.container]: true,
-        [classes.mediumContainer]: isMedium,
+        [classes.smallContainer]: isPortrait,
+        [classes.mediumContainer]: !isPortrait,
         [classes.printContainer]: isPrint
       })}
     >

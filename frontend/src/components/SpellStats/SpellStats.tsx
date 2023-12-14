@@ -9,6 +9,7 @@ import classNames from 'classnames/bind'
 import useStyles from './SpellStats.styles'
 import _ from 'lodash'
 import { Checkbox, FormControlLabel, FormGroup } from '@mui/material'
+import { useOrientation } from 'utils/hooks'
 
 const DescriptionBlock: React.FC<{ style?: CSSProperties }> = (props) => {
   const { children, style } = props
@@ -36,7 +37,8 @@ export const SpellStats: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
   const currentSpell = useRecoilValue(spellState)
-  const isMedium = useMediaQuery('(max-width:80em)')
+  const orientation = useOrientation()
+  const isPortrait = orientation === 'portrait'
   const isPrint = useMediaQuery('print')
   const [inlineFeatures, setInlineFeatures] = useState(true)
 
@@ -50,7 +52,8 @@ export const SpellStats: React.FC = () => {
         <StatsContainer
           className={cx({
             [classes.container]: true,
-            [classes.mediumContainer]: isMedium,
+            [classes.smallContainer]: isPortrait,
+            [classes.mediumContainer]: !isPortrait,
             [classes.printContainer]: isPrint
           })}
         >
@@ -100,7 +103,7 @@ export const SpellStats: React.FC = () => {
                   <MainDescription>
                     {feature.featureName && <h3 className={classes.featureName}>{feature.featureName}</h3>}
                     {feature.featureDescription &&
-                      (inlineFeatures ? (
+                      (inlineFeatures || !feature.featureName ? (
                         <DescriptionInline>{feature.featureDescription}</DescriptionInline>
                       ) : (
                         <div>

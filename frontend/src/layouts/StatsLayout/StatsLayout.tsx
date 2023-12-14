@@ -7,6 +7,7 @@ import MinusButton from 'components/MinusButton'
 import PlusButton from 'components/PlusButton'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTheme } from '@mui/material/styles'
+import { useOrientation } from 'utils/hooks'
 
 interface StatsLayoutProps {
   statsComponent?: React.ReactNode
@@ -19,7 +20,8 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
   const { statsComponent, inputComponent, sx } = props
 
   const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const orientation = useOrientation()
+  const isPortrait = orientation === 'portrait'
 
   const onToggleBg = () => {
     const statsContainers = document.getElementsByClassName('stats-background')
@@ -69,7 +71,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
           md={12}
           sx={{
             '&&': {
-              margin: `0${isSmall ? '' : ' 1em'}`,
+              margin: `0 1em`,
               paddingTop: 0
             }
           }}
