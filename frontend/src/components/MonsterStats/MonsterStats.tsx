@@ -15,6 +15,7 @@ import { upsertToArray } from 'utils/utils'
 import DeleteButton from 'components/DeleteButton'
 import ScreenshotButton from 'components/ScreenshotButton'
 import _ from 'lodash'
+import { useOrientation } from 'utils/hooks'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -33,6 +34,9 @@ export const MonsterStats: React.FC = () => {
   const [currentMonster, setCurrentMonster] = useRecoilState(monsterState)
   const [{ characters: customCharacterList }, setCustomCharacters] = useRecoilState(customCharactersState)
   const [combatTracker] = useRecoilState(combatTrackerState)
+
+  const orientation = useOrientation()
+  const isPortrait = orientation === 'portrait'
 
   const [monsterList, setMonsterList] = useState<MonsterListOption[]>([emptyMonster] as MonsterListOption[])
   const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
@@ -300,8 +304,12 @@ export const MonsterStats: React.FC = () => {
         </StatsContainer>
       </div>
               */}
-      <div className={classes.root}>
-        <CharacterCard character={currentMonster} className={classes.characterCardContainer} onChange={onChangeMonster} />
+      <div className={isPortrait ? classes.rootPortrait : classes.rootLandscape}>
+        <CharacterCard
+          character={currentMonster}
+          className={isPortrait ? classes.characterCardContainerPortrait : classes.characterCardContainerLandscape}
+          onChange={onChangeMonster}
+        />
         <div className={classes.rightContainer}>
           {currentMonster.imageElement && (
             <div className={`${classes.imageContainer}`}>

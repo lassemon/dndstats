@@ -36,7 +36,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     disableInteractiveTooltip = false,
     tooltipClass = '',
     tooltipMaxWidth = '300',
-    textWidth = 0,
+    textWidth = 25,
     editWidth = 12,
     type = 'text',
     tooltipPlacement = 'top-start'

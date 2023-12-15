@@ -51,12 +51,15 @@ export const combatTrackerState = atom<typeof defaultCombat>({
       'combatTrackerState',
       defaultCombat,
       (state: typeof defaultCombat) => {
+        // loader
         return {
+          ...defaultCombat,
           ...state,
           characters: state.characters.map((character: any) => Character.fromJSON(character))
         }
       },
       (state: typeof defaultCombat) => {
+        // saver
         return {
           ...state,
           characters: state.characters.map((character: Character) => character.toJSON())
@@ -73,12 +76,14 @@ export const customCharactersState = atom<typeof defaultCustomCharacters>({
       'customCharactersState',
       defaultCustomCharacters,
       (state: typeof defaultCustomCharacters) => {
+        // loader
         return {
           ...state,
           characters: state.characters.map((character: any) => Character.fromJSON(character))
         }
       },
       (state: typeof defaultCustomCharacters) => {
+        // saver
         return {
           ...state,
           characters: state.characters.map((character: Character) => character.toJSON())

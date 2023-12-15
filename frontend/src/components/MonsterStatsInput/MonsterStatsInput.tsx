@@ -1,18 +1,20 @@
-import { Button, Grid, TextField } from '@mui/material'
-import FeatureInputContainer from 'components/FeatureInputContainer'
+//import { Button, Grid, TextField } from '@mui/material'
+//import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
 import React from 'react'
 import { useRecoilState } from 'recoil'
 import { monsterState } from 'recoil/atoms'
 
+/*
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
-}
+}*/
 
 export const MonsterStatsInput: React.FC = () => {
-  const [currentMonster, setCurrentMonster] = useRecoilState(monsterState)
+  const [, /*currentMonster*/ setCurrentMonster] = useRecoilState(monsterState)
 
+  /*
   const onChange = (name: string) => (event: any) =>
     setCurrentMonster((monster) => {
       return monster.clone({ [name]: event.target.value })
@@ -160,7 +162,7 @@ export const MonsterStatsInput: React.FC = () => {
         reactions: reactionsCopy
       })
     })
-  }
+  }*/
 
   const onDeleteImage = () => {
     setCurrentMonster((monster) => {

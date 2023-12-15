@@ -2,10 +2,20 @@ import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
-  root: {
+  rootPortrait: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1em'
+  },
+  rootLandscape: {
     display: 'flex'
   },
-  characterCardContainer: {
+  characterCardContainerPortrait: {
+    '&&': {
+      width: '100%'
+    }
+  },
+  characterCardContainerLandscape: {
     //flex: '1 1 65%'
   },
   rightContainer: {

@@ -62,6 +62,8 @@ const App: React.FC = () => {
                     onChange={handleChange}
                     aria-label="dnd stats tabs"
                     variant="scrollable"
+                    scrollButtons={isPortrait}
+                    allowScrollButtonsMobile
                     orientation={isPortrait ? 'horizontal' : 'vertical'}
                   >
                     {Object.keys(TABS).map((tab) => {
@@ -74,7 +76,7 @@ const App: React.FC = () => {
                           key={tab}
                           {...a11yProps(5)}
                           sx={{
-                            padding: isPortrait ? '0.3em' : ''
+                            padding: isPortrait ? '0.7em' : ''
                           }}
                         />
                       )

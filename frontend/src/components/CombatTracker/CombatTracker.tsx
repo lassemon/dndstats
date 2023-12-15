@@ -89,9 +89,6 @@ export const CombatTracker: React.FC = () => {
   const cx = classNames.bind(classes)
   const [currentCombat, setCurrentCombat] = useRecoilState(combatTrackerState)
   const [{ characters: customCharacterList }] = useRecoilState(customCharactersState)
-  const [combatOngoing, setCombatOngoing] = useState(false)
-  const [currentTurn, _setCurrentTurn] = useState(0)
-  const [currentRound, setCurrentRound] = useState(1)
   const [monsterList, setMonsterList] = useState<MonsterListOption[]>([emptyMonster] as MonsterListOption[])
   const [loadingMonsterList, setLoadingMonsterList] = useState(false)
   const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
@@ -139,14 +136,14 @@ export const CombatTracker: React.FC = () => {
   }, [customCharacterList])
 
   useEffect(() => {
-    const currentCharacter = currentCombat.characters[currentTurn]
+    const currentCharacter = currentCombat.characters[currentCombat.turn]
     const canRegenerate = currentCharacter.current_hit_points < currentCharacter.hit_points
     if (currentCharacter.regeneration > 0 && canRegenerate) {
       setRegenDialogsOpen((regenDialogs) => {
-        return replaceItemAtIndex<boolean>(regenDialogs, currentTurn, true)
+        return replaceItemAtIndex<boolean>(regenDialogs, currentCombat.turn, true)
       })
     }
-  }, [currentTurn, currentCombat.characters])
+  }, [currentCombat.turn, currentCombat.characters])
 
   useEffect(() => {
     setRegenDialogsOpen((regenDialogs) => {
@@ -157,16 +154,12 @@ export const CombatTracker: React.FC = () => {
     })
   }, [currentCombat.characters])
 
-  useEffect(() => {
-    _setCurrentTurn(0)
-  }, [currentCombat.characters.length])
-
   const closeRegenDialog = (index: number, regenCharacter?: boolean) => {
     if (regenCharacter === true) {
       onRegenerateCharacter(index)
     } else {
       setRegenDialogsOpen((regenDialogs) => {
-        return replaceItemAtIndex<boolean>(regenDialogs, currentTurn, false)
+        return replaceItemAtIndex<boolean>(regenDialogs, currentCombat.turn, false)
       })
     }
   }
@@ -183,22 +176,56 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
+  const setCombatOngoing = (ongoing: boolean) => {
+    setCurrentCombat((combat) => {
+      return {
+        ...combat,
+        ongoing
+      }
+    })
+  }
+
   const setCurrentTurn = (next: boolean) => {
     if (next) {
-      if (currentTurn === currentCombat.characters.length - 1) {
-        _setCurrentTurn(0)
-        setCurrentRound(currentRound + 1)
+      if (currentCombat.turn === currentCombat.characters.length - 1) {
+        setCurrentCombat((combat) => {
+          return {
+            ...combat,
+            turn: 0,
+            round: combat.round + 1
+          }
+        })
       } else {
-        _setCurrentTurn(currentTurn + 1)
+        setCurrentCombat((combat) => {
+          return {
+            ...combat,
+            turn: combat.turn + 1
+          }
+        })
       }
     } else {
-      if (currentTurn === 0) {
-        _setCurrentTurn(currentCombat.characters.length - 1)
-        if (currentRound > 1) {
-          setCurrentRound(currentRound - 1)
+      if (currentCombat.turn === 0) {
+        setCurrentCombat((combat) => {
+          return {
+            ...combat,
+            turn: currentCombat.characters.length - 1
+          }
+        })
+        if (currentCombat.round > 1) {
+          setCurrentCombat((combat) => {
+            return {
+              ...combat,
+              round: combat.round - 1
+            }
+          })
         }
       } else {
-        _setCurrentTurn(currentTurn - 1)
+        setCurrentCombat((combat) => {
+          return {
+            ...combat,
+            turn: combat.turn - 1
+          }
+        })
       }
     }
   }
@@ -565,7 +592,7 @@ export const CombatTracker: React.FC = () => {
     return (
       <>
         <div className={`${classes.root}`}>
-          {!combatOngoing ? (
+          {!currentCombat.ongoing ? (
             <div className={`${classes.topActionsContainer}`}>
               <Button variant="contained" color="primary" onClick={onSort} className={`${classes.sortButton}`}>
                 Sort by init
@@ -602,11 +629,11 @@ export const CombatTracker: React.FC = () => {
                   margin: '0 0 0 .1em'
                 }}
               >
-                {currentRound}
+                {currentCombat.round}
               </Typography>
               <br />
               <Typography variant="caption" sx={{ fontSize: '0.8em' }}>
-                Time elapsed {currentRound * 6 - 6} seconds
+                Time elapsed {currentCombat.round * 6 - 6} seconds
               </Typography>
             </Typography>
           )}
@@ -635,7 +662,7 @@ export const CombatTracker: React.FC = () => {
                       disabled={character.isUnconscious()}
                       className={cx({
                         [classes.listItem]: true,
-                        [classes.listItemCurrent]: currentTurn === index && combatOngoing,
+                        [classes.listItemCurrent]: currentCombat.turn === index && currentCombat.ongoing,
                         [classes.listItemBloodied]: character.isBloodied(),
                         [classes.listItemUnconscious]: character.isUnconscious(),
                         [classes.listItemPlayer]: character.player_type === CharacterType.Player,
@@ -672,12 +699,12 @@ export const CombatTracker: React.FC = () => {
                           </Button>
                         </DialogActions>
                       </Dialog>
-                      {combatOngoing && (
+                      {currentCombat.ongoing && (
                         <ListItemIcon className={`${character.isUnconscious() ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
-                          {currentTurn === index ? <CurrentTurnIcon fontSize="large" /> : <span style={{ width: '1.5em' }}>&nbsp;</span>}
+                          {currentCombat.turn === index ? <CurrentTurnIcon fontSize="large" /> : <span style={{ width: '1.5em' }}>&nbsp;</span>}
                         </ListItemIcon>
                       )}
-                      {!combatOngoing && (
+                      {!currentCombat.ongoing && (
                         <>
                           <ListItemIcon className={`${character.isUnconscious() ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
                             <DragHandleIcon fontSize="large" />
@@ -708,6 +735,7 @@ export const CombatTracker: React.FC = () => {
                           [classes.initText]: true
                         })}
                         textFieldClass={`${classes.editableTextField}`}
+                        editWidth={3}
                         value={character.init}
                         type="number"
                         disabled={character.isUnconscious()}
@@ -848,7 +876,7 @@ export const CombatTracker: React.FC = () => {
                         PaperComponent={AutoCompleteItem}
                         renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
                       />
-                      {!combatOngoing && (
+                      {!currentCombat.ongoing && (
                         <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)', marginRight: 0 }} onClick={() => duplicateCharacter(index)}>
                           <AddBox />
                         </IconButton>
@@ -989,7 +1017,7 @@ export const CombatTracker: React.FC = () => {
               })}
             </Container>
           </List>
-          {!combatOngoing && (
+          {!currentCombat.ongoing && (
             <>
               <AddCharacterInput onAdd={onAddCharacter(CharacterType.Enemy)} text={'Add Enemy'}>
                 <Autocomplete
@@ -1037,9 +1065,9 @@ export const CombatTracker: React.FC = () => {
           )}
         </div>
         <div className={`${classes.actionsContainer}`}>
-          {combatOngoing ? (
+          {currentCombat.ongoing ? (
             <Button variant="contained" color="warning" onClick={() => setCombatOngoing(false)}>
-              Pause combat
+              Stop combat
             </Button>
           ) : (
             <Button
@@ -1052,7 +1080,7 @@ export const CombatTracker: React.FC = () => {
               Start combat
             </Button>
           )}
-          {combatOngoing && (
+          {currentCombat.ongoing && (
             <>
               <Button
                 variant="contained"
@@ -1075,12 +1103,17 @@ export const CombatTracker: React.FC = () => {
             </>
           )}
           <div className={`${classes.actionsSpread}`}></div>
-          {combatOngoing && (
+          {currentCombat.ongoing && (
             <Button
               variant="contained"
               onClick={() => {
-                setCurrentRound(1)
-                _setCurrentTurn(0)
+                setCurrentCombat((combat) => {
+                  return {
+                    ...combat,
+                    turn: 0,
+                    round: 1
+                  }
+                })
               }}
             >
               Reset combat

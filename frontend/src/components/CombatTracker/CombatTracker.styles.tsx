@@ -164,16 +164,10 @@ export const useStyles = makeStyles()((theme) => ({
     '& label': {
       padding: '0 0 0 4px',
       transform: 'translate(10px, -9px) scale(0.75)'
-    },
-    '& input': {
-      textAlign: 'center',
-      fontSize: '1.3em',
-      padding: '4.5px 0 3px 0'
     }
   },
   initText: {
     position: 'relative',
-    minWidth: '1.5em',
     '&:before': {
       content: '"init"',
       position: 'absolute',

@@ -164,6 +164,9 @@ export const defaultMonster = new Character({
 })
 
 export const defaultCombat = {
+  ongoing: false,
+  turn: 0,
+  round: 1,
   characters: [
     new Character({
       id: 'ogi',

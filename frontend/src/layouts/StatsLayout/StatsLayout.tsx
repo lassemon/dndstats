@@ -5,9 +5,6 @@ import statblockparchwhite from 'assets/statblockparch_white.jpg'
 import ToggleButton from 'components/ToggleButton'
 import MinusButton from 'components/MinusButton'
 import PlusButton from 'components/PlusButton'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTheme } from '@mui/material/styles'
-import { useOrientation } from 'utils/hooks'
 
 interface StatsLayoutProps {
   statsComponent?: React.ReactNode
@@ -18,10 +15,6 @@ interface StatsLayoutProps {
 
 const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
   const { statsComponent, inputComponent, sx } = props
-
-  const theme = useTheme()
-  const orientation = useOrientation()
-  const isPortrait = orientation === 'portrait'
 
   const onToggleBg = () => {
     const statsContainers = document.getElementsByClassName('stats-background')
