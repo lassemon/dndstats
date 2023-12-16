@@ -1,15 +1,17 @@
-import { Button, TextField } from '@mui/material'
+import { Button, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material'
 import React, { useState } from 'react'
 
 import useStyles from './AddCharacterInput.styles'
+import { CharacterType } from 'interfaces'
 
-const blankCharacter = { init: '', armorClass: '', name: '', hit_points: '' }
+const blankCharacter = { init: '', armorClass: '', name: '', hit_points: '', player_type: CharacterType.Enemy }
 
 export interface CharacterInput {
   init: number
   armorClass: number
   name: string
   hit_points: number
+  player_type: `${CharacterType}`
 }
 
 interface AddCharacterInputProps {
@@ -29,9 +31,10 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     } else {
       onAdd({
         init: parseInt(character.init) && parseInt(character.init) > 0 ? parseInt(character.init) : 0,
-        armorClass: parseInt(character.armorClass) || 0,
+        armorClass: parseInt(character.armorClass) || 10,
         name: character.name,
-        hit_points: parseInt(character.hit_points) || 0
+        hit_points: parseInt(character.hit_points) || 10,
+        player_type: character.player_type
       })
 
       setCharacter({ ...blankCharacter })
@@ -79,6 +82,16 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     })
   }
 
+  const onChangePlayerType = (event: SelectChangeEvent<CharacterType>) => {
+    console.log('changing player type', event)
+    setCharacter((character) => {
+      return {
+        ...character,
+        player_type: event.target.value as CharacterType
+      }
+    })
+  }
+
   return (
     <div className={classes.addContainer}>
       <TextField
@@ -111,6 +124,23 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
         onBlur={() => setCharacterInputError(false)}
         variant="standard"
       />
+      <Select
+        size="small"
+        labelId={`type`}
+        id="type-select"
+        value={character.player_type}
+        label="Age"
+        onChange={onChangePlayerType}
+        sx={{
+          '&': {
+            width: '8.9em'
+          }
+        }}
+      >
+        <MenuItem value={CharacterType.Player}>Player</MenuItem>
+        <MenuItem value={CharacterType.NPC}>NPC</MenuItem>
+        <MenuItem value={CharacterType.Enemy}>Enemy</MenuItem>
+      </Select>
       <Button variant="contained" color="primary" onClick={internalOnAdd}>
         {text}
       </Button>

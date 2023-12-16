@@ -300,7 +300,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onAddCharacter = (type: CharacterType) => (characterInput: CharacterInput) => {
+  const onAddCharacter = (characterInput: CharacterInput) => {
     setRegenDialogsOpen((regenDialogs) => {
       return [...regenDialogs, false]
     })
@@ -319,7 +319,7 @@ export const CombatTracker: React.FC = () => {
           armor_classes: [{ type: 'natural', value: characterInput.armorClass }],
           name: characterInput.name,
           hit_points: characterInput.hit_points,
-          player_type: type,
+          player_type: characterInput.player_type,
           source: Source.HomeBrew
         })
       )
@@ -769,6 +769,11 @@ export const CombatTracker: React.FC = () => {
                           />
                         }
                         placement="top"
+                        componentsProps={{
+                          tooltip: {
+                            sx: { maxWidth: 'none' }
+                          }
+                        }}
                       >
                         <div className={`${classes.damageModifiers}`}>
                           {(character.damage_immunities || []).map((immunity, immunityIndex) => {
@@ -830,6 +835,11 @@ export const CombatTracker: React.FC = () => {
                           )
                         }
                         placement="right"
+                        componentsProps={{
+                          tooltip: {
+                            sx: { maxWidth: 'none' }
+                          }
+                        }}
                       >
                         <TextField
                           id={`character-hit-points-${index}`}
@@ -1019,7 +1029,7 @@ export const CombatTracker: React.FC = () => {
           </List>
           {!currentCombat.ongoing && (
             <>
-              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Enemy)} text={'Add Enemy'}>
+              <AddCharacterInput onAdd={onAddCharacter} text={'Add Player'}>
                 <Autocomplete
                   id={`add-monster-dropdown`}
                   blurOnSelect
@@ -1059,8 +1069,6 @@ export const CombatTracker: React.FC = () => {
                   }}
                 />
               </AddCharacterInput>
-              <AddCharacterInput onAdd={onAddCharacter(CharacterType.NPC)} text={'Add NPC'} />
-              <AddCharacterInput onAdd={onAddCharacter(CharacterType.Player)} text={'Add Player'} />
             </>
           )}
         </div>

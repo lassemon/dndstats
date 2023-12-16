@@ -29,7 +29,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   name: {
     fontSize: '2.3em',
-    lineHeight: 'normal'
+    lineHeight: '2.5rem'
   },
   baseStatsContainer: {
     display: 'flex',

@@ -36,7 +36,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     disableInteractiveTooltip = false,
     tooltipClass = '',
     tooltipMaxWidth = '300',
-    textWidth = 25,
+    textWidth = 30,
     editWidth = 12,
     type = 'text',
     tooltipPlacement = 'top-start'
@@ -86,7 +86,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
   }
 
   return (
-    <div className={className} style={{ flex: `0 1 ${textWidth}px` }}>
+    <div className={`editableTextField ${className}`}>
       {isText ? (
         <EditableTextTooltip
           PopperProps={{ className: tooltipClass }}

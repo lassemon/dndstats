@@ -21,7 +21,7 @@ export const useStyles = makeStyles()((theme) => ({
     boxShadow: theme.custom.boxShadow
   },
   margins: {
-    padding: '1em'
+    padding: '0.7em'
   },
   marginsSmall: {
     padding: '0.7em'

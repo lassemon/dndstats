@@ -7,7 +7,9 @@ export const useStyles = makeStyles()((theme) => ({
     fontSize: '1.2em',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    display: 'inline-block'
+    display: 'inline-block',
+    lineHeight: 'normal',
+    verticalAlign: 'bottom'
   }
 }))
 

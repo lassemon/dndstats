@@ -8,7 +8,7 @@ import classNames from 'classnames/bind'
 
 import useStyles from './SpellStats.styles'
 import _ from 'lodash'
-import { Checkbox, FormControlLabel, FormGroup } from '@mui/material'
+import { Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material'
 import { useOrientation } from 'utils/hooks'
 
 const DescriptionBlock: React.FC<{ style?: CSSProperties }> = (props) => {
@@ -40,6 +40,8 @@ export const SpellStats: React.FC = () => {
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
   const isPrint = useMediaQuery('print')
+  const theme = useTheme()
+  const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
   const [inlineFeatures, setInlineFeatures] = useState(true)
 
   const onChangeInlineFeatures = () => {
@@ -53,7 +55,7 @@ export const SpellStats: React.FC = () => {
           className={cx({
             [classes.container]: true,
             [classes.smallContainer]: isPortrait,
-            [classes.mediumContainer]: !isPortrait,
+            [classes.largeContainer]: isLarge,
             [classes.printContainer]: isPrint
           })}
         >

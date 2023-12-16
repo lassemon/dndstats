@@ -39,12 +39,14 @@ export const useStyles = makeStyles()((theme) => ({
     paddingRight: 0,
     paddingLeft: 0,
     margin: '0 .2em .3em 0em',
-    padding: '0.2em 0 0.2em 0.5em',
+    padding: '0.3em 0 0.1em 0.5em',
     '&& > *': {
-      display: 'flex',
       marginRight: '.4em'
     },
-    border: '1px solid transparent'
+    border: '1px solid transparent',
+    '& .editableTextField': {
+      flex: '0 1 2em'
+    }
   },
   listItemCurrent: {
     backdropFilter: 'brightness(93%)',
@@ -222,6 +224,7 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   damageModifiers: {
+    display: 'flex',
     flex: '1 1 68px',
     flexWrap: 'wrap',
     maxWidth: '68px',
@@ -258,7 +261,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   hpBarContainer: {
     '&&': {
-      display: 'block',
+      display: 'flex',
       flex: '0 0 18%',
       alignItems: 'center',
       height: '3em'
@@ -296,6 +299,7 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   conditionList: {
+    display: 'flex',
     position: 'relative',
     flexWrap: 'wrap',
     flex: '1 1 auto',

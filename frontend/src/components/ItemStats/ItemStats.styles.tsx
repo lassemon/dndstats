@@ -6,11 +6,15 @@ export const useStyles = makeStyles()((theme) => {
     container: {
       width: '55%'
     },
-    mediumContainer: {
-      width: '65%'
-    },
     smallContainer: {
-      width: '95%'
+      '&&': {
+        width: '95%'
+      }
+    },
+    mediumContainer: {
+      '&&': {
+        width: '65%'
+      }
     },
     printContainer: {
       width: '100%'
