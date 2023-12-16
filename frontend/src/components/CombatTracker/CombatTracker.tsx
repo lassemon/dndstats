@@ -137,8 +137,8 @@ export const CombatTracker: React.FC = () => {
 
   useEffect(() => {
     const currentCharacter = currentCombat.characters[currentCombat.turn]
-    const canRegenerate = currentCharacter.current_hit_points < currentCharacter.hit_points
-    if (currentCharacter.regeneration > 0 && canRegenerate) {
+    const canRegenerate = currentCharacter?.current_hit_points < currentCharacter?.hit_points
+    if (currentCharacter?.regeneration > 0 && canRegenerate) {
       setRegenDialogsOpen((regenDialogs) => {
         return replaceItemAtIndex<boolean>(regenDialogs, currentCombat.turn, true)
       })
@@ -253,7 +253,9 @@ export const CombatTracker: React.FC = () => {
       const charactersCopy = type ? [...combat.characters].filter((character) => character.player_type !== type) : []
       return {
         ...combat,
-        characters: charactersCopy
+        characters: charactersCopy,
+        turn: 0,
+        round: 1
       }
     })
   }

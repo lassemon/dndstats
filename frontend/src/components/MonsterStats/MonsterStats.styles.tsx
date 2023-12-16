@@ -19,7 +19,7 @@ export const useStyles = makeStyles()((theme) => ({
     //flex: '1 1 65%'
   },
   rightContainer: {
-    flex: '1 0 30%',
+    flex: '1 0 25%',
     display: 'flex',
     gap: '0.5em',
     flexDirection: 'column',
