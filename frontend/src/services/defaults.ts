@@ -2,7 +2,8 @@ import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
 import Character from 'domain/entities/Character'
-import { CharacterType, Condition, DamageType, Source, Spell } from 'interfaces'
+import { AbilityScores } from 'domain/services/FifthESRDService'
+import { PlayerType, Condition, DamageType, Source, Spell } from 'interfaces'
 import React from 'react'
 
 export const defaultItem = {
@@ -174,7 +175,7 @@ export const defaultCombat = {
       init: 12,
       armor_classes: [{ type: 'natural', value: 15 }],
       hit_points: 35,
-      player_type: CharacterType.Player,
+      player_type: PlayerType.Player,
       source: Source.HomeBrew
     }),
     new Character({
@@ -183,7 +184,7 @@ export const defaultCombat = {
       init: 5,
       armor_classes: [{ type: 'natural', value: 16 }],
       hit_points: 55,
-      player_type: CharacterType.Player,
+      player_type: PlayerType.Player,
       source: Source.HomeBrew
     }),
     new Character({
@@ -192,7 +193,7 @@ export const defaultCombat = {
       init: 3,
       armor_classes: [{ type: 'natural', value: 15 }],
       hit_points: 19,
-      player_type: CharacterType.NPC,
+      player_type: PlayerType.NPC,
       source: Source.HomeBrew
     }),
     new Character({
@@ -201,7 +202,7 @@ export const defaultCombat = {
       init: 19,
       armor_classes: [{ type: 'natural', value: 16 }],
       hit_points: 61,
-      player_type: CharacterType.NPC,
+      player_type: PlayerType.NPC,
       source: Source.HomeBrew
     }),
     new Character({
@@ -210,7 +211,7 @@ export const defaultCombat = {
       init: 15,
       armor_classes: [{ type: 'natural', value: 15 }],
       hit_points: 57,
-      player_type: CharacterType.NPC,
+      player_type: PlayerType.NPC,
       source: Source.HomeBrew
     }),
     new Character({
@@ -234,4 +235,21 @@ export const defaultCombat = {
 
 export const defaultCustomCharacters = {
   characters: [] as Character[]
+}
+
+export const defaultAbilityScores = {
+  ...Object.values(AbilityScores).reduce((accumulator, key) => {
+    accumulator[key] = 10
+    return accumulator
+  }, {} as { [key in AbilityScores]: number } & {})
+}
+
+export const defaultSavingThrows = {
+  strength: '',
+  dexterity: '',
+  constitution: '',
+  intelligence: '',
+  wisdom: '',
+  charisma: '',
+  death: ''
 }

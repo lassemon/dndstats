@@ -1,12 +1,10 @@
-import { CharacterType, Condition, DamageType, Source } from 'interfaces'
+import { PlayerType, Condition, DamageType, Source } from 'interfaces'
 import ValueObject from './ValueObject'
 import _ from 'lodash'
-import { ConditionEffects, getConditionEffects, printConditions } from 'components/CombatTracker/Conditions'
+import { ConditionEffects, getConditionEffects, getPrintableConditions } from 'components/CombatTracker/Conditions'
 import { getNumberWithSign, upsertToArray, uuid } from 'utils/utils'
-import { Action, ArmorClass, FifthESRDMonster, FifthESRDService, Proficiency, Sense, SpecialAbility } from 'domain/services/FifthESRDService'
+import { Action, ArmorClass, ArmorClassType, FifthESRDMonster, FifthESRDService, Proficiency, Sense, SpecialAbility } from 'domain/services/FifthESRDService'
 import { ReactElement } from 'react'
-import { Differ } from 'json-diff-kit'
-
 export interface ICharacter extends Partial<FifthESRDMonster> {
   id?: string
   name: string
@@ -29,7 +27,7 @@ export interface ICharacter extends Partial<FifthESRDMonster> {
   xp?: number
   actions?: Action[]
   saving_throws?: Proficiency[]
-  player_type?: `${CharacterType}`
+  player_type?: `${PlayerType}`
   source: `${Source}`
   effects?: any
   imageElement?: ReactElement<any>
@@ -39,6 +37,11 @@ export interface ICharacter extends Partial<FifthESRDMonster> {
   alignment?: string
   description?: string
 }
+
+const DefaultArmorClass = {
+  type: 'natural',
+  value: 10
+} as ArmorClass
 
 class Character extends ValueObject {
   private _id
@@ -90,7 +93,7 @@ class Character extends ValueObject {
       id,
       name = '',
       init = 10,
-      armor_classes = [{ type: 'natural', value: 10 }],
+      armor_classes = [DefaultArmorClass],
       hit_points = 10,
       temporary_hit_points = 0,
       damage = 0,
@@ -110,7 +113,7 @@ class Character extends ValueObject {
       xp = 0,
       actions = [],
       reactions = [],
-      player_type = CharacterType.Enemy,
+      player_type = PlayerType.Enemy,
       source = Source.FifthESRD,
       effects = {},
 
@@ -127,7 +130,8 @@ class Character extends ValueObject {
       type = '',
       subtype = '',
       alignment = '',
-      description = ''
+      description = '',
+      desc
     } = character
     super()
     this._id = id ? id : this.convertNameToId(name)
@@ -140,9 +144,9 @@ class Character extends ValueObject {
     this._regeneration = regeneration
     this._conditions = conditions
     this._condition_immunities = condition_immunities
-    this._damage_immunities = damage_immunities
-    this._damage_resistances = damage_resistances
-    this._damage_vulnerabilities = damage_vulnerabilities
+    this._damage_immunities = Character.parseActualDamageTypes(damage_immunities)
+    this._damage_resistances = Character.parseActualDamageTypes(damage_resistances)
+    this._damage_vulnerabilities = Character.parseActualDamageTypes(damage_vulnerabilities)
     this._skills = _.isEmpty(skills) ? FifthESRDService.parseSkills(character.proficiencies) : skills
     this._saving_throws = _.isEmpty(saving_throws) ? FifthESRDService.parseSavingThrows(character.proficiencies) : saving_throws
     this._senses = senses
@@ -171,14 +175,15 @@ class Character extends ValueObject {
     this._type = type
     this._subtype = subtype
     this._alignment = alignment
-    this._description = description
+    this._description = description || desc
   }
 
   private getArmorClassesFromConditions(conditions: Condition[]) {
     return conditions.reduce((acsFromConditions, condition) => {
       const conditionEffect = ConditionEffects[condition]
       if (conditionEffect && conditionEffect.AC) {
-        acsFromConditions.push({ type: condition, value: conditionEffect.AC })
+        // todo, currently ConditionEffects are all spells, add ability to change AC with an actual condition
+        acsFromConditions.push({ type: 'spell', value: conditionEffect.AC, spell: { index: condition.replace(' ', '-').toLowerCase(), name: condition } })
       }
       return acsFromConditions
     }, [] as ICharacter['armor_classes'])
@@ -215,59 +220,110 @@ class Character extends ValueObject {
   }
 
   public get armor_classes(): ICharacter['armor_classes'] {
-    return [...this._armor_classes, ...this.getArmorClassesFromConditions(this.conditions)]
+    return this._armor_classes
+  }
+
+  public get armor_class_with_conditions(): ICharacter['armor_classes'] {
+    const highestArmorClass = _.maxBy(this._armor_classes, 'value')
+    return [...this.getArmorClassesFromConditions(this.conditions)].concat(highestArmorClass ? [highestArmorClass] : [])
   }
   public get armor_class(): number {
+    return _.maxBy(this._armor_classes, 'value')?.value || 0
+  }
+  public get armor_class_total(): number {
     let acSum = 0
-    this.armor_classes.forEach((ac) => {
+    this.armor_class_with_conditions.forEach((ac) => {
       acSum += typeof ac.value === 'number' ? ac.value : 0
     })
     return acSum
   }
   public get armor_class_label(): string {
-    const baseArmorClass = _.find(this.armor_classes, { type: 'natural' }) || _.get(this.armor_classes, 0) || [{ type: 'natural', value: 0 }]
-    const armorClassesWithoutBase = _.without(this.armor_classes, baseArmorClass)
+    const baseArmorClass = _.maxBy(this.armor_classes, 'value') || _.get(this.armor_classes, 0) || [DefaultArmorClass]
+    return this.parseArmorClassLabel(baseArmorClass)
+  }
+  public get armor_class_label_with_conditions(): string {
+    const baseArmorClass = _.maxBy(this.armor_class_with_conditions, 'value') || _.get(this.armor_classes, 0) || [DefaultArmorClass]
+    const armorClassesWithoutBase = _.without(this.armor_class_with_conditions, baseArmorClass)
 
     return `${this.parseArmorClassLabel(baseArmorClass)} ${
       armorClassesWithoutBase.length > 0 ? armorClassesWithoutBase.reduce((sum, current) => (sum += ' ' + this.parseArmorClassLabelWithSign(current)), '') : ''
     }`
   }
 
+  public static getArmorClassDetailPath = (armorClass: ArmorClass) => {
+    switch (armorClass.type) {
+      case 'armor':
+        return 'armor.0'
+      case 'spell':
+        return 'spell'
+      case 'condition':
+        return 'condition'
+      default:
+        return ''
+    }
+  }
+
+  public static getArmorClassNamePath = (armorClass: ArmorClass) => {
+    return `${Character.getArmorClassDetailPath(armorClass)}.name`
+  }
+
+  public static getArmorClassIndexPath = (armorClass: ArmorClass) => {
+    return `${Character.getArmorClassDetailPath(armorClass)}.index`
+  }
+
+  public static getArmorClassName = (armorClass: ArmorClass) => {
+    return armorClass.type === 'natural' ? 'Natural' : _.get(armorClass, Character.getArmorClassNamePath(armorClass))
+  }
+
   private parseArmorClassLabel = (armorClass: ArmorClass): string => {
     let armorClassLabel = String(armorClass.value)
-    if (armorClass.armor) {
-      armorClassLabel += ` (${_.get(armorClass.armor, 0).name})` // TODO, why is this an array, can there be more than one?
+    if (Character.getArmorClassName(armorClass)) {
+      armorClassLabel += ` (${this.parseArmorClassName(Character.getArmorClassName(armorClass))})`
     }
     return armorClassLabel
   }
 
   private parseArmorClassLabelWithSign = (armorClass: ArmorClass): string => {
     let armorClassLabel = getNumberWithSign(armorClass.value)
-    if (armorClass.armor) {
-      armorClassLabel += ` (${_.get(armorClass.armor, 0).name})` // TODO, why is this an array, can there be more than one?
+    if (Character.getArmorClassName(armorClass)) {
+      armorClassLabel += ` (${this.parseArmorClassName(Character.getArmorClassName(armorClass))})`
     }
     return armorClassLabel
   }
 
-  public set armor_classes(value: ArmorClass[]) {
-    value.forEach(({ value, type }) => {
-      if (type) {
-        this._armor_classes = upsertToArray<ArmorClass>(this.armor_classes, { type, value }, type as keyof ArmorClass)
-      } else {
-        // if no type is given, let's update the natural armor
-        let element
-        for (let index = 0, length = this._armor_classes.length; index < length; ++index) {
-          const thisElement = this._armor_classes[index]
-          if (thisElement.type === 'natural') {
-            element = thisElement
-            break
-          }
-        }
-        if (element) {
-          element.value = value
-        } else {
-          this._armor_classes = upsertToArray<ArmorClass>(this.armor_classes, { type: 'natural', value }, 'natural' as keyof ArmorClass)
-        }
+  private parseArmorClassName = (name: string) => {
+    // changes _ to empty space and capitalizes first letter of every word
+    return name
+      .replaceAll('_', ' ')
+      .split(' ')
+      .map((word) => word[0].toUpperCase() + word.substring(1))
+      .join(' ')
+  }
+
+  public set armor_classes(newArmorClasses: ArmorClass[]) {
+    this._armor_classes = !_.isEmpty(newArmorClasses) ? newArmorClasses : [DefaultArmorClass]
+  }
+
+  public updateArmorClasses = (newArmorClasses: ArmorClass[]) => {
+    const uniquenewArmorClasses = _.uniqWith(newArmorClasses, (a, b) => JSON.stringify(a) === JSON.stringify(b))
+    if (!_.isEqual(uniquenewArmorClasses, newArmorClasses)) {
+      console.warn('trying to set an armor class type TWICE, why u do dis?')
+    }
+    newArmorClasses.forEach((newArmorClass) => {
+      switch (newArmorClass.type) {
+        case 'armor':
+        case 'spell':
+        case 'condition':
+        case 'dex':
+        case 'natural':
+          this._armor_classes = upsertToArray<ArmorClass>(this._armor_classes, newArmorClass as ArmorClass, newArmorClass.type as keyof ArmorClass)
+          break
+        default:
+          this._armor_classes = upsertToArray<ArmorClass>(
+            this._armor_classes,
+            { type: ArmorClassType.NATURAL, value: newArmorClass.value },
+            newArmorClass.type as keyof ArmorClass
+          )
       }
     })
   }
@@ -318,7 +374,7 @@ class Character extends ValueObject {
     return this._conditions
   }
   public get conditions_label() {
-    return printConditions(this.conditions).join(', ')
+    return getPrintableConditions(this.conditions).join(', ')
   }
   public set conditions(newConditions) {
     const conditionsToRemove = _.difference(this.conditions, newConditions).filter((condition) => {
@@ -382,7 +438,7 @@ class Character extends ValueObject {
     return this._condition_immunities
   }
   public get condition_immunities_label() {
-    return this.condition_immunities.map((immunity) => immunity.name).join(', ')
+    return getPrintableConditions(this.condition_immunities.map((immunity) => immunity.name) as Condition[]).join(', ')
   }
   public set condition_immunities(value) {
     this._condition_immunities = value
@@ -394,8 +450,8 @@ class Character extends ValueObject {
   public get damage_immunities_label() {
     return this.damage_immunities.join(', ')
   }
-  public set damage_immunities(value) {
-    this._damage_immunities = value
+  public set damage_immunities(newDamageImmunities) {
+    this._damage_immunities = Character.parseActualDamageTypes(newDamageImmunities)
   }
 
   public get damage_resistances() {
@@ -404,8 +460,8 @@ class Character extends ValueObject {
   public get damage_resistances_label() {
     return this.damage_resistances.join(', ')
   }
-  public set damage_resistances(value) {
-    this._damage_resistances = value
+  public set damage_resistances(newDamageResistances) {
+    this._damage_resistances = Character.parseActualDamageTypes(newDamageResistances)
   }
 
   public get damage_vulnerabilities() {
@@ -414,8 +470,38 @@ class Character extends ValueObject {
   public get damage_vulnerabilities_label() {
     return this.damage_vulnerabilities.join(', ')
   }
-  public set damage_vulnerabilities(value) {
-    this._damage_vulnerabilities = value
+  public set damage_vulnerabilities(newDamageVulnerabilities) {
+    this._damage_vulnerabilities = Character.parseActualDamageTypes(newDamageVulnerabilities)
+  }
+
+  public static parseActualDamageTypes(damageTypes: DamageType[]) {
+    if (_.isEmpty(damageTypes)) {
+      return []
+    }
+    const test = damageTypes.reduce((allDamageTypes, damageType) => {
+      const _damageTypes = Character.parseDamageTypeString(damageType)
+      return allDamageTypes.concat(_damageTypes)
+    }, [] as DamageType[])
+    return test
+  }
+
+  public static parseDamageTypeString(damageTypeString: DamageType): DamageType[] {
+    //console.log('parsing string', damageTypeString)
+    const parsedTypes = []
+    if (Object.values(DamageType).includes(damageTypeString.toLowerCase() as DamageType)) {
+      parsedTypes.push(damageTypeString)
+    }
+    if (
+      damageTypeString.toLowerCase().includes('bludgeoning, piercing, and slashing from nonmagical attacks not made with silvered weapons') ||
+      damageTypeString.toLowerCase().includes("bludgeoning, piercing, and slashing from nonmagical weapons that aren't silvered") ||
+      damageTypeString.toLowerCase().includes('bludgeoning, piercing, and slashing from nonmagical/nonsilver weapons')
+    ) {
+      parsedTypes.push(DamageType.Not_Silvered)
+    }
+    if (damageTypeString.toLowerCase().includes('nonmagical bludgeoning, piercing, and slashing')) {
+      parsedTypes.push(DamageType.Not_Magical)
+    }
+    return parsedTypes
   }
 
   public get player_type() {
@@ -540,6 +626,19 @@ class Character extends ValueObject {
     this._charisma = value
   }
 
+  public get abilityScores() {
+    return {
+      ...(this.strength ? { strength: this.strength } : {}),
+      ...(this.dexterity ? { dexterity: this.dexterity } : {}),
+      ...(this.constitution ? { constitution: this.constitution } : {}),
+      ...(this.intelligence ? { intelligence: this.intelligence } : {}),
+      ...(this.wisdom ? { wisdom: this.wisdom } : {}),
+      ...(this.charisma ? { charisma: this.charisma } : {})
+    }
+  }
+
+  public set abilityScores(newAbilityScores) {}
+
   private calculateAbilityScoreModifier = (score?: number): string => {
     const modifier = Math.floor(((score || 0) - 10) / 2)
     return getNumberWithSign(modifier)
@@ -560,6 +659,7 @@ class Character extends ValueObject {
   }
 
   public get saving_throws() {
+    // palauta tässä reducen tulos?
     return this._saving_throws
   }
   public get saving_throws_label() {
@@ -700,6 +800,7 @@ class Character extends ValueObject {
       return false
     }
 
+    /*
     console.log('this', _.omit(this.toJSON(), ['imageElement']))
     console.log('other', _.omit(character.toJSON(), ['imageElement']))
     console.log('this JSON', JSON.stringify(_.omit(this.toJSON(), ['imageElement'])))
@@ -708,7 +809,7 @@ class Character extends ValueObject {
     console.log(`equality with images ${this.name}`, _.isEqual(this.toJSON(), character.toJSON()))
     console.log('TO JSON', this.toJSON())
     console.log('diff', new Differ().diff(_.omit(this.toJSON, ['imageElement']), _.omit(character.toJSON(), ['imageElement'])))
-    console.log('\n\n')
+    console.log('\n\n')*/
 
     return _.isEqual(_.omit(this.toJSON(), ['imageElement']), _.omit(character.toJSON(), ['imageElement']))
   }

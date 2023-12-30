@@ -2,16 +2,16 @@ import { Button, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/mat
 import React, { useState } from 'react'
 
 import useStyles from './AddCharacterInput.styles'
-import { CharacterType } from 'interfaces'
+import { PlayerType } from 'interfaces'
 
-const blankCharacter = { init: '', armorClass: '', name: '', hit_points: '', player_type: CharacterType.Enemy }
+const blankCharacter = { init: '', armorClass: '', name: '', hit_points: '', player_type: PlayerType.Enemy }
 
 export interface CharacterInput {
   init: number
   armorClass: number
   name: string
   hit_points: number
-  player_type: `${CharacterType}`
+  player_type: `${PlayerType}`
 }
 
 interface AddCharacterInputProps {
@@ -82,12 +82,11 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
     })
   }
 
-  const onChangePlayerType = (event: SelectChangeEvent<CharacterType>) => {
-    console.log('changing player type', event)
+  const onChangePlayerType = (event: SelectChangeEvent<PlayerType>) => {
     setCharacter((character) => {
       return {
         ...character,
-        player_type: event.target.value as CharacterType
+        player_type: event.target.value as PlayerType
       }
     })
   }
@@ -137,9 +136,9 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
           }
         }}
       >
-        <MenuItem value={CharacterType.Player}>Player</MenuItem>
-        <MenuItem value={CharacterType.NPC}>NPC</MenuItem>
-        <MenuItem value={CharacterType.Enemy}>Enemy</MenuItem>
+        <MenuItem value={PlayerType.Player}>Player</MenuItem>
+        <MenuItem value={PlayerType.NPC}>NPC</MenuItem>
+        <MenuItem value={PlayerType.Enemy}>Enemy</MenuItem>
       </Select>
       <Button variant="contained" color="primary" onClick={internalOnAdd}>
         {text}

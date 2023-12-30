@@ -41,6 +41,8 @@ import Unconscious from 'assets/Unconcious.png'
 
 import { Condition } from 'interfaces'
 import Character from 'domain/entities/Character'
+import { APIReference } from 'domain/services/FifthESRDService'
+import _ from 'lodash'
 
 const Icons: { [key in Condition]?: string } = {
   [Condition.Baned]: Baned,
@@ -56,7 +58,7 @@ const Icons: { [key in Condition]?: string } = {
   [Condition.Dead]: Dead,
   [Condition.Deafened]: Deafened,
   [Condition.Diseased]: Diseased,
-  [Condition.Exhausted]: Exhausted,
+  [Condition.Exhaustion]: Exhausted,
   [Condition.Frightened]: Frightened,
   [Condition.Grappled]: Grappled,
   [Condition.Hasted]: Hasted,
@@ -92,7 +94,7 @@ export const ConditionDescription: { [key in Condition]?: string } = {
   <b>7-8:</b> The creature uses its action to make a melee attack against a randomly determined creature within its reach. If there is no creature within its reach, the creature does nothing this turn.<br/>
   <b>9-10:</b> The creature can act and move normally.<br/>
   At the end of its turns, an affected target can make a Wisdom saving throw. If it succeeds, this effect ends for that target.`,
-  [Condition.Exhausted]: `Level	Effect<br/>
+  [Condition.Exhaustion]: `Level	Effect<br/>
   1	Disadvantage on ability checks<br/>
   2	Speed halved<br/>
   3	Disadvantage on attack rolls and saving throws<br/>
@@ -220,7 +222,7 @@ export const getConditionEffects = (conditions: Condition[]) => {
   return effects
 }
 
-export const printConditions = (conditions: Condition[]) => {
+export const getPrintableConditions = (conditions: Condition[]) => {
   return conditions.map((condition) => condition.replaceAll('_', ' '))
 }
 
@@ -249,4 +251,35 @@ const parseEffectString = (calculation: string) => {
   } catch (error: any) {
     return '?'
   }
+}
+
+export const conditionToApiReference = (condition: Condition): APIReference => {
+  return {
+    index: condition.toLowerCase(),
+    name: condition
+  }
+}
+
+export const getConditionImmunitiesList = () => {
+  return _.without(
+    Object.values(Condition),
+    Condition.Dead,
+    Condition.Unconscious,
+    Condition.Bloodied,
+    Condition.Baned,
+    Condition.Blessed,
+    Condition.Concentration,
+    Condition.Holding_Action,
+    Condition.Blur,
+    Condition.InspiredByBard,
+    Condition.Hex,
+    Condition.Hasted,
+    Condition.Mage_Armor,
+    Condition.MirrorImage,
+    Condition.Reaction_Used,
+    Condition.Stabilized,
+    Condition.Shield_of_Faith,
+    Condition.Raging,
+    Condition.Invisible
+  )
 }

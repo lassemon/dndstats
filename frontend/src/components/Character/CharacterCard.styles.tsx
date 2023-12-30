@@ -2,12 +2,19 @@ import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
-  root: {},
+  root: {
+    '& .editing': {
+      margin: '0.5em 0 1.2em 0'
+    }
+  },
   staticWidthMedium: {
     width: '40vw'
   },
   staticWidthLarge: {
     width: '60vw'
+  },
+  fullWidth: {
+    width: '94vw'
   },
   columns: {
     columnCount: '2',
@@ -20,12 +27,6 @@ export const useStyles = makeStyles()((theme) => ({
     color: theme.status.blood,
     letterSpacing: '0.02em',
     fontVariant: 'small-caps'
-  },
-  shortDescription: {
-    marginTop: 0,
-    fontWeight: 'normal',
-    fontStyle: 'italic',
-    fontSize: '0.95em'
   },
   name: {
     fontSize: '2.3em',
@@ -44,14 +45,7 @@ export const useStyles = makeStyles()((theme) => ({
   baseStat: {
     textTransform: 'capitalize'
   },
-  abilityScores: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    '& > div': {
-      marginInlineStart: '0',
-      textAlign: 'center'
-    }
-  },
+
   statHeader: {
     color: theme.status.blood,
     fontSize: '1.1em',

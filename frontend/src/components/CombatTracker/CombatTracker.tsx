@@ -2,6 +2,7 @@ import { withStyles } from 'tss-react/mui'
 import {
   Button,
   CircularProgress,
+  ClickAwayListener,
   Dialog,
   DialogActions,
   DialogContent,
@@ -33,7 +34,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
-import { CharacterType, Condition, DamageType, Source } from 'interfaces'
+import { PlayerType, Condition, DamageType, Source } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
@@ -41,7 +42,7 @@ import Settings from '@mui/icons-material/Settings'
 import { TransitionProps } from '@mui/material/transitions'
 import { DamageTypeToIconMap } from './DamageTypes'
 import StatusModifiers from './StatusModifiers'
-import CharacterCard from './CharacterCard'
+import CharacterCard from '../Character/CharacterCard'
 import { getMonster, getMonsterList } from 'api/monsters'
 import Character from 'domain/entities/Character'
 import { replaceItemAtIndex } from 'utils/utils'
@@ -92,15 +93,28 @@ export const CombatTracker: React.FC = () => {
   const [monsterList, setMonsterList] = useState<MonsterListOption[]>([emptyMonster] as MonsterListOption[])
   const [loadingMonsterList, setLoadingMonsterList] = useState(false)
   const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
-  const [settingsAnchors, setSettingsAnchors] = React.useState<Array<HTMLButtonElement | null>>(currentCombat.characters.map(() => null))
-  const [incomingDamages, setIncomingDamages] = React.useState<string[]>(currentCombat.characters.map(() => ''))
-  const [incomingTempHPs, setIncomingTempHPs] = React.useState<string[]>(
+  const [settingsAnchors, setSettingsAnchors] = useState<Array<HTMLButtonElement | null>>(currentCombat.characters.map(() => null))
+  const [incomingDamages, setIncomingDamages] = useState<string[]>(currentCombat.characters.map(() => ''))
+  const [incomingTempHPs, setIncomingTempHPs] = useState<string[]>(
     currentCombat.characters.map((character) => String(character.temporary_hit_points || '') || '')
   )
-  const [incomingRegenerations, setIncomingRegenerations] = React.useState<string[]>(
+  const [incomingRegenerations, setIncomingRegenerations] = useState<string[]>(
     currentCombat.characters.map((character) => String(character.regeneration || '') || '')
   )
-  const [regenDialogsOpen, setRegenDialogsOpen] = React.useState<boolean[]>(currentCombat.characters.map(() => false))
+  const [regenDialogsOpen, setRegenDialogsOpen] = useState<boolean[]>(currentCombat.characters.map(() => false))
+  const [characterCardTooltipsOpen, setCharacterCardTooltipsOpen] = useState<boolean[]>(currentCombat.characters.map(() => false))
+
+  const handleCharacterCardTooltipClickAway = (index: number) => () => {
+    setCharacterCardTooltipsOpen((cardTooltipsOpen) => {
+      return replaceItemAtIndex<boolean>(cardTooltipsOpen, index, false)
+    })
+  }
+
+  const handleCharacterCardTooltipHover = (index: number) => (event: any) => {
+    setCharacterCardTooltipsOpen((cardTooltipsOpen) => {
+      return replaceItemAtIndex<boolean>(cardTooltipsOpen, index, true)
+    })
+  }
 
   // sync current combat with characters from custom character list
   // NOTE: DO NOT change custom character list state in this file, it will cause an infinite loop
@@ -248,7 +262,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const clearCombat = (type?: CharacterType) => {
+  const clearCombat = (type?: PlayerType) => {
     setCurrentCombat((combat) => {
       const charactersCopy = type ? [...combat.characters].filter((character) => character.player_type !== type) : []
       return {
@@ -274,7 +288,7 @@ export const CombatTracker: React.FC = () => {
   const onChangeCharacterAC = (index: number) => (value: string) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
-      character.armor_classes = [{ type: 'natural', value: parseInt(value) || 0 }]
+      character.updateArmorClasses([{ type: 'natural', value: parseInt(value) || 0 }])
       return {
         ...combat,
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
@@ -351,7 +365,7 @@ export const CombatTracker: React.FC = () => {
               ...monster,
               init: 0,
               armor_classes: monster.armor_class,
-              player_type: CharacterType.Enemy,
+              player_type: PlayerType.Enemy,
               source: Source.FifthESRD
             })
           )
@@ -599,10 +613,10 @@ export const CombatTracker: React.FC = () => {
               <Button variant="contained" color="primary" onClick={onSort} className={`${classes.sortButton}`}>
                 Sort by init
               </Button>
-              <Button variant="contained" color="primary" onClick={() => clearCombat(CharacterType.NPC)} className={`${classes.sortButton}`}>
+              <Button variant="contained" color="primary" onClick={() => clearCombat(PlayerType.NPC)} className={`${classes.sortButton}`}>
                 Clear NPCs
               </Button>
-              <Button variant="contained" color="primary" onClick={() => clearCombat(CharacterType.Enemy)} className={`${classes.sortButton}`}>
+              <Button variant="contained" color="primary" onClick={() => clearCombat(PlayerType.Enemy)} className={`${classes.sortButton}`}>
                 Clear Enemies
               </Button>
               <Button variant="contained" color="primary" onClick={() => clearCombat()} className={`${classes.sortButton}`}>
@@ -667,10 +681,10 @@ export const CombatTracker: React.FC = () => {
                         [classes.listItemCurrent]: currentCombat.turn === index && currentCombat.ongoing,
                         [classes.listItemBloodied]: character.isBloodied(),
                         [classes.listItemUnconscious]: character.isUnconscious(),
-                        [classes.listItemPlayer]: character.player_type === CharacterType.Player,
-                        [classes.listItemPlayerBloodied]: character.player_type === CharacterType.Player && character.isBloodied(),
-                        [classes.listItemNPC]: character.player_type === CharacterType.NPC,
-                        [classes.listItemNPCBloodied]: character.player_type === CharacterType.NPC && character.isBloodied()
+                        [classes.listItemPlayer]: character.player_type === PlayerType.Player,
+                        [classes.listItemPlayerBloodied]: character.player_type === PlayerType.Player && character.isBloodied(),
+                        [classes.listItemNPC]: character.player_type === PlayerType.NPC,
+                        [classes.listItemNPCBloodied]: character.player_type === PlayerType.NPC && character.isBloodied()
                       })}
                     >
                       <div className={`${classes.regeneration}`}>
@@ -693,7 +707,7 @@ export const CombatTracker: React.FC = () => {
                           </ul>
                         </DialogContent>
                         <DialogActions>
-                          <Button variant="contained" onClick={() => closeRegenDialog(index)} autoFocus>
+                          <Button variant="contained" onClick={() => closeRegenDialog(index)}>
                             No
                           </Button>
                           <Button variant="contained" color="success" onClick={() => closeRegenDialog(index, true)}>
@@ -719,11 +733,11 @@ export const CombatTracker: React.FC = () => {
                       <EditableText
                         type="number"
                         id={`character-ac-${index}`}
-                        tooltip={`AC ${character.armor_class_label}`}
+                        tooltip={`AC ${character.armor_class_label_with_conditions}`}
                         className={`${classes.editableTextField}`}
                         textFieldClass={`${classes.editableTextField}`}
                         textClass={`${classes.ACText}`}
-                        value={character.armor_class}
+                        value={character.armor_class_total}
                         textWidth={25}
                         editWidth={3}
                         disabled={character.isUnconscious()}
@@ -745,9 +759,16 @@ export const CombatTracker: React.FC = () => {
                       />
                       <EditableText
                         id={`character-name-${index}`}
-                        tooltip={<CharacterCard character={character} resizeable={false} onChange={onChangeCharacterCard(index)} />}
+                        tooltip={
+                          <ClickAwayListener mouseEvent="onMouseUp" onClickAway={handleCharacterCardTooltipClickAway(index)}>
+                            <div>
+                              <CharacterCard character={character} resizeable={false} onChange={onChangeCharacterCard(index)} />
+                            </div>
+                          </ClickAwayListener>
+                        }
                         tooltipPlacement="bottom-start"
                         tooltipClass={`${classes.nameTextTooltip}`}
+                        tooltipOpen={characterCardTooltipsOpen[index]}
                         className={cx({
                           [classes.editableTextField]: true,
                           [classes.nameTextContainer]: true,
@@ -760,8 +781,10 @@ export const CombatTracker: React.FC = () => {
                         editWidth={10}
                         disabled={character.isUnconscious()}
                         onChange={onChangeCharacterName(index)}
+                        onOpen={handleCharacterCardTooltipHover(index)}
                         key={index}
                       />
+
                       <Tooltip
                         title={
                           <StatusModifiers
@@ -858,9 +881,9 @@ export const CombatTracker: React.FC = () => {
                       <Typography
                         className={cx({
                           [classes.conditionList]: true,
-                          [classes.player]: character.player_type === CharacterType.Player,
-                          [classes.npc]: character.player_type === CharacterType.NPC,
-                          [classes.enemy]: character.player_type === CharacterType.Enemy
+                          [classes.player]: character.player_type === PlayerType.Player,
+                          [classes.npc]: character.player_type === PlayerType.NPC,
+                          [classes.enemy]: character.player_type === PlayerType.Enemy
                         })}
                       >
                         &nbsp;
@@ -931,9 +954,9 @@ export const CombatTracker: React.FC = () => {
                                 }
                               }}
                             >
-                              <MenuItem value={CharacterType.Player}>Player</MenuItem>
-                              <MenuItem value={CharacterType.NPC}>NPC</MenuItem>
-                              <MenuItem value={CharacterType.Enemy}>Enemy</MenuItem>
+                              <MenuItem value={PlayerType.Player}>Player</MenuItem>
+                              <MenuItem value={PlayerType.NPC}>NPC</MenuItem>
+                              <MenuItem value={PlayerType.Enemy}>Enemy</MenuItem>
                             </Select>
                           </ListItem>
                           <ListItem className={`${classes.settingsListItem}`}>
@@ -956,7 +979,7 @@ export const CombatTracker: React.FC = () => {
                           <ListItem className={`${classes.settingsListItem}`}>
                             <Typography>Vulnerabilities:</Typography>
                             <Autocomplete
-                              id={`vulnerabilitiers-${index}`}
+                              id={`vulnerabilities-${index}`}
                               multiple
                               clearOnBlur
                               disableCloseOnSelect

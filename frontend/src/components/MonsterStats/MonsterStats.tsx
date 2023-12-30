@@ -9,25 +9,20 @@ import { getMonster, getMonsterList } from 'api/monsters'
 import { FifthESRDMonster } from 'domain/services/FifthESRDService'
 import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
 import Character from 'domain/entities/Character'
-import { CharacterType, Source } from 'interfaces'
-import CharacterCard from 'components/CombatTracker/CharacterCard'
+import { PlayerType, Source } from 'interfaces'
+import CharacterCard from 'components/Character/CharacterCard'
 import { upsertToArray } from 'utils/utils'
 import DeleteButton from 'components/DeleteButton'
 import ScreenshotButton from 'components/ScreenshotButton'
 import _ from 'lodash'
 import { useOrientation } from 'utils/hooks'
+import EditButton from 'components/EditButton'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
   const { classes } = useStyles()
   return <p className={classes.blockDescription}>{children}</p>
 }
-
-/*const DescriptionInline: React.FC = (props) => {
-  const { children } = props
-  const { classes } = useStyles()
-  return <p className={classes.inlineDescription}>{children}</p>
-}*/
 
 export const MonsterStats: React.FC = () => {
   const { classes } = useStyles()
@@ -42,6 +37,7 @@ export const MonsterStats: React.FC = () => {
   const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
   const [monsterActionsVisible, setMonsterActionsVisible] = useState(true)
   const [loadingMonsterList, setLoadingMonsterList] = useState(false)
+  const [editMode, setEditMode] = useState(false)
 
   // sync characters in custom character list from combat tracker
   // NOTE: DO NOT change combat tracker state in this file, it will cause an infinite loop
@@ -81,7 +77,10 @@ export const MonsterStats: React.FC = () => {
       setLoadingMonsterList(false)
     }
 
-    fetchData().catch(console.error)
+    fetchData().catch((error) => {
+      setLoadingMonsterList(false)
+      console.error(error)
+    })
   }, [customCharacterList])
 
   const onChangeMonster = (key: string, character: Character) => {
@@ -121,7 +120,7 @@ export const MonsterStats: React.FC = () => {
             ...monster,
             init: 0,
             armor_classes: monster.armor_class,
-            player_type: CharacterType.Enemy,
+            player_type: PlayerType.Enemy,
             source: Source.FifthESRD
           })
         )
@@ -156,159 +155,18 @@ export const MonsterStats: React.FC = () => {
     setMonsterActionsVisible((monsterActionsVisible) => !monsterActionsVisible)
   }
 
+  const onToggletEditMode = () => {
+    setEditMode((editMode) => !editMode)
+  }
+
   return (
     <>
-      {' '}
-      {/*
-      <div>
-        <StatsContainer className={classes.monsterContainer}>
-          <h1 className={classes.name}>{currentMonster.name}</h1>
-          <h2 className={classes.shortDescription}>{currentMonster.short_description}</h2>
-          <TaperedRule />
-          <div className={classes.baseStatsContainer}>
-            <div>
-              <span className={classes.statHeader}>Armor Class</span>
-              <span className={classes.statValue}>{currentMonster.armor_class_label}</span>
-            </div>
-            <div>
-              <span className={classes.statHeader}>Hit Points</span>
-              <span className={classes.statValue}>{currentMonster.hit_points}</span>
-            </div>
-            <div>
-              <span className={classes.statHeader}>Speed</span>
-              <span className={classes.statValue}>{currentMonster.speed_label}</span>
-            </div>
-          </div>
-          <TaperedRule />
-          <div>
-            <div className={classes.stats}>
-              <div className={classes.statHeader}>STR</div>
-              <div className={classes.statHeader}>DEX</div>
-              <div className={classes.statHeader}>CON</div>
-              <div className={classes.statHeader}>INT</div>
-              <div className={classes.statHeader}>WIS</div>
-              <div className={classes.statHeader}>CHA</div>
-              <div className={classes.rowBreak} />
-              <div className={classes.statValue}>
-                <span>{currentMonster.strenght_label}</span>
-              </div>
-              <div className={classes.statValue}>
-                <span>{currentMonster.dexterity_label}</span>
-              </div>
-              <div className={classes.statValue}>
-                <span>{currentMonster.constitution_label}</span>
-              </div>
-              <div className={classes.statValue}>
-                <span>{currentMonster.intelligence_label}</span>
-              </div>
-              <div className={classes.statValue}>
-                <span>{currentMonster.wisdom_label}</span>
-              </div>
-              <div className={classes.statValue}>
-                <span>{currentMonster.charisma_label}</span>
-              </div>
-            </div>
-            <TaperedRule />
-            <div className={classes.baseStatsContainer}>
-              {currentMonster.skills && (
-                <div>
-                  <span className={classes.statHeader}>Skills</span>
-                  <span className={classes.statValue}>{currentMonster.skills_label}</span>
-                </div>
-              )}
-              {!_.isEmpty(currentMonster.saving_throws) && (
-                <div>
-                  <span className={classes.statHeader}>Saving Throws</span>
-                  <span className={classes.statValue}>{currentMonster.saving_throws_label}</span>
-                </div>
-              )}
-              {!_.isEmpty(currentMonster.damage_resistances) && (
-                <div>
-                  <span className={classes.statHeader}>Damage Resistances</span>
-                  <span className={classes.statValue}>{currentMonster.damage_resistances_label}</span>
-                </div>
-              )}
-              {!_.isEmpty(currentMonster.damage_immunities) && (
-                <div>
-                  <span className={classes.statHeader}>Damage Immunities</span>
-                  <span className={classes.statValue}>{currentMonster.damage_immunities_label}</span>
-                </div>
-              )}
-              {!_.isEmpty(currentMonster.condition_immunities) && (
-                <div>
-                  <span className={classes.statHeader}>Condition Immunities</span>
-                  <span className={classes.statValue}>{currentMonster.condition_immunities_label}</span>
-                </div>
-              )}
-              {currentMonster.senses && (
-                <div>
-                  <span className={classes.statHeader}>Senses</span>
-                  <span className={classes.statValue}>{currentMonster.senses_label}</span>
-                </div>
-              )}
-              {currentMonster.languages && (
-                <div>
-                  <span className={classes.statHeader}>Languages</span>
-                  <span className={classes.statValue}>{currentMonster.languages}</span>
-                </div>
-              )}
-              {currentMonster.challenge_rating && (
-                <div>
-                  <span className={classes.statHeader}>Challenge</span>
-                  <span className={classes.statValue}>{currentMonster.challenge_rating_label}</span>
-                </div>
-              )}
-            </div>
-            <TaperedRule />
-            <div>
-              {currentMonster.special_abilities.map((special_ability, key) => {
-                return (
-                  <div className={classes.actionRow} key={key}>
-                    <h3 key={`header-${key}`} className={classes.actionName}>
-                      {special_ability.name}
-                    </h3>
-                    <DescriptionInline>{special_ability.desc}</DescriptionInline>
-                  </div>
-                )
-              })}
-            </div>
-            <div>
-              <h3 className={classes.featureName}>ACTIONS</h3>
-              {currentMonster.actions.map((action, key) => {
-                return (
-                  <div className={classes.actionRow} key={key}>
-                    <h3 key={`header-${key}`} className={classes.actionName}>
-                      {action.name}
-                    </h3>
-                    <DescriptionInline>{action.desc}</DescriptionInline>
-                  </div>
-                )
-              })}
-            </div>
-            {currentMonster.reactions.length > 0 && (
-              <div>
-                <h3 className={classes.featureName}>REACTIONS</h3>
-                {currentMonster.reactions.map((reaction, key) => {
-                  return (
-                    <div className={classes.actionRow} key={key}>
-                      <h3 key={`header-${key}`} className={classes.actionName}>
-                        {reaction.name}
-                      </h3>
-                      <DescriptionInline>{reaction.desc}</DescriptionInline>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        </StatsContainer>
-      </div>
-              */}
       <div className={isPortrait ? classes.rootPortrait : classes.rootLandscape}>
         <CharacterCard
           character={currentMonster}
           className={isPortrait ? classes.characterCardContainerPortrait : classes.characterCardContainerLandscape}
           onChange={onChangeMonster}
+          editMode={editMode}
         />
         <div className={classes.rightContainer}>
           {currentMonster.imageElement && (
@@ -403,6 +261,9 @@ export const MonsterStats: React.FC = () => {
           <ScreenshotButton onClick={onToggletMonsterActionsVisible} color={monsterActionsVisible ? 'default' : 'info'} />
         </div>
       </Tooltip>
+      <div style={{ display: 'inline-block' }}>
+        <EditButton onClick={onToggletEditMode} color={monsterActionsVisible ? 'default' : 'info'} />
+      </div>
     </>
   )
 }

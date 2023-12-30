@@ -1,5 +1,6 @@
 import { DamageType } from 'interfaces'
 import _ from 'lodash'
+import { defaultSavingThrows } from 'services/defaults'
 import { getNumberWithSign } from 'utils/utils'
 
 // D&D 5e SRD API interfaces
@@ -33,10 +34,52 @@ type LegendaryAction = {
   dc?: DifficultyClass
 }
 
-export type ArmorClass = {
-  type: string
+export type ArmorClass = ArmorClassDex | ArmorClassNatural | ArmorClassArmor | ArmorClassSpell | ArmorClassCondition | { type: string; value: number }
+
+type ArmorClassDex = {
+  _id?: boolean
+  type: 'dex'
+  value: number
+  desc?: string
+}
+
+type ArmorClassNatural = {
+  _id?: boolean
+  type: 'natural'
+  value: number
+  desc?: string
+}
+
+type ArmorClassArmor = {
+  _id?: boolean
+  type: 'armor'
   value: number
   armor?: APIReference[] // Equipment
+  desc?: string
+}
+
+type ArmorClassSpell = {
+  _id?: boolean
+  type: 'spell'
+  value: number
+  spell: APIReference // Spell
+  desc?: string
+}
+
+type ArmorClassCondition = {
+  _id?: boolean
+  type: 'condition'
+  value: number
+  condition: APIReference // Condition
+  desc?: string
+}
+
+export enum ArmorClassType {
+  DEX = 'dex',
+  NATURAL = 'natural',
+  ARMOR = 'armor',
+  SPELL = 'spell',
+  CONDITION = 'condition'
 }
 
 export type Choice = {
@@ -134,13 +177,24 @@ export type SpecialAbility = {
   usage?: SpecialAbilityUsage
 }
 
-type Speed = {
-  burrow?: string
-  climb?: string
-  fly?: string
-  hover?: string
-  swim?: string
-  walk?: string
+export enum Speed {
+  BURROW = 'burrow',
+  CLIMB = 'climb',
+  FLY = 'fly',
+  HOVER = 'hover',
+  SWIM = 'swim',
+  WALK = 'walk'
+}
+
+type MonsterSpeed = { [key in Speed]?: string }
+
+export enum AbilityScores {
+  STRENGTH = 'strength',
+  DEXTERITY = 'dexterity',
+  CONSTITUTION = 'constitution',
+  INTELLIGENCE = 'intelligence',
+  WISDOM = 'wisdom',
+  CHARISMA = 'charisma'
 }
 
 export type FifthESRDMonster = {
@@ -170,13 +224,14 @@ export type FifthESRDMonster = {
   senses: Sense
   size: string
   special_abilities?: SpecialAbility[]
-  speed: Speed
+  speed: MonsterSpeed
   strength: number
   subtype?: string
   type: string
   url: string
   wisdom: number
   xp: number
+  desc?: string
 }
 
 export class FifthESRDService {
@@ -194,7 +249,61 @@ export class FifthESRDService {
       .join(', ')
   }
 
+  public static parseProficiencyName(proficiency?: Proficiency) {
+    const proficiencyIndex = proficiency?.proficiency?.index
+    const indexParts = proficiencyIndex?.split('-')
+    const nameAcronym = indexParts ? indexParts[indexParts.length - 1] : ''
+    switch (nameAcronym.toLowerCase()) {
+      case 'str':
+        return AbilityScores.STRENGTH
+      case 'dex':
+        return AbilityScores.DEXTERITY
+      case 'con':
+        return AbilityScores.CONSTITUTION
+      case 'int':
+        return AbilityScores.INTELLIGENCE
+      case 'wis':
+        return AbilityScores.WISDOM
+      case 'cha':
+        return AbilityScores.CHARISMA
+      default:
+        return ''
+    }
+  }
+
+  public static parseProficiencyAcronym(name: string) {
+    switch (name) {
+      case AbilityScores.STRENGTH:
+        return 'str'
+      case AbilityScores.DEXTERITY:
+        return 'dex'
+      case AbilityScores.CONSTITUTION:
+        return 'con'
+      case AbilityScores.INTELLIGENCE:
+        return 'int'
+      case AbilityScores.WISDOM:
+        return 'wis'
+      case AbilityScores.CHARISMA:
+        return 'cha'
+      default:
+        return name
+    }
+  }
+
   public static parseSavingThrows(proficiencies?: Proficiency[]) {
     return _.filter(proficiencies, (proficiency) => proficiency?.proficiency?.index.includes('saving-throw'))
+  }
+
+  public static convertToSavingThrowsToProficiencies(savingThrows: Partial<typeof defaultSavingThrows>): Proficiency[] {
+    return Object.entries(savingThrows).map(([key, value]) => {
+      return {
+        value: parseInt(value.toString()),
+        proficiency: {
+          index: `saving-throw-${FifthESRDService.parseProficiencyAcronym(key)}`,
+          name: `Saving Throw: ${FifthESRDService.parseProficiencyAcronym(key).toUpperCase()}`,
+          url: `/api/proficiencies/saving-throw-${FifthESRDService.parseProficiencyAcronym(key)}`
+        }
+      }
+    })
   }
 }

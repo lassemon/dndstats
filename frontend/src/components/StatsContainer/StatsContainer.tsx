@@ -9,9 +9,10 @@ interface StatsContainerProps {
   className?: string
   size?: 'small' | 'normal'
   resizeable?: boolean
+  children?: React.ReactNode
 }
 
-export const StatsContainer: React.FC<StatsContainerProps> = (props) => {
+export const StatsContainer = React.forwardRef<HTMLDivElement, StatsContainerProps>((props, ref) => {
   const { children, className = '', size = 'normal', resizeable = true } = props
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
@@ -27,6 +28,7 @@ export const StatsContainer: React.FC<StatsContainerProps> = (props) => {
         [className]: true,
         [classes.resizeable]: resizeable
       })}
+      ref={ref ? ref : null}
     >
       <OrangeBorder />
       <div className={`${classes.content} stats-background`} style={divStyle}>
@@ -35,6 +37,6 @@ export const StatsContainer: React.FC<StatsContainerProps> = (props) => {
       <OrangeBorder />
     </div>
   )
-}
+})
 
 export default StatsContainer

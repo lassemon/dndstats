@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 export const getNumberWithSign = (theNumber: number) => {
   if (theNumber > 0) {
     return '+' + theNumber
@@ -20,6 +22,12 @@ export const upsertToArray = <T>(arr: T[], obj: T, key: keyof T): T[] => {
     array[index] = obj
   }
   return array
+}
+
+export const objectWithoutEmptyOrUndefined = <T extends { [key: string]: any }>(object: T) => {
+  return _(object)
+    .omitBy((value) => value === '' || typeof value === 'undefined')
+    .valueOf()
 }
 
 export const uuid = (): string => {

@@ -44,7 +44,7 @@ export const useStyles = makeStyles()((theme) => ({
       marginRight: '.4em'
     },
     border: '1px solid transparent',
-    '& .editableTextField': {
+    '& .editing': {
       flex: '0 1 2em'
     }
   },
@@ -118,9 +118,11 @@ export const useStyles = makeStyles()((theme) => ({
     padding: '0 0 0 0'
   },
   nameText: {
-    width: '6em'
+    width: '8em',
+    textAlign: 'left'
   },
   nameTextTooltip: {
+    zIndex: '100',
     '& .MuiTooltip-tooltip': {
       backgroundColor: 'transparent',
       color: 'rgb(0,0,0)',
@@ -160,7 +162,7 @@ export const useStyles = makeStyles()((theme) => ({
   initField: {
     flexShrink: 0,
     '&&': {
-      width: '3em',
+      width: '1.5em',
       marginLeft: '1em'
     },
     '& label': {
@@ -176,7 +178,7 @@ export const useStyles = makeStyles()((theme) => ({
       opacity: '0.2',
       top: 0,
       left: 0,
-      margin: '-10px 0 0px -10px',
+      margin: '-12px 0 0 0',
       fontWeight: 600,
       fontSize: '0.8em'
     }
@@ -187,14 +189,8 @@ export const useStyles = makeStyles()((theme) => ({
       minWidth: '4em'
     }
   },
-  hpText: {
-    minWidth: '3em',
-    padding: '0 1em 0 0',
-    '&&': {
-      flex: '0 1 auto'
-    }
-  },
   HPText: {
+    minWidth: '3em',
     position: 'relative',
     '&:before': {
       content: '"HP"',
@@ -202,7 +198,7 @@ export const useStyles = makeStyles()((theme) => ({
       opacity: '0.2',
       top: 0,
       left: 0,
-      margin: '-10px 0 0px -10px',
+      margin: '-12px 0 0 0px',
       fontWeight: 600,
       fontSize: '0.8em'
     }

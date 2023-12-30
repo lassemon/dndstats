@@ -79,7 +79,6 @@ const theme = createTheme({
             whiteSpace: 'nowrap'
           },
           '& legend': {
-            fontSize: '1.5rem',
             fontWeight: 'bold'
           },
           '& > label.Mui-focused.Mui-focused': {
@@ -120,6 +119,34 @@ const theme = createTheme({
       defaultProps: {
         enterTouchDelay: 50,
         leaveTouchDelay: 600000 // 10 minutes
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          textTransform: 'capitalize'
+        }
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          textTransform: 'capitalize'
+        }
+      }
+    },
+    MuiInputLabel: {
+      defaultProps: {
+        color: 'secondary'
+      }
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: {
+          '& > legend': {
+            maxWidth: '100%'
+          }
+        }
       }
     }
   }

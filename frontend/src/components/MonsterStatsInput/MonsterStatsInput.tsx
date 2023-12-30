@@ -1,18 +1,52 @@
 //import { Button, Grid, TextField } from '@mui/material'
 //import FeatureInputContainer from 'components/FeatureInputContainer'
+//import { Autocomplete, List, ListItem, TextField, Typography } from '@mui/material'
+//import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
+//import { conditionToApiReference, getConditionImmunitiesList } from 'components/CombatTracker/Conditions'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
+//import { APIReference } from 'domain/services/FifthESRDService'
+//import { DamageType } from 'interfaces'
 import React from 'react'
 import { useRecoilState } from 'recoil'
 import { monsterState } from 'recoil/atoms'
+import { makeStyles } from 'tss-react/mui'
 
-/*
-const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
-  return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
-}*/
+export const useStyles = makeStyles()((theme) => ({
+  autocomplete: {
+    '& .MuiAutocomplete-tag': {
+      textTransform: 'capitalize',
+      height: 'auto',
+      '& .MuiChip-label': {
+        whiteSpace: 'normal'
+      }
+    },
+    '& .MuiInputLabel-animated': {
+      transform: 'translate(14px, -9px) scale(0.75)'
+    },
+    '& legend': {
+      maxWidth: '100%'
+    }
+  },
+  settingsList: {
+    padding: '0.5em'
+  },
+  settingsListItem: {
+    display: 'flex',
+    gap: '1em',
+    padding: '0.5em',
+    '> p': {
+      flex: 1
+    },
+    '> div': {
+      flex: 3
+    }
+  }
+}))
 
 export const MonsterStatsInput: React.FC = () => {
-  const [, /*currentMonster*/ setCurrentMonster] = useRecoilState(monsterState)
+  const [, setCurrentMonster] = useRecoilState(monsterState)
+  //const { classes } = useStyles()
 
   /*
   const onChange = (name: string) => (event: any) =>
@@ -204,9 +238,113 @@ export const MonsterStatsInput: React.FC = () => {
     }
   }
 
+  /*
+  const onChangeResistance = (event: any, resistances: DamageType[]) => {
+    setCurrentMonster((monster) => {
+      const monsterCopy = monster.clone()
+      monsterCopy.damage_resistances = [...resistances]
+      return monsterCopy
+    })
+  }
+
+  const onChangeVulnerability = (event: any, vulnerabilities: DamageType[]) => {
+    setCurrentMonster((monster) => {
+      const monsterCopy = monster.clone()
+      monsterCopy.damage_vulnerabilities = [...vulnerabilities]
+      return monsterCopy
+    })
+  }
+
+  const onChangeDamageImmunity = (event: any, immunities: DamageType[]) => {
+    setCurrentMonster((monster) => {
+      const monsterCopy = monster.clone()
+      monsterCopy.damage_immunities = [...immunities]
+      return monsterCopy
+    })
+  }
+
+  const onChangeConditionImmunity = (event: any, immunities: APIReference[]) => {
+    setCurrentMonster((monster) => {
+      const monsterCopy = monster.clone()
+      monsterCopy.condition_immunities = [...immunities]
+      return monsterCopy
+    })
+  }*/
+
   return (
     <StatsInputContainer>
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
+      {/*
+      <List className={`${classes.settingsList}`}>
+        <ListItem className={`${classes.settingsListItem}`}>
+          <Typography>Condition Immunities:</Typography>
+          <Autocomplete
+            id={`condition-immunities`}
+            multiple
+            clearOnBlur
+            disableCloseOnSelect
+            value={currentMonster.condition_immunities}
+            isOptionEqualToValue={(option, value) => option.index === value.index}
+            className={`${classes.autocomplete}`}
+            options={getConditionImmunitiesList().map((condition) => conditionToApiReference(condition))}
+            onChange={onChangeConditionImmunity}
+            getOptionLabel={(option) => option.name.replaceAll('_', ' ')}
+            PaperComponent={AutoCompleteItem}
+            renderInput={(params) => <TextField {...params} label="Resistances" variant="outlined" size="small" />}
+          />
+        </ListItem>
+        <ListItem className={`${classes.settingsListItem}`}>
+          <Typography>Damage Resistances:</Typography>
+          <Autocomplete
+            id={`resistances`}
+            multiple
+            clearOnBlur
+            disableCloseOnSelect
+            value={currentMonster.damage_resistances}
+            className={`${classes.autocomplete}`}
+            options={Object.values(DamageType)}
+            onChange={onChangeResistance}
+            getOptionLabel={(option) => option.replaceAll('_', ' ')}
+            PaperComponent={AutoCompleteItem}
+            renderInput={(params) => <TextField {...params} label="Resistances" variant="outlined" size="small" />}
+          />
+        </ListItem>
+        <ListItem className={`${classes.settingsListItem}`}>
+          <Typography>Damage Vulnerabilities:</Typography>
+          <Autocomplete
+            id={`vulnerabilities`}
+            multiple
+            clearOnBlur
+            disableCloseOnSelect
+            value={currentMonster.damage_vulnerabilities}
+            className={`${classes.autocomplete}`}
+            options={Object.values(DamageType)}
+            onChange={onChangeVulnerability}
+            getOptionLabel={(option) => option.replaceAll('_', ' ')}
+            style={{ width: '10em' }}
+            PaperComponent={AutoCompleteItem}
+            renderInput={(params) => <TextField {...params} label="Vulnerabilities" variant="outlined" size="small" />}
+          />
+        </ListItem>
+        <ListItem className={`${classes.settingsListItem}`}>
+          <Typography>Damage Immunities:</Typography>
+          <Autocomplete
+            id={`immunities`}
+            multiple
+            clearOnBlur
+            disableCloseOnSelect
+            value={currentMonster.damage_immunities}
+            className={`${classes.autocomplete}`}
+            options={Object.values(DamageType)}
+            onChange={onChangeDamageImmunity}
+            getOptionLabel={(option) => option.replaceAll('_', ' ')}
+            style={{ width: '10em' }}
+            PaperComponent={AutoCompleteItem}
+            renderInput={(params) => <TextField {...params} label="Immunities" variant="outlined" size="small" />}
+          />
+        </ListItem>
+      </List>
+  */}
       {/**
       <TextField id="monster-name" label="Name" value={currentMonster.name} onChange={onChange('name')} />
       <TextField id="monster-short-description" label="Short Description" value={currentMonster.short_description} onChange={onChange('shortDescription')} />
