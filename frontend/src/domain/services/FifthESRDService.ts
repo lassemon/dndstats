@@ -1,6 +1,6 @@
 import { DamageType } from 'interfaces'
 import _ from 'lodash'
-import { defaultSavingThrows } from 'services/defaults'
+import { defaultSavingThrows, defaultSkills } from 'services/defaults'
 import { getNumberWithSign } from 'utils/utils'
 
 // D&D 5e SRD API interfaces
@@ -294,7 +294,7 @@ export class FifthESRDService {
     return _.filter(proficiencies, (proficiency) => proficiency?.proficiency?.index.includes('saving-throw'))
   }
 
-  public static convertToSavingThrowsToProficiencies(savingThrows: Partial<typeof defaultSavingThrows>): Proficiency[] {
+  public static convertSavingThrowsToProficiencies(savingThrows: Partial<typeof defaultSavingThrows>): Proficiency[] {
     return Object.entries(savingThrows).map(([key, value]) => {
       return {
         value: parseInt(value.toString()),
@@ -305,5 +305,24 @@ export class FifthESRDService {
         }
       }
     })
+  }
+
+  public static convertSkillsToProficiencies(skills: typeof defaultSkills): Proficiency[] {
+    return Object.entries(skills).map(([key, value]) => {
+      return {
+        value: parseInt(value.toString()),
+        proficiency: {
+          index: `saving-throw-${FifthESRDService.parseProficiencyAcronym(key)}`,
+          name: `Saving Throw: ${FifthESRDService.parseProficiencyAcronym(key).toUpperCase()}`,
+          url: `/api/proficiencies/saving-throw-${FifthESRDService.parseProficiencyAcronym(key)}`
+        }
+      }
+    })
+  }
+
+  public static parseSkillName(proficiency?: Proficiency) {
+    const proficiencyIndex = proficiency?.proficiency?.index
+    const indexParts = proficiencyIndex?.split('-')
+    return indexParts ? indexParts[indexParts.length - 1] : ''
   }
 }

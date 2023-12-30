@@ -101,10 +101,9 @@ const formatEditableAbilityScores = (_abilityScores: { [key in AbilityScores]: s
 const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
   const { editMode = false, className = '', editWidth = 3.5 } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
-
   const [isText, setIsText] = useState(!editMode)
 
-  const [abilityScores, setAbilityScores] = useState({
+  const characterAbilityScores = {
     ...{
       strength: character.strength || '',
       dexterity: character.dexterity || '',
@@ -113,8 +112,34 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
       wisdom: character.wisdom || '',
       charisma: character.charisma || ''
     }
+  }
+
+  const [abilityScores, setAbilityScores] = useState({
+    ...defaultAbilityScores,
+    ...characterAbilityScores
   })
   const { classes } = useStyles()
+
+  useEffect(() => {
+    const characterAbilityScores = {
+      ...{
+        strength: character.strength || '',
+        dexterity: character.dexterity || '',
+        constitution: character.constitution || '',
+        intelligence: character.intelligence || '',
+        wisdom: character.wisdom || '',
+        charisma: character.charisma || ''
+      }
+    }
+    /*const hasChanged = !_.isEqual(character.abilityScores, abilityScores)
+    console.log('hasChanged', hasChanged)
+    console.log('character.abilityScores', character.abilityScores)
+    console.log('abilityScores', abilityScores)*/
+    setAbilityScores({
+      ...defaultAbilityScores,
+      ...characterAbilityScores
+    })
+  }, [character.strength, character.dexterity, character.constitution, character.intelligence, character.wisdom, character.charisma])
 
   useEffect(() => {
     setIsText(!editMode)

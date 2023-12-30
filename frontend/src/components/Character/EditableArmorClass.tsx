@@ -157,7 +157,7 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
               <div key={index} className={classes.row}>
                 <DeleteButton size="small" onClick={onDelete(index)} sx={{ padding: 0 }} />
                 <Tooltip title="Whatever is the highest armor class value below, is considered as the base AC of the character" placement="top-start">
-                  <FormControl sx={{ m: 0, flex: '0 0 7em' }} size="small">
+                  <FormControl sx={{ m: 0, flex: '0 0 9em' }} size="small">
                     <InputLabel id="armor-class-type">Armor Class</InputLabel>
                     <Select labelId={'armor-class-type'} id="type-select" value={armorClass.type} label="Armor Class" onChange={onChangeType(index)}>
                       {Object.values(ArmorClassType).map((value, index) => {

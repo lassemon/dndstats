@@ -3,7 +3,7 @@ import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
 import Character from 'domain/entities/Character'
 import { AbilityScores } from 'domain/services/FifthESRDService'
-import { PlayerType, Condition, DamageType, Source, Spell } from 'interfaces'
+import { PlayerType, Condition, DamageType, Source, Spell, Skill } from 'interfaces'
 import React from 'react'
 
 export const defaultItem = {
@@ -253,3 +253,8 @@ export const defaultSavingThrows = {
   charisma: '',
   death: ''
 }
+
+export const defaultSkills = Object.values(Skill).reduce((defaultSkills, skill) => {
+  defaultSkills[skill] = ''
+  return defaultSkills
+}, {} as { [key: string]: string })

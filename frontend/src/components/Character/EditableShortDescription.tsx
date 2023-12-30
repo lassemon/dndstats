@@ -50,6 +50,15 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
   const { classes } = useStyles()
 
   useEffect(() => {
+    setShortDescription({
+      size: character.size || '',
+      type: character.type || '',
+      subtype: character.subtype || '',
+      alignment: character.alignment || ''
+    })
+  }, [character.size, character.type, character.subtype, character.alignment])
+
+  useEffect(() => {
     setIsText(!editMode)
   }, [editMode])
 
@@ -106,6 +115,8 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
     }
   }
 
+  const editWidth = '15em'
+
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`} onDoubleClick={onDoubleClick}>
       {isText ? (
@@ -115,7 +126,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
       ) : (
         <div className={classes.editor}>
           <div className={classes.row}>
-            <FormControl sx={{ m: 0, flex: '0 0 12em' }} size="small">
+            <FormControl sx={{ m: 0, flex: `0 0 ${editWidth}` }} size="small">
               <InputLabel shrink id="size">
                 Size
               </InputLabel>
@@ -131,11 +142,11 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
             </FormControl>
           </div>
           <div className={classes.row}>
-            <FormControl sx={{ m: 0, flex: '0 0 12em' }} size="small">
+            <FormControl sx={{ m: 0, flex: `0 0 ${editWidth}` }} size="small">
               <InputLabel shrink id="type">
                 Type
               </InputLabel>
-              <Select labelId={'type'} id="type-select" value={shortDescription.type} label="Type" onChange={onChangeType}>
+              <Select labelId={'type'} id="type-select" value={shortDescription.type.toLowerCase()} label="Type" onChange={onChangeType}>
                 {Object.values(MonsterType).map((value, index) => {
                   return (
                     <MenuItem key={index} value={value}>
@@ -147,11 +158,11 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
             </FormControl>
           </div>
           <div className={classes.row}>
-            <FormControl sx={{ m: 0, flex: '0 0 12em' }} size="small">
+            <FormControl sx={{ m: 0, flex: `0 0 ${editWidth}` }} size="small">
               <InputLabel shrink id="subtype">
                 Subtype
               </InputLabel>
-              <Select labelId={'subtype'} id="subtype-select" value={shortDescription.subtype} label="Subtype" onChange={onChangeSubtype}>
+              <Select labelId={'subtype'} id="subtype-select" value={shortDescription.subtype.toLowerCase()} label="Subtype" onChange={onChangeSubtype}>
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
@@ -166,7 +177,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
             </FormControl>
           </div>
           <div className={classes.row}>
-            <FormControl sx={{ m: 0, flex: '0 0 12em' }} size="small">
+            <FormControl sx={{ m: 0, flex: `0 0 ${editWidth}` }} size="small">
               <InputLabel shrink id="alignment">
                 Alignment
               </InputLabel>

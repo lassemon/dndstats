@@ -18,6 +18,7 @@ import EditableAbilityScores from './EditableAbilityScores'
 import EditableShortDescription from './EditableShortDescription'
 import EditableSavingThrows from './EditableSavingThrows'
 import { CharacterCardContext } from 'services/context'
+import EditableSkills from './EditableSkills'
 
 interface CharacterCardProps {
   character: Character
@@ -190,10 +191,13 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
 
             {!_.isEmpty(internalCharacter.saving_throws) && <EditableSavingThrows editMode={editMode} />}
             {!_.isEmpty(internalCharacter.skills) && (
-              <div>
-                <span className={`${classes.statHeader}`}>Skills</span>
-                <span className={classes.statValue}>{internalCharacter.skills_label}</span>
-              </div>
+              <>
+                <div>
+                  <span className={`${classes.statHeader}`}>Skills</span>
+                  <span className={classes.statValue}>{internalCharacter.skills_label}</span>
+                </div>
+                <EditableSkills editMode={editMode} />
+              </>
             )}
             {!_.isEmpty(internalCharacter.conditions) && (
               <div>

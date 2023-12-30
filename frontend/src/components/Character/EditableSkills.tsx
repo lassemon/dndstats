@@ -2,10 +2,9 @@ import { Button, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import _ from 'lodash'
-import { AbilityScores, FifthESRDService } from 'domain/services/FifthESRDService'
+import { FifthESRDService } from 'domain/services/FifthESRDService'
 import { CharacterCardContext } from 'services/context'
-import { defaultSavingThrows } from 'services/defaults'
-import { objectWithoutEmptyOrUndefined } from 'utils/utils'
+import { defaultSkills } from 'services/defaults'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -47,45 +46,44 @@ export const useStyles = makeStyles()((theme) => ({
   }
 }))
 
-interface EditableSavingThrowsProps {
+interface EditableSkillsProps {
   className?: string
   editMode?: boolean
 }
 
-const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
+const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
   const { editMode = false, className = '' } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
 
-  const characterSavingThrows = character.saving_throws.reduce((_savingThrows, proficiency) => {
-    const proficiencyName = FifthESRDService.parseProficiencyName(proficiency)
+  const characterSkills = character.skills.reduce((_skills, proficiency) => {
+    const proficiencyName = FifthESRDService.parseSkillName(proficiency)
     if (proficiencyName) {
-      _savingThrows[proficiencyName] = proficiency.value.toString()
+      _skills[proficiencyName] = proficiency.value.toString()
     }
-    return _savingThrows
-  }, {} as { [key in AbilityScores]: string })
+    return _skills
+  }, {} as { [key: string]: string })
 
-  const [savingThrows, setSavingThrows] = useState({
-    ...defaultSavingThrows,
-    ...characterSavingThrows
+  const [skills, setSkills] = useState({
+    ...defaultSkills,
+    ...characterSkills
   })
 
   const { classes } = useStyles()
 
   useEffect(() => {
-    const characterSavingThrows = character.saving_throws.reduce((_savingThrows, proficiency) => {
-      const proficiencyName = FifthESRDService.parseProficiencyName(proficiency)
+    const characterSkills = character.skills.reduce((_skills, proficiency) => {
+      const proficiencyName = FifthESRDService.parseSkillName(proficiency)
       if (proficiencyName) {
-        _savingThrows[proficiencyName] = proficiency.value.toString()
+        _skills[proficiencyName] = proficiency.value.toString()
       }
-      return _savingThrows
-    }, {} as { [key in AbilityScores]: string })
-
-    setSavingThrows({
-      ...defaultSavingThrows,
-      ...characterSavingThrows
+      return _skills
+    }, {} as { [key: string]: string })
+    setSkills({
+      ...defaultSkills,
+      ...characterSkills
     })
-  }, [character.saving_throws])
+  }, [character.skills])
 
   useEffect(() => {
     setIsText(!editMode)
@@ -98,10 +96,9 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
   }
 
   const onChangeValue = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(event.target.value.toString()) || ''
-    setSavingThrows((_savingThrows) => {
+    setSkills((_skills) => {
       // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
-      return { ..._.cloneDeep(_savingThrows), [key]: newValue }
+      return { ..._.cloneDeep(_skills), [key]: event.target.value }
     })
   }
 
@@ -110,7 +107,7 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
   }
 
   const onSave = () => {
-    setCharacter(character.clone({ saving_throws: FifthESRDService.convertSavingThrowsToProficiencies(objectWithoutEmptyOrUndefined(savingThrows)) }))
+    setCharacter(character.clone({ skills: FifthESRDService.convertSkillsToProficiencies(skills) }))
     if (!editMode) {
       setIsText(true)
     }
@@ -120,13 +117,13 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
         <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={`${classes.statHeader}`}>Saving Throws</span>
-          <span className={classes.statValue}>{character.saving_throws_label}</span>
+          <span className={`${classes.statHeader}`}>Skills</span>
+          <span className={classes.statValue}>{character.skills_label}</span>
         </div>
       ) : (
         <>
           <div className={classes.editor}>
-            {Object.entries(savingThrows).map(([name, value], index) => {
+            {Object.entries(skills).map(([name, value], index) => {
               return (
                 /*<div key={index} className={classes.row}>*/
                 <TextField
@@ -165,4 +162,4 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
   )
 }
 
-export default EditableSavingThrows
+export default EditableSkills

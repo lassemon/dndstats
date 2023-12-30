@@ -141,6 +141,9 @@ const theme = createTheme({
       }
     },
     MuiOutlinedInput: {
+      defaultProps: {
+        color: 'secondary'
+      },
       styleOverrides: {
         notchedOutline: {
           '& > legend': {

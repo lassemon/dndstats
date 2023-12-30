@@ -264,7 +264,6 @@ export const getConditionImmunitiesList = () => {
   return _.without(
     Object.values(Condition),
     Condition.Dead,
-    Condition.Unconscious,
     Condition.Bloodied,
     Condition.Baned,
     Condition.Blessed,

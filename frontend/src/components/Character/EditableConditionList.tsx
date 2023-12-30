@@ -124,7 +124,7 @@ const EditableConditionList: React.FC<EditableConditionListProps> = (props) => {
             clearOnBlur
             disableCloseOnSelect
             value={conditionList}
-            isOptionEqualToValue={(option, value) => option.index === value.index}
+            isOptionEqualToValue={(option, value) => option.index.toLowerCase() === value.index.toLowerCase()}
             className={`${classes.autocomplete}`}
             options={getConditionImmunitiesList().map((condition) => conditionToApiReference(condition))}
             onChange={onChangeValue}

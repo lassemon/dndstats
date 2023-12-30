@@ -14,7 +14,7 @@ export enum Condition {
   Diseased = 'diseased',
   Exhaustion = 'exhaustion',
   Frightened = 'frightened',
-  Grappled = 'grabbled',
+  Grappled = 'grappled',
   Hasted = 'hasted',
   Hex = 'hex',
   Holding_Action = 'holding_action',
@@ -66,6 +66,11 @@ export enum Alignment {
   NeutralEvil = 'neutral evil',
   ChaoticEvil = 'chaotic evil',
   AnyAlignment = 'any alignment',
+  AnyLawful = 'any lawful alignment',
+  AnyNeutral = 'any neutral alignment',
+  AnyChaotic = 'any chaotic alignment',
+  AnyGood = 'any good alignment',
+  AnyEvil = 'any evil alignment',
   Unaligned = 'unaligned'
 }
 
@@ -84,6 +89,7 @@ export enum MonsterType {
   ABERRATION = 'aberration',
   OOZE = 'ooze',
   SWARM = 'swarm',
+  SWARM_OF_TINY_BEASTS = 'swarm of tiny beasts',
   PLANT = 'plant'
 }
 
@@ -137,6 +143,26 @@ export enum DamageType {
   Not_Magical = 'bludgeoning, piercing, and slashing from nonmagical weapons'
 }
 
+export enum Skill {
+  Acrobatics = 'acrobatics',
+  AnimalHandling = 'animal_handling',
+  Arcana = 'arcana',
+  Athletics = 'athletics',
+  Deception = 'deception',
+  History = 'history',
+  Insight = 'insight',
+  Intimidation = 'intimidation',
+  Investigation = 'investigation',
+  Medicine = 'medicine',
+  Nature = 'nature',
+  Perception = 'perception',
+  Performance = 'performance',
+  Persuasion = 'persuasion',
+  Religion = 'religion',
+  SleightOfHand = 'sleight_of_hand',
+  Stealth = 'stealth',
+  Survival = 'survival'
+}
 export interface Spell {
   name: string
   shortDescription: string
