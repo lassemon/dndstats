@@ -1,10 +1,11 @@
 import { Button, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
-import _ from 'lodash'
+import _, { capitalize } from 'lodash'
 import { FifthESRDService } from 'domain/services/FifthESRDService'
 import { CharacterCardContext } from 'services/context'
 import { defaultSkills } from 'services/defaults'
+import { objectWithoutEmptyOrUndefined } from 'utils/utils'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -38,7 +39,7 @@ export const useStyles = makeStyles()((theme) => ({
     marginInlineStart: '0.5em'
   },
   textField: {
-    flex: '0 1 7em'
+    flex: '0 1 8.5em'
   },
   buttonsContainer: {
     display: 'flex',
@@ -107,7 +108,7 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
   }
 
   const onSave = () => {
-    setCharacter(character.clone({ skills: FifthESRDService.convertSkillsToProficiencies(skills) }))
+    setCharacter(character.clone({ skills: FifthESRDService.convertSkillsToProficiencies(objectWithoutEmptyOrUndefined<typeof skills>(skills)) }))
     if (!editMode) {
       setIsText(true)
     }
@@ -125,13 +126,16 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
           <div className={classes.editor}>
             {Object.entries(skills).map(([name, value], index) => {
               return (
-                /*<div key={index} className={classes.row}>*/
                 <TextField
                   key={index}
                   className={classes.textField}
                   value={value}
                   type="tel"
-                  label={name}
+                  label={name
+                    .replaceAll('_', ' ')
+                    .split(' ')
+                    .map((part) => capitalize(part))
+                    .join(' ')}
                   onChange={onChangeValue(name)}
                   variant="outlined"
                   size="small"
@@ -142,7 +146,6 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
                     shrink: true
                   }}
                 />
-                /*</div>*/
               )
             })}
           </div>

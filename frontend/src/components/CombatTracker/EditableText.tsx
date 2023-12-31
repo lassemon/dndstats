@@ -24,7 +24,8 @@ interface EditableTextProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
-  onChange: (event: any) => void
+  hideSave?: boolean
+  onChange: (value: string | number) => void
   onOpen?: React.MouseEventHandler<HTMLSpanElement>
 }
 
@@ -47,8 +48,8 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     tooltipOpen,
     editWidth,
     type = 'text',
-
-    editMode = false
+    editMode = false,
+    hideSave
   } = props
 
   const EditableTextTooltip =
@@ -142,7 +143,10 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
           onBlur={onBlur}
           variant="outlined"
           size="small"
-          autoFocus
+          autoFocus // TODO: use this only in combat tracker but not character card
+          InputLabelProps={{
+            shrink: true
+          }}
           onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
             event.target.select()
           }}
@@ -151,7 +155,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
           }}
         />
       )}
-      {!isText && editMode && (
+      {!isText && editMode && !hideSave && (
         <Button variant="contained" size="small" onClick={onSave}>
           Save
         </Button>

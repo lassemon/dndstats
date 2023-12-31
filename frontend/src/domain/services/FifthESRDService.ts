@@ -1,4 +1,4 @@
-import { DamageType } from 'interfaces'
+import { CharacterSenses, CharacterSpeed, DamageType } from 'interfaces'
 import _ from 'lodash'
 import { defaultSavingThrows, defaultSkills } from 'services/defaults'
 import { getNumberWithSign } from 'utils/utils'
@@ -133,7 +133,7 @@ type Reaction = {
 export type Sense = {
   blindsight?: string
   darkvision?: string
-  passive_perception: number
+  passive_perception: string
   tremorsense?: string
   truesight?: string
 }
@@ -177,17 +177,6 @@ export type SpecialAbility = {
   usage?: SpecialAbilityUsage
 }
 
-export enum Speed {
-  BURROW = 'burrow',
-  CLIMB = 'climb',
-  FLY = 'fly',
-  HOVER = 'hover',
-  SWIM = 'swim',
-  WALK = 'walk'
-}
-
-type MonsterSpeed = { [key in Speed]?: string }
-
 export enum AbilityScores {
   STRENGTH = 'strength',
   DEXTERITY = 'dexterity',
@@ -221,10 +210,10 @@ export type FifthESRDMonster = {
   proficiencies: Proficiency[]
   proficiency_bonus: number
   reactions?: Reaction[]
-  senses: Sense
+  senses: CharacterSenses
   size: string
   special_abilities?: SpecialAbility[]
-  speed: MonsterSpeed
+  speed: CharacterSpeed
   strength: number
   subtype?: string
   type: string
@@ -307,10 +296,10 @@ export class FifthESRDService {
     })
   }
 
-  public static convertSkillsToProficiencies(skills: typeof defaultSkills): Proficiency[] {
+  public static convertSkillsToProficiencies(skills: Partial<typeof defaultSkills>): Proficiency[] {
     return Object.entries(skills).map(([key, value]) => {
       return {
-        value: parseInt(value.toString()),
+        value: parseInt(value?.toString() || ''),
         proficiency: {
           index: `saving-throw-${FifthESRDService.parseProficiencyAcronym(key)}`,
           name: `Saving Throw: ${FifthESRDService.parseProficiencyAcronym(key).toUpperCase()}`,

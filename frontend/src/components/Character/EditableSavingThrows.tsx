@@ -1,7 +1,7 @@
 import { Button, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
-import _ from 'lodash'
+import _, { capitalize } from 'lodash'
 import { AbilityScores, FifthESRDService } from 'domain/services/FifthESRDService'
 import { CharacterCardContext } from 'services/context'
 import { defaultSavingThrows } from 'services/defaults'
@@ -134,7 +134,11 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
                   className={classes.textField}
                   value={value}
                   type="tel"
-                  label={name}
+                  label={name
+                    .replaceAll('_', ' ')
+                    .split(' ')
+                    .map((part) => capitalize(part))
+                    .join(' ')}
                   onChange={onChangeValue(name)}
                   variant="outlined"
                   size="small"

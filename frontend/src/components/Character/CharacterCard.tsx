@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import useStyles from './CharacterCard.styles'
 import TaperedRule from 'components/TaperedRule'
 import _ from 'lodash'
-import Character, { ICharacter } from 'domain/entities/Character'
+import Character from 'domain/entities/Character'
 import { Typography, useMediaQuery, useTheme } from '@mui/material'
 import classNames from 'classnames'
 import EditableText from '../CombatTracker/EditableText'
@@ -19,6 +19,10 @@ import EditableShortDescription from './EditableShortDescription'
 import EditableSavingThrows from './EditableSavingThrows'
 import { CharacterCardContext } from 'services/context'
 import EditableSkills from './EditableSkills'
+import EditableLanguages from './EditableLanguages'
+import EditableKeyValue from './EditableKeyValue'
+import EditableChallengeRating from './EditableChallengeRating'
+import EditableSenses from './EditableSenses'
 
 interface CharacterCardProps {
   character: Character
@@ -43,9 +47,10 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
   //const hasSpecialAbilities = _.isEmpty(character.special_abilities) // todo, use later?
   const hasActions = !_.isEmpty(internalCharacter.actions)
   const hasMoreThanOneSpecialAbility = internalCharacter.special_abilities.length > 1
+  const hasMoreThanTwoSpecialAbilities = internalCharacter.special_abilities.length > 2
   //const hasMoreThanOneAction = character.actions.length > 1
   const hasMoreThanTwoActions = internalCharacter.actions.length > 2
-  const splitToColumns = (hasMoreThanOneSpecialAbility && hasActions) || hasMoreThanTwoActions
+  const splitToColumns = (hasMoreThanOneSpecialAbility && hasActions) || hasMoreThanTwoActions || hasMoreThanTwoSpecialAbilities
 
   useEffect(() => {
     setInternalCharacter(character.clone())
@@ -58,9 +63,9 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     }
   }, [editMode, statsContainerRef])
 
-  const onChangeName = (value: string) => {
+  const onChangeName = (value: string | number) => {
     setInternalCharacter((character) => {
-      const characterClone = character.clone({ name: value })
+      const characterClone = character.clone({ name: value.toString() })
       onChange('name', characterClone)
       return characterClone
     })
@@ -77,15 +82,6 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
         return characterClone
       }
       return character
-    })
-  }
-
-  const onChangeSpeed = (speed: ICharacter['speed']) => {
-    setInternalCharacter((character) => {
-      const characterClone = character.clone()
-      characterClone.speed = speed
-      onChange('speed', characterClone)
-      return characterClone
     })
   }
 
@@ -121,6 +117,24 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
       const characterClone = character.clone()
       characterClone.condition_immunities = immunities
       onChange('condition_immunities', characterClone)
+      return characterClone
+    })
+  }
+
+  const onChangeLanguages = (languages: string) => {
+    setInternalCharacter((character) => {
+      const characterClone = character.clone()
+      characterClone.languages = languages
+      onChange('condition_immunities', characterClone)
+      return characterClone
+    })
+  }
+
+  const onChangeProficiencyBonus = (value: string | number) => {
+    setInternalCharacter((character) => {
+      const characterClone = character.clone()
+      characterClone.proficiency_bonus = parseInt(value.toString())
+      onChange('proficiency_bonus', characterClone)
       return characterClone
     })
   }
@@ -166,7 +180,12 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
           />
           <EditableShortDescription editMode={editMode} />
           <TaperedRule />
-          <div className={classes.statsContainer}>
+          <div
+            className={classes.statsContainer}
+            style={{
+              breakInside: editMode ? 'auto' : 'avoid'
+            }}
+          >
             <div className={classes.baseStatsContainer}>
               <EditableArmorClass editMode={editMode} />
               <EditableText
@@ -177,7 +196,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 editWidth={6}
                 editMode={editMode}
               />
-              {internalCharacter.speed && <EditableSpeed character={internalCharacter} onChange={onChangeSpeed} editMode={editMode} />}
+              {internalCharacter.speed && <EditableSpeed editMode={editMode} />}
             </div>
             {internalCharacter.hasAbilityScores() && (
               <>
@@ -190,15 +209,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
             )}
 
             {!_.isEmpty(internalCharacter.saving_throws) && <EditableSavingThrows editMode={editMode} />}
-            {!_.isEmpty(internalCharacter.skills) && (
-              <>
-                <div>
-                  <span className={`${classes.statHeader}`}>Skills</span>
-                  <span className={classes.statValue}>{internalCharacter.skills_label}</span>
-                </div>
-                <EditableSkills editMode={editMode} />
-              </>
-            )}
+            {!_.isEmpty(internalCharacter.skills) && <EditableSkills editMode={editMode} />}
             {!_.isEmpty(internalCharacter.conditions) && (
               <div>
                 <span className={`${classes.statHeader}`}>Conditions</span>
@@ -237,30 +248,23 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 editMode={editMode}
               />
             )}
-            {!_.isEmpty(internalCharacter.senses) && (
-              <div>
-                <span className={`${classes.statHeader}`}>Senses</span>
-                <span className={classes.statValue}>{internalCharacter.senses_label}</span>
-              </div>
-            )}
+            {!_.isEmpty(internalCharacter.senses) && <EditableSenses editMode={editMode} />}
             {!_.isEmpty(internalCharacter.languages) && (
-              <div>
-                <span className={`${classes.statHeader}`}>Languages</span>
-                <span className={classes.statValue}>{internalCharacter.languages}</span>
-              </div>
+              <EditableLanguages language={internalCharacter.languages} onChange={onChangeLanguages} editMode={editMode} />
             )}
             <div style={{ display: 'flex', gap: '0.5em' }}>
-              {!!internalCharacter.challenge_rating && (
-                <div>
-                  <span className={`${classes.statHeader}`}>Challenge Rating</span>
-                  <span className={classes.statValue}>{internalCharacter.challenge_rating_label}</span>
-                </div>
-              )}
+              {!!internalCharacter.challenge_rating && <EditableChallengeRating editMode={editMode} />}
               {!!internalCharacter.proficiency_bonus && (
-                <div>
-                  <span className={`${classes.statHeader}`}>Proficiency Bonus</span>
-                  <span className={classes.statValue}>{internalCharacter.proficiency_bonus_label}</span>
-                </div>
+                <EditableKeyValue
+                  id="proficiency-bonus"
+                  label="Proficiency Bonus"
+                  type="number"
+                  value={internalCharacter.proficiency_bonus}
+                  valueLabel={internalCharacter.proficiency_bonus_label}
+                  onChange={onChangeProficiencyBonus}
+                  editWidth={10}
+                  editMode={editMode}
+                />
               )}
             </div>
             <TaperedRule />

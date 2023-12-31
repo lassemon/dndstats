@@ -3,7 +3,7 @@ import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
 import Character from 'domain/entities/Character'
 import { AbilityScores } from 'domain/services/FifthESRDService'
-import { PlayerType, Condition, DamageType, Source, Spell, Skill } from 'interfaces'
+import { PlayerType, Condition, DamageType, Source, Spell, Skill, Senses, Speed } from 'interfaces'
 import React from 'react'
 
 export const defaultItem = {
@@ -115,7 +115,7 @@ export const defaultMonster = new Character({
   condition_immunities: [{ index: Condition.Poisoned, name: Condition.Poisoned }],
   senses: {
     truesight: '120 ft.',
-    passive_perception: 13
+    passive_perception: '13'
   },
   languages: 'Abyssal, Telepathy 120 ft.',
   challenge_rating: 19,
@@ -254,7 +254,17 @@ export const defaultSavingThrows = {
   death: ''
 }
 
+export const defaultSpeed = Object.values(Speed).reduce((accumulator, speedKey) => {
+  accumulator[speedKey] = ''
+  return accumulator
+}, {} as Character['speed'] & {})
+
 export const defaultSkills = Object.values(Skill).reduce((defaultSkills, skill) => {
   defaultSkills[skill] = ''
   return defaultSkills
+}, {} as { [key: string]: string })
+
+export const defaultSenses = Object.values(Senses).reduce((defaultSenses, sense) => {
+  defaultSenses[sense] = ''
+  return defaultSenses
 }, {} as { [key: string]: string })

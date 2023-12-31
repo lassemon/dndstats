@@ -1,11 +1,11 @@
-import { Button, TextField, TextFieldProps } from '@mui/material'
+import { Button, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
+import { Senses } from 'interfaces'
 import _, { capitalize } from 'lodash'
-import { objectWithoutEmptyOrUndefined } from 'utils/utils'
 import { CharacterCardContext } from 'services/context'
-import { defaultSpeed } from 'services/defaults'
-import { Speed } from 'interfaces'
+import { defaultSenses } from 'services/defaults'
+import { objectWithoutEmptyOrUndefined } from 'utils/utils'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -13,10 +13,10 @@ export const useStyles = makeStyles()((theme) => ({
   },
   editor: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     gap: '0.4em',
     alignItems: 'baseline',
-    margin: '0 0 0.8em 0'
+    margin: '0.6em 0 0.8em 0'
   },
   row: {
     display: 'flex',
@@ -46,31 +46,46 @@ export const useStyles = makeStyles()((theme) => ({
   buttonsContainer: {
     display: 'flex',
     gap: '0.6em'
+  },
+  autocomplete: {
+    '& .MuiAutocomplete-tag': {
+      textTransform: 'capitalize',
+      height: 'auto',
+      '& .MuiChip-label': {
+        whiteSpace: 'normal'
+      }
+    },
+    '& .MuiInputLabel-animated': {
+      transform: 'translate(14px, -9px) scale(0.75)'
+    },
+    '& legend': {
+      maxWidth: '100%'
+    }
   }
 }))
 
-interface EditableSpeedProps {
-  id?: string
+interface EditableSensesProps {
   className?: string
-  textFieldClass?: string
-  textClass?: string
-  valueLabel?: string | number
-  textWidth?: number
-  editWidth?: number
-  type?: TextFieldProps['type']
   editMode?: boolean
 }
 
-const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
-  const { id, editMode = false, className = '', textFieldClass = '' } = props
+const EditableSenses: React.FC<EditableSensesProps> = (props) => {
+  const { className = '', editMode = false } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
-  const [_speed, setSpeed] = useState({ ...defaultSpeed, ...character.speed })
+  const [internalSenses, setInternalSenses] = useState({
+    ...defaultSenses,
+    ...character.senses
+  })
+
   const { classes } = useStyles()
 
   useEffect(() => {
-    setSpeed({ ...defaultSpeed, ...character.speed })
-  }, [character.speed])
+    setInternalSenses({
+      ...defaultSenses,
+      ...character.senses
+    })
+  }, [character.senses])
 
   useEffect(() => {
     setIsText(!editMode)
@@ -83,8 +98,8 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   }
 
   const onChangeValue = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSpeed((speed) => {
-      return { ..._.cloneDeep(speed), [key]: event.target.value } // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
+    setInternalSenses((_senses) => {
+      return { ..._.cloneDeep(_senses), [key]: event.target.value } // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
     })
   }
 
@@ -93,7 +108,7 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   }
 
   const onSave = () => {
-    const characterClone = character.clone({ speed: objectWithoutEmptyOrUndefined<typeof _speed>(_speed) })
+    const characterClone = character.clone({ senses: objectWithoutEmptyOrUndefined<typeof internalSenses>(internalSenses) })
     setCharacter(characterClone)
     if (!editMode) {
       setIsText(true)
@@ -104,19 +119,18 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
         <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={classes.statHeader}>Speed</span>
-          <span className={classes.statValue}>{character.speed_label}</span>
+          <span className={classes.statHeader}>Senses</span>
+          <span className={classes.statValue}>{character.senses_label}</span>
         </div>
       ) : (
         <>
           <div className={classes.editor}>
-            {Object.values(Speed).map((key, index) => {
+            {Object.values(Senses).map((key, index) => {
               return (
                 <div key={index} className={classes.row}>
                   <TextField
-                    id={id}
-                    className={textFieldClass}
-                    value={_speed[key]}
+                    id={key}
+                    value={internalSenses[key]}
                     type="text"
                     label={key
                       .replaceAll('_', ' ')
@@ -153,4 +167,4 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   )
 }
 
-export default EditableSpeed
+export default EditableSenses

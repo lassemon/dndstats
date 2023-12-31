@@ -4,7 +4,11 @@ import { makeStyles } from 'tss-react/mui'
 export const useStyles = makeStyles()((theme) => ({
   root: {
     '& .editing': {
-      margin: '0.5em 0 1.2em 0'
+      margin: '0 0 1.5em 0',
+      breakInside: 'avoid',
+      '& .MuiFormControl-root': {
+        margin: '0.5em 0 0 0'
+      }
     }
   },
   staticWidthMedium: {

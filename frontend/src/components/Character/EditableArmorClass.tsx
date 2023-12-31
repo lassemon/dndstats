@@ -194,7 +194,7 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
                     onChange={onChangeDetail(index)}
                     variant="outlined"
                     size="small"
-                    autoFocus
+                    autoFocus // this is good
                     onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
                       event.target.select()
                     }}

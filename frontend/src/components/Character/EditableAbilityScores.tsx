@@ -131,10 +131,7 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
         charisma: character.charisma || ''
       }
     }
-    /*const hasChanged = !_.isEqual(character.abilityScores, abilityScores)
-    console.log('hasChanged', hasChanged)
-    console.log('character.abilityScores', character.abilityScores)
-    console.log('abilityScores', abilityScores)*/
+    // note: this infinite loop was fixed by putting static values to useEffect [] list instead of character.abilityScores
     setAbilityScores({
       ...defaultAbilityScores,
       ...characterAbilityScores

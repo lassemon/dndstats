@@ -1,12 +1,13 @@
-import { PlayerType, Condition, DamageType, Source } from 'interfaces'
+import { PlayerType, Condition, DamageType, Source, CharacterSenses } from 'interfaces'
 import ValueObject from './ValueObject'
-import _ from 'lodash'
+import _, { capitalize } from 'lodash'
 import { ConditionEffects, getConditionEffects, getPrintableConditions } from 'components/CombatTracker/Conditions'
 import { getNumberWithSign, upsertToArray, uuid } from 'utils/utils'
-import { Action, ArmorClass, ArmorClassType, FifthESRDMonster, FifthESRDService, Proficiency, Sense, SpecialAbility } from 'domain/services/FifthESRDService'
+import { Action, ArmorClass, ArmorClassType, FifthESRDMonster, FifthESRDService, Proficiency, SpecialAbility } from 'domain/services/FifthESRDService'
 import { ReactElement } from 'react'
 export interface ICharacter extends Partial<FifthESRDMonster> {
   id?: string
+  index?: string
   name: string
   init?: number
   armor_classes: ArmorClass[]
@@ -20,7 +21,7 @@ export interface ICharacter extends Partial<FifthESRDMonster> {
   damage_vulnerabilities?: DamageType[]
   skills?: Proficiency[]
   special_abilities?: SpecialAbility[]
-  senses?: Sense
+  senses?: CharacterSenses
   languages?: string
   proficiency_bonus?: number
   challenge_rating?: number
@@ -106,7 +107,7 @@ class Character extends ValueObject {
       skills = [],
       saving_throws = [],
       special_abilities = [],
-      senses = {},
+
       languages = '',
       proficiency_bonus = 0,
       challenge_rating = 0,
@@ -124,6 +125,7 @@ class Character extends ValueObject {
       wisdom,
       charisma,
       speed,
+      senses,
 
       imageElement = null,
       size = '',
@@ -134,7 +136,7 @@ class Character extends ValueObject {
       desc
     } = character
     super()
-    this._id = id ? id : this.convertNameToId(name)
+    this._id = character.index || (id ? id : this.convertNameToId(name))
     this._name = name
     this._init = init
     this._armor_classes = armor_classes
@@ -296,7 +298,7 @@ class Character extends ValueObject {
     return name
       .replaceAll('_', ' ')
       .split(' ')
-      .map((word) => word[0].toUpperCase() + word.substring(1))
+      .map((word) => capitalize(word))
       .join(' ')
   }
 
@@ -637,6 +639,7 @@ class Character extends ValueObject {
     }
   }
 
+  // TODO, make this a setter?
   public set abilityScores(newAbilityScores) {}
 
   private calculateAbilityScoreModifier = (score?: number): string => {
@@ -673,7 +676,7 @@ class Character extends ValueObject {
     return this._senses
   }
   public get senses_label() {
-    return Object.entries(this._senses)
+    return Object.entries(this._senses || '')
       .map(([key, value]) => `${key.replace('_', ' ')} ${value}`)
       .join(', ')
   }

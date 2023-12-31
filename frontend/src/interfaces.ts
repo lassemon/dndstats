@@ -163,6 +163,53 @@ export enum Skill {
   Stealth = 'stealth',
   Survival = 'survival'
 }
+
+export enum Languages {
+  Common = 'common',
+  Dwarvish = 'dwarvish',
+  Elvish = 'elvish',
+  Giant = 'giant',
+  Gnomish = 'gnomish',
+  Goblin = 'goblin',
+  Halfling = 'halfling',
+  Orc = 'orc',
+  Abyssal = 'abyssal',
+  Celestial = 'celestial',
+  Draconic = 'draconic',
+  DeepSpeech = 'deep_speech',
+  Infernal = 'infernal',
+  Primordial = 'primordial',
+  Sylvan = 'sylvan',
+  Undercommon = 'undercommon',
+  Aarakocra = 'aarakocra',
+  Aquan = 'aquan',
+  Auran = 'auran',
+  Ignan = 'ignan',
+  Terran = 'terran',
+  Druidic = 'druidic'
+}
+
+export enum Speed {
+  BURROW = 'burrow',
+  CLIMB = 'climb',
+  FLY = 'fly',
+  HOVER = 'hover',
+  SWIM = 'swim',
+  WALK = 'walk'
+}
+
+export type CharacterSpeed = { [key in Speed]?: string }
+
+export enum Senses {
+  Blindsight = 'blindsight',
+  Darkvision = 'darkvision',
+  Tremorsense = 'tremorsense',
+  Truesight = 'truesight',
+  PassivePerception = 'passive_perception'
+}
+
+export type CharacterSenses = { [key in Senses]?: string }
+
 export interface Spell {
   name: string
   shortDescription: string

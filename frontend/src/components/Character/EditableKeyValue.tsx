@@ -1,4 +1,4 @@
-import { TextField, TextFieldProps } from '@mui/material'
+import { Button, TextField, TextFieldProps } from '@mui/material'
 import React, { ReactNode, useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
@@ -121,6 +121,10 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
     }
   }
 
+  const onSave = () => {
+    onChange(_value)
+  }
+
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
@@ -136,27 +140,34 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
           </div>
         </EditableKeyValueTooltip>
       ) : (
-        <TextField
-          id={id}
-          className={textFieldClass}
-          value={_value}
-          type={type}
-          label={label}
-          disabled={disabled}
-          onChange={internalOnChange}
-          onBlur={onBlur}
-          onDoubleClick={onDoubleClick}
-          onKeyDown={onEnter}
-          variant="outlined"
-          size="small"
-          //autoFocus here breaks the open edit mode in monsterstats because blur gets triggered
-          onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
-            event.target.select()
-          }}
-          sx={{
-            width: `${editWidth}em`
-          }}
-        />
+        <>
+          <TextField
+            id={id}
+            className={textFieldClass}
+            value={_value}
+            type={type}
+            label={label}
+            disabled={disabled}
+            onChange={internalOnChange}
+            onBlur={onBlur}
+            onDoubleClick={onDoubleClick}
+            onKeyDown={onEnter}
+            variant="outlined"
+            size="small"
+            //autoFocus here breaks the open edit mode in monsterstats because blur gets triggered
+            onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
+              event.target.select()
+            }}
+            sx={{
+              width: `${editWidth}em`
+            }}
+          />
+          {!isText && editMode && (
+            <Button variant="contained" size="small" onClick={onSave}>
+              Save
+            </Button>
+          )}
+        </>
       )}
     </div>
   )

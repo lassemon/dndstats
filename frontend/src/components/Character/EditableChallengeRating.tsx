@@ -1,11 +1,8 @@
-import { Button, TextField, TextFieldProps } from '@mui/material'
+import { Button, TextField } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
-import _, { capitalize } from 'lodash'
-import { objectWithoutEmptyOrUndefined } from 'utils/utils'
+import _ from 'lodash'
 import { CharacterCardContext } from 'services/context'
-import { defaultSpeed } from 'services/defaults'
-import { Speed } from 'interfaces'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -49,28 +46,29 @@ export const useStyles = makeStyles()((theme) => ({
   }
 }))
 
-interface EditableSpeedProps {
-  id?: string
+interface EditableChallengeRatingProps {
   className?: string
-  textFieldClass?: string
-  textClass?: string
-  valueLabel?: string | number
   textWidth?: number
   editWidth?: number
-  type?: TextFieldProps['type']
   editMode?: boolean
 }
 
-const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
-  const { id, editMode = false, className = '', textFieldClass = '' } = props
+const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) => {
+  const { editMode = false, className = '' } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
-  const [_speed, setSpeed] = useState({ ...defaultSpeed, ...character.speed })
+  const [challengeRating, setChallengeRating] = useState({
+    challenge_rating: character.challenge_rating || '',
+    xp: character.xp || ''
+  })
   const { classes } = useStyles()
 
   useEffect(() => {
-    setSpeed({ ...defaultSpeed, ...character.speed })
-  }, [character.speed])
+    setChallengeRating({
+      challenge_rating: character.challenge_rating || '',
+      xp: character.xp || ''
+    })
+  }, [character.challenge_rating, character.xp])
 
   useEffect(() => {
     setIsText(!editMode)
@@ -83,8 +81,8 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   }
 
   const onChangeValue = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSpeed((speed) => {
-      return { ..._.cloneDeep(speed), [key]: event.target.value } // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
+    setChallengeRating((challenge_rating) => {
+      return { ..._.cloneDeep(challenge_rating), [key]: event.target.value } // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
     })
   }
 
@@ -93,8 +91,12 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   }
 
   const onSave = () => {
-    const characterClone = character.clone({ speed: objectWithoutEmptyOrUndefined<typeof _speed>(_speed) })
-    setCharacter(characterClone)
+    const newValues = {
+      ...(challengeRating.challenge_rating !== '' ? { challenge_rating: parseInt(challengeRating.challenge_rating.toString()) } : {}),
+      ...(challengeRating.xp !== '' ? { xp: parseInt(challengeRating.xp.toString()) } : {})
+    }
+    const characterCopy = character.clone(newValues)
+    setCharacter(characterCopy)
     if (!editMode) {
       setIsText(true)
     }
@@ -104,38 +106,36 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
         <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={classes.statHeader}>Speed</span>
-          <span className={classes.statValue}>{character.speed_label}</span>
+          <span className={classes.statHeader}>Challenge Rating</span>
+          <span className={classes.statValue}>{character.challenge_rating_label}</span>
         </div>
       ) : (
         <>
           <div className={classes.editor}>
-            {Object.values(Speed).map((key, index) => {
-              return (
-                <div key={index} className={classes.row}>
-                  <TextField
-                    id={id}
-                    className={textFieldClass}
-                    value={_speed[key]}
-                    type="text"
-                    label={key
-                      .replaceAll('_', ' ')
-                      .split(' ')
-                      .map((part) => capitalize(part))
-                      .join(' ')}
-                    onChange={onChangeValue(key)}
-                    variant="outlined"
-                    size="small"
-                    onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
-                      event.target.select()
-                    }}
-                    InputLabelProps={{
-                      shrink: true
-                    }}
-                  />
-                </div>
-              )
-            })}
+            <TextField
+              id="challenge_rating"
+              label="Challenge Rating"
+              type="number"
+              value={challengeRating.challenge_rating}
+              onChange={onChangeValue('challenge_rating')}
+              variant="outlined"
+              size="small"
+              InputLabelProps={{
+                shrink: true
+              }}
+            />
+            <TextField
+              id="xp"
+              label="XP"
+              type="number"
+              value={challengeRating.xp}
+              onChange={onChangeValue('xp')}
+              variant="outlined"
+              size="small"
+              InputLabelProps={{
+                shrink: true
+              }}
+            />
           </div>
           <div className={classes.buttonsContainer}>
             {!editMode && (
@@ -153,4 +153,4 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   )
 }
 
-export default EditableSpeed
+export default EditableChallengeRating

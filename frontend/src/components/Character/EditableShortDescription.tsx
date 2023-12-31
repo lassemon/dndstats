@@ -115,7 +115,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
     }
   }
 
-  const editWidth = '15em'
+  const editWidth = '14em'
 
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`} onDoubleClick={onDoubleClick}>
