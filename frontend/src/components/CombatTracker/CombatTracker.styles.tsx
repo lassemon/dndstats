@@ -285,6 +285,11 @@ export const useStyles = makeStyles()((theme) => ({
       fontSize: '1.5em'
     }
   },
+  imageIconContainer: {
+    '& > button > svg': {
+      fontSize: '1em'
+    }
+  },
   addContainer: {
     flex: '0 0 100%',
     display: 'flex',

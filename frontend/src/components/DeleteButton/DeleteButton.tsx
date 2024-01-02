@@ -5,7 +5,7 @@ import React from 'react'
 import useStyles from './DeleteButton.styles'
 
 interface DeleteButtonProps extends IconButtonProps {
-  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 const DeleteButton: React.FC<DeleteButtonProps> = (props) => {

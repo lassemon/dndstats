@@ -3,6 +3,7 @@ import { DamageType } from 'interfaces'
 import Slashing from 'assets/damagetypes/Slashing.png'
 import Piercing from 'assets/damagetypes/Piercing.png'
 import Bludgeoning from 'assets/damagetypes/Bludgeoning.png'
+import Bludgeoning_Piercing_Slashing from 'assets/damagetypes/Bludgeoning_Piercing_Slashing.png'
 import Poison from 'assets/damagetypes/Poison.png'
 import Acid from 'assets/damagetypes/Acid.png'
 import Adamantine from 'assets/damagetypes/Adamantine.png'
@@ -37,7 +38,11 @@ const Icons: { [key in DamageType]?: string } = {
   [DamageType.Lightning]: Lightning,
   [DamageType.Thunder]: Thunder,
   [DamageType.Force]: Force,
-  [DamageType.Psychic]: Psychic
+  [DamageType.Psychic]: Psychic,
+  [DamageType.From_Spells]: Magical,
+  [DamageType.Not_Silvered]: Bludgeoning_Piercing_Slashing,
+  [DamageType.Not_Adamantine]: Bludgeoning_Piercing_Slashing,
+  [DamageType.Not_Magical]: Bludgeoning_Piercing_Slashing
 }
 
 export const DamageTypeToIconMap = Object.values(DamageType).reduce((accumulator, key) => {

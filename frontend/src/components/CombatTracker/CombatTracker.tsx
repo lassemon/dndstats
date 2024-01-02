@@ -17,6 +17,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { Container, Draggable } from 'react-smooth-dnd'
 import List from '@mui/material/List'
 import { arrayMoveImmutable } from 'array-move'
@@ -32,7 +33,6 @@ import classNames from 'classnames/bind'
 
 import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
-import DeleteButton from 'components/DeleteButton'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
 import { PlayerType, Condition, DamageType, Source } from 'interfaces'
 import EditableText from './EditableText'
@@ -49,6 +49,8 @@ import { replaceItemAtIndex } from 'utils/utils'
 import { FifthESRDMonster } from 'domain/services/FifthESRDService'
 import { MonsterListOption, emptyMonster } from 'domain/entities/Monster'
 import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
+import ImageButton from 'components/ImageButton'
+import theme from 'theme'
 
 const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
   return {
@@ -102,6 +104,7 @@ export const CombatTracker: React.FC = () => {
     currentCombat.characters.map((character) => String(character.regeneration || '') || '')
   )
   const [regenDialogsOpen, setRegenDialogsOpen] = useState<boolean[]>(currentCombat.characters.map(() => false))
+  const [imageDialogsOpen, setImageDialogsOpen] = useState<boolean[]>(currentCombat.characters.map(() => false))
   const [characterCardTooltipsOpen, setCharacterCardTooltipsOpen] = useState<boolean[]>(currentCombat.characters.map(() => false))
 
   const handleCharacterCardTooltipClickAway = (index: number) => () => {
@@ -165,6 +168,12 @@ export const CombatTracker: React.FC = () => {
     })
     setIncomingDamages((damages) => {
       return damages.map(() => '')
+    })
+    setImageDialogsOpen((imageDialogs) => {
+      return imageDialogs.map(() => false)
+    })
+    setSettingsAnchors((anchors) => {
+      return anchors.map(() => null)
     })
   }, [currentCombat.characters])
 
@@ -274,10 +283,10 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeCharacterInit = (index: number) => (value: string) => {
+  const onChangeCharacterInit = (index: number) => (value: string | number) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
-      character.init = parseInt(value) || 0
+      character.init = parseInt(value.toString()) || 0
       return {
         ...combat,
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
@@ -285,10 +294,10 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeCharacterAC = (index: number) => (value: string) => {
+  const onChangeCharacterAC = (index: number) => (value: string | number) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
-      character.updateArmorClasses([{ type: 'natural', value: parseInt(value) || 0 }])
+      character.updateArmorClasses([{ type: 'natural', value: parseInt(value.toString()) || 0 }])
       return {
         ...combat,
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
@@ -296,10 +305,10 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeCharacterName = (index: number) => (value: string) => {
+  const onChangeCharacterName = (index: number) => (value: string | number) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
-      character.name = value
+      character.name = value.toString()
       return {
         ...combat,
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
@@ -319,6 +328,12 @@ export const CombatTracker: React.FC = () => {
   const onAddCharacter = (characterInput: CharacterInput) => {
     setRegenDialogsOpen((regenDialogs) => {
       return [...regenDialogs, false]
+    })
+    setImageDialogsOpen((imageDialogs) => {
+      return [...imageDialogs, false]
+    })
+    setSettingsAnchors((anchors) => {
+      return anchors.map(() => null)
     })
     setCurrentCombat((combat) => {
       const charactersCopy = [...combat.characters]
@@ -407,9 +422,21 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeCharacterHP = (index: number) => (value: string) => {
+  const onShowCharacterImage = (index: number) => () => {
+    setImageDialogsOpen((imageDialogsDialogs) => {
+      return replaceItemAtIndex<boolean>(imageDialogsDialogs, index, true)
+    })
+  }
+
+  const closeImageDialog = (index: number) => {
+    setImageDialogsOpen((imageDialogs) => {
+      return replaceItemAtIndex<boolean>(imageDialogs, index, false)
+    })
+  }
+
+  const onChangeCharacterHP = (index: number) => (value: string | number) => {
     setCurrentCombat((combat) => {
-      const newMaxHP = parseInt(value)
+      const newMaxHP = parseInt(value.toString())
       if (
         newMaxHP !== combat.characters[index].hit_points ||
         newMaxHP !== combat.characters[index].hit_points_cap ||
@@ -658,6 +685,8 @@ export const CombatTracker: React.FC = () => {
               {currentCombat.characters.map((character, index) => {
                 const settingsAnchor = settingsAnchors[index]
                 const settingsOpen = Boolean(settingsAnchor)
+                const regenDialogOpen = Boolean(regenDialogsOpen[index])
+                const imageDialogOpen = Boolean(imageDialogsOpen[index])
 
                 const HPOf100 = (character.current_hit_points / character.hit_points_cap) * 100
                 const totalHPOf100 = ((character.current_hit_points + character.temporary_hit_points) / character.hit_points_cap) * 100
@@ -694,7 +723,7 @@ export const CombatTracker: React.FC = () => {
                           </Tooltip>
                         )}
                       </div>
-                      <Dialog open={regenDialogsOpen[index]} onClose={() => closeRegenDialog(index)} TransitionComponent={Transition}>
+                      <Dialog open={regenDialogOpen} onClose={() => closeRegenDialog(index)} TransitionComponent={Transition}>
                         <DialogTitle id={`regen-dialog-title-${index}`}>{`Regen ${character.name} for ${character.regeneration} HP this turn?`}</DialogTitle>
                         <DialogContent>
                           <Typography variant="body2" paragraph={false}>
@@ -721,14 +750,9 @@ export const CombatTracker: React.FC = () => {
                         </ListItemIcon>
                       )}
                       {!currentCombat.ongoing && (
-                        <>
-                          <ListItemIcon className={`${character.isUnconscious() ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
-                            <DragHandleIcon fontSize="large" />
-                          </ListItemIcon>
-                          <ListItemIcon className={`${classes.deleteIconContainer}`}>
-                            <DeleteButton onClick={onDeleteCharacter(index)} />
-                          </ListItemIcon>
-                        </>
+                        <ListItemIcon className={`${character.isUnconscious() ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
+                          <DragHandleIcon fontSize="large" />
+                        </ListItemIcon>
                       )}
                       <EditableText
                         type="number"
@@ -848,6 +872,7 @@ export const CombatTracker: React.FC = () => {
                         </div>
                       </Tooltip>
                       <Tooltip
+                        disableHoverListener
                         title={
                           (!_.isEmpty(character.damage_resistances) ||
                             !_.isEmpty(character.damage_vulnerabilities) ||
@@ -878,6 +903,42 @@ export const CombatTracker: React.FC = () => {
                           size="small"
                         />
                       </Tooltip>
+                      <ListItemIcon className={`${classes.imageIconContainer}`}>
+                        {character.imageElement && <ImageButton onClick={onShowCharacterImage(index)} />}
+                      </ListItemIcon>
+                      <Dialog
+                        open={imageDialogOpen}
+                        onClose={() => closeImageDialog(index)}
+                        TransitionComponent={Transition}
+                        fullScreen
+                        PaperProps={{
+                          sx: {
+                            width: '95%',
+                            height: '95%',
+                            background: theme.palette.grey[900]
+                          }
+                        }}
+                      >
+                        <DialogContent
+                          sx={{
+                            padding: 0,
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                          }}
+                        >
+                          {character.imageElement && (
+                            <img style={{ maxHeight: '99%' }} alt={character.imageElement?.props.alt} src={`${character.imageElement?.props.src}`} />
+                          )}
+                        </DialogContent>
+                        <DialogActions>
+                          <Button variant="contained" onClick={() => closeImageDialog(index)}>
+                            Close
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
                       <Typography
                         className={cx({
                           [classes.conditionList]: true,
@@ -1044,6 +1105,20 @@ export const CombatTracker: React.FC = () => {
                               }}
                             />
                           </ListItem>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={onDeleteCharacter(index)}
+                            startIcon={
+                              <DeleteIcon
+                                sx={{
+                                  color: theme.status.blood
+                                }}
+                              />
+                            }
+                          >
+                            Delete
+                          </Button>
                         </List>
                       </Popover>
                     </ListItem>
