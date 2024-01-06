@@ -264,7 +264,7 @@ export const MonsterStats: React.FC = () => {
               })}
             </ButtonGroup>
             <Button variant="contained" onClick={onSaveCustomCharacter}>
-              Save current character
+              Save as homebrew character
             </Button>
           </div>
         </div>

@@ -4,6 +4,9 @@ import { makeStyles } from 'tss-react/mui'
 export const useStyles = makeStyles()((theme) => ({
   root: {
     '& .editing': {
+      backgroundColor: 'rgba(235,145,20,0.2)',
+      borderRadius: '0.5em',
+      padding: '0.5em',
       margin: '0 0 1.5em 0',
       breakInside: 'avoid',
       '& .MuiFormControl-root': {

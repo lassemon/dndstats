@@ -19,6 +19,7 @@ export const useStyles = makeStyles()((theme) => ({
     margin: '0.6em 0 0.8em 0'
   },
   row: {
+    width: '100%',
     display: 'flex',
     gap: '0.4em',
     alignItems: 'center'

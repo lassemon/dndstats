@@ -18,6 +18,7 @@ export const useStyles = makeStyles()((theme) => ({
     margin: '0.6em 0 0.8em 0'
   },
   row: {
+    width: '100%',
     display: 'flex',
     gap: '0.4em',
     alignItems: 'center'
@@ -145,16 +146,8 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
             renderInput={(params) => <TextField {...params} label="Languages" variant="outlined" size="small" />}
           />
           <Tooltip title="Comma separated list of other languages" placement="top-start">
-            <div>
-              <EditableText
-                id="custom-languages"
-                label="Custom"
-                value={customLanguages}
-                onChange={onChangeCustomLanguages}
-                editWidth={20}
-                editMode={true}
-                hideSave={true}
-              />
+            <div style={{ width: '100%' }}>
+              <EditableText id="custom-languages" label="Custom" value={customLanguages} onChange={onChangeCustomLanguages} editMode={true} hideSave={true} />
             </div>
           </Tooltip>
           <div className={classes.buttonsContainer}>

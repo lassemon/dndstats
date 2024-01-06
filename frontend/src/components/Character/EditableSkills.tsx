@@ -39,7 +39,7 @@ export const useStyles = makeStyles()((theme) => ({
     marginInlineStart: '0.5em'
   },
   textField: {
-    flex: '0 1 8.5em'
+    flex: '0 1 48%'
   },
   buttonsContainer: {
     display: 'flex',

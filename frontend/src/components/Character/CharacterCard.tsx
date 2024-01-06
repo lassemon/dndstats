@@ -48,9 +48,9 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
   const hasActions = !_.isEmpty(internalCharacter.actions)
   const hasMoreThanOneSpecialAbility = internalCharacter.special_abilities.length > 1
   const hasMoreThanTwoSpecialAbilities = internalCharacter.special_abilities.length > 2
-  //const hasMoreThanOneAction = character.actions.length > 1
+  const hasMoreThanOneAction = character.actions.length > 1
   const hasMoreThanTwoActions = internalCharacter.actions.length > 2
-  const splitToColumns = (hasMoreThanOneSpecialAbility && hasActions) || hasMoreThanTwoActions || hasMoreThanTwoSpecialAbilities
+  const splitToColumns = (hasMoreThanOneSpecialAbility && hasActions) || hasMoreThanTwoActions || hasMoreThanTwoSpecialAbilities || hasMoreThanOneAction
 
   useEffect(() => {
     setInternalCharacter(character.clone())

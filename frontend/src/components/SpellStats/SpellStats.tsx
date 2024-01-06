@@ -67,26 +67,36 @@ export const SpellStats: React.FC = () => {
           <div className={classes.headerContainer}>
             <h1 className={classes.name}>{currentSpell.name}</h1>
             <h2 className={classes.shortDescription}>{currentSpell.shortDescription}</h2>
-            <div>
-              <h3 className={classes.featureName}>Casting Time</h3>
-              <DescriptionInline>{currentSpell.castingtime}</DescriptionInline>
-            </div>
-            <div>
-              <h3 className={classes.featureName}>Range</h3>
-              <DescriptionInline>{currentSpell.range}</DescriptionInline>
-            </div>
-            <div>
-              <h3 className={classes.featureName}>Components</h3>
-              <DescriptionInline>{currentSpell.components}</DescriptionInline>
-            </div>
-            <div>
-              <h3 className={classes.featureName}>Duration</h3>
-              <DescriptionInline>{currentSpell.duration}</DescriptionInline>
-            </div>
-            <div>
-              <h3 className={classes.featureName}>Classes</h3>
-              <DescriptionInline>{currentSpell.classes}</DescriptionInline>
-            </div>
+            {currentSpell.castingtime && (
+              <div>
+                <h3 className={classes.featureName}>Casting Time</h3>
+                <DescriptionInline>{currentSpell.castingtime}</DescriptionInline>
+              </div>
+            )}
+            {currentSpell.range && (
+              <div>
+                <h3 className={classes.featureName}>Range</h3>
+                <DescriptionInline>{currentSpell.range}</DescriptionInline>
+              </div>
+            )}
+            {currentSpell.components && (
+              <div>
+                <h3 className={classes.featureName}>Components</h3>
+                <DescriptionInline>{currentSpell.components}</DescriptionInline>
+              </div>
+            )}
+            {currentSpell.duration && (
+              <div>
+                <h3 className={classes.featureName}>Duration</h3>
+                <DescriptionInline>{currentSpell.duration}</DescriptionInline>
+              </div>
+            )}
+            {currentSpell.classes && (
+              <div>
+                <h3 className={classes.featureName}>Classes</h3>
+                <DescriptionInline>{currentSpell.classes}</DescriptionInline>
+              </div>
+            )}
           </div>
         </div>
 

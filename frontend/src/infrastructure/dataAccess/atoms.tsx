@@ -21,7 +21,7 @@ type AsyncStorageParsers<T> = {
 const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, parsers?: AsyncStorageParsers<T>) => {
   const loadParser = parsers?.loadParser ? parsers.loadParser : (value: T | null) => value
   const saveParser = parsers?.saveParser ? parsers.saveParser : (value: T) => value
-  const baseAtom = jotaiAtom<T | null>(loadParser(null))
+  const baseAtom = jotaiAtom<T | null>(null)
   baseAtom.onMount = (setValue) => {
     ;(async () => {
       setValue(
@@ -35,17 +35,19 @@ const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, p
     (get) => get(baseAtom),
     (get, set, update: UpdateParam<T>) => {
       const oldValue = get(baseAtom)
-      const nextValue = update instanceof Function && oldValue ? update(oldValue) : (update as T)
-      set(baseAtom, nextValue || null)
-      if (nextValue) {
-        store(key, saveParser(nextValue))
-          .then(() => {
-            set(baseAtom, nextValue)
-          })
-          .catch((error) => {
-            console.error(error)
-            set(errorState, new StorageSyncError(error && error.message ? error.message : error))
-          })
+      if (oldValue) {
+        const nextValue = update instanceof Function ? update(oldValue) : (update as T)
+        set(baseAtom, nextValue || null)
+        if (nextValue) {
+          store(key, saveParser(nextValue))
+            .then(() => {
+              set(baseAtom, nextValue)
+            })
+            .catch((error) => {
+              console.error(error)
+              set(errorState, new StorageSyncError(error && error.message ? error.message : error))
+            })
+        }
       }
     }
   )

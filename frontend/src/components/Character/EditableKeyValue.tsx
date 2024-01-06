@@ -49,6 +49,7 @@ interface EditableKeyValueProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
+  saveButton?: boolean
   onChange: (value: string | number) => void
 }
 
@@ -69,7 +70,8 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
     editWidth = 12,
     type = 'text',
     tooltipPlacement = 'top-start',
-    editMode = false
+    editMode = false,
+    saveButton = false
   } = props
 
   const EditableKeyValueTooltip =
@@ -162,7 +164,7 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
               width: `${editWidth}em`
             }}
           />
-          {!isText && editMode && (
+          {!isText && saveButton && (
             <Button variant="contained" size="small" onClick={onSave}>
               Save
             </Button>
