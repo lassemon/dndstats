@@ -377,7 +377,9 @@ export const useStyles = makeStyles()((theme) => ({
     flex: '1 1 auto'
   },
   settingsList: {
-    padding: '0.5em'
+    padding: '0.5em',
+    display: 'flex',
+    flexDirection: 'column'
   },
   settingsListItem: {
     display: 'flex',

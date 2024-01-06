@@ -142,7 +142,7 @@ class Character extends ValueObject {
     this._armor_classes = armor_classes
     this._hit_points = hit_points
     this._temporary_hit_points = temporary_hit_points
-    this._damage = Math.abs(damage) // turn damage always into positive integer
+    this._damage = Math.abs(damage) || 0 // turn damage always into positive integer
     this._regeneration = regeneration
     this._conditions = conditions
     this._condition_immunities = condition_immunities

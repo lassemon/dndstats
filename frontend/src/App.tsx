@@ -7,14 +7,16 @@ import MonsterStatsLayout from 'layouts/MonsterStatsLayout'
 import SpellStatsLayout from 'layouts/SpellStatsLayout'
 import WeaponStatsLayout from 'layouts/WeaponStatsLayout'
 import React, { useState } from 'react'
-import { RecoilRoot } from 'recoil'
 import theme from 'theme'
 import { Routes, Route, Outlet, Link } from 'react-router-dom'
+import { ErrorBoundary } from 'react-error-boundary'
 
 import useStyles from './App.styles'
 import LoadingIndicator from 'components/LoadingIndicator'
 import { clearAll } from 'services/store'
 import { useOrientation } from 'utils/hooks'
+import { Preloader } from 'infrastructure/dataAccess/Preloader'
+import ErrorDisplay from 'components/ErrorDisplay'
 
 const TABS = {
   '/item': 'Item Stats',
@@ -30,6 +32,19 @@ function a11yProps(index: number) {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`
   }
+}
+
+function Fallback() {
+  return (
+    <>
+      <p>
+        <span role="img" aria-label="Warning icon">
+          ⚠️
+        </span>
+        Something went wrong
+      </p>
+    </>
+  )
 }
 
 const App: React.FC = () => {
@@ -48,74 +63,76 @@ const App: React.FC = () => {
 
   const Main = () => {
     return (
-      <RecoilRoot>
-        <ThemeProvider theme={theme}>
-          <div className={classes.root} style={isPortrait ? { flexDirection: 'column' } : {}}>
-            <Box display="block" displayPrint="none">
-              <AppBar position="static" className={classes.appBar}>
-                <Toolbar disableGutters className={isPortrait ? classes.toolbarPortrait : classes.toolbarLandscape}>
-                  <Tabs
-                    textColor="secondary"
-                    indicatorColor="secondary"
-                    className={isPortrait ? classes.tabsPortrait : classes.tabsLandscape}
-                    value={value}
-                    onChange={handleChange}
-                    aria-label="dnd stats tabs"
-                    variant="scrollable"
-                    scrollButtons={isPortrait}
-                    allowScrollButtonsMobile
-                    orientation={isPortrait ? 'horizontal' : 'vertical'}
-                  >
-                    {Object.keys(TABS).map((tab) => {
-                      return (
-                        <Tab
-                          label={TABS[tab]}
-                          value={`${tab}`}
-                          component={Link}
-                          to={tab}
-                          key={tab}
-                          {...a11yProps(5)}
-                          sx={{
-                            padding: isPortrait ? '0.7em' : ''
-                          }}
-                        />
-                      )
-                    })}
-                  </Tabs>
+      <ThemeProvider theme={theme}>
+        <div className={classes.root} style={isPortrait ? { flexDirection: 'column' } : {}}>
+          <Box display="block" displayPrint="none">
+            <AppBar position="static" className={classes.appBar}>
+              <Toolbar disableGutters className={isPortrait ? classes.toolbarPortrait : classes.toolbarLandscape}>
+                <Tabs
+                  textColor="secondary"
+                  indicatorColor="secondary"
+                  className={isPortrait ? classes.tabsPortrait : classes.tabsLandscape}
+                  value={value}
+                  onChange={handleChange}
+                  aria-label="dnd stats tabs"
+                  variant="scrollable"
+                  scrollButtons={isPortrait}
+                  allowScrollButtonsMobile
+                  orientation={isPortrait ? 'horizontal' : 'vertical'}
+                >
+                  {Object.keys(TABS).map((tab) => {
+                    return (
+                      <Tab
+                        label={TABS[tab]}
+                        value={`${tab}`}
+                        component={Link}
+                        to={tab}
+                        key={tab}
+                        {...a11yProps(5)}
+                        sx={{
+                          padding: isPortrait ? '0.7em' : ''
+                        }}
+                      />
+                    )
+                  })}
+                </Tabs>
 
-                  <Button variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
-                    Print page
-                  </Button>
-                  <Tooltip
-                    title={
-                      <>
-                        <Typography variant="h6">WARNING!</Typography>
-                        <Typography variant="body1">Resets everything in ALL VIEWS to default values</Typography>
-                      </>
-                    }
-                    placement="top-end"
+                <Button variant="contained" color="primary" onClick={onPrint} endIcon={<PrintIcon />}>
+                  Print page
+                </Button>
+                <Tooltip
+                  title={
+                    <>
+                      <Typography variant="h6">WARNING!</Typography>
+                      <Typography variant="body1">Resets everything in ALL VIEWS to default values</Typography>
+                    </>
+                  }
+                  placement="top-end"
+                >
+                  <Button
+                    variant="contained"
+                    onClick={async () => {
+                      await clearAll()
+                      window.location.reload()
+                    }}
                   >
-                    <Button
-                      variant="contained"
-                      onClick={async () => {
-                        await clearAll()
-                        window.location.reload()
-                      }}
-                    >
-                      Reset All
-                    </Button>
-                  </Tooltip>
-                </Toolbar>
-              </AppBar>
-            </Box>
-            <main className={classes.main}>
+                    Reset All
+                  </Button>
+                </Tooltip>
+              </Toolbar>
+            </AppBar>
+          </Box>
+          <main className={classes.main}>
+            <ErrorBoundary FallbackComponent={Fallback}>
               <React.Suspense fallback={<LoadingIndicator />}>
+                <Preloader />
                 <Outlet />
+                <ErrorDisplay />
               </React.Suspense>
-            </main>
-          </div>
-        </ThemeProvider>
-      </RecoilRoot>
+            </ErrorBoundary>
+          </main>
+        </div>
+      </ThemeProvider>
     )
   }
 

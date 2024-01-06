@@ -3,84 +3,96 @@ import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
 import TaperedRule from 'components/TaperedRule'
-import React, { Fragment } from 'react'
-import { useRecoilState } from 'recoil'
-import { weaponState } from 'recoil/atoms'
+import { useAtom } from 'jotai'
+import React, { Fragment, useMemo } from 'react'
+import { weaponState } from 'infrastructure/dataAccess/atoms'
 
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
 }
 
 export const WeaponStatsInput: React.FC = () => {
-  const [currentWeapon, setCurrentWeapon] = useRecoilState(weaponState)
+  const [currentWeapon, setCurrentWeapon] = useAtom(useMemo(() => weaponState, []))
 
   const onChange = (name: string) => (event: any) =>
     setCurrentWeapon((weapon) => {
-      return { ...weapon, [name]: event.target.value }
+      if (weapon) {
+        return { ...weapon, [name]: event.target.value }
+      }
     })
 
   const onAddFeature = () => {
     setCurrentWeapon((weapon) => {
-      return {
-        ...weapon,
-        features: [
-          ...weapon.features,
-          {
-            featureName: 'Feature name',
-            featureDescription: 'Feature description'
-          }
-        ]
+      if (weapon) {
+        return {
+          ...weapon,
+          features: [
+            ...weapon.features,
+            {
+              featureName: 'Feature name',
+              featureDescription: 'Feature description'
+            }
+          ]
+        }
       }
     })
   }
 
   const onChangeFeatureName = (index: number) => (event: any) => {
     setCurrentWeapon((weapon) => {
-      const featuresCopy = replaceItemAtIndex(weapon.features, index, {
-        featureName: event.target.value,
-        featureDescription: weapon.features[index].featureDescription
-      })
-      return {
-        ...weapon,
-        features: featuresCopy
+      if (weapon) {
+        const featuresCopy = replaceItemAtIndex(weapon.features, index, {
+          featureName: event.target.value,
+          featureDescription: weapon.features[index].featureDescription
+        })
+        return {
+          ...weapon,
+          features: featuresCopy
+        }
       }
     })
   }
 
   const onChangeFeatureDescription = (index: number) => (event: any) => {
     setCurrentWeapon((weapon) => {
-      const featuresCopy = replaceItemAtIndex(weapon.features, index, {
-        featureName: weapon.features[index].featureName,
-        featureDescription: event.target.value
-      })
-      return {
-        ...weapon,
-        features: featuresCopy
+      if (weapon) {
+        const featuresCopy = replaceItemAtIndex(weapon.features, index, {
+          featureName: weapon.features[index].featureName,
+          featureDescription: event.target.value
+        })
+        return {
+          ...weapon,
+          features: featuresCopy
+        }
       }
     })
   }
 
   const onDeleteFeature = (index: number) => () => {
     setCurrentWeapon((weapon) => {
-      const featuresCopy = [...weapon.features]
-      featuresCopy.splice(index, 1)
-      return {
-        ...weapon,
-        features: featuresCopy
+      if (weapon) {
+        const featuresCopy = [...weapon.features]
+        featuresCopy.splice(index, 1)
+        return {
+          ...weapon,
+          features: featuresCopy
+        }
       }
     })
   }
 
   const onDeleteImage = () => {
     setCurrentWeapon((weapon) => {
-      return {
-        ...weapon,
-        image: React.createElement('img', {
-          width: 200,
-          alt: '',
-          src: '',
-          hash: 0
-        })
+      if (weapon) {
+        return {
+          ...weapon,
+          image: React.createElement('img', {
+            width: 200,
+            alt: '',
+            src: '',
+            hash: 0
+          })
+        }
       }
     })
   }
@@ -101,9 +113,11 @@ export const WeaponStatsInput: React.FC = () => {
           })
 
           setCurrentWeapon((weapon) => {
-            return {
-              ...weapon,
-              image: imgtag
+            if (weapon) {
+              return {
+                ...weapon,
+                image: imgtag
+              }
             }
           })
         }
@@ -111,6 +125,10 @@ export const WeaponStatsInput: React.FC = () => {
 
       reader.readAsDataURL(imageFile)
     }
+  }
+
+  if (!currentWeapon) {
+    return null
   }
 
   return (

@@ -10,7 +10,8 @@ export const useStyles = makeStyles()(() => ({
   main: {
     margin: 0,
     padding: 0,
-    width: '100%'
+    width: '100%',
+    overflowAnchor: 'none'
   },
   appBar: {
     margin: '0',

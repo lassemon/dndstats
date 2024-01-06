@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
-import { combatTrackerState, customCharactersState, monsterState } from 'recoil/atoms'
+import React, { useEffect, useMemo, useState } from 'react'
+import { combatTrackerState, customCharactersState, monsterState } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './MonsterStats.styles'
 import { Autocomplete, Button, ButtonGroup, CircularProgress, TextField, Tooltip } from '@mui/material'
@@ -17,6 +16,8 @@ import ScreenshotButton from 'components/ScreenshotButton'
 import _ from 'lodash'
 import { useOrientation } from 'utils/hooks'
 import EditButton from 'components/EditButton'
+import { useAtom } from 'jotai'
+import LoadingIndicator from 'components/LoadingIndicator'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -26,9 +27,11 @@ const DescriptionBlock: React.FC = (props) => {
 
 export const MonsterStats: React.FC = () => {
   const { classes } = useStyles()
-  const [currentMonster, setCurrentMonster] = useRecoilState(monsterState)
-  const [{ characters: customCharacterList }, setCustomCharacters] = useRecoilState(customCharactersState)
-  const [combatTracker] = useRecoilState(combatTrackerState)
+  const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterState, []))
+
+  const [customCharacters, setCustomCharacters] = useAtom(useMemo(() => customCharactersState, []))
+  const customCharacterList = customCharacters?.characters || []
+  const [combatTracker] = useAtom(useMemo(() => combatTrackerState, []))
 
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
@@ -42,22 +45,24 @@ export const MonsterStats: React.FC = () => {
   // sync characters in custom character list from combat tracker
   // NOTE: DO NOT change combat tracker state in this file, it will cause an infinite loop
   useEffect(() => {
-    const customCharactersExistingInCombatTracker = combatTracker.characters.filter((combatTrackerCharacter) => {
-      return customCharacterList.find((customCharacter) => customCharacter.id === combatTrackerCharacter.id)
-    })
-    if (!_.isEmpty(customCharactersExistingInCombatTracker)) {
-      setCustomCharacters((customCharacters) => {
-        return {
-          ...customCharacters,
-          characters: _.unionBy(customCharactersExistingInCombatTracker, customCharacters.characters, (character) => character.id)
-        }
+    if (combatTracker) {
+      const customCharactersExistingInCombatTracker = combatTracker.characters.filter((combatTrackerCharacter) => {
+        return customCharacterList.find((customCharacter) => customCharacter.id === combatTrackerCharacter.id)
       })
-    }
-    const currentMonsterExistsingCombatTracker = combatTracker.characters.find((combatTrackerCharacter) => {
-      return combatTrackerCharacter.id === currentMonster.id
-    })
-    if (!!currentMonsterExistsingCombatTracker) {
-      setCurrentMonster(currentMonsterExistsingCombatTracker)
+      if (!_.isEmpty(customCharactersExistingInCombatTracker)) {
+        setCustomCharacters((customCharacters) => {
+          return {
+            ...customCharacters,
+            characters: _.unionBy(customCharactersExistingInCombatTracker, customCharacters.characters, (character) => character.id)
+          }
+        })
+      }
+      const currentMonsterExistsingCombatTracker = combatTracker.characters.find((combatTrackerCharacter) => {
+        return combatTrackerCharacter.id === currentMonster?.id
+      })
+      if (!!currentMonsterExistsingCombatTracker) {
+        setCurrentMonster(currentMonsterExistsingCombatTracker)
+      }
     }
   }, [])
 
@@ -85,30 +90,34 @@ export const MonsterStats: React.FC = () => {
 
   const onChangeMonster = (key: string, character: Character) => {
     setCurrentMonster((currentMonster) => {
-      return currentMonster.clone(character.toJSON())
+      return currentMonster?.clone(character.toJSON())
     })
   }
 
   const onSaveCustomCharacter = () => {
-    let characterToBeSaved = currentMonster.clone({ source: Source.HomeBrew })
-    const existingCharacter = monsterList.concat(customCharacterList).find((monster) => monster.id === currentMonster.id)
-    const characterExists = !!existingCharacter
-    const tryingToOverwriteNonHomebrewCharacter = characterExists && existingCharacter?.source !== Source.HomeBrew
+    if (currentMonster) {
+      let characterToBeSaved = currentMonster.clone({ source: Source.HomeBrew })
+      const existingCharacter = monsterList.concat(customCharacterList).find((monster) => monster.id === currentMonster.id)
+      const characterExists = !!existingCharacter
+      const tryingToOverwriteNonHomebrewCharacter = characterExists && existingCharacter?.source !== Source.HomeBrew
 
-    if (tryingToOverwriteNonHomebrewCharacter) {
-      setCurrentMonster((currentMonster) => {
-        const monsterWithNameCount = (customCharacterList || []).filter((customCharacter) => customCharacter.id.includes(currentMonster.id)).length
-        const newName = `${currentMonster.name} #${monsterWithNameCount + 1}`
-        characterToBeSaved = characterToBeSaved.clone({ name: newName })
-        return characterToBeSaved
+      if (tryingToOverwriteNonHomebrewCharacter) {
+        setCurrentMonster((currentMonster) => {
+          if (currentMonster) {
+            const monsterWithNameCount = (customCharacterList || []).filter((customCharacter) => customCharacter.id.includes(currentMonster.id)).length
+            const newName = `${currentMonster.name} #${monsterWithNameCount + 1}`
+            characterToBeSaved = characterToBeSaved?.clone({ name: newName })
+            return characterToBeSaved
+          }
+        })
+      }
+      setCustomCharacters((customCharacters) => {
+        return {
+          ...customCharacters,
+          characters: upsertToArray(customCharacterList, characterToBeSaved, 'id')
+        }
       })
     }
-    setCustomCharacters((customCharacters) => {
-      return {
-        ...customCharacters,
-        characters: upsertToArray(customCharacterList, characterToBeSaved, 'id')
-      }
-    })
   }
 
   const onSelectMonster = async (event: React.SyntheticEvent, selected: MonsterListOption | null | string) => {
@@ -157,6 +166,10 @@ export const MonsterStats: React.FC = () => {
 
   const onToggletEditMode = () => {
     setEditMode((editMode) => !editMode)
+  }
+
+  if (!currentMonster) {
+    return <LoadingIndicator />
   }
 
   return (

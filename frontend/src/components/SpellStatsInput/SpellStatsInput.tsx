@@ -1,71 +1,85 @@
 import { Button, Grid, TextField } from '@mui/material'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import StatsInputContainer from 'components/StatsInputContainer'
+import { useAtom } from 'jotai'
 import _ from 'lodash'
-import React, { Fragment } from 'react'
-import { useRecoilState } from 'recoil'
-import { spellState } from 'recoil/atoms'
+import React, { Fragment, useMemo } from 'react'
+import { spellState } from 'infrastructure/dataAccess/atoms'
 import { replaceItemAtIndex } from 'utils/utils'
 
 export const SpellStatsInput: React.FC = () => {
-  const [currentSpell, setCurrentSpell] = useRecoilState(spellState)
+  const [currentSpell, setCurrentSpell] = useAtom(useMemo(() => spellState, []))
 
   const onChange = (name: string) => (event: any) => {
     setCurrentSpell((spell) => {
-      return { ...spell, [name]: event.target.value }
+      if (spell) {
+        return { ...spell, [name]: event.target.value }
+      }
     })
   }
 
   const onDeleteFeature = (index: number) => () => {
     setCurrentSpell((spell) => {
-      const featuresCopy = [...spell.features]
-      featuresCopy.splice(index, 1)
-      return {
-        ...spell,
-        features: featuresCopy
+      if (spell) {
+        const featuresCopy = [...spell.features]
+        featuresCopy.splice(index, 1)
+        return {
+          ...spell,
+          features: featuresCopy
+        }
       }
     })
   }
 
   const onChangeFeatureName = (index: number) => (event: any) => {
     setCurrentSpell((spell) => {
-      const featuresCopy = replaceItemAtIndex(spell.features, index, {
-        featureName: event.target.value,
-        featureDescription: spell.features[index].featureDescription
-      })
-      return {
-        ...spell,
-        features: featuresCopy
+      if (spell) {
+        const featuresCopy = replaceItemAtIndex(spell.features, index, {
+          featureName: event.target.value,
+          featureDescription: spell.features[index].featureDescription
+        })
+        return {
+          ...spell,
+          features: featuresCopy
+        }
       }
     })
   }
 
   const onChangeFeatureDescription = (index: number) => (event: any) => {
     setCurrentSpell((spell) => {
-      const featuresCopy = replaceItemAtIndex(spell.features, index, {
-        featureName: spell.features[index].featureName,
-        featureDescription: event.target.value
-      })
-      return {
-        ...spell,
-        features: featuresCopy
+      if (spell) {
+        const featuresCopy = replaceItemAtIndex(spell.features, index, {
+          featureName: spell.features[index].featureName,
+          featureDescription: event.target.value
+        })
+        return {
+          ...spell,
+          features: featuresCopy
+        }
       }
     })
   }
 
   const onAddFeature = () => {
     setCurrentSpell((spell) => {
-      return {
-        ...spell,
-        features: [
-          ...(spell.features || []),
-          {
-            featureName: 'Feature name',
-            featureDescription: 'Feature description'
-          }
-        ]
+      if (spell) {
+        return {
+          ...spell,
+          features: [
+            ...(spell.features || []),
+            {
+              featureName: 'Feature name',
+              featureDescription: 'Feature description'
+            }
+          ]
+        }
       }
     })
+  }
+
+  if (!currentSpell) {
+    return null
   }
 
   return (

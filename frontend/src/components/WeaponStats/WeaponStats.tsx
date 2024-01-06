@@ -1,13 +1,14 @@
 import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
-import React, { Fragment } from 'react'
-import { useRecoilValue } from 'recoil'
-import { weaponState } from 'recoil/atoms'
+import React, { Fragment, useMemo } from 'react'
+import { weaponState } from 'infrastructure/dataAccess/atoms'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import classNames from 'classnames/bind'
 
 import useStyles from './WeaponStats.styles'
 import { useOrientation } from 'utils/hooks'
+import { useAtom } from 'jotai'
+import LoadingIndicator from 'components/LoadingIndicator'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -18,10 +19,14 @@ const DescriptionBlock: React.FC = (props) => {
 export const WeaponStats: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
-  const currentWeapon = useRecoilValue(weaponState)
+  const [currentWeapon] = useAtom(useMemo(() => weaponState, []))
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
   const isPrint = useMediaQuery('print')
+
+  if (!currentWeapon) {
+    return <LoadingIndicator />
+  }
 
   return (
     <StatsContainer

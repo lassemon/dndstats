@@ -1,15 +1,8 @@
-//import { Button, Grid, TextField } from '@mui/material'
-//import FeatureInputContainer from 'components/FeatureInputContainer'
-//import { Autocomplete, List, ListItem, TextField, Typography } from '@mui/material'
-//import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
-//import { conditionToApiReference, getConditionImmunitiesList } from 'components/CombatTracker/Conditions'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
-//import { APIReference } from 'domain/services/FifthESRDService'
-//import { DamageType } from 'interfaces'
-import React from 'react'
-import { useRecoilState } from 'recoil'
-import { monsterState } from 'recoil/atoms'
+import { useAtom } from 'jotai'
+import React, { useMemo } from 'react'
+import { monsterState } from 'infrastructure/dataAccess/atoms'
 import { makeStyles } from 'tss-react/mui'
 
 export const useStyles = makeStyles()((theme) => ({
@@ -45,162 +38,11 @@ export const useStyles = makeStyles()((theme) => ({
 }))
 
 export const MonsterStatsInput: React.FC = () => {
-  const [, setCurrentMonster] = useRecoilState(monsterState)
-  //const { classes } = useStyles()
-
-  /*
-  const onChange = (name: string) => (event: any) =>
-    setCurrentMonster((monster) => {
-      return monster.clone({ [name]: event.target.value })
-    })
-
-  const onAddFeature = () => {
-    setCurrentMonster((monster) => {
-      return monster.clone({
-        special_abilities: [
-          ...monster.special_abilities,
-          {
-            name: 'Feature name',
-            desc: 'Feature description'
-          }
-        ]
-      })
-    })
-  }
-
-  const onAddAction = () => {
-    setCurrentMonster((monster) => {
-      return monster.clone({
-        actions: [
-          ...monster.actions,
-          {
-            name: 'Action name',
-            desc: 'Action description'
-          }
-        ]
-      })
-    })
-  }
-
-  const onAddReaction = () => {
-    setCurrentMonster((monster) => {
-      return monster.clone({
-        reactions: [
-          ...monster.reactions,
-          {
-            name: 'Reaction name',
-            desc: 'Reaction description'
-          }
-        ]
-      })
-    })
-  }
-
-  const onChangeFeatureName = (index: number) => (event: any) => {
-    setCurrentMonster((monster) => {
-      const specialAbilitiesCopy = replaceItemAtIndex(monster.special_abilities, index, {
-        name: event.target.value,
-        description: monster.special_abilities[index].desc
-      })
-      return monster.clone({
-        special_abilities: specialAbilitiesCopy
-      })
-    })
-  }
-
-  const onChangeActionName = (index: number) => (event: any) => {
-    setCurrentMonster((monster) => {
-      const actionsCopy = replaceItemAtIndex(monster.actions, index, {
-        name: event.target.value,
-        description: monster.actions[index].desc
-      })
-      return monster.clone({
-        actions: actionsCopy
-      })
-    })
-  }
-
-  const onChangeReactionName = (index: number) => (event: any) => {
-    setCurrentMonster((monster) => {
-      const reactionsCopy = replaceItemAtIndex(monster.reactions, index, {
-        name: event.target.value,
-        description: monster.reactions[index].desc
-      })
-      return monster.clone({
-        reactions: reactionsCopy
-      })
-    })
-  }
-
-  const onChangeFeatureDescription = (index: number) => (event: any) => {
-    setCurrentMonster((monster) => {
-      const specialAbilitiesCopy = replaceItemAtIndex(monster.special_abilities, index, {
-        name: monster.special_abilities[index].name,
-        desc: event.target.value
-      })
-      return monster.clone({
-        special_abilities: specialAbilitiesCopy
-      })
-    })
-  }
-
-  const onChangeActionDescription = (index: number) => (event: any) => {
-    setCurrentMonster((monster) => {
-      const actionsCopy = replaceItemAtIndex(monster.actions, index, {
-        name: monster.actions[index].name,
-        desc: event.target.value
-      })
-      return monster.clone({
-        actions: actionsCopy
-      })
-    })
-  }
-
-  const onChangeReactionDescription = (index: number) => (event: any) => {
-    setCurrentMonster((monster) => {
-      const reactionsCopy = replaceItemAtIndex(monster.reactions, index, {
-        name: monster.actions[index].name,
-        desc: event.target.value
-      })
-      return monster.clone({
-        reactions: reactionsCopy
-      })
-    })
-  }
-
-  const onDeleteFeature = (index: number) => () => {
-    setCurrentMonster((monster) => {
-      const specialAbilitiesCopy = [...monster.special_abilities]
-      specialAbilitiesCopy.splice(index, 1)
-      return monster.clone({
-        special_abilities: specialAbilitiesCopy
-      })
-    })
-  }
-
-  const onDeleteAction = (index: number) => () => {
-    setCurrentMonster((monster) => {
-      const actionsCopy = [...monster.actions]
-      actionsCopy.splice(index, 1)
-      return monster.clone({
-        actions: actionsCopy
-      })
-    })
-  }
-
-  const onDeleteReaction = (index: number) => () => {
-    setCurrentMonster((monster) => {
-      const reactionsCopy = [...monster.reactions]
-      reactionsCopy.splice(index, 1)
-      return monster.clone({
-        reactions: reactionsCopy
-      })
-    })
-  }*/
+  const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterState, []))
 
   const onDeleteImage = () => {
     setCurrentMonster((monster) => {
-      return monster.clone({
+      return monster?.clone({
         imageElement: React.createElement('img', {
           width: 200,
           alt: '',
@@ -225,9 +67,8 @@ export const MonsterStatsInput: React.FC = () => {
             src: (event.target.result || '') as string,
             hash: Date.now()
           })
-
           setCurrentMonster((monster) => {
-            return monster.clone({
+            return monster?.clone({
               imageElement: imgtag
             })
           })
@@ -238,38 +79,9 @@ export const MonsterStatsInput: React.FC = () => {
     }
   }
 
-  /*
-  const onChangeResistance = (event: any, resistances: DamageType[]) => {
-    setCurrentMonster((monster) => {
-      const monsterCopy = monster.clone()
-      monsterCopy.damage_resistances = [...resistances]
-      return monsterCopy
-    })
+  if (!currentMonster) {
+    return null
   }
-
-  const onChangeVulnerability = (event: any, vulnerabilities: DamageType[]) => {
-    setCurrentMonster((monster) => {
-      const monsterCopy = monster.clone()
-      monsterCopy.damage_vulnerabilities = [...vulnerabilities]
-      return monsterCopy
-    })
-  }
-
-  const onChangeDamageImmunity = (event: any, immunities: DamageType[]) => {
-    setCurrentMonster((monster) => {
-      const monsterCopy = monster.clone()
-      monsterCopy.damage_immunities = [...immunities]
-      return monsterCopy
-    })
-  }
-
-  const onChangeConditionImmunity = (event: any, immunities: APIReference[]) => {
-    setCurrentMonster((monster) => {
-      const monsterCopy = monster.clone()
-      monsterCopy.condition_immunities = [...immunities]
-      return monsterCopy
-    })
-  }*/
 
   return (
     <StatsInputContainer>

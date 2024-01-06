@@ -25,9 +25,8 @@ import ListItem from '@mui/material/ListItem'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import CurrentTurnIcon from '@mui/icons-material/ArrowForwardIos'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import React, { useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
-import { combatTrackerState, customCharactersState } from 'recoil/atoms'
+import React, { useEffect, useMemo, useState } from 'react'
+import { combatTrackerState, customCharactersState } from 'infrastructure/dataAccess/atoms'
 import _ from 'lodash'
 import classNames from 'classnames/bind'
 
@@ -51,6 +50,8 @@ import { MonsterListOption, emptyMonster } from 'domain/entities/Monster'
 import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
 import ImageButton from 'components/ImageButton'
 import theme from 'theme'
+import { useAtom } from 'jotai'
+import LoadingIndicator from 'components/LoadingIndicator'
 
 const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
   return {
@@ -90,22 +91,27 @@ const Transition = React.forwardRef(function Transition(
 export const CombatTracker: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
-  const [currentCombat, setCurrentCombat] = useRecoilState(combatTrackerState)
-  const [{ characters: customCharacterList }] = useRecoilState(customCharactersState)
+  const [currentCombat, setCurrentCombat] = useAtom(useMemo(() => combatTrackerState, []))
+  const currentTurn = currentCombat?.turn
+  const currentCharacters = currentCombat?.characters
+
+  const [customCharacters] = useAtom(useMemo(() => customCharactersState, []))
+  const customCharacterList = customCharacters?.characters || []
+
   const [monsterList, setMonsterList] = useState<MonsterListOption[]>([emptyMonster] as MonsterListOption[])
   const [loadingMonsterList, setLoadingMonsterList] = useState(false)
   const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
-  const [settingsAnchors, setSettingsAnchors] = useState<Array<HTMLButtonElement | null>>(currentCombat.characters.map(() => null))
-  const [incomingDamages, setIncomingDamages] = useState<string[]>(currentCombat.characters.map(() => ''))
+  const [settingsAnchors, setSettingsAnchors] = useState<Array<HTMLButtonElement | null>>(currentCombat ? currentCombat.characters.map(() => null) : [])
+  const [incomingDamages, setIncomingDamages] = useState<string[]>(currentCombat ? currentCombat.characters.map(() => '') : [])
   const [incomingTempHPs, setIncomingTempHPs] = useState<string[]>(
-    currentCombat.characters.map((character) => String(character.temporary_hit_points || '') || '')
+    currentCombat ? currentCombat.characters.map((character) => String(character.temporary_hit_points || '') || '') : []
   )
   const [incomingRegenerations, setIncomingRegenerations] = useState<string[]>(
-    currentCombat.characters.map((character) => String(character.regeneration || '') || '')
+    currentCombat ? currentCombat.characters.map((character) => String(character.regeneration || '') || '') : []
   )
-  const [regenDialogsOpen, setRegenDialogsOpen] = useState<boolean[]>(currentCombat.characters.map(() => false))
-  const [imageDialogsOpen, setImageDialogsOpen] = useState<boolean[]>(currentCombat.characters.map(() => false))
-  const [characterCardTooltipsOpen, setCharacterCardTooltipsOpen] = useState<boolean[]>(currentCombat.characters.map(() => false))
+  const [regenDialogsOpen, setRegenDialogsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
+  const [imageDialogsOpen, setImageDialogsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
+  const [characterCardTooltipsOpen, setCharacterCardTooltipsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
 
   const handleCharacterCardTooltipClickAway = (index: number) => () => {
     setCharacterCardTooltipsOpen((cardTooltipsOpen) => {
@@ -153,14 +159,16 @@ export const CombatTracker: React.FC = () => {
   }, [customCharacterList])
 
   useEffect(() => {
-    const currentCharacter = currentCombat.characters[currentCombat.turn]
-    const canRegenerate = currentCharacter?.current_hit_points < currentCharacter?.hit_points
-    if (currentCharacter?.regeneration > 0 && canRegenerate) {
-      setRegenDialogsOpen((regenDialogs) => {
-        return replaceItemAtIndex<boolean>(regenDialogs, currentCombat.turn, true)
-      })
+    if (currentCombat) {
+      const currentCharacter = currentCombat.characters[currentCombat.turn]
+      const canRegenerate = currentCharacter?.current_hit_points < currentCharacter?.hit_points
+      if (currentCharacter?.regeneration > 0 && canRegenerate) {
+        setRegenDialogsOpen((regenDialogs) => {
+          return replaceItemAtIndex<boolean>(regenDialogs, currentCombat.turn, true)
+        })
+      }
     }
-  }, [currentCombat.turn, currentCombat.characters])
+  }, [currentCombat, currentTurn, currentCharacters])
 
   useEffect(() => {
     setRegenDialogsOpen((regenDialogs) => {
@@ -175,15 +183,17 @@ export const CombatTracker: React.FC = () => {
     setSettingsAnchors((anchors) => {
       return anchors.map(() => null)
     })
-  }, [currentCombat.characters])
+  }, [currentCharacters])
 
   const closeRegenDialog = (index: number, regenCharacter?: boolean) => {
-    if (regenCharacter === true) {
-      onRegenerateCharacter(index)
-    } else {
-      setRegenDialogsOpen((regenDialogs) => {
-        return replaceItemAtIndex<boolean>(regenDialogs, currentCombat.turn, false)
-      })
+    if (currentCombat) {
+      if (regenCharacter === true) {
+        onRegenerateCharacter(index)
+      } else {
+        setRegenDialogsOpen((regenDialogs) => {
+          return replaceItemAtIndex<boolean>(regenDialogs, currentCombat.turn, false)
+        })
+      }
     }
   }
 
@@ -209,46 +219,48 @@ export const CombatTracker: React.FC = () => {
   }
 
   const setCurrentTurn = (next: boolean) => {
-    if (next) {
-      if (currentCombat.turn === currentCombat.characters.length - 1) {
-        setCurrentCombat((combat) => {
-          return {
-            ...combat,
-            turn: 0,
-            round: combat.round + 1
-          }
-        })
-      } else {
-        setCurrentCombat((combat) => {
-          return {
-            ...combat,
-            turn: combat.turn + 1
-          }
-        })
-      }
-    } else {
-      if (currentCombat.turn === 0) {
-        setCurrentCombat((combat) => {
-          return {
-            ...combat,
-            turn: currentCombat.characters.length - 1
-          }
-        })
-        if (currentCombat.round > 1) {
+    if (currentCombat) {
+      if (next) {
+        if (currentCombat.turn === currentCombat.characters.length - 1) {
           setCurrentCombat((combat) => {
             return {
               ...combat,
-              round: combat.round - 1
+              turn: 0,
+              round: combat.round + 1
+            }
+          })
+        } else {
+          setCurrentCombat((combat) => {
+            return {
+              ...combat,
+              turn: combat.turn + 1
             }
           })
         }
       } else {
-        setCurrentCombat((combat) => {
-          return {
-            ...combat,
-            turn: combat.turn - 1
+        if (currentCombat.turn === 0) {
+          setCurrentCombat((combat) => {
+            return {
+              ...combat,
+              turn: currentCombat.characters.length - 1
+            }
+          })
+          if (currentCombat.round > 1) {
+            setCurrentCombat((combat) => {
+              return {
+                ...combat,
+                round: combat.round - 1
+              }
+            })
           }
-        })
+        } else {
+          setCurrentCombat((combat) => {
+            return {
+              ...combat,
+              turn: combat.turn - 1
+            }
+          })
+        }
       }
     }
   }
@@ -629,6 +641,10 @@ export const CombatTracker: React.FC = () => {
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
       }
     })
+  }
+
+  if (!currentCombat) {
+    return <LoadingIndicator />
   }
 
   if (currentCombat) {
@@ -1108,6 +1124,9 @@ export const CombatTracker: React.FC = () => {
                           <Button
                             variant="contained"
                             size="small"
+                            sx={{
+                              alignSelf: 'end'
+                            }}
                             onClick={onDeleteCharacter(index)}
                             startIcon={
                               <DeleteIcon
