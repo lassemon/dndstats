@@ -488,7 +488,6 @@ class Character extends ValueObject {
   }
 
   public static parseDamageTypeString(damageTypeString: DamageType): DamageType[] {
-    //console.log('parsing string', damageTypeString)
     const parsedTypes = []
     if (Object.values(DamageType).includes(damageTypeString.toLowerCase() as DamageType)) {
       parsedTypes.push(damageTypeString)

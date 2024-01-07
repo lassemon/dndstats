@@ -68,11 +68,12 @@ interface EditableLanguagesProps {
   className?: string
   language: string
   editMode?: boolean
+  presentationMode?: boolean
   onChange: (languages: string) => void
 }
 
 const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
-  const { language, className = '', editMode = false, onChange } = props
+  const { language, className = '', editMode = false, presentationMode = false, onChange } = props
   const knownLanguages = Object.values(Languages).map((language) => language.toString().toLowerCase())
   const [isText, setIsText] = useState(!editMode)
 
@@ -103,6 +104,9 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
 
   const onChangeValue = (event: any, newLanguageList: string[]) => {
     setLanguageList(newLanguageList)
+    if (!presentationMode) {
+      onChange(formatLanguagesForSave(newLanguageList, customLanguages))
+    }
   }
 
   const onChangeCustomLanguages = (value: string | number) => {
@@ -114,13 +118,17 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
   }
 
   const onSave = () => {
-    const allLanguages = [...languageList.map((language) => capitalize(language))]
-      .concat(customLanguages.length > 0 ? customLanguages.split(',').map((language) => capitalize(language.trim())) : [])
-      .join(', ')
+    const allLanguages = formatLanguagesForSave(languageList, customLanguages)
     onChange(allLanguages)
     if (!editMode) {
       setIsText(true)
     }
+  }
+
+  const formatLanguagesForSave = (_languageList: string[], customLanguages: string = '') => {
+    return [..._languageList.map((language) => capitalize(language))]
+      .concat(customLanguages.length > 0 ? customLanguages.split(',').map((language) => capitalize(language.trim())) : [])
+      .join(', ')
   }
 
   return (
@@ -147,7 +155,14 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
           />
           <Tooltip title="Comma separated list of other languages" placement="top-start">
             <div style={{ width: '100%' }}>
-              <EditableText id="custom-languages" label="Custom" value={customLanguages} onChange={onChangeCustomLanguages} editMode={true} hideSave={true} />
+              <EditableText
+                id="custom-languages"
+                label="Custom"
+                value={customLanguages}
+                onChange={onChangeCustomLanguages}
+                editMode={true}
+                presentationMode={presentationMode}
+              />
             </div>
           </Tooltip>
           <div className={classes.buttonsContainer}>
@@ -156,9 +171,11 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
                 Cancel
               </Button>
             )}
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </div>
       )}

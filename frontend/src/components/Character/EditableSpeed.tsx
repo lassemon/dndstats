@@ -60,10 +60,11 @@ interface EditableSpeedProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
+  presentationMode?: boolean
 }
 
 const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
-  const { id, editMode = false, className = '', textFieldClass = '' } = props
+  const { id, editMode = false, presentationMode = false, className = '', textFieldClass = '' } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
   const [_speed, setSpeed] = useState({ ...defaultSpeed, ...character.speed })
@@ -94,8 +95,12 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   }
 
   const onSave = () => {
-    const characterClone = character.clone({ speed: objectWithoutEmptyOrUndefined<typeof _speed>(_speed) })
-    setCharacter(characterClone)
+    const newSpeed = objectWithoutEmptyOrUndefined<typeof _speed>(_speed)
+    const hasChanged = !_.isEqual(character.speed, newSpeed)
+    if (hasChanged) {
+      const characterClone = character.clone({ speed: newSpeed })
+      setCharacter(characterClone)
+    }
     if (!editMode) {
       setIsText(true)
     }
@@ -125,6 +130,7 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
                       .map((part) => capitalize(part))
                       .join(' ')}
                     onChange={onChangeValue(key)}
+                    onBlur={presentationMode ? undefined : onSave}
                     variant="outlined"
                     size="small"
                     onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
@@ -144,9 +150,11 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
                 Cancel
               </Button>
             )}
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </>
       )}

@@ -1,4 +1,4 @@
-import { Button, TextField, TextFieldProps } from '@mui/material'
+import { TextField, TextFieldProps } from '@mui/material'
 import React, { ReactNode, useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
@@ -49,6 +49,7 @@ interface EditableKeyValueProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
+  presentationMode?: boolean
   saveButton?: boolean
   onChange: (value: string | number) => void
 }
@@ -70,8 +71,7 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
     editWidth = 12,
     type = 'text',
     tooltipPlacement = 'top-start',
-    editMode = false,
-    saveButton = false
+    editMode = false
   } = props
 
   const EditableKeyValueTooltip =
@@ -103,7 +103,10 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
 
   const onBlur = () => {
     if (!isText && !disabled) {
-      onChange(_value)
+      const hasChanged = value !== _value
+      if (hasChanged) {
+        onChange(_value)
+      }
       if (!editMode) {
         setIsText(true)
       }
@@ -117,14 +120,13 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
   const onEnter = (event: any) => {
     if (event.keyCode === 13) {
       if (!isText && !disabled) {
-        onChange(_value)
+        const hasChanged = value !== _value
+        if (hasChanged) {
+          onChange(_value)
+        }
         setIsText(true)
       }
     }
-  }
-
-  const onSave = () => {
-    onChange(_value)
   }
 
   return (
@@ -151,7 +153,7 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
             label={label}
             disabled={disabled}
             onChange={internalOnChange}
-            onBlur={onBlur}
+            onBlur={onBlur} // this component should always have onBlur, wheter or not presentationMode is used elsewhere
             onDoubleClick={onDoubleClick}
             onKeyDown={onEnter}
             variant="outlined"
@@ -164,11 +166,6 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
               width: `${editWidth}em`
             }}
           />
-          {!isText && saveButton && (
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
-          )}
         </>
       )}
     </div>

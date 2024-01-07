@@ -50,10 +50,11 @@ export const useStyles = makeStyles()((theme) => ({
 interface EditableSavingThrowsProps {
   className?: string
   editMode?: boolean
+  presentationMode?: boolean
 }
 
 const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
-  const { editMode = false, className = '' } = props
+  const { editMode = false, presentationMode = false, className = '' } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
 
@@ -110,7 +111,11 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
   }
 
   const onSave = () => {
-    setCharacter(character.clone({ saving_throws: FifthESRDService.convertSavingThrowsToProficiencies(objectWithoutEmptyOrUndefined(savingThrows)) }))
+    const newSavingThrows = FifthESRDService.convertSavingThrowsToProficiencies(objectWithoutEmptyOrUndefined(savingThrows))
+    const hasChanged = !_.isEqual(character.saving_throws, newSavingThrows)
+    if (hasChanged) {
+      setCharacter(character.clone({ saving_throws: FifthESRDService.convertSavingThrowsToProficiencies(objectWithoutEmptyOrUndefined(savingThrows)) }))
+    }
     if (!editMode) {
       setIsText(true)
     }
@@ -128,7 +133,6 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
           <div className={classes.editor}>
             {Object.entries(savingThrows).map(([name, value], index) => {
               return (
-                /*<div key={index} className={classes.row}>*/
                 <TextField
                   key={index}
                   className={classes.textField}
@@ -140,6 +144,7 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
                     .map((part) => capitalize(part))
                     .join(' ')}
                   onChange={onChangeValue(name)}
+                  onBlur={presentationMode ? undefined : onSave}
                   variant="outlined"
                   size="small"
                   onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
@@ -149,7 +154,6 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
                     shrink: true
                   }}
                 />
-                /*</div>*/
               )
             })}
           </div>
@@ -159,9 +163,11 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
                 Cancel
               </Button>
             )}
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </>
       )}

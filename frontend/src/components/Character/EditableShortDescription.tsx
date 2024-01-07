@@ -3,10 +3,13 @@ import { Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, T
 import { makeStyles } from 'tss-react/mui'
 import { Alignment, MonsterSubtype, MonsterType, Size } from 'interfaces'
 import { CharacterCardContext } from 'services/context'
+import Character from 'domain/entities/Character'
+import _ from 'lodash'
 
 interface EditableShortDescriptionProps {
   className?: string
   editMode?: boolean
+  presentationMode?: boolean
 }
 
 export const useStyles = makeStyles()((theme) => ({
@@ -27,6 +30,7 @@ export const useStyles = makeStyles()((theme) => ({
     margin: '0 0 0.8em 0'
   },
   row: {
+    width: '100%',
     display: 'flex',
     gap: '0.4em',
     alignItems: 'center'
@@ -38,7 +42,7 @@ export const useStyles = makeStyles()((theme) => ({
 }))
 
 const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props) => {
-  const { editMode = false, className = '' } = props
+  const { editMode = false, presentationMode = false, className = '' } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
   const [shortDescription, setShortDescription] = useState({
@@ -75,6 +79,9 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
         size: event.target.value
       }
     })
+    if (!presentationMode) {
+      setCharacter(character.clone({ ...shortDescription, size: event.target.value }))
+    }
   }
 
   const onChangeType = (event: SelectChangeEvent<string>) => {
@@ -84,6 +91,9 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
         type: event.target.value
       }
     })
+    if (!presentationMode) {
+      setCharacter(character.clone({ ...shortDescription, type: event.target.value }))
+    }
   }
 
   const onChangeSubtype = (event: SelectChangeEvent<string>) => {
@@ -93,6 +103,9 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
         subtype: event.target.value
       }
     })
+    if (!presentationMode) {
+      setCharacter(character.clone({ ...shortDescription, subtype: event.target.value }))
+    }
   }
 
   const onChangeAlignment = (event: SelectChangeEvent<string>) => {
@@ -102,6 +115,10 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
         alignment: event.target.value
       }
     })
+    // has changed is not needed here because Select does not trigger onChange event otherwise
+    if (!presentationMode) {
+      setCharacter(character.clone({ ...shortDescription, alignment: event.target.value }))
+    }
   }
 
   const onCancel = () => {
@@ -115,7 +132,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
     }
   }
 
-  const editWidth = '14em'
+  const editWidth = '100%'
 
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`} onDoubleClick={onDoubleClick}>
@@ -198,9 +215,11 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
                 Cancel
               </Button>
             )}
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </div>
       )}

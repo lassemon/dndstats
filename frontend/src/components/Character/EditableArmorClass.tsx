@@ -61,10 +61,11 @@ interface EditableArmorClassProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
+  presentationMode?: boolean
 }
 
 const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
-  const { id, editMode = false, className = '', textFieldClass = '' } = props
+  const { id, editMode = false, presentationMode = false, className = '', textFieldClass = '' } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
   const [_armorClasses, setArmorClasses] = useState([...(character.armor_classes || [])])
@@ -104,7 +105,6 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
         _.set(newArmorClass, Character.getArmorClassNamePath(newArmorClass), '')
         _.set(newArmorClass, Character.getArmorClassIndexPath(newArmorClass), '')
       }
-
       return replaceItemAtIndex(armorClasses, index, newArmorClass)
     })
   }
@@ -122,6 +122,7 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
     setArmorClasses((armorClasses) => {
       const armorClassesCopy = [...armorClasses]
       armorClassesCopy.splice(index, 1)
+      setCharacter(character.clone({ armor_classes: armorClassesCopy }))
       return armorClassesCopy
     })
   }
@@ -134,12 +135,13 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
     setArmorClasses((armorClasses) => {
       return [...armorClasses, { type: ArmorClassType.NATURAL, value: 10 }]
     })
+    setCharacter(character.clone({ armor_classes: [..._armorClasses, { type: ArmorClassType.NATURAL, value: 10 }] }))
   }
 
   const onSave = () => {
-    setCharacter(character.clone({ armor_classes: _armorClasses }))
-    if (!editMode) {
-      setIsText(true)
+    const hasChanged = !_.isEqual(character.armor_classes, _armorClasses)
+    if (hasChanged) {
+      setCharacter(character.clone({ armor_classes: _armorClasses }))
     }
   }
 
@@ -156,10 +158,17 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
             return (
               <div key={index} className={classes.row}>
                 <DeleteButton size="small" onClick={onDelete(index)} sx={{ padding: 0 }} />
-                <Tooltip title="Whatever is the highest armor class value below, is considered as the base AC of the character" placement="top-start">
+                <Tooltip title="Whatever is the highest armor class value in the list, is considered the AC of the character" placement="top-start">
                   <FormControl sx={{ m: 0, flex: '0 0 9em' }} size="small">
                     <InputLabel id="armor-class-type">Armor Class</InputLabel>
-                    <Select labelId={'armor-class-type'} id="type-select" value={armorClass.type} label="Armor Class" onChange={onChangeType(index)}>
+                    <Select
+                      labelId={'armor-class-type'}
+                      id="type-select"
+                      value={armorClass.type}
+                      label="Armor Class"
+                      onChange={onChangeType(index)}
+                      onBlur={presentationMode ? undefined : onSave}
+                    >
                       {Object.values(ArmorClassType).map((value, index) => {
                         return (
                           <MenuItem key={index} value={value}>
@@ -176,6 +185,7 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
                   value={armorClass.value}
                   type="text"
                   onChange={onChangeValue(index)}
+                  onBlur={presentationMode ? undefined : onSave}
                   variant="outlined"
                   size="small"
                   onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
@@ -192,9 +202,10 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
                     value={Character.getArmorClassName(armorClass)}
                     type="text"
                     onChange={onChangeDetail(index)}
+                    onBlur={presentationMode ? undefined : onSave}
                     variant="outlined"
                     size="small"
-                    autoFocus // this is good
+                    autoFocus={presentationMode}
                     onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
                       event.target.select()
                     }}
@@ -213,11 +224,13 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
               </Button>
             )}
             <Button variant="contained" size="small" onClick={onAdd}>
-              Add
+              Add AC
             </Button>
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </div>
       )}

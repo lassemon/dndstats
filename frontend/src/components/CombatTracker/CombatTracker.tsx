@@ -95,6 +95,8 @@ export const CombatTracker: React.FC = () => {
   const currentTurn = currentCombat?.turn
   const currentCharacters = currentCombat?.characters
 
+  // TODO, enable custom character edit through combat tracker?
+  // might be too complicated data flow
   const [customCharacters] = useAtom(useMemo(() => customCharactersState, []))
   const customCharacterList = customCharacters?.characters || []
 
@@ -133,8 +135,8 @@ export const CombatTracker: React.FC = () => {
         return {
           ...combat,
           characters: combat.characters.map((character) => {
-            const existingCustomcharacter = customCharacterList.find((customCharacter) => customCharacter.id === character.id)
-            return existingCustomcharacter ? existingCustomcharacter : character
+            const existingCustomCharacter = customCharacterList.find((customCharacter) => customCharacter.id === character.id)
+            return existingCustomCharacter ? existingCustomCharacter : character
           })
         }
       }
@@ -815,6 +817,7 @@ export const CombatTracker: React.FC = () => {
                       value={character.armor_class_total}
                       textWidth={25}
                       editWidth={3}
+                      presentationMode
                       disabled={character.isUnconscious()}
                       onChange={onChangeCharacterAC(index)}
                     />
@@ -827,6 +830,7 @@ export const CombatTracker: React.FC = () => {
                       })}
                       textFieldClass={`${classes.editableTextField}`}
                       editWidth={3}
+                      presentationMode
                       value={character.init}
                       type="number"
                       disabled={character.isUnconscious()}
@@ -837,7 +841,7 @@ export const CombatTracker: React.FC = () => {
                       tooltip={
                         <ClickAwayListener mouseEvent="onMouseUp" onClickAway={handleCharacterCardTooltipClickAway(index)}>
                           <div>
-                            <CharacterCard character={character} resizeable={false} onChange={onChangeCharacterCard(index)} />
+                            <CharacterCard character={character} resizeable={false} onChange={onChangeCharacterCard(index)} presentationMode={true} />
                           </div>
                         </ClickAwayListener>
                       }
@@ -854,6 +858,7 @@ export const CombatTracker: React.FC = () => {
                       value={character.name}
                       textWidth={120}
                       editWidth={10}
+                      presentationMode
                       disabled={character.isUnconscious()}
                       onChange={onChangeCharacterName(index)}
                       onOpen={handleCharacterCardTooltipHover(index)}
@@ -909,6 +914,7 @@ export const CombatTracker: React.FC = () => {
                       value={character.current_hit_points + (character.temporary_hit_points || 0)}
                       textWidth={30}
                       editWidth={4}
+                      presentationMode
                       disabled={false}
                       onChange={onChangeCharacterHP(index)}
                     />

@@ -72,11 +72,12 @@ interface EditableConditionListProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
+  presentationMode?: boolean
   onChange: (list: APIReference[]) => void
 }
 
 const EditableConditionList: React.FC<EditableConditionListProps> = (props) => {
-  const { header = '', list = [], className = '', editMode = false, onChange } = props
+  const { header = '', list = [], className = '', editMode = false, presentationMode = false, onChange } = props
   const [isText, setIsText] = useState(!editMode)
   const [conditionList, setConditionList] = useState(list)
   const { classes } = useStyles()
@@ -97,6 +98,10 @@ const EditableConditionList: React.FC<EditableConditionListProps> = (props) => {
 
   const onChangeValue = (event: any, newConditionList: APIReference[]) => {
     setConditionList(newConditionList)
+    // has changed is not needed here because Autocomplete does not trigger onChange event otherwise
+    if (!presentationMode) {
+      onChange(newConditionList)
+    }
   }
 
   const onCancel = () => {
@@ -140,9 +145,11 @@ const EditableConditionList: React.FC<EditableConditionListProps> = (props) => {
                 Cancel
               </Button>
             )}
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </div>
       )}

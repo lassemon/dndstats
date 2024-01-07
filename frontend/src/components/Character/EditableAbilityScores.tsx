@@ -79,6 +79,7 @@ interface EditableAbilityScoresProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
+  presentationMode?: boolean
 }
 
 const formatEditableAbilityScores = (_abilityScores: { [key in AbilityScores]: string | number }): typeof defaultAbilityScores => {
@@ -99,7 +100,7 @@ const formatEditableAbilityScores = (_abilityScores: { [key in AbilityScores]: s
 }
 
 const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
-  const { editMode = false, className = '', editWidth = 3.5 } = props
+  const { editMode = false, presentationMode = false, className = '', editWidth = 3.5 } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
 
@@ -153,13 +154,22 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
     setAbilityScores((_abilityScores) => {
       // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
       const newAbilityScores = { ..._.cloneDeep(_abilityScores), [key]: newValue }
-      setCharacter(character.clone(formatEditableAbilityScores(newAbilityScores)))
+      const hasChanged = !_.isEqual(character.abilityScores, formatEditableAbilityScores(newAbilityScores))
+      // this is extra precaution, EditableKeyValue already has hasChanged check on blur
+      if (hasChanged) {
+        setCharacter(character.clone(formatEditableAbilityScores(newAbilityScores)))
+      }
       return newAbilityScores
     })
   }
 
   const onSave = () => {
-    setCharacter(character.clone(formatEditableAbilityScores(abilityScores)))
+    const newAbilityScores = formatEditableAbilityScores(abilityScores)
+    const hasChanged = !_.isEqual(character.abilityScores, newAbilityScores)
+    // this is extra precaution, EditableKeyValue already has hasChanged check on blur
+    if (hasChanged) {
+      setCharacter(character.clone(newAbilityScores))
+    }
   }
 
   return (
@@ -177,6 +187,7 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
                 onChange={onChangeValue('strength')}
                 editWidth={editWidth}
                 editMode={!isText}
+                presentationMode={presentationMode}
               />
             )}
             {character.dexterity && (
@@ -189,6 +200,7 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
                 onChange={onChangeValue('dexterity')}
                 editWidth={editWidth}
                 editMode={!isText}
+                presentationMode={presentationMode}
               />
             )}
             {character.constitution && (
@@ -201,6 +213,7 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
                 onChange={onChangeValue('constitution')}
                 editWidth={editWidth}
                 editMode={!isText}
+                presentationMode={presentationMode}
               />
             )}
           </div>
@@ -215,6 +228,7 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
                 onChange={onChangeValue('intelligence')}
                 editWidth={editWidth}
                 editMode={!isText}
+                presentationMode={presentationMode}
               />
             )}
             {character.wisdom && (
@@ -227,6 +241,7 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
                 onChange={onChangeValue('wisdom')}
                 editWidth={editWidth}
                 editMode={!isText}
+                presentationMode={presentationMode}
               />
             )}
             {character.charisma && (
@@ -239,11 +254,12 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
                 onChange={onChangeValue('charisma')}
                 editWidth={editWidth}
                 editMode={!isText}
+                presentationMode={presentationMode}
               />
             )}
           </div>
         </div>
-        {!isText && editMode && (
+        {!isText && presentationMode && (
           <div className={classes.buttonsContainer}>
             <Button variant="contained" size="small" onClick={onSave}>
               Save

@@ -51,10 +51,11 @@ interface EditableChallengeRatingProps {
   textWidth?: number
   editWidth?: number
   editMode?: boolean
+  presentationMode?: boolean
 }
 
 const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) => {
-  const { editMode = false, className = '' } = props
+  const { editMode = false, presentationMode = false, className = '' } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
   const [challengeRating, setChallengeRating] = useState({
@@ -92,11 +93,20 @@ const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) 
 
   const onSave = () => {
     const newValues = {
-      ...(challengeRating.challenge_rating !== '' ? { challenge_rating: parseInt(challengeRating.challenge_rating.toString()) } : {}),
-      ...(challengeRating.xp !== '' ? { xp: parseInt(challengeRating.xp.toString()) } : {})
+      ...(challengeRating.challenge_rating !== ''
+        ? { challenge_rating: parseInt(challengeRating.challenge_rating.toString()) }
+        : { challenge_rating: undefined }),
+      ...(challengeRating.xp !== '' ? { xp: parseInt(challengeRating.xp.toString()) } : { xp: undefined })
     }
-    const characterCopy = character.clone(newValues)
-    setCharacter(characterCopy)
+    const oldValues = {
+      ...(character.challenge_rating ? { challenge_rating: parseInt(character.challenge_rating.toString()) } : { challenge_rating: undefined }),
+      ...(character.xp ? { xp: parseInt(character.xp.toString()) } : { xp: undefined })
+    }
+    const hasChanged = !_.isEqual(oldValues, newValues)
+    if (hasChanged) {
+      const characterCopy = character.clone(newValues)
+      setCharacter(characterCopy)
+    }
     if (!editMode) {
       setIsText(true)
     }
@@ -118,6 +128,7 @@ const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) 
               type="number"
               value={challengeRating.challenge_rating}
               onChange={onChangeValue('challenge_rating')}
+              onBlur={presentationMode ? undefined : onSave}
               variant="outlined"
               size="small"
               InputLabelProps={{
@@ -130,6 +141,7 @@ const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) 
               type="number"
               value={challengeRating.xp}
               onChange={onChangeValue('xp')}
+              onBlur={presentationMode ? undefined : onSave}
               variant="outlined"
               size="small"
               InputLabelProps={{
@@ -143,9 +155,11 @@ const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) 
                 Cancel
               </Button>
             )}
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </>
       )}

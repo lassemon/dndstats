@@ -18,6 +18,7 @@ import { useOrientation } from 'utils/hooks'
 import EditButton from 'components/EditButton'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
+import classNames from 'classnames'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -27,6 +28,7 @@ const DescriptionBlock: React.FC = (props) => {
 
 export const MonsterStats: React.FC = () => {
   const { classes } = useStyles()
+  const cx = classNames.bind(classes)
   const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterState, []))
 
   const [customCharacters, setCustomCharacters] = useAtom(useMemo(() => customCharactersState, []))
@@ -41,6 +43,9 @@ export const MonsterStats: React.FC = () => {
   const [monsterActionsVisible, setMonsterActionsVisible] = useState(true)
   const [loadingMonsterList, setLoadingMonsterList] = useState(false)
   const [editMode, setEditMode] = useState(false)
+
+  const existingCustomCharacter = customCharacterList.find((customCharacter) => customCharacter.id === currentMonster?.id)
+  const monsterSavedInHomebrew = currentMonster?.isEqual(existingCustomCharacter)
 
   // sync characters in custom character list from combat tracker
   // NOTE: DO NOT change combat tracker state in this file, it will cause an infinite loop
@@ -168,19 +173,37 @@ export const MonsterStats: React.FC = () => {
     setEditMode((editMode) => !editMode)
   }
 
+  const onCloseEditMode = () => {
+    setEditMode(false)
+  }
+
   if (!currentMonster) {
     return <LoadingIndicator />
   }
 
   return (
     <>
-      <div className={isPortrait ? classes.rootPortrait : classes.rootLandscape}>
-        <CharacterCard
-          character={currentMonster}
-          className={isPortrait ? classes.characterCardContainerPortrait : classes.characterCardContainerLandscape}
-          onChange={onChangeMonster}
-          editMode={editMode}
-        />
+      <div
+        className={cx({
+          [classes.rootPortrait]: isPortrait,
+          [classes.rootLandscape]: !isPortrait
+        })}
+      >
+        <div
+          className={cx({
+            [classes.unsaved]: !monsterSavedInHomebrew && existingCustomCharacter
+          })}
+        >
+          <CharacterCard
+            character={currentMonster}
+            className={isPortrait ? classes.characterCardContainerPortrait : classes.characterCardContainerLandscape}
+            onChange={onChangeMonster}
+            onCloseEditMode={onCloseEditMode}
+            editMode={editMode}
+            presentationMode={!editMode}
+            unsaved={true}
+          />
+        </div>
         <div className={classes.rightContainer}>
           {currentMonster.imageElement && (
             <div className={`${classes.imageContainer}`}>
@@ -263,9 +286,19 @@ export const MonsterStats: React.FC = () => {
                 )
               })}
             </ButtonGroup>
-            <Button variant="contained" onClick={onSaveCustomCharacter}>
-              Save as homebrew character
-            </Button>
+            {monsterSavedInHomebrew ? (
+              <Tooltip title="No changes to be saved" placement="top-start">
+                <div>
+                  <Button variant="contained" onClick={onSaveCustomCharacter} disabled fullWidth>
+                    Save as homebrew character
+                  </Button>
+                </div>
+              </Tooltip>
+            ) : (
+              <Button variant="contained" onClick={onSaveCustomCharacter}>
+                Save as homebrew character
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -71,11 +71,12 @@ interface EditableDamageListProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
+  presentationMode?: boolean
   onChange: (list: DamageType[]) => void
 }
 
 const EditableDamageList: React.FC<EditableDamageListProps> = (props) => {
-  const { header = '', list = [], className = '', editMode = false, onChange } = props
+  const { header = '', list = [], className = '', editMode = false, presentationMode = false, onChange } = props
   const [isText, setIsText] = useState(!editMode)
   const [damageList, setDamageList] = useState(list)
   const { classes } = useStyles()
@@ -96,6 +97,9 @@ const EditableDamageList: React.FC<EditableDamageListProps> = (props) => {
 
   const onChangeValue = (event: any, newDamageList: DamageType[]) => {
     setDamageList(newDamageList)
+    if (!presentationMode) {
+      onChange(newDamageList)
+    }
   }
 
   const onCancel = () => {
@@ -138,9 +142,11 @@ const EditableDamageList: React.FC<EditableDamageListProps> = (props) => {
                 Cancel
               </Button>
             )}
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </div>
       )}

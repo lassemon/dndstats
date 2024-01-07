@@ -50,10 +50,11 @@ export const useStyles = makeStyles()((theme) => ({
 interface EditableSkillsProps {
   className?: string
   editMode?: boolean
+  presentationMode?: boolean
 }
 
 const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
-  const { editMode = false, className = '' } = props
+  const { editMode = false, presentationMode = false, className = '' } = props
   const { character, setCharacter } = useContext(CharacterCardContext)
   const [isText, setIsText] = useState(!editMode)
 
@@ -108,7 +109,11 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
   }
 
   const onSave = () => {
-    setCharacter(character.clone({ skills: FifthESRDService.convertSkillsToProficiencies(objectWithoutEmptyOrUndefined<typeof skills>(skills)) }))
+    const newSkills = FifthESRDService.convertSkillsToProficiencies(objectWithoutEmptyOrUndefined<typeof skills>(skills))
+    const hasChanged = !_.isEqual(character.skills, newSkills)
+    if (hasChanged) {
+      setCharacter(character.clone({ skills: newSkills }))
+    }
     if (!editMode) {
       setIsText(true)
     }
@@ -137,6 +142,7 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
                     .map((part) => capitalize(part))
                     .join(' ')}
                   onChange={onChangeValue(name)}
+                  onBlur={presentationMode ? undefined : onSave}
                   variant="outlined"
                   size="small"
                   onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
@@ -155,9 +161,11 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
                 Cancel
               </Button>
             )}
-            <Button variant="contained" size="small" onClick={onSave}>
-              Save
-            </Button>
+            {presentationMode && (
+              <Button variant="contained" size="small" onClick={onSave}>
+                Save
+              </Button>
+            )}
           </div>
         </>
       )}

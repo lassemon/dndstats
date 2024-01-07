@@ -1,11 +1,11 @@
 import StatsContainer from 'components/StatsContainer'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import useStyles from './CharacterCard.styles'
 import TaperedRule from 'components/TaperedRule'
 import _ from 'lodash'
 import Character from 'domain/entities/Character'
-import { Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Button, Typography, useMediaQuery, useTheme } from '@mui/material'
 import classNames from 'classnames'
 import EditableText from '../CombatTracker/EditableText'
 import EditableArmorClass from 'components/Character/EditableArmorClass'
@@ -23,28 +23,42 @@ import EditableLanguages from './EditableLanguages'
 import EditableKeyValue from './EditableKeyValue'
 import EditableChallengeRating from './EditableChallengeRating'
 import EditableSenses from './EditableSenses'
+import { uuid } from 'utils/utils'
 
 interface CharacterCardProps {
   character: Character
   resizeable?: boolean
   className?: string
   editMode?: boolean
+  presentationMode?: boolean
+  unsaved?: boolean
   onChange?: (key: string, value: Character) => void
+  onCloseEditMode?: () => void
 }
 
 const CharacterCard: React.FC<CharacterCardProps> = (props) => {
-  const { character, editMode = false, resizeable = true, className = '', onChange = () => {} } = props
+  const {
+    character,
+    editMode = false,
+    presentationMode = false,
+    unsaved = false,
+    resizeable = true,
+    className = '',
+    onChange = () => {},
+    onCloseEditMode = () => {}
+  } = props
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
+  const onChangeSaveDelay = 1000
 
   const [internalCharacter, setInternalCharacter] = useState(character.clone())
+  const [onChangeTrigger, setOnChangeTrigger] = useState('')
 
   const statsContainerRef = React.createRef<HTMLDivElement>()
 
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
 
-  //const hasSpecialAbilities = _.isEmpty(character.special_abilities) // todo, use later?
   const hasActions = !_.isEmpty(internalCharacter.actions)
   const hasMoreThanOneSpecialAbility = internalCharacter.special_abilities.length > 1
   const hasMoreThanTwoSpecialAbilities = internalCharacter.special_abilities.length > 2
@@ -63,10 +77,16 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     }
   }, [editMode, statsContainerRef])
 
+  useEffect(() => {
+    if (onChangeTrigger) {
+      saveConditionally.current('', internalCharacter)
+    }
+  }, [onChangeTrigger])
+
   const onChangeName = (value: string | number) => {
     setInternalCharacter((character) => {
       const characterClone = character.clone({ name: value.toString() })
-      onChange('name', characterClone)
+      setOnChangeTrigger(uuid())
       return characterClone
     })
   }
@@ -78,7 +98,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
       const hitPointsHaveChanged = characterClone.hit_points !== newHitPoints
       if (hitPointsHaveChanged) {
         characterClone.hit_points = newHitPoints
-        onChange('hit_points', characterClone)
+        setOnChangeTrigger(uuid())
         return characterClone
       }
       return character
@@ -89,7 +109,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     setInternalCharacter((character) => {
       const characterClone = character.clone()
       characterClone.damage_resistances = resistances
-      onChange('damage_resistances', characterClone)
+      setOnChangeTrigger(uuid())
       return characterClone
     })
   }
@@ -98,7 +118,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     setInternalCharacter((character) => {
       const characterClone = character.clone()
       characterClone.damage_vulnerabilities = vulnerabilities
-      onChange('damage_vulnerabilities', characterClone)
+      setOnChangeTrigger(uuid())
       return characterClone
     })
   }
@@ -107,7 +127,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     setInternalCharacter((character) => {
       const characterClone = character.clone()
       characterClone.damage_immunities = immunities
-      onChange('damage_immunities', characterClone)
+      setOnChangeTrigger(uuid())
       return characterClone
     })
   }
@@ -116,7 +136,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     setInternalCharacter((character) => {
       const characterClone = character.clone()
       characterClone.condition_immunities = immunities
-      onChange('condition_immunities', characterClone)
+      setOnChangeTrigger(uuid())
       return characterClone
     })
   }
@@ -125,7 +145,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     setInternalCharacter((character) => {
       const characterClone = character.clone()
       characterClone.languages = languages
-      onChange('condition_immunities', characterClone)
+      setOnChangeTrigger(uuid())
       return characterClone
     })
   }
@@ -134,7 +154,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     setInternalCharacter((character) => {
       const characterClone = character.clone()
       characterClone.proficiency_bonus = parseInt(value.toString())
-      onChange('proficiency_bonus', characterClone)
+      setOnChangeTrigger(uuid())
       return characterClone
     })
   }
@@ -142,10 +162,28 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
   // NOTE: DO NOT PASS internalCharacter to any child component below
   // use CharacterCardContext instead to share state
   // ========================
-
   const setCharacter = (_character: Character) => {
     setInternalCharacter((_currentCharacter) => _currentCharacter.clone(_character.toJSON()))
-    onChange('', _character)
+    setOnChangeTrigger(uuid())
+  }
+
+  const saveConditionally = useRef(
+    _.throttle(
+      (key: string, characterToSave: Character) => {
+        if (presentationMode) {
+          onChange(key || '', characterToSave)
+        } else {
+          _.delay(onChange, onChangeSaveDelay, key, characterToSave)
+        }
+      },
+      1500,
+      { trailing: true }
+    )
+  )
+
+  const onSave = () => {
+    onChange('', internalCharacter)
+    onCloseEditMode()
   }
 
   return (
@@ -159,6 +197,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
       resizeable={resizeable && !editMode}
       ref={statsContainerRef}
     >
+      {/* Context for sub edit components inside CharacterCard to update character in card internal state instead of setting atoms */}
       <CharacterCardContext.Provider
         value={{
           character: internalCharacter,
@@ -178,7 +217,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
             onChange={onChangeName}
             editMode={editMode}
           />
-          <EditableShortDescription editMode={editMode} />
+          <EditableShortDescription editMode={editMode} presentationMode={presentationMode} />
           <TaperedRule />
           <div
             className={classes.statsContainer}
@@ -187,7 +226,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
             }}
           >
             <div className={classes.baseStatsContainer}>
-              <EditableArmorClass editMode={editMode} />
+              <EditableArmorClass editMode={editMode} presentationMode={presentationMode} />
               <EditableText
                 id="hit-points"
                 label="Hit Points"
@@ -196,20 +235,20 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 editWidth={6}
                 editMode={editMode}
               />
-              {internalCharacter.speed && <EditableSpeed editMode={editMode} />}
+              {(!_.isEmpty(internalCharacter.speed) || editMode) && <EditableSpeed editMode={editMode} presentationMode={presentationMode} />}
             </div>
-            {internalCharacter.hasAbilityScores() && (
+            {(internalCharacter.hasAbilityScores() || editMode) && (
               <>
                 <div>
                   <TaperedRule />
-                  <EditableAbilityScores editMode={editMode} />
+                  <EditableAbilityScores editMode={editMode} presentationMode={presentationMode} />
                 </div>
                 <TaperedRule />
               </>
             )}
 
-            {!_.isEmpty(internalCharacter.saving_throws) && <EditableSavingThrows editMode={editMode} />}
-            {!_.isEmpty(internalCharacter.skills) && <EditableSkills editMode={editMode} />}
+            {(!_.isEmpty(internalCharacter.saving_throws) || editMode) && <EditableSavingThrows editMode={editMode} presentationMode={presentationMode} />}
+            {(!_.isEmpty(internalCharacter.skills) || editMode) && <EditableSkills editMode={editMode} presentationMode={presentationMode} />}
             {!_.isEmpty(internalCharacter.conditions) && (
               <div>
                 <span className={`${classes.statHeader}`}>Conditions</span>
@@ -222,6 +261,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 list={internalCharacter.condition_immunities}
                 onChange={onChangeConditionImmunities}
                 editMode={editMode}
+                presentationMode={presentationMode}
               />
             )}
             {(!_.isEmpty(internalCharacter.damage_resistances) || editMode) && (
@@ -230,6 +270,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 list={internalCharacter.damage_resistances}
                 onChange={onChangeDamageResistance}
                 editMode={editMode}
+                presentationMode={presentationMode}
               />
             )}
             {(!_.isEmpty(internalCharacter.damage_vulnerabilities) || editMode) && (
@@ -238,6 +279,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 list={internalCharacter.damage_vulnerabilities}
                 onChange={onChangeDamageVulnerabilities}
                 editMode={editMode}
+                presentationMode={presentationMode}
               />
             )}
             {(!_.isEmpty(internalCharacter.damage_immunities) || editMode) && (
@@ -246,15 +288,16 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 list={internalCharacter.damage_immunities}
                 onChange={onChangeDamageImmunities}
                 editMode={editMode}
+                presentationMode={presentationMode}
               />
             )}
-            {!_.isEmpty(internalCharacter.senses) && <EditableSenses editMode={editMode} />}
-            {!_.isEmpty(internalCharacter.languages) && (
-              <EditableLanguages language={internalCharacter.languages} onChange={onChangeLanguages} editMode={editMode} />
+            {(!_.isEmpty(internalCharacter.senses) || editMode) && <EditableSenses editMode={editMode} presentationMode={presentationMode} />}
+            {(!_.isEmpty(internalCharacter.languages) || editMode) && (
+              <EditableLanguages language={internalCharacter.languages} onChange={onChangeLanguages} editMode={editMode} presentationMode={presentationMode} />
             )}
             <div style={{ display: 'flex', gap: '0.5em' }}>
-              {!!internalCharacter.challenge_rating && <EditableChallengeRating editMode={editMode} />}
-              {!!internalCharacter.proficiency_bonus && (
+              {(!!internalCharacter.challenge_rating || editMode) && <EditableChallengeRating editMode={editMode} presentationMode={presentationMode} />}
+              {(!!internalCharacter.proficiency_bonus || editMode) && (
                 <EditableKeyValue
                   id="proficiency-bonus"
                   label="Proficiency Bonus"
@@ -269,7 +312,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
             </div>
             <TaperedRule />
           </div>
-          {!_.isEmpty(internalCharacter.special_abilities) && (
+          {(!_.isEmpty(internalCharacter.special_abilities) || editMode) && (
             <div className={classes.actionsContainer}>
               {internalCharacter.special_abilities.map((specialAbility, index) => {
                 return (
@@ -281,7 +324,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
               })}
             </div>
           )}
-          {!_.isEmpty(internalCharacter.actions) && (
+          {(!_.isEmpty(internalCharacter.actions) || editMode) && (
             <div className={classes.actionsContainer}>
               <Typography variant="h2" className={`${classes.header} ${classes.actionsHeader}`}>
                 Actions
@@ -297,6 +340,11 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 })}
               </>
             </div>
+          )}
+          {editMode && (
+            <Button variant="contained" size="small" onClick={onSave}>
+              Save
+            </Button>
           )}
         </div>
       </CharacterCardContext.Provider>

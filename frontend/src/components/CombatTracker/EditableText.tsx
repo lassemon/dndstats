@@ -1,4 +1,4 @@
-import { Button, TextField, TextFieldProps, Typography } from '@mui/material'
+import { TextField, TextFieldProps, Typography } from '@mui/material'
 import React, { ReactNode, useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
@@ -24,7 +24,7 @@ interface EditableTextProps {
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
-  hideSave?: boolean
+  presentationMode?: boolean
   onChange: (value: string | number) => void
   onOpen?: React.MouseEventHandler<HTMLSpanElement>
 }
@@ -38,8 +38,8 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     label,
     value,
     disabled = false,
-    onChange,
     onOpen,
+    onChange,
     tooltip = '',
     disableInteractiveTooltip = false,
     tooltipClass = '',
@@ -49,7 +49,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     editWidth,
     type = 'text',
     editMode = false,
-    hideSave
+    presentationMode = false
   } = props
 
   const EditableTextTooltip =
@@ -86,7 +86,10 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
 
   const onBlur = () => {
     if (!isText && !disabled) {
-      onChange(_value)
+      const hasChanged = value !== _value
+      if (hasChanged) {
+        onChange(_value)
+      }
       if (!editMode) {
         setIsText(true)
       }
@@ -96,14 +99,13 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
   const onEnter = (event: any) => {
     if (event.keyCode === 13) {
       if (!isText && !disabled) {
-        onChange(_value)
+        const hasChanged = value !== _value
+        if (hasChanged) {
+          onChange(_value)
+        }
         setIsText(true)
       }
     }
-  }
-
-  const onSave = () => {
-    onChange(_value)
   }
 
   return (
@@ -143,7 +145,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
           onBlur={onBlur}
           variant="outlined"
           size="small"
-          autoFocus // TODO: use this only in combat tracker but not character card
+          autoFocus={presentationMode} // TODO: use this only in combat tracker but not character card
           InputLabelProps={{
             shrink: true
           }}
@@ -154,11 +156,6 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
             width: `${editWidth ? `${editWidth}em` : '100%'}`
           }}
         />
-      )}
-      {!isText && editMode && !hideSave && (
-        <Button variant="contained" size="small" onClick={onSave}>
-          Save
-        </Button>
       )}
     </div>
   )

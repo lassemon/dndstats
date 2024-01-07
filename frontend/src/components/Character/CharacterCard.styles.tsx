@@ -11,6 +11,10 @@ export const useStyles = makeStyles()((theme) => ({
       breakInside: 'avoid',
       '& .MuiFormControl-root': {
         margin: '0.5em 0 0 0'
+      },
+      '& .editing': {
+        padding: 0,
+        backgroundColor: 'transparent'
       }
     }
   },
