@@ -6,6 +6,7 @@ import { AbilityScores, FifthESRDService } from 'domain/services/FifthESRDServic
 import { CharacterCardContext } from 'services/context'
 import { defaultSavingThrows } from 'services/defaults'
 import { objectWithoutEmptyOrUndefined } from 'utils/utils'
+import CardTitle from './CardTitle'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -130,6 +131,7 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
         </div>
       ) : (
         <>
+          <CardTitle>Saving Throws</CardTitle>
           <div className={classes.editor}>
             {Object.entries(savingThrows).map(([name, value], index) => {
               return (

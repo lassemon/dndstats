@@ -6,6 +6,7 @@ import { objectWithoutEmptyOrUndefined } from 'utils/utils'
 import { CharacterCardContext } from 'services/context'
 import { defaultSpeed } from 'services/defaults'
 import { Speed } from 'interfaces'
+import CardTitle from './CardTitle'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -115,6 +116,7 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
         </div>
       ) : (
         <>
+          <CardTitle>Speed</CardTitle>
           <div className={classes.editor}>
             {Object.values(Speed).map((key, index) => {
               return (

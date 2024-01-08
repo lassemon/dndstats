@@ -9,11 +9,13 @@ export const useStyles = makeStyles()((theme) => ({
       padding: '0.5em',
       margin: '0 0 1.5em 0',
       breakInside: 'avoid',
+      cursor: 'default',
       '& .MuiFormControl-root': {
         margin: '0.5em 0 0 0'
       },
       '& .editing': {
         padding: 0,
+        margin: 0,
         backgroundColor: 'transparent'
       }
     }
@@ -56,7 +58,6 @@ export const useStyles = makeStyles()((theme) => ({
   baseStat: {
     textTransform: 'capitalize'
   },
-
   statHeader: {
     color: theme.status.blood,
     fontSize: '1.1em',
@@ -98,7 +99,12 @@ export const useStyles = makeStyles()((theme) => ({
     color: `${theme.palette.text.primary}`,
     padding: '0 0.5em 0 0'
   },
-  actionDescription: {}
+  actionDescription: {
+    whiteSpace: 'pre-wrap'
+  },
+  saveButtonContainer: {
+    textAlign: 'end'
+  }
 }))
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.

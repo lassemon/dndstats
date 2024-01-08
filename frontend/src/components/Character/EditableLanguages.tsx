@@ -5,6 +5,7 @@ import { Languages } from 'interfaces'
 import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
 import _, { capitalize } from 'lodash'
 import EditableText from 'components/CombatTracker/EditableText'
+import CardTitle from './CardTitle'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -111,6 +112,9 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
 
   const onChangeCustomLanguages = (value: string | number) => {
     setCustomLanguages(value.toString())
+    if (!presentationMode) {
+      onChange(formatLanguagesForSave(languageList, value.toString()))
+    }
   }
 
   const onCancel = () => {
@@ -139,45 +143,48 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
           <span className={classes.statValue}>{language}</span>
         </div>
       ) : (
-        <div className={classes.editor}>
-          <Autocomplete
-            multiple
-            clearOnBlur
-            disableCloseOnSelect
-            value={languageList}
-            className={`${classes.autocomplete}`}
-            options={knownLanguages}
-            onChange={onChangeValue}
-            getOptionLabel={(option) => option.replaceAll('_', ' ')}
-            style={{ width: '100%' }}
-            PaperComponent={AutoCompleteItem}
-            renderInput={(params) => <TextField {...params} label="Languages" variant="outlined" size="small" />}
-          />
-          <Tooltip title="Comma separated list of other languages" placement="top-start">
-            <div style={{ width: '100%' }}>
-              <EditableText
-                id="custom-languages"
-                label="Custom"
-                value={customLanguages}
-                onChange={onChangeCustomLanguages}
-                editMode={true}
-                presentationMode={presentationMode}
-              />
+        <>
+          <CardTitle>Languages</CardTitle>
+          <div className={classes.editor}>
+            <Autocomplete
+              multiple
+              clearOnBlur
+              disableCloseOnSelect
+              value={languageList}
+              className={`${classes.autocomplete}`}
+              options={knownLanguages}
+              onChange={onChangeValue}
+              getOptionLabel={(option) => option.replaceAll('_', ' ')}
+              style={{ width: '100%' }}
+              PaperComponent={AutoCompleteItem}
+              renderInput={(params) => <TextField {...params} label="Languages" variant="outlined" size="small" />}
+            />
+            <Tooltip title="Comma separated list of other languages" placement="top-start">
+              <div style={{ width: '100%' }}>
+                <EditableText
+                  id="custom-languages"
+                  label="Custom"
+                  value={customLanguages}
+                  onChange={onChangeCustomLanguages}
+                  editMode={true}
+                  presentationMode={false}
+                />
+              </div>
+            </Tooltip>
+            <div className={classes.buttonsContainer}>
+              {!editMode && (
+                <Button variant="contained" size="small" onClick={onCancel}>
+                  Cancel
+                </Button>
+              )}
+              {presentationMode && (
+                <Button variant="contained" size="small" onClick={onSave}>
+                  Save
+                </Button>
+              )}
             </div>
-          </Tooltip>
-          <div className={classes.buttonsContainer}>
-            {!editMode && (
-              <Button variant="contained" size="small" onClick={onCancel}>
-                Cancel
-              </Button>
-            )}
-            {presentationMode && (
-              <Button variant="contained" size="small" onClick={onSave}>
-                Save
-              </Button>
-            )}
           </div>
-        </div>
+        </>
       )}
     </div>
   )

@@ -6,6 +6,7 @@ import { FifthESRDService } from 'domain/services/FifthESRDService'
 import { CharacterCardContext } from 'services/context'
 import { defaultSkills } from 'services/defaults'
 import { objectWithoutEmptyOrUndefined } from 'utils/utils'
+import CardTitle from './CardTitle'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -128,6 +129,7 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
         </div>
       ) : (
         <>
+          <CardTitle>Skills</CardTitle>
           <div className={classes.editor}>
             {Object.entries(skills).map(([name, value], index) => {
               return (

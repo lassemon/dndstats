@@ -3,8 +3,6 @@ import { Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, T
 import { makeStyles } from 'tss-react/mui'
 import { Alignment, MonsterSubtype, MonsterType, Size } from 'interfaces'
 import { CharacterCardContext } from 'services/context'
-import Character from 'domain/entities/Character'
-import _ from 'lodash'
 
 interface EditableShortDescriptionProps {
   className?: string

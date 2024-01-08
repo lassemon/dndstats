@@ -8,6 +8,7 @@ import _ from 'lodash'
 import { replaceItemAtIndex } from 'utils/utils'
 import DeleteButton from 'components/DeleteButton'
 import { CharacterCardContext } from 'services/context'
+import CardTitle from './CardTitle'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -143,6 +144,9 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
     if (hasChanged) {
       setCharacter(character.clone({ armor_classes: _armorClasses }))
     }
+    if (!editMode) {
+      setIsText(true)
+    }
   }
 
   return (
@@ -154,6 +158,7 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
         </div>
       ) : (
         <div className={classes.editor}>
+          <CardTitle>Armor Classes</CardTitle>
           {_armorClasses.map((armorClass, index) => {
             return (
               <div key={index} className={classes.row}>

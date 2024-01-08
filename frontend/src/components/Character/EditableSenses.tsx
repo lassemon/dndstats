@@ -6,6 +6,7 @@ import _, { capitalize } from 'lodash'
 import { CharacterCardContext } from 'services/context'
 import { defaultSenses } from 'services/defaults'
 import { objectWithoutEmptyOrUndefined } from 'utils/utils'
+import CardTitle from './CardTitle'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -130,6 +131,7 @@ const EditableSenses: React.FC<EditableSensesProps> = (props) => {
         </div>
       ) : (
         <>
+          <CardTitle>Senses</CardTitle>
           <div className={classes.editor}>
             {Object.values(Senses).map((key, index) => {
               return (

@@ -732,12 +732,7 @@ class Character extends ValueObject {
   }
 
   public get special_abilities() {
-    return this._special_abilities.map((specialAbility) => {
-      return {
-        ...specialAbility,
-        name: specialAbility.usage ? `${specialAbility.name} (${specialAbility.usage.times} ${specialAbility.usage.type})` : specialAbility.name
-      }
-    })
+    return this._special_abilities
   }
   public set special_abilities(value) {
     this._special_abilities = value

@@ -67,10 +67,15 @@ export enum Alignment {
   ChaoticEvil = 'chaotic evil',
   AnyAlignment = 'any alignment',
   AnyLawful = 'any lawful alignment',
+  AnyNonLawful = 'any non-lawful alignment',
   AnyNeutral = 'any neutral alignment',
+  AnyNonNeutral = 'any non-neutral alignment',
   AnyChaotic = 'any chaotic alignment',
+  AnyNonChaotic = 'any non-chaotic alignment',
   AnyGood = 'any good alignment',
+  AnyNonGood = 'any non-good alignment',
   AnyEvil = 'any evil alignment',
+  AnyNonEvil = 'any non-evil alignment',
   Unaligned = 'unaligned'
 }
 

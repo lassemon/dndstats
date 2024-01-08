@@ -12,6 +12,7 @@ interface EditableTextProps {
   textFieldClass?: string
   textClass?: string
   label?: string
+  hideLabelInTextMode?: boolean
   value: string | number
   disabled?: boolean
   tooltip?: string | ReactNode
@@ -25,6 +26,7 @@ interface EditableTextProps {
   type?: TextFieldProps['type']
   editMode?: boolean
   presentationMode?: boolean
+  multiline?: boolean
   onChange: (value: string | number) => void
   onOpen?: React.MouseEventHandler<HTMLSpanElement>
 }
@@ -36,6 +38,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     textClass = '',
     textFieldClass = '',
     label,
+    hideLabelInTextMode = false,
     value,
     disabled = false,
     onOpen,
@@ -49,7 +52,8 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     editWidth,
     type = 'text',
     editMode = false,
-    presentationMode = false
+    presentationMode = false,
+    multiline = false
   } = props
 
   const EditableTextTooltip =
@@ -98,7 +102,7 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
 
   const onEnter = (event: any) => {
     if (event.keyCode === 13) {
-      if (!isText && !disabled) {
+      if (!isText && !disabled && !editMode) {
         const hasChanged = value !== _value
         if (hasChanged) {
           onChange(_value)
@@ -127,8 +131,8 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
               [textClass]: true
             })}
           >
-            {label && <span className={classes.statHeader}>{label}</span>}
-            <span className={label ? classes.statValue : ''}>{_value}</span>
+            {label && !hideLabelInTextMode && <span className={classes.statHeader}>{label}</span>}
+            <span className={label && !hideLabelInTextMode ? classes.statValue : ''}>{_value}</span>
           </Typography>
         </EditableTextTooltip>
       ) : (
@@ -140,17 +144,19 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
           label={label}
           disabled={disabled}
           onChange={internalOnChange}
-          onDoubleClick={onDoubleClick}
           onKeyDown={onEnter}
           onBlur={onBlur}
           variant="outlined"
           size="small"
-          autoFocus={presentationMode} // TODO: use this only in combat tracker but not character card
+          multiline={multiline}
+          autoFocus={presentationMode}
           InputLabelProps={{
             shrink: true
           }}
           onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
-            event.target.select()
+            if (!multiline) {
+              event.target.select()
+            }
           }}
           sx={{
             width: `${editWidth ? `${editWidth}em` : '100%'}`

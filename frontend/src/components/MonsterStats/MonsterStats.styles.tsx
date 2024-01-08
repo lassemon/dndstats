@@ -16,18 +16,17 @@ export const useStyles = makeStyles()((theme) => ({
       content: '"*"',
       color: theme.palette.grey[100],
       width: '100%',
-      height: '1.5em',
       fontFamily: 'Consolas',
       fontSize: '3em',
+      lineHeight: '0.4em',
       fontWeight: '600',
       position: 'absolute',
       top: 0,
       left: 0,
       textAlign: 'right',
-      transform: 'translate(5px, -0.3em)',
+      transform: 'translate(3px, -2px)',
       zIndex: '10',
-      textShadow: '0px 0px 3px rgba(0,0,0,0.6)',
-      rotate: '-1deg'
+      textShadow: '0px 0px 3px rgba(0,0,0,0.6)'
     }
   },
   characterCardContainerPortrait: {

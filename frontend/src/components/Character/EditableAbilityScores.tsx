@@ -7,6 +7,7 @@ import { defaultAbilityScores } from 'services/defaults'
 import { objectWithoutEmptyOrUndefined } from 'utils/utils'
 import { AbilityScores } from 'domain/services/FifthESRDService'
 import { CharacterCardContext } from 'services/context'
+import CardTitle from './CardTitle'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -175,6 +176,7 @@ const EditableAbilityScores: React.FC<EditableAbilityScoresProps> = (props) => {
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       <>
+        {!isText && <CardTitle>Ability Scores</CardTitle>}
         <div className={classes.abilityScores}>
           <div>
             {character.strength && (

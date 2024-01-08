@@ -95,6 +95,7 @@ export const MonsterStats: React.FC = () => {
 
   const onChangeMonster = (key: string, character: Character) => {
     setCurrentMonster((currentMonster) => {
+      //console.log('saving monster state', character.toJSON())
       return currentMonster?.clone(character.toJSON())
     })
   }
@@ -201,7 +202,6 @@ export const MonsterStats: React.FC = () => {
             onCloseEditMode={onCloseEditMode}
             editMode={editMode}
             presentationMode={!editMode}
-            unsaved={true}
           />
         </div>
         <div className={classes.rightContainer}>
