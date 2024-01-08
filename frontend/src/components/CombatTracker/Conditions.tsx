@@ -18,6 +18,7 @@ import Diseased from 'assets/Diseased.png'
 import Exhausted from 'assets/Exhausted.png'
 import Frightened from 'assets/Frightened.png'
 import Grappled from 'assets/Grappled.png'
+import Guidance from 'assets/Guidance.png'
 import Hasted from 'assets/Hasted.png'
 import Hex from 'assets/Hex.png'
 import Holding_Action from 'assets/Holding_Action.png'
@@ -61,6 +62,7 @@ const Icons: { [key in Condition]?: string } = {
   [Condition.Exhaustion]: Exhausted,
   [Condition.Frightened]: Frightened,
   [Condition.Grappled]: Grappled,
+  [Condition.Guidance]: Guidance,
   [Condition.Hasted]: Hasted,
   [Condition.Hex]: Hex,
   [Condition.Holding_Action]: Holding_Action,
@@ -123,6 +125,7 @@ export const ConditionDescription: { [key in Condition]?: string } = {
   [Condition.Grappled]: `A grappled creature’s speed becomes 0, and it can’t benefit from any bonus to its speed.<br/>
   The condition ends if the grappler is incapacitated (see the condition).<br/>
   The condition also ends if an effect removes the grappled creature from the reach of the grappler or grappling effect, such as when a creature is hurled away by the thunderwave spell.`,
+  [Condition.Guidance]: `Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice. It can roll the die before or after making the ability check. The spell then ends.`,
   [Condition.Incapacitated]: `An incapacitated creature can’t take actions or reactions.`,
   [Condition.Invisible]: `An invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. The creature’s location can be detected by any noise it makes or any tracks it leaves.<br/>
   Attack rolls against the creature have disadvantage, and the creature’s attack rolls have advantage.`,
@@ -267,9 +270,10 @@ export const getConditionImmunitiesList = () => {
     Condition.Bloodied,
     Condition.Baned,
     Condition.Blessed,
+    Condition.Blur,
     Condition.Concentration,
     Condition.Holding_Action,
-    Condition.Blur,
+    Condition.Guidance,
     Condition.InspiredByBard,
     Condition.Hex,
     Condition.Hasted,

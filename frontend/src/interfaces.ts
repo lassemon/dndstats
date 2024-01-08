@@ -15,6 +15,7 @@ export enum Condition {
   Exhaustion = 'exhaustion',
   Frightened = 'frightened',
   Grappled = 'grappled',
+  Guidance = 'guidance',
   Hasted = 'hasted',
   Hex = 'hex',
   Holding_Action = 'holding_action',
