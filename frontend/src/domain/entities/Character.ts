@@ -398,12 +398,21 @@ class Character extends ValueObject {
     this.isBloodied()
       ? (this._conditions = _.uniq([...this._conditions, Condition.Bloodied]))
       : (this._conditions = _.uniq(_.without(this._conditions, Condition.Bloodied)))
-    this.isUnconscious() ? (this._conditions = _.uniq([...this._conditions, Condition.Unconscious])) : this.awakeFromUnconciousness()
+    this.isUnconscious()
+      ? (this._conditions = _.uniq([
+          ..._.without(this._conditions, Condition.Bloodied, Condition.Concentration, Condition.Blur, Condition.Holding_Action, Condition.Raging),
+          Condition.Unconscious
+        ]))
+      : this.awakeFromUnconciousness()
     // TODO, this.isDead() ? this._conditions = [Condition.Dead] : null
   }
 
   public setCondition(conditionToAdd: Condition) {
     this.conditions = [conditionToAdd]
+  }
+
+  public isConcentrating() {
+    return this.conditions.includes(Condition.Concentration)
   }
 
   public awakeFromUnconciousness() {
@@ -553,6 +562,10 @@ class Character extends ValueObject {
       }
       this.parseConditions()
     }
+  }
+
+  public hasTakenDamage() {
+    return this.damage > 0
   }
 
   public get speed() {

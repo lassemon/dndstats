@@ -1,4 +1,4 @@
-import { Button, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material'
+import { Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material'
 import React, { useState } from 'react'
 
 import useStyles from './AddCharacterInput.styles'
@@ -123,23 +123,26 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
         onBlur={() => setCharacterInputError(false)}
         variant="standard"
       />
-      <Select
-        size="small"
-        labelId={`type`}
-        id="type-select"
-        value={character.player_type}
-        label="Age"
-        onChange={onChangePlayerType}
-        sx={{
-          '&': {
-            width: '8.9em'
-          }
-        }}
-      >
-        <MenuItem value={PlayerType.Player}>Player</MenuItem>
-        <MenuItem value={PlayerType.NPC}>NPC</MenuItem>
-        <MenuItem value={PlayerType.Enemy}>Enemy</MenuItem>
-      </Select>
+      <FormControl size="small">
+        <InputLabel id="type-select">Player Type</InputLabel>
+        <Select
+          size="small"
+          labelId={`type`}
+          id="type-select"
+          value={character.player_type}
+          label="Player type"
+          onChange={onChangePlayerType}
+          sx={{
+            '&': {
+              width: '8.9em'
+            }
+          }}
+        >
+          <MenuItem value={PlayerType.Player}>Player</MenuItem>
+          <MenuItem value={PlayerType.NPC}>NPC</MenuItem>
+          <MenuItem value={PlayerType.Enemy}>Enemy</MenuItem>
+        </Select>
+      </FormControl>
       <Button variant="contained" color="primary" onClick={internalOnAdd}>
         {text}
       </Button>

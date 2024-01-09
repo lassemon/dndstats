@@ -11,7 +11,7 @@ import { alpha } from '@mui/material'
 export const useStyles = makeStyles()((theme) => ({
   root: {
     background: theme.status.light,
-    padding: '1em 1em',
+    padding: '1em 0 1em 1em',
     margin: '0 0 1em 0',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -184,7 +184,8 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   hpField: {
-    '&&': {
+    '&&&': {
+      marginRight: '0',
       width: '4em',
       minWidth: '4em'
     }
@@ -286,8 +287,12 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   imageIconContainer: {
-    '& > button > svg': {
-      fontSize: '1em'
+    '&&&': {
+      minWidth: '2.8em',
+      marginRight: 0,
+      '& > button > svg': {
+        fontSize: '1em'
+      }
     }
   },
   addContainer: {
@@ -300,6 +305,7 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   conditionList: {
+    margin: '0 0 0 -9px',
     display: 'flex',
     position: 'relative',
     flexWrap: 'wrap',

@@ -94,6 +94,7 @@ export const CombatTracker: React.FC = () => {
   const [currentCombat, setCurrentCombat] = useAtom(useMemo(() => combatTrackerState, []))
   const currentTurn = currentCombat?.turn
   const currentCharacters = currentCombat?.characters
+  const currentCharacterAmount = currentCharacters?.length
 
   // TODO, enable custom character edit through combat tracker?
   // might be too complicated data flow
@@ -112,6 +113,9 @@ export const CombatTracker: React.FC = () => {
     currentCombat ? currentCombat.characters.map((character) => String(character.regeneration || '') || '') : []
   )
   const [regenDialogsOpen, setRegenDialogsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
+  const [concentrationDialogsOpen, setConcentrationDialogsOpen] = useState<Array<number | undefined>>(
+    currentCombat ? currentCombat.characters.map(() => undefined) : []
+  )
   const [imageDialogsOpen, setImageDialogsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
   const [characterCardTooltipsOpen, setCharacterCardTooltipsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
 
@@ -136,7 +140,16 @@ export const CombatTracker: React.FC = () => {
           ...combat,
           characters: combat.characters.map((character) => {
             const existingCustomCharacter = customCharacterList.find((customCharacter) => customCharacter.id === character.id)
-            return existingCustomCharacter ? existingCustomCharacter : character
+            // there are certain values that a character from customCharacters should not overwrite because they are combat tracker specific
+            return existingCustomCharacter
+              ? existingCustomCharacter.clone({
+                  init: character.init,
+                  damage: character.damage,
+                  temporary_hit_points: character.temporary_hit_points,
+                  regeneration: character.regeneration,
+                  conditions: character.conditions
+                })
+              : character
           })
         }
       }
@@ -176,7 +189,7 @@ export const CombatTracker: React.FC = () => {
         })
       }
     }
-  }, [currentCombat, currentTurn, currentCharacters])
+  }, [currentTurn])
 
   useEffect(() => {
     if (currentCharacters) {
@@ -192,28 +205,37 @@ export const CombatTracker: React.FC = () => {
       setIncomingRegenerations(() => {
         return currentCharacters.map(() => '')
       })
-
       setRegenDialogsOpen(() => {
         return currentCharacters.map(() => false)
       })
-      setImageDialogsOpen((imageialogs) => {
+      setConcentrationDialogsOpen(() => {
+        return currentCharacters.map(() => undefined)
+      })
+      setImageDialogsOpen(() => {
         return currentCharacters.map(() => false)
       })
       setCharacterCardTooltipsOpen(() => {
         return currentCharacters.map(() => false)
       })
     }
-  }, [currentCharacters])
+  }, [currentCharacterAmount])
 
   const closeRegenDialog = (index: number, regenCharacter?: boolean) => {
     if (currentCombat) {
       if (regenCharacter === true) {
         onRegenerateCharacter(index)
-      } else {
-        setRegenDialogsOpen((regenDialogs) => {
-          return replaceItemAtIndex<boolean>(regenDialogs, currentCombat.turn, false)
-        })
       }
+      setRegenDialogsOpen((regenDialogs) => {
+        return replaceItemAtIndex<boolean>(regenDialogs, index, false)
+      })
+    }
+  }
+
+  const closeConcentrationDialog = (index: number) => {
+    if (currentCombat) {
+      setConcentrationDialogsOpen((_concentrationDialogs) => {
+        return replaceItemAtIndex(_concentrationDialogs, index, undefined)
+      })
     }
   }
 
@@ -360,6 +382,9 @@ export const CombatTracker: React.FC = () => {
   const onAddCharacter = (characterInput: CharacterInput) => {
     setRegenDialogsOpen((regenDialogs) => {
       return [...regenDialogs, false]
+    })
+    setConcentrationDialogsOpen((concentrationDialogs) => {
+      return [...concentrationDialogs, undefined]
     })
     setImageDialogsOpen((imageDialogs) => {
       return [...imageDialogs, false]
@@ -562,6 +587,14 @@ export const CombatTracker: React.FC = () => {
           setIncomingTempHPs((tempHPs) => {
             return replaceItemAtIndex<string>(tempHPs, index, String(character.temporary_hit_points || ''))
           })
+          setIncomingDamages((damages) => {
+            return replaceItemAtIndex<string>(damages, index, '')
+          })
+          if (incomingHpChange < 0 && character.isConcentrating() && !character.isUnconscious() && currentCombat?.ongoing) {
+            setConcentrationDialogsOpen((_concentrationDialogs) => {
+              return replaceItemAtIndex(_concentrationDialogs, index, Math.abs(incomingHpChange))
+            })
+          }
         }
 
         return {
@@ -673,6 +706,7 @@ export const CombatTracker: React.FC = () => {
   const incomingTempHPsSynced = currentCharacters?.length === incomingTempHPs.length
   const incomingRegenerationsSynced = currentCharacters?.length === incomingRegenerations.length
   const regenDialogsSynced = currentCharacters?.length === regenDialogsOpen.length
+  const concentrationDialogsSynced = currentCharacters?.length === concentrationDialogsOpen.length
   const imageDialogsSynced = currentCharacters?.length === imageDialogsOpen.length
   const cardTooltipsOpenSynced = currentCharacters?.length === characterCardTooltipsOpen.length
 
@@ -683,6 +717,7 @@ export const CombatTracker: React.FC = () => {
     !incomingTempHPsSynced ||
     !incomingRegenerationsSynced ||
     !regenDialogsSynced ||
+    !concentrationDialogsSynced ||
     !imageDialogsSynced ||
     !cardTooltipsOpenSynced
   ) {
@@ -743,6 +778,8 @@ export const CombatTracker: React.FC = () => {
               const settingsAnchor = settingsAnchors[index]
               const settingsOpen = Boolean(settingsAnchor)
               const regenDialogOpen = Boolean(regenDialogsOpen[index])
+              const concentrationDialogOpen = Boolean(typeof concentrationDialogsOpen[index] !== 'undefined')
+              const damageForConcentrationCheck = concentrationDialogsOpen[index]
               const imageDialogOpen = Boolean(imageDialogsOpen[index])
               const tooltipOpen = Boolean(characterCardTooltipsOpen[index])
 
@@ -799,6 +836,33 @@ export const CombatTracker: React.FC = () => {
                         </Button>
                         <Button variant="contained" color="success" onClick={() => closeRegenDialog(index, true)}>
                           Yes
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                    <Dialog open={concentrationDialogOpen} onClose={() => closeConcentrationDialog(index)} TransitionComponent={Transition}>
+                      <DialogTitle id={`concentration-dialog-title-${index}`}>{`Character is concentrating on a spell`}</DialogTitle>
+                      <DialogContent>
+                        <Typography
+                          variant="body1"
+                          paragraph={false}
+                          sx={{
+                            margin: '0 0 2em 0'
+                          }}
+                        >
+                          The DC of a concentration check is either 10 or half of the total damage the character takes — whichever value is greater.
+                        </Typography>
+                        <Typography variant="body1" paragraph={false}>
+                          The damage just taken was {damageForConcentrationCheck} so{' '}
+                          <strong>
+                            the DC for this concentration check is
+                            {damageForConcentrationCheck &&
+                              ` ${Math.floor(damageForConcentrationCheck / 2) <= 10 ? 10 : Math.floor(damageForConcentrationCheck / 2)}`}
+                          </strong>
+                        </Typography>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button variant="contained" color="success" onClick={() => closeConcentrationDialog(index)}>
+                          OK
                         </Button>
                       </DialogActions>
                     </Dialog>
