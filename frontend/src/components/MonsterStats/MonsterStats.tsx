@@ -2,7 +2,7 @@ import React, { HTMLAttributes, useEffect, useMemo, useState } from 'react'
 import { combatTrackerState, customCharactersState, monsterState } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './MonsterStats.styles'
-import { Autocomplete, Button, ButtonGroup, CircularProgress, TextField, Tooltip } from '@mui/material'
+import { Autocomplete, Box, Button, ButtonGroup, CircularProgress, TextField, Tooltip } from '@mui/material'
 import { MonsterListOption, emptyMonster } from 'domain/entities/Monster'
 import { getMonster, getMonsterList } from 'api/monsters'
 import { FifthESRDMonster } from 'domain/services/FifthESRDService'
@@ -306,14 +306,16 @@ export const MonsterStats: React.FC = () => {
           </div>
         </div>
       </div>
-      <Tooltip title="Toggle screenshot mode" placement="top-start">
+      <Box displayPrint="none">
+        <Tooltip title="Toggle screenshot mode" placement="top-start">
+          <div style={{ display: 'inline-block' }}>
+            <ScreenshotButton onClick={onToggletMonsterActionsVisible} color={monsterActionsVisible ? 'default' : 'info'} />
+          </div>
+        </Tooltip>
         <div style={{ display: 'inline-block' }}>
-          <ScreenshotButton onClick={onToggletMonsterActionsVisible} color={monsterActionsVisible ? 'default' : 'info'} />
+          <EditButton onClick={onToggletEditMode} color={monsterActionsVisible ? 'default' : 'info'} />
         </div>
-      </Tooltip>
-      <div style={{ display: 'inline-block' }}>
-        <EditButton onClick={onToggletEditMode} color={monsterActionsVisible ? 'default' : 'info'} />
-      </div>
+      </Box>
     </>
   )
 }

@@ -43,6 +43,7 @@ export const useStyles = makeStyles()((theme) => ({
     gap: '0.5em',
     flexDirection: 'column',
     margin: '0 0 0 1em',
+    maxWidth: '30em',
     '& > img': {
       width: '100%'
     }

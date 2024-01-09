@@ -7,7 +7,7 @@ import classNames from 'classnames/bind'
 
 import useStyles from './SpellStats.styles'
 import _ from 'lodash'
-import { Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material'
+import { Box, Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material'
 import { useOrientation } from 'utils/hooks'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
@@ -142,9 +142,11 @@ export const SpellStats: React.FC = () => {
           </>
         )}
       </StatsContainer>
-      <FormGroup>
-        <FormControlLabel control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />} label="Inline features" />
-      </FormGroup>
+      <Box displayPrint="none">
+        <FormGroup>
+          <FormControlLabel control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />} label="Inline features" />
+        </FormGroup>
+      </Box>
     </>
   )
 }

@@ -5,7 +5,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import classNames from 'classnames/bind'
 
 import useStyles from './ItemStats.styles'
-import { Checkbox, FormControlLabel, FormGroup } from '@mui/material'
+import { Box, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 import { useOrientation } from 'utils/hooks'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
@@ -90,9 +90,11 @@ export const ItemStats: React.FC = () => {
           </div>
         </div>
       </StatsContainer>
-      <FormGroup>
-        <FormControlLabel control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />} label="Inline features" />
-      </FormGroup>
+      <Box displayPrint="none">
+        <FormGroup>
+          <FormControlLabel control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />} label="Inline features" />
+        </FormGroup>
+      </Box>
     </>
   )
 }

@@ -82,9 +82,11 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
               }
             }}
           >
-            <ToggleButton onClick={onToggleBg} />
-            <PlusButton onClick={onFontSizeLarger} />
-            <MinusButton onClick={onFontSizeSmaller} />
+            <Box displayPrint="none">
+              <ToggleButton onClick={onToggleBg} />
+              <PlusButton onClick={onFontSizeLarger} />
+              <MinusButton onClick={onFontSizeSmaller} />
+            </Box>
           </Toolbar>
           {statsComponent}
         </Grid>
