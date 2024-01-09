@@ -127,6 +127,9 @@ export const ConditionDescription: { [key in Condition]?: string } = {
   The condition also ends if an effect removes the grappled creature from the reach of the grappler or grappling effect, such as when a creature is hurled away by the thunderwave spell.`,
   [Condition.Guidance]: `Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice. It can roll the die before or after making the ability check. The spell then ends.`,
   [Condition.Incapacitated]: `An incapacitated creature can’t take actions or reactions.`,
+  [Condition.InspiredByBard]: `Once within the next 10 minutes, the creature can roll the bardic inspiration die and add the number rolled to one ability check, attack roll, or saving throw it makes.<br/>
+  The creature can wait until after it rolls the d20 before deciding to use the Bardic Inspiration die, but must decide before the DM says whether the roll succeeds or fails. <br/>
+  Once the Bardic Inspiration die is rolled, it is lost.<br/>A creature can have only one Bardic Inspiration die at a time.`,
   [Condition.Invisible]: `An invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. The creature’s location can be detected by any noise it makes or any tracks it leaves.<br/>
   Attack rolls against the creature have disadvantage, and the creature’s attack rolls have advantage.`,
   [Condition.Paralyzed]: `A paralyzed creature is incapacitated (see the condition) and can’t move or speak.<br/>

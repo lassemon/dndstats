@@ -589,6 +589,11 @@ export const CombatTracker: React.FC = () => {
   const onChangeCondition = (index: number) => (event: any, conditions: Condition[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
+      const incomingStunnedCondition = conditions.includes(Condition.Stunned)
+      const characterIsIncapasitated = character.conditions.includes(Condition.Incapacitated)
+      if (incomingStunnedCondition && !characterIsIncapasitated) {
+        conditions.push(Condition.Incapacitated)
+      }
       character.conditions = conditions
       return {
         ...combat,
