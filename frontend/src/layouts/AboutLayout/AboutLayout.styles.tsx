@@ -9,14 +9,11 @@ export const useStyles = makeStyles()((theme) => ({
       margin: 0,
       padding: '0 1rem 0 2rem'
     },
-    '&& > *:first-of-type': {
-      paddingTop: '1rem'
-    },
     '&& > *:last-child': {
-      paddingBottom: '1rem'
+      paddingBottom: '3rem'
     },
     '&& > h6': {
-      margin: '2em 0 0 0'
+      margin: '1.2em 0 0 0'
     }
   }
 }))

@@ -7,8 +7,14 @@ const AboutLayout: React.FC = () => {
   const { classes } = useStyles()
   return (
     <div className={classes.root}>
-      <Typography variant="h3">About</Typography>
-      <Typography variant="h4">How to use</Typography>
+      <Typography
+        variant="h3"
+        sx={{
+          margin: '1em 0 0 0'
+        }}
+      >
+        How to use
+      </Typography>
       <Typography variant="h6">Text fields</Typography>
       <Typography>
         Use the edit fields to change generated stats to your liking. Some of the stats can be left empty and that will make them disappear from the generated
@@ -24,6 +30,11 @@ const AboutLayout: React.FC = () => {
         <br />
         Use the "clear image" -button to remove the image entirely. This will also remove the space the image occupies and leave more room for text.
       </Typography>
+      <Typography variant="h6">Monster Stats</Typography>
+      <Typography>
+        Doubleclick on the character display card to open a singular edit view OR click the pen button at the bottom of the card to open the full edit view of
+        everything.
+      </Typography>
       <Typography variant="h6">Combat Tracker</Typography>
       <Typography>
         Most of the features should be self explanatory for any DM. <br />
@@ -33,7 +44,7 @@ const AboutLayout: React.FC = () => {
       </Typography>
       <Typography variant="h6">Printing</Typography>
       <Typography>
-        The generator has printing optimized css built in. You can attempt to print any of the generatod stat pages and it should hide the input fields and only
+        The generator has printing optimized css built in. You can attempt to print any of the generated stat pages and it should hide the input fields and only
         show you the generated stat block.
         <br />
         You can either print the page directly or save the print as PDF.

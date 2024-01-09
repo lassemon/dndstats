@@ -11,9 +11,9 @@ export const useStyles = makeStyles()((theme) => ({
     backgroundPosition: 'center',
     display: 'flex',
     flexDirection: 'column',
+    gap: '3em',
     '&& > *': {
-      flex: '1 1 100%',
-      margin: '0 0 3em 0'
+      flex: '1 1 100%'
     }
   }
 }))
