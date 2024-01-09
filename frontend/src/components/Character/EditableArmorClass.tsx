@@ -24,7 +24,8 @@ export const useStyles = makeStyles()((theme) => ({
   row: {
     display: 'flex',
     gap: '0.4em',
-    alignItems: 'center'
+    alignItems: 'center',
+    flexWrap: 'wrap'
   },
   baseStat: {
     textTransform: 'capitalize'

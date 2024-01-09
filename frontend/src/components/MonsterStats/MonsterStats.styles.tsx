@@ -42,8 +42,7 @@ export const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     gap: '0.5em',
     flexDirection: 'column',
-    margin: '0 0 0 1em',
-    maxWidth: '30em',
+    margin: '0 0 0 8px',
     '& > img': {
       width: '100%'
     }
@@ -148,6 +147,7 @@ export const useStyles = makeStyles()((theme) => ({
   blockDescription: {
     margin: '0.8em',
     whiteSpace: 'pre-wrap',
+    width: 'fit-content',
     '& p': {
       margin: 0
     }
