@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { HTMLAttributes, useEffect, useMemo, useState } from 'react'
 import { combatTrackerState, customCharactersState, monsterState } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './MonsterStats.styles'
@@ -19,10 +19,16 @@ import EditButton from 'components/EditButton'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
 import classNames from 'classnames'
+import Showdown from 'showdown'
 
-const DescriptionBlock: React.FC = (props) => {
+const DescriptionBlock: React.FC<HTMLAttributes<HTMLParagraphElement>> = (props) => {
   const { children } = props
   const { classes } = useStyles()
+  if (props.dangerouslySetInnerHTML && typeof props.dangerouslySetInnerHTML.__html === 'string') {
+    const converter = new Showdown.Converter()
+    const htmlConvertedText = converter.makeHtml(props.dangerouslySetInnerHTML.__html)
+    return <p className={classes.blockDescription} dangerouslySetInnerHTML={{ __html: htmlConvertedText }} />
+  }
   return <p className={classes.blockDescription}>{children}</p>
 }
 
@@ -212,9 +218,7 @@ export const MonsterStats: React.FC = () => {
           )}
           {currentMonster.description && (
             <div className={classes.mainDescription}>
-              {currentMonster.description.split('\n').map((value, key) => {
-                return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
-              })}
+              <DescriptionBlock key={`description`} dangerouslySetInnerHTML={{ __html: currentMonster.description || '' }} />
             </div>
           )}
           <div className={`${classes.monsterActionsContainer} ${monsterActionsVisible ? '' : classes.hidden}`}>

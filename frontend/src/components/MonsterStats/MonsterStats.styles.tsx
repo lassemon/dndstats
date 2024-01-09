@@ -145,7 +145,11 @@ export const useStyles = makeStyles()((theme) => ({
     padding: '0 4px 0 0'
   },
   blockDescription: {
-    margin: '0.8em'
+    margin: '0.8em',
+    whiteSpace: 'pre-wrap',
+    '& p': {
+      margin: 0
+    }
   },
   inlineDescription: {
     display: 'inline'
