@@ -323,7 +323,9 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
               <EditableLanguages language={internalCharacter.languages} onChange={onChangeLanguages} editMode={editMode} presentationMode={presentationMode} />
             )}
             <div style={{ display: 'flex', gap: '0.5em' }}>
-              {(!!internalCharacter.challenge_rating || editMode) && <EditableChallengeRating editMode={editMode} presentationMode={presentationMode} />}
+              {(typeof internalCharacter.challenge_rating !== 'undefined' || editMode) && (
+                <EditableChallengeRating editMode={editMode} presentationMode={presentationMode} />
+              )}
               {(!!internalCharacter.proficiency_bonus || editMode) && (
                 <EditableKeyValue
                   id="proficiency-bonus"

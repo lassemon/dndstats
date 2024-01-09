@@ -2,7 +2,7 @@ import { PlayerType, Condition, DamageType, Source, CharacterSenses } from 'inte
 import ValueObject from './ValueObject'
 import _, { capitalize } from 'lodash'
 import { ConditionEffects, getConditionEffects, getPrintableConditions } from 'components/CombatTracker/Conditions'
-import { getNumberWithSign, upsertToArray, uuid } from 'utils/utils'
+import { getNumberWithSign, getlowestfraction, upsertToArray, uuid } from 'utils/utils'
 import { Action, ArmorClass, ArmorClassType, FifthESRDMonster, FifthESRDService, Proficiency, SpecialAbility } from 'domain/services/FifthESRDService'
 import { ReactElement } from 'react'
 export interface ICharacter extends Partial<FifthESRDMonster> {
@@ -704,7 +704,12 @@ class Character extends ValueObject {
     return this._challenge_rating
   }
   public get challenge_rating_label() {
-    return `${this._challenge_rating}${this.xp ? ` (${this.xp} XP)` : ''}`
+    const challengeRatingAsFraction =
+      this._challenge_rating > 0 && this._challenge_rating < 1 ? Character.getChallengeRatingAsFraction(this._challenge_rating) : this._challenge_rating
+    return `${challengeRatingAsFraction}${this.xp ? ` (${this.xp} XP)` : ''}`
+  }
+  public static getChallengeRatingAsFraction(challengeRating: number) {
+    return getlowestfraction(challengeRating)
   }
   public set challenge_rating(value) {
     this._challenge_rating = value

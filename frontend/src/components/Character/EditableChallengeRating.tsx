@@ -1,4 +1,4 @@
-import { Button, TextField } from '@mui/material'
+import { Button, TextField, Tooltip } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import _ from 'lodash'
@@ -94,13 +94,13 @@ const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) 
   const onSave = () => {
     const newValues = {
       ...(challengeRating.challenge_rating !== ''
-        ? { challenge_rating: parseInt(challengeRating.challenge_rating.toString()) }
+        ? { challenge_rating: parseFloat(challengeRating.challenge_rating.toString()) }
         : { challenge_rating: undefined }),
-      ...(challengeRating.xp !== '' ? { xp: parseInt(challengeRating.xp.toString()) } : { xp: undefined })
+      ...(challengeRating.xp !== '' ? { xp: parseFloat(challengeRating.xp.toString()) } : { xp: undefined })
     }
     const oldValues = {
-      ...(character.challenge_rating ? { challenge_rating: parseInt(character.challenge_rating.toString()) } : { challenge_rating: undefined }),
-      ...(character.xp ? { xp: parseInt(character.xp.toString()) } : { xp: undefined })
+      ...(character.challenge_rating ? { challenge_rating: parseFloat(character.challenge_rating.toString()) } : { challenge_rating: undefined }),
+      ...(character.xp ? { xp: parseFloat(character.xp.toString()) } : { xp: undefined })
     }
     const hasChanged = !_.isEqual(oldValues, newValues)
     if (hasChanged) {
@@ -122,19 +122,21 @@ const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) 
       ) : (
         <>
           <div className={classes.editor}>
-            <TextField
-              id="challenge_rating"
-              label="Challenge Rating"
-              type="number"
-              value={challengeRating.challenge_rating}
-              onChange={onChangeValue('challenge_rating')}
-              onBlur={presentationMode ? undefined : onSave}
-              variant="outlined"
-              size="small"
-              InputLabelProps={{
-                shrink: true
-              }}
-            />
+            <Tooltip title="0.5 = 1/2, 0.25 = 1/4, 0.125 = 1/8" placement="top-end">
+              <TextField
+                id="challenge_rating"
+                label="Challenge Rating"
+                type="number"
+                value={challengeRating.challenge_rating}
+                onChange={onChangeValue('challenge_rating')}
+                onBlur={presentationMode ? undefined : onSave}
+                variant="outlined"
+                size="small"
+                InputLabelProps={{
+                  shrink: true
+                }}
+              />
+            </Tooltip>
             <TextField
               id="xp"
               label="XP"
