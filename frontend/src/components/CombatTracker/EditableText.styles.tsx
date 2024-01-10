@@ -3,7 +3,10 @@ import { makeStyles } from 'tss-react/mui'
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
   root: {
-    cursor: 'pointer'
+    cursor: 'pointer',
+    '&.editing': {
+      marginLeft: '0.5em'
+    }
   },
   textMode: {
     cursor: 'pointer',

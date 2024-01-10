@@ -982,7 +982,7 @@ export const CombatTracker: React.FC = () => {
                       textFieldClass={`${classes.editableTextField}`}
                       value={character.current_hit_points + (character.temporary_hit_points || 0)}
                       textWidth={30}
-                      editWidth={4}
+                      editWidth={3.2}
                       presentationMode
                       disabled={false}
                       onChange={onChangeCharacterHP(index)}

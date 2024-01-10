@@ -114,7 +114,7 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   nameTextContainer: {
-    margin: '0 0 0 0.6em',
+    margin: '0 0 0 0.3em',
     padding: '0 0 0 0'
   },
   nameText: {
@@ -162,7 +162,6 @@ export const useStyles = makeStyles()((theme) => ({
   initField: {
     flexShrink: 0,
     '&&': {
-      width: '1.5em',
       marginLeft: '1em'
     },
     '& label': {
@@ -172,6 +171,10 @@ export const useStyles = makeStyles()((theme) => ({
   },
   initText: {
     position: 'relative',
+    minWidth: '1.4em',
+    '&.editing': {
+      minWidth: 'auto'
+    },
     '&:before': {
       content: '"init"',
       position: 'absolute',
@@ -191,8 +194,11 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   HPText: {
-    minWidth: '3em',
     position: 'relative',
+    minWidth: '2.6em',
+    '&.editing': {
+      minWidth: 'auto'
+    },
     '&:before': {
       content: '"HP"',
       position: 'absolute',
