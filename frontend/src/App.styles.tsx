@@ -17,6 +17,11 @@ export const useStyles = makeStyles()(() => ({
     margin: '0',
     minHeight: '100%'
   },
+  tabs: {
+    '& .MuiTabs-flexContainer': {
+      justifyContent: 'center'
+    }
+  },
   tabsPortrait: {
     flexGrow: 1,
     minWidth: '170px',

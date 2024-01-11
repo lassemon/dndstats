@@ -216,11 +216,11 @@ export const ConditionToIconMap = Object.values(Condition).reduce((accumulator, 
     >
       <span
         style={{
-          width: '2.5em',
-          height: '2.2em',
+          width: '2em',
+          height: '2em',
           display: 'block',
           textAlign: 'center',
-          lineHeight: '2.2em'
+          lineHeight: '2em'
         }}
       >
         <img alt={key[0].toUpperCase() + key.slice(1)} src={Icons[key]} height="35px" />

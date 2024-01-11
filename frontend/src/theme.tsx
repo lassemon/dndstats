@@ -61,6 +61,9 @@ const theme = createTheme({
     },
     MuiAutocomplete: {
       styleOverrides: {
+        listbox: {
+          maxHeight: '60vh'
+        },
         option: {
           textTransform: 'capitalize'
         }

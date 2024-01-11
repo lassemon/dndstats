@@ -71,7 +71,7 @@ const App: React.FC = () => {
                 <Tabs
                   textColor="secondary"
                   indicatorColor="secondary"
-                  className={isPortrait ? classes.tabsPortrait : classes.tabsLandscape}
+                  className={`${classes.tabs} ${isPortrait ? classes.tabsPortrait : classes.tabsLandscape}`}
                   value={value}
                   onChange={handleChange}
                   aria-label="dnd stats tabs"

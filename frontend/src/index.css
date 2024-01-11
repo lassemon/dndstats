@@ -5,10 +5,10 @@ html {
   padding: 0;
 }
 body {
+  position: absolute;
   min-height: 100%;
   margin: 0;
   padding: 0;
-  display: flex;
   background-image: url(assets/statblockparch.jpg);
   font-family: 'Noto Sans', 'Myriad Pro', Calibri, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -27,9 +27,7 @@ input[type='number'] {
 }
 
 #root {
-  display: flex;
   min-height: 100%;
-  width: 100%;
 }
 
 img {

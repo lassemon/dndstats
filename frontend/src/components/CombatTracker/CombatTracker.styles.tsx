@@ -11,7 +11,7 @@ import { alpha } from '@mui/material'
 export const useStyles = makeStyles()((theme) => ({
   root: {
     background: theme.status.light,
-    padding: '1em 0 1em 1em',
+    padding: '1em 1em 1em 1em',
     margin: '0 0 1em 0',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -115,11 +115,18 @@ export const useStyles = makeStyles()((theme) => ({
   },
   nameTextContainer: {
     margin: '0 0 0 0.3em',
-    padding: '0 0 0 0'
+    padding: '0 0 0 0',
+    minWidth: '10%'
   },
   nameText: {
-    width: '8em',
-    textAlign: 'left'
+    textAlign: 'left',
+    display: 'block',
+    '& > span': {
+      display: 'block',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    }
   },
   nameTextTooltip: {
     zIndex: '100',
@@ -230,8 +237,8 @@ export const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     flex: '1 1 68px',
     flexWrap: 'wrap',
-    maxWidth: '68px',
-    minWidth: '45px',
+    minWidth: '6%',
+    maxWidth: '6%',
     '&&&': {
       marginRight: '0.2em'
     }
@@ -265,9 +272,10 @@ export const useStyles = makeStyles()((theme) => ({
   hpBarContainer: {
     '&&': {
       display: 'flex',
-      flex: '0 0 18%',
+      flex: '0 0 auto',
       alignItems: 'center',
-      height: '3em'
+      height: '3em',
+      minWidth: '12%'
     }
   },
   hpBar: {
@@ -313,12 +321,13 @@ export const useStyles = makeStyles()((theme) => ({
   conditionList: {
     margin: '0 0 0 -9px',
     display: 'flex',
+    alignContent: 'center',
     position: 'relative',
     flexWrap: 'wrap',
     flex: '1 1 auto',
     zIndex: '1',
     minHeight: '2em',
-    minWidth: '12em',
+    minWidth: '14%',
     lineHeight: '0.1em',
     '& .MuiIcon-root': {
       width: '1.8em',
@@ -332,13 +341,19 @@ export const useStyles = makeStyles()((theme) => ({
       opacity: '.1',
       position: 'absolute',
       top: '45%',
-      left: '50%',
+      left: '40%',
       width: '6em',
       height: '2em',
       zIndex: '-1',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
       transform: 'translate(-50%, -50%) rotate(-10deg)'
+    }
+  },
+  conditionListSmall: {
+    '&:before': {
+      backgroundSize: 'auto 55%',
+      left: '30%'
     }
   },
   player: {

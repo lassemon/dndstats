@@ -15,7 +15,9 @@ import {
   Slide,
   TextField,
   Tooltip,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { Container, Draggable } from 'react-smooth-dnd'
@@ -91,6 +93,8 @@ const Transition = React.forwardRef(function Transition(
 export const CombatTracker: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
+  const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('md'))
   const [currentCombat, setCurrentCombat] = useAtom(useMemo(() => combatTrackerState, []))
   const currentTurn = currentCombat?.turn
   const currentCharacters = currentCombat?.characters
@@ -1068,6 +1072,7 @@ export const CombatTracker: React.FC = () => {
                     <Typography
                       className={cx({
                         [classes.conditionList]: true,
+                        [classes.conditionListSmall]: isSmall,
                         [classes.player]: character.player_type === PlayerType.Player,
                         [classes.npc]: character.player_type === PlayerType.NPC,
                         [classes.enemy]: character.player_type === PlayerType.Enemy
@@ -1077,7 +1082,18 @@ export const CombatTracker: React.FC = () => {
                       {character.conditions.map((condition, conditionIndex) => {
                         return (
                           <React.Fragment key={conditionIndex}>
-                            <span onMouseUp={onRemoveCondition(index, condition)}>{ConditionToIconMap[condition] || null}</span>
+                            <span
+                              onMouseUp={onRemoveCondition(index, condition)}
+                              style={{
+                                ...(isSmall
+                                  ? {
+                                      fontSize: '10px'
+                                    }
+                                  : {})
+                              }}
+                            >
+                              {ConditionToIconMap[condition] || null}
+                            </span>
                           </React.Fragment>
                         )
                       })}
@@ -1094,7 +1110,7 @@ export const CombatTracker: React.FC = () => {
                       options={_.without(Object.values(Condition), Condition.Dead, Condition.Unconscious, Condition.Bloodied) as Condition[]}
                       onChange={onChangeCondition(index)}
                       getOptionLabel={(option) => option.replaceAll('_', ' ')}
-                      style={{ width: '14em' }}
+                      style={{ width: '14em', minWidth: '8em' }}
                       PaperComponent={AutoCompleteItem}
                       renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
                     />
@@ -1246,7 +1262,7 @@ export const CombatTracker: React.FC = () => {
                             />
                           }
                         >
-                          Delete
+                          Remove from combat tracker
                         </Button>
                       </List>
                     </Popover>
@@ -1258,7 +1274,7 @@ export const CombatTracker: React.FC = () => {
         </List>
         {!currentCombat.ongoing && (
           <>
-            <AddCharacterInput onAdd={onAddCharacter} text={'Add Player'}>
+            <AddCharacterInput onAdd={onAddCharacter}>
               <Autocomplete
                 id={`add-monster-dropdown`}
                 blurOnSelect
@@ -1273,6 +1289,7 @@ export const CombatTracker: React.FC = () => {
                 onChange={onAddMonster}
                 getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
                 style={{ width: '14em' }}
+                selectOnFocus={false}
                 PaperComponent={AutoCompleteItem}
                 renderInput={(params) => (
                   <TextField

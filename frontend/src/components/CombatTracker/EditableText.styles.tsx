@@ -13,6 +13,7 @@ export const useStyles = makeStyles()((theme) => ({
     fontSize: '1.2em',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
     display: 'inline-block',
     lineHeight: 'normal',
     verticalAlign: 'bottom',

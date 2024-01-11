@@ -16,11 +16,10 @@ export interface CharacterInput {
 
 interface AddCharacterInputProps {
   onAdd: (character: CharacterInput) => void
-  text: string
 }
 
 const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
-  const { onAdd, text } = props
+  const { onAdd } = props
   const [character, setCharacter] = useState(blankCharacter)
   const [characterInputError, setCharacterInputError] = useState(false)
   const { classes } = useStyles()
@@ -36,8 +35,6 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
         hit_points: parseInt(character.hit_points) || 10,
         player_type: character.player_type
       })
-
-      setCharacter({ ...blankCharacter })
     }
   }
 
@@ -143,8 +140,8 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
           <MenuItem value={PlayerType.Enemy}>Enemy</MenuItem>
         </Select>
       </FormControl>
-      <Button variant="contained" color="primary" onClick={internalOnAdd}>
-        {text}
+      <Button variant="contained" color="primary" onClick={internalOnAdd} sx={{ whiteSpace: 'nowrap' }}>
+        Add Player
       </Button>
       {props.children}
     </div>
