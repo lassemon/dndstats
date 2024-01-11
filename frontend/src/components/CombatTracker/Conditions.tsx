@@ -20,7 +20,9 @@ import Frightened from 'assets/Frightened.png'
 import Grappled from 'assets/Grappled.png'
 import Guidance from 'assets/Guidance.png'
 import Hasted from 'assets/Hasted.png'
+import HalfCover from 'assets/HalfCover.png'
 import Hex from 'assets/Hex.png'
+import Hidden from 'assets/Hidden.png'
 import Holding_Action from 'assets/Holding_Action.png'
 import Incapacitated from 'assets/Incapacitated.png'
 import Invisible from 'assets/Invisible.png'
@@ -38,6 +40,8 @@ import Shield_of_Faith from 'assets/Shield_of_Faith.png'
 import Slowed from 'assets/Slowed.png'
 import Stabilized from 'assets/Stabilized.png'
 import Stunned from 'assets/Stunned.png'
+import ThreeQuartersCover from 'assets/ThreeQuartersCover.png'
+import TotalCover from 'assets/TotalCover.png'
 import Unconscious from 'assets/Unconcious.png'
 
 import { Condition } from 'interfaces'
@@ -64,7 +68,9 @@ const Icons: { [key in Condition]?: string } = {
   [Condition.Grappled]: Grappled,
   [Condition.Guidance]: Guidance,
   [Condition.Hasted]: Hasted,
+  [Condition.HalfCover]: HalfCover,
   [Condition.Hex]: Hex,
+  [Condition.Hidden]: Hidden,
   [Condition.Holding_Action]: Holding_Action,
   [Condition.Incapacitated]: Incapacitated,
   [Condition.Invisible]: Invisible,
@@ -82,6 +88,8 @@ const Icons: { [key in Condition]?: string } = {
   [Condition.Slowed]: Slowed,
   [Condition.Stabilized]: Stabilized,
   [Condition.Stunned]: Stunned,
+  [Condition.ThreeQuartersCover]: ThreeQuartersCover,
+  [Condition.TotalCover]: TotalCover,
   [Condition.Unconscious]: Unconscious
 }
 
@@ -109,7 +117,7 @@ export const ConditionDescription: { [key in Condition]?: string } = {
   A duplicate's AC equals 10 + your Dexterity modifier. If an attack hits a duplicate, the duplicate is destroyed.`,
   [Condition.Posessed]: ``,
   [Condition.Raging]: ``,
-  [Condition.Slowed]: `Target's speed is halved, it takes a −2 penalty to AC and Dexterity saving throws, and it can't use reactions. On its turn, it can use either an action or a bonus action, not both.<br/>
+  [Condition.Slowed]: `Target's speed is halved, it takes a -2 penalty to AC and Dexterity saving throws, and it can't use reactions. On its turn, it can use either an action or a bonus action, not both.<br/>
   Regardless of the creature's abilities or magic items, it can't make more than one melee or ranged attack during its turn.<br/>
   If the creature attempts to cast a spell with a casting time of 1 action, roll a d20. On an 11 or higher, the spell doesn't take effect until the creature's next turn, and the creature must use its action on that turn to complete the spell. If it can't, the spell is wasted.<br/>
   Repeat the Wisdom saving throw at the end of each of its turns.`,
@@ -161,7 +169,11 @@ export const ConditionDescription: { [key in Condition]?: string } = {
   [Condition.Shield_of_Faith]: `+2 bonus to AC for the duration`,
   [Condition.Reaction_Used]: 'No reaction on this round',
   [Condition.Mage_Armor]: `Target's base AC becomes 13 + its Dexterity modifier`,
+  [Condition.HalfCover]: `A target with half cover has a +2 bonus to AC and Dexterity saving throws. A target has half cover if an obstacle blocks at least half of its body. The obstacle might be a low wall, a large piece of furniture, a narrow tree trunk, or a creature, whether that creature is an enemy or a friend.`,
+  [Condition.ThreeQuartersCover]: `A target with three-quarters cover has a +5 bonus to AC and Dexterity saving throws. A target has three-quarters cover if about three-quarters of it is covered by an obstacle. The obstacle might be a portcullis, an arrow slit, or a thick tree trunk.`,
+  [Condition.TotalCover]: `A target with total cover can't be targeted directly by an attack or a spell, although some spells can reach such a target by including it in an area of effect. A target has total cover if it is completely concealed by an obstacle.`,
   [Condition.Hex]: `Caster of the Hex deals an extra 1d6 necrotic damage to the target whenever they hit it with an attack. Also, The target has disadvantage on one chosen ability checks.`,
+  [Condition.Hidden]: `When you attack a target that you can't see, you have disadvantage on the attack roll.<br/> When a creature can't see you, you have advantage on attack rolls against it. If you are hidden--both unseen and unheard--when you make an attack, you give away your location when the attack hits or misses.`,
   [Condition.Hasted]: `Speed is doubled, +2 bonus to AC, advantage on Dexterity saving throws, an additional action on each of its turns. That action can be used only to take the Attack (one weapon attack only), Dash, Disengage, Hide, or Use an Object action.`,
   [Condition.Concentration]: `Whenever you take damage while you are concentrating on a spell, you must make a Constitution saving throw to maintain your concentration. The DC equals half the damage you take (minimum of 10). If you take damage from multiple sources, such as an arrow and a dragon’s breath, you make a separate saving throw for each source of damage.`,
   [Condition.Blessed]: `Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw.`,
@@ -177,6 +189,12 @@ export const ConditionEffects = {
   },
   [Condition.Shield_of_Faith]: {
     AC: +2
+  },
+  [Condition.HalfCover]: {
+    AC: +2
+  },
+  [Condition.ThreeQuartersCover]: {
+    AC: +5
   },
   [Condition.Mage_Armor]: {
     AC: '(13 + Dexterity modifier)'

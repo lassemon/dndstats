@@ -162,7 +162,7 @@ export const useStyles = makeStyles()((theme) => ({
   initField: {
     flexShrink: 0,
     '&&': {
-      marginLeft: '1em'
+      marginLeft: '0.4em'
     },
     '& label': {
       padding: '0 0 0 4px',
@@ -233,7 +233,7 @@ export const useStyles = makeStyles()((theme) => ({
     maxWidth: '68px',
     minWidth: '45px',
     '&&&': {
-      marginRight: '1em'
+      marginRight: '0.2em'
     }
   },
   resistance: {
@@ -318,7 +318,7 @@ export const useStyles = makeStyles()((theme) => ({
     flex: '1 1 auto',
     zIndex: '1',
     minHeight: '2em',
-    width: '12em',
+    minWidth: '12em',
     lineHeight: '0.1em',
     '& .MuiIcon-root': {
       width: '1.8em',

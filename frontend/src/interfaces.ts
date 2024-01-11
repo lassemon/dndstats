@@ -1,7 +1,6 @@
 export enum Condition {
   Baned = 'baned',
   Blessed = 'blessed',
-  InspiredByBard = 'inspired_by_bard',
   Blinded = 'blinded',
   Bloodied = 'bloodied',
   Burning = 'burning',
@@ -17,9 +16,12 @@ export enum Condition {
   Grappled = 'grappled',
   Guidance = 'guidance',
   Hasted = 'hasted',
+  HalfCover = 'half_cover',
   Hex = 'hex',
+  Hidden = 'hidden',
   Holding_Action = 'holding_action',
   Incapacitated = 'incapacitated',
+  InspiredByBard = 'inspired_by_bard',
   Invisible = 'invisible',
   Mage_Armor = 'mage_armor',
   MirrorImage = 'mirror_image',
@@ -35,6 +37,8 @@ export enum Condition {
   Slowed = 'slowed',
   Stabilized = 'stabilized',
   Stunned = 'stunned',
+  ThreeQuartersCover = 'three_quarters_cover',
+  TotalCover = 'total_cover',
   Unconscious = 'unconscious'
 }
 
