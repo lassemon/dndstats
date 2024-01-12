@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _, { capitalize } from 'lodash'
 
 export const getNumberWithSign = (theNumber: number) => {
   if (theNumber > 0) {
@@ -22,6 +22,14 @@ export const upsertToArray = <T>(arr: T[], obj: T, key: keyof T): T[] => {
     array[index] = obj
   }
   return array
+}
+
+export const formatKeyString = (key: string) => {
+  return key
+    .replaceAll('_', ' ')
+    .split(' ')
+    .map((part) => capitalize(part))
+    .join(' ')
 }
 
 export const objectWithoutEmptyOrUndefined = <T extends { [key: string]: any }>(object: T) => {

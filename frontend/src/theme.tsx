@@ -67,6 +67,9 @@ const theme = createTheme({
         option: {
           textTransform: 'capitalize'
         }
+      },
+      defaultProps: {
+        selectOnFocus: false
       }
     },
     MuiTextField: {

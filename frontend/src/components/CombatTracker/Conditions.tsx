@@ -48,6 +48,7 @@ import { Condition } from 'interfaces'
 import Character from 'domain/entities/Character'
 import { APIReference } from 'domain/services/FifthESRDService'
 import _ from 'lodash'
+import { formatKeyString } from 'utils/utils'
 
 const Icons: { [key in Condition]?: string } = {
   [Condition.Baned]: Baned,
@@ -216,14 +217,37 @@ export const ConditionToIconMap = Object.values(Condition).reduce((accumulator, 
     >
       <span
         style={{
-          width: '2em',
-          height: '2em',
-          display: 'block',
+          width: '1.5em',
+          height: '1.5em',
+          padding: '0 0.7em 0.7em 0',
+          display: 'flex',
           textAlign: 'center',
-          lineHeight: '2em'
+          lineHeight: '1.8em',
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'relative'
         }}
       >
         <img alt={key[0].toUpperCase() + key.slice(1)} src={Icons[key]} height="35px" />
+        <span
+          style={{
+            fontSize: '0.4em',
+            fontWeight: '600',
+            position: 'absolute',
+            transform: 'translateY(-45%)',
+            color: 'black',
+            zIndex: '2',
+            bottom: 0,
+            lineHeight: '1.2em',
+            width: '5em',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            textShadow: `0px 0px 2px #c77b09`
+          }}
+        >
+          {formatKeyString(key)}
+        </span>
       </span>
     </Tooltip>
   )

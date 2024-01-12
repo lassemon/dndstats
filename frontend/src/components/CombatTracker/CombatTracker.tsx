@@ -1110,7 +1110,7 @@ export const CombatTracker: React.FC = () => {
                       options={_.without(Object.values(Condition), Condition.Dead, Condition.Unconscious, Condition.Bloodied) as Condition[]}
                       onChange={onChangeCondition(index)}
                       getOptionLabel={(option) => option.replaceAll('_', ' ')}
-                      style={{ width: '14em', minWidth: '8em' }}
+                      style={{ width: '14em', minWidth: '10em' }}
                       PaperComponent={AutoCompleteItem}
                       renderInput={(params) => <TextField {...params} label="Conditions" variant="outlined" size="small" />}
                     />
