@@ -826,7 +826,7 @@ class Character extends ValueObject {
     console.log('diff', new Differ().diff(_.omit(this.toJSON, ['imageElement']), _.omit(character.toJSON(), ['imageElement'])))
     console.log('\n\n')*/
 
-    return _.isEqual(_.omit(this.toJSON(), ['imageElement']), _.omit(character.toJSON(), ['imageElement']))
+    return _.isEqual(_.omit(this.toJSON(), ['imageElement', 'source']), _.omit(character.toJSON(), ['imageElement', 'source']))
   }
 
   public toJSON(): ICharacter {
