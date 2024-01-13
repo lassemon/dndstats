@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useEffect, useMemo, useState } from 'react'
-import { combatTrackerState, customCharactersState, monsterState } from 'infrastructure/dataAccess/atoms'
+import { combatTrackerState, customCharactersState, errorState, monsterState } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './MonsterStats.styles'
 import { Autocomplete, Box, Button, ButtonGroup, CircularProgress, TextField, Tooltip } from '@mui/material'
@@ -20,6 +20,8 @@ import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
 import classNames from 'classnames'
 import Showdown from 'showdown'
+import { ErrorBoundary } from 'react-error-boundary'
+import ErrorFallback from 'components/ErrorFallback'
 
 const DescriptionBlock: React.FC<HTMLAttributes<HTMLParagraphElement>> = (props) => {
   const { children } = props
@@ -101,7 +103,6 @@ export const MonsterStats: React.FC = () => {
 
   const onChangeMonster = (key: string, character: Character) => {
     setCurrentMonster((currentMonster) => {
-      //console.log('saving monster state', character.toJSON())
       return currentMonster?.clone(character.toJSON())
     })
   }
@@ -196,20 +197,22 @@ export const MonsterStats: React.FC = () => {
           [classes.rootLandscape]: !isPortrait
         })}
       >
-        <div
-          className={cx({
-            [classes.unsaved]: !monsterSavedInHomebrew && existingCustomCharacter
-          })}
-        >
-          <CharacterCard
-            character={currentMonster}
-            className={isPortrait ? classes.characterCardContainerPortrait : classes.characterCardContainerLandscape}
-            onChange={onChangeMonster}
-            onCloseEditMode={onCloseEditMode}
-            editMode={editMode}
-            presentationMode={!editMode}
-          />
-        </div>
+        <ErrorBoundary FallbackComponent={(props) => <ErrorFallback {...props} className={classes.errorFallback} />}>
+          <div
+            className={cx({
+              [classes.unsaved]: !monsterSavedInHomebrew && existingCustomCharacter
+            })}
+          >
+            <CharacterCard
+              character={currentMonster}
+              className={isPortrait ? classes.characterCardContainerPortrait : classes.characterCardContainerLandscape}
+              onChange={onChangeMonster}
+              onCloseEditMode={onCloseEditMode}
+              editMode={editMode}
+              presentationMode={!editMode}
+            />
+          </div>
+        </ErrorBoundary>
         <div className={classes.rightContainer}>
           {currentMonster.imageElement && (
             <div className={`${classes.imageContainer}`}>

@@ -2,43 +2,29 @@ import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
 import { useAtom } from 'jotai'
 import React, { useMemo } from 'react'
-import { monsterState } from 'infrastructure/dataAccess/atoms'
+import { errorState, monsterState } from 'infrastructure/dataAccess/atoms'
 import { makeStyles } from 'tss-react/mui'
+import DownloadJSON from 'components/DownloadJSON'
+import UploadJSON from 'components/UploadJSON'
+import Character from 'domain/entities/Character'
 
-export const useStyles = makeStyles()((theme) => ({
-  autocomplete: {
-    '& .MuiAutocomplete-tag': {
-      textTransform: 'capitalize',
-      height: 'auto',
-      '& .MuiChip-label': {
-        whiteSpace: 'normal'
-      }
-    },
-    '& .MuiInputLabel-animated': {
-      transform: 'translate(14px, -9px) scale(0.75)'
-    },
-    '& legend': {
-      maxWidth: '100%'
+const useStyles = makeStyles()((theme) => ({
+  inputContainer: {
+    '&&': {
+      gap: '1em',
+      padding: '0 0 3em 0'
     }
   },
-  settingsList: {
-    padding: '0.5em'
-  },
-  settingsListItem: {
+  uploadButtons: {
     display: 'flex',
-    gap: '1em',
-    padding: '0.5em',
-    '> p': {
-      flex: 1
-    },
-    '> div': {
-      flex: 3
-    }
+    gap: '1em'
   }
 }))
 
 export const MonsterStatsInput: React.FC = () => {
   const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterState, []))
+  const [, setError] = useAtom(React.useMemo(() => errorState, []))
+  const { classes } = useStyles()
 
   const onDeleteImage = () => {
     setCurrentMonster((monster) => {
@@ -57,7 +43,7 @@ export const MonsterStatsInput: React.FC = () => {
     const imageFile = event.target.files[0]
 
     if (imageFile) {
-      var reader = new FileReader()
+      const reader = new FileReader()
 
       reader.onload = (event) => {
         if (event && event.target) {
@@ -74,8 +60,19 @@ export const MonsterStatsInput: React.FC = () => {
           })
         }
       }
-
       reader.readAsDataURL(imageFile)
+    }
+  }
+
+  const onUploadMonster = (monster?: { [key: string]: any }) => {
+    try {
+      if (monster) {
+        const parsedMonster = Character.fromJSON(monster)
+        setCurrentMonster(parsedMonster)
+      }
+    } catch (error) {
+      setError(new Error(error?.toString()))
+      return null
     }
   }
 
@@ -84,8 +81,14 @@ export const MonsterStatsInput: React.FC = () => {
   }
 
   return (
-    <StatsInputContainer>
+    <StatsInputContainer className={classes.inputContainer}>
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
+      <div className={classes.uploadButtons}>
+        <UploadJSON onUpload={onUploadMonster}>Import Monster</UploadJSON>
+        <DownloadJSON fileName={currentMonster.id} data={currentMonster}>
+          Export Monster
+        </DownloadJSON>
+      </div>
     </StatsInputContainer>
   )
 }

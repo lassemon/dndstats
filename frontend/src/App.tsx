@@ -17,6 +17,7 @@ import { clearAll } from 'services/store'
 import { useOrientation } from 'utils/hooks'
 import { Preloader } from 'infrastructure/dataAccess/Preloader'
 import ErrorDisplay from 'components/ErrorDisplay'
+import ErrorFallback from 'components/ErrorFallback'
 
 const TABS = {
   '/item': 'Item Stats',
@@ -32,19 +33,6 @@ function a11yProps(index: number) {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`
   }
-}
-
-function Fallback() {
-  return (
-    <>
-      <p>
-        <span role="img" aria-label="Warning icon">
-          ⚠️
-        </span>
-        Something went wrong
-      </p>
-    </>
-  )
 }
 
 const App: React.FC = () => {
@@ -123,7 +111,7 @@ const App: React.FC = () => {
             </AppBar>
           </Box>
           <main className={classes.main}>
-            <ErrorBoundary FallbackComponent={Fallback}>
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
               <React.Suspense fallback={<LoadingIndicator />}>
                 <Preloader />
                 <Outlet />

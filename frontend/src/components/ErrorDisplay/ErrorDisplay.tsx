@@ -1,6 +1,6 @@
 import { Snackbar, Typography } from '@mui/material'
 import MuiAlert, { AlertProps } from '@mui/material/Alert'
-import StorageSyncError from 'domain/errors/StorageSyncError'
+import { StorageParseError, StorageSyncError } from 'domain/errors/StorageError'
 import { useAtom } from 'jotai'
 import React from 'react'
 import { errorState } from 'infrastructure/dataAccess/atoms'
@@ -28,6 +28,9 @@ export const ErrorDisplay: React.FC = () => {
   switch (error.constructor) {
     case StorageSyncError:
       message += 'Saving change to storage failed. This is most commonly caused by too large image file. Try uploading a smaller image.'
+      break
+    case StorageParseError:
+      message += 'Invalid data. Parsing failed!'
       break
     default:
       message += 'Unknown error'

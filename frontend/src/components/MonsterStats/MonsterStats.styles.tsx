@@ -165,6 +165,9 @@ export const useStyles = makeStyles()((theme) => ({
     '& legend': {
       maxWidth: '100%'
     }
+  },
+  errorFallback: {
+    width: '60%'
   }
 }))
 

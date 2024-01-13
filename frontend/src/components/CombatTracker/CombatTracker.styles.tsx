@@ -395,7 +395,7 @@ export const useStyles = makeStyles()((theme) => ({
   actionsContainer: {
     display: 'flex',
     margin: '0 1em',
-    padding: '0 0 8em  0',
+    padding: '0 0 1em 0',
     '& > button': {
       margin: '0 1em 0 0'
     }

@@ -51,9 +51,11 @@ import { FifthESRDMonster } from 'domain/services/FifthESRDService'
 import { MonsterListOption, emptyMonster } from 'domain/entities/Monster'
 import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
 import ImageButton from 'components/ImageButton'
-import theme from 'theme'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
+import DownloadJSON from 'components/DownloadJSON/DownloadJSON'
+import UploadJSON from 'components/UploadJSON'
+import { defaultCombat } from 'services/defaults'
 
 const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
   return {
@@ -97,7 +99,7 @@ export const CombatTracker: React.FC = () => {
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
   const [currentCombat, setCurrentCombat] = useAtom(useMemo(() => combatTrackerState, []))
   const currentTurn = currentCombat?.turn
-  const currentCharacters = currentCombat?.characters
+  const currentCharacters = currentCombat?.characters || []
   const currentCharacterAmount = currentCharacters?.length
 
   // TODO, enable custom character edit through combat tracker?
@@ -108,20 +110,14 @@ export const CombatTracker: React.FC = () => {
   const [monsterList, setMonsterList] = useState<MonsterListOption[]>([emptyMonster] as MonsterListOption[])
   const [loadingMonsterList, setLoadingMonsterList] = useState(false)
   const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
-  const [settingsAnchors, setSettingsAnchors] = useState<Array<HTMLButtonElement | null>>(currentCombat ? currentCombat.characters.map(() => null) : [])
-  const [incomingDamages, setIncomingDamages] = useState<string[]>(currentCombat ? currentCombat.characters.map(() => '') : [])
-  const [incomingTempHPs, setIncomingTempHPs] = useState<string[]>(
-    currentCombat ? currentCombat.characters.map((character) => String(character.temporary_hit_points || '') || '') : []
-  )
-  const [incomingRegenerations, setIncomingRegenerations] = useState<string[]>(
-    currentCombat ? currentCombat.characters.map((character) => String(character.regeneration || '') || '') : []
-  )
-  const [regenDialogsOpen, setRegenDialogsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
-  const [concentrationDialogsOpen, setConcentrationDialogsOpen] = useState<Array<number | undefined>>(
-    currentCombat ? currentCombat.characters.map(() => undefined) : []
-  )
-  const [imageDialogsOpen, setImageDialogsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
-  const [characterCardTooltipsOpen, setCharacterCardTooltipsOpen] = useState<boolean[]>(currentCombat ? currentCombat.characters.map(() => false) : [])
+  const [settingsAnchors, setSettingsAnchors] = useState<Array<HTMLButtonElement | null>>(currentCharacters?.map(() => null))
+  const [incomingDamages, setIncomingDamages] = useState<string[]>(currentCharacters?.map(() => ''))
+  const [incomingTempHPs, setIncomingTempHPs] = useState<string[]>(currentCharacters.map((character) => String(character.temporary_hit_points || '') || ''))
+  const [incomingRegenerations, setIncomingRegenerations] = useState<string[]>(currentCharacters.map((character) => String(character.regeneration || '') || ''))
+  const [regenDialogsOpen, setRegenDialogsOpen] = useState<boolean[]>(currentCharacters.map(() => false))
+  const [concentrationDialogsOpen, setConcentrationDialogsOpen] = useState<Array<number | undefined>>(currentCharacters.map(() => undefined))
+  const [imageDialogsOpen, setImageDialogsOpen] = useState<boolean[]>(currentCharacters.map(() => false))
+  const [characterCardTooltipsOpen, setCharacterCardTooltipsOpen] = useState<boolean[]>(currentCharacters.map(() => false))
 
   const handleCharacterCardTooltipClickAway = (index: number) => () => {
     setCharacterCardTooltipsOpen((cardTooltipsOpen) => {
@@ -184,8 +180,8 @@ export const CombatTracker: React.FC = () => {
   }, [customCharacterList])
 
   useEffect(() => {
-    if (currentCombat) {
-      const currentCharacter = currentCombat.characters[currentCombat.turn]
+    if (currentCombat && currentCombat.ongoing) {
+      const currentCharacter = currentCharacters[currentCombat.turn]
       const canRegenerate = currentCharacter?.current_hit_points < currentCharacter?.hit_points
       if (currentCharacter?.regeneration > 0 && canRegenerate) {
         setRegenDialogsOpen((regenDialogs) => {
@@ -267,7 +263,7 @@ export const CombatTracker: React.FC = () => {
   const setCurrentTurn = (next: boolean) => {
     if (currentCombat) {
       if (next) {
-        if (currentCombat.turn === currentCombat.characters.length - 1) {
+        if (currentCombat.turn === currentCharacters.length - 1) {
           setCurrentCombat((combat) => {
             return {
               ...combat,
@@ -288,7 +284,7 @@ export const CombatTracker: React.FC = () => {
           setCurrentCombat((combat) => {
             return {
               ...combat,
-              turn: currentCombat.characters.length - 1
+              turn: currentCharacters.length - 1
             }
           })
           if (currentCombat.round > 1) {
@@ -705,6 +701,16 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
+  const onUploadCombat = (combat?: { [key: string]: any }) => {
+    if (combat) {
+      const parsedCombat = {
+        ...combat,
+        characters: combat?.characters.map((character: any) => Character.fromJSON(character))
+      } as typeof defaultCombat
+      setCurrentCombat(parsedCombat)
+    }
+  }
+
   const settingsAnchorsSynced = currentCharacters?.length === settingsAnchors.length
   const incomingDamagesSynced = currentCharacters?.length === incomingDamages.length
   const incomingTempHPsSynced = currentCharacters?.length === incomingTempHPs.length
@@ -778,7 +784,7 @@ export const CombatTracker: React.FC = () => {
         )}
         <List>
           <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
-            {currentCombat.characters.map((character, index) => {
+            {currentCharacters.map((character, index) => {
               const settingsAnchor = settingsAnchors[index]
               const settingsOpen = Boolean(settingsAnchor)
               const regenDialogOpen = Boolean(regenDialogsOpen[index])
@@ -1357,7 +1363,7 @@ export const CombatTracker: React.FC = () => {
           </>
         )}
         <div className={`${classes.actionsSpread}`}></div>
-        {currentCombat.ongoing && (
+        {currentCombat.ongoing ? (
           <Button
             variant="contained"
             onClick={() => {
@@ -1370,8 +1376,15 @@ export const CombatTracker: React.FC = () => {
               })
             }}
           >
-            Reset combat
+            '' Reset combat
           </Button>
+        ) : (
+          <div style={{ display: 'flex', gap: '1em' }}>
+            <UploadJSON onUpload={onUploadCombat}>Import Combat</UploadJSON>
+            <DownloadJSON fileName="combat" data={currentCombat}>
+              Export Combat
+            </DownloadJSON>
+          </div>
         )}
       </div>
     </>

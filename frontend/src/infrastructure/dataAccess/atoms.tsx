@@ -3,7 +3,7 @@ import { defaultCustomCharacters, defaultCombat, defaultItem, defaultMonster, de
 import { load, store } from 'services/store'
 
 import { atom as jotaiAtom } from 'jotai'
-import StorageSyncError from 'domain/errors/StorageSyncError'
+import { StorageParseError, StorageSyncError } from 'domain/errors/StorageError'
 
 type UpdateFunction<T> = (oldValue: T) => T | undefined
 type UpdateParam<T> = UpdateFunction<T> | T
@@ -39,14 +39,19 @@ const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, p
         const nextValue = update instanceof Function ? update(oldValue) : (update as T)
         set(baseAtom, nextValue || null)
         if (nextValue) {
-          store(key, saveParser(nextValue))
-            .then(() => {
-              set(baseAtom, nextValue)
-            })
-            .catch((error) => {
-              console.error(error)
-              set(errorState, new StorageSyncError(error && error.message ? error.message : error))
-            })
+          try {
+            store(key, saveParser(nextValue))
+              .then(() => {
+                set(baseAtom, nextValue)
+              })
+              .catch((error) => {
+                console.error(error)
+                set(errorState, new StorageSyncError(error && error.message ? error.message : error))
+              })
+          } catch (error) {
+            //console.error(error)
+            set(errorState, new StorageParseError(error?.toString()))
+          }
         }
       }
     }
