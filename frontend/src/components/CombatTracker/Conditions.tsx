@@ -99,84 +99,110 @@ export const ConditionDescription: { [key in Condition]?: string } = {
   [Condition.Dead]: ``,
   [Condition.Burning]: `Until a creature takes an action to douse the fire, the target takes 5 (1d10) fire damage at the start of each of its turns.`,
   [Condition.Blur]: `For the duration, any creature has disadvantage on attack rolls against you. An attacker is immune to this effect if it doesn't rely on sight, as with blindsight, or can see through illusions, as with truesight.`,
-  [Condition.Confused]: `An affected target can't take reactions and must roll a d10 at the start of each of its turns to determine its behavior for that turn.
-  <b>1:</b> The creature uses all its movement to move in a random direction. To determine the direction, roll a d8 and assign a direction to each die face. The creature doesn't take an action this turn.<br/>
-  <b>2-6:</b> The creature doesn't move or take actions this turn.<br/>
-  <b>7-8:</b> The creature uses its action to make a melee attack against a randomly determined creature within its reach. If there is no creature within its reach, the creature does nothing this turn.<br/>
-  <b>9-10:</b> The creature can act and move normally.<br/>
-  At the end of its turns, an affected target can make a Wisdom saving throw. If it succeeds, this effect ends for that target.`,
-  [Condition.Exhaustion]: `Level	Effect<br/>
-  1	Disadvantage on ability checks<br/>
-  2	Speed halved<br/>
-  3	Disadvantage on attack rolls and saving throws<br/>
-  4	Hit point maximum halved<br/>
-  5	Speed reduced to 0<br/>
-  6	Death`,
-  [Condition.Holding_Action]: `Define a trigger that uses your action. Using your held action expends you reaction.<br/>
-  Holding a spell requires Concentration until the trigger.`,
-  [Condition.MirrorImage]: `If you have three duplicates, you must roll a 6 or higher to change the attack's target to a duplicate. With two duplicates, you must roll an 8 or higher. With one duplicate, you must roll an 11 or higher.<br/>
-  A duplicate's AC equals 10 + your Dexterity modifier. If an attack hits a duplicate, the duplicate is destroyed.`,
-  [Condition.Posessed]: ``,
-  [Condition.Raging]: ``,
-  [Condition.Slowed]: `Target's speed is halved, it takes a -2 penalty to AC and Dexterity saving throws, and it can't use reactions. On its turn, it can use either an action or a bonus action, not both.<br/>
-  Regardless of the creature's abilities or magic items, it can't make more than one melee or ranged attack during its turn.<br/>
-  If the creature attempts to cast a spell with a casting time of 1 action, roll a d20. On an 11 or higher, the spell doesn't take effect until the creature's next turn, and the creature must use its action on that turn to complete the spell. If it can't, the spell is wasted.<br/>
-  Repeat the Wisdom saving throw at the end of each of its turns.`,
-  [Condition.Blinded]: `A blinded creature can’t see and automatically fails any ability check that requires sight.<br/>
-  Attack rolls against the creature have advantage, and the creature’s attack rolls have disadvantage.`,
-  [Condition.Charmed]: `A charmed creature can’t attack the charmer or target the charmer with harmful abilities or magical effects.<br/>
-  The charmer has advantage on any ability check to interact socially with the creature.`,
+  [Condition.Confused]: `An affected target can't take reactions and must roll a <b>d10</b> at the start of each of its turns to determine its behavior for that turn.
+<b>1:</b> The creature uses all its movement to move in a random direction. To determine the direction, roll a d8 and assign a direction to each die face. The creature doesn't take an action this turn.
+<b>2-6:</b> The creature doesn't move or take actions this turn.
+<b>7-8:</b> The creature uses its action to make a melee attack against a randomly determined creature within its reach. If there is no creature within its reach, the creature does nothing this turn.
+<b>9-10:</b> The creature can act and move normally.
+At the end of its turns, an affected target can make a Wisdom saving throw. If it succeeds, this effect ends for that target.`,
+  [Condition.Exhaustion]: `Level	Effect
+<b>1</b>	Disadvantage on ability checks
+<b>2</b>	Speed halved
+<b>3</b>	Disadvantage on attack rolls and saving throws
+<b>4</b>	Hit point maximum halved
+<b>5</b>	Speed reduced to 0
+<b>6</b>	Death`,
+  [Condition.Holding_Action]: `Define a trigger that uses your action. Using your held action expends you reaction.
+Holding a spell requires Concentration until the trigger.`,
+  [Condition.MirrorImage]: `If you have three duplicates, you must roll a 6 or higher to change the attack's target to a duplicate. With two duplicates, you must roll an 8 or higher. With one duplicate, you must roll an 11 or higher.
+A duplicate's AC equals 10 + your Dexterity modifier. If an attack hits a duplicate, the duplicate is destroyed.`,
+  [Condition.Raging]: `Rage is a barbarian class exclusive trait.
+
+On your turn, you can enter a rage as a <b>bonus action</b>.
+While raging, you gain the following benefits if you aren’t wearing heavy armor:
+
+&#9679; You have advantage on Strength checks and Strength saving throws.
+&#9679; When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table.
+&#9679; You have resistance to bludgeoning, piercing, and slashing damage.
+
+If you are able to cast spells, you can’t cast them or concentrate on them while raging.
+
+Your rage lasts for <b>1 minute</b>. It ends early if you are knocked <b>unconscious</b> or if your turn ends and you haven’t attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on your turn as a bonus action.
+
+Once you have raged the number of times shown for your barbarian level in the Rages column of the Barbarian table, you must finish a long rest before you can rage again.`,
+  [Condition.Slowed]: `Target's speed is halved, it takes a -2 penalty to AC and Dexterity saving throws, and it can't use reactions. On its turn, it can use either an action or a bonus action, not both.
+Regardless of the creature's abilities or magic items, it can't make more than one melee or ranged attack during its turn.
+If the creature attempts to cast a spell with a casting time of 1 action, roll a d20. On an 11 or higher, the spell doesn't take effect until the creature's next turn, and the creature must use its action on that turn to complete the spell. If it can't, the spell is wasted.
+Repeat the Wisdom saving throw at the end of each of its turns.`,
+  [Condition.Blinded]: `A blinded creature can’t see and automatically fails any ability check that requires sight.
+Attack rolls against the creature have advantage, and the creature’s attack rolls have disadvantage.`,
+  [Condition.Charmed]: `A charmed creature can’t attack the charmer or target the charmer with harmful abilities or magical effects.
+The charmer has advantage on any ability check to interact socially with the creature.`,
   [Condition.Deafened]: 'A deafened creature can’t hear and automatically fails any ability check that requires hearing.',
   [Condition.Diseased]:
     'A disease can have varying effect depending on the source. This character might be able to repeat a saving throw to get rid of the disease during or at the end of their turn.',
-  [Condition.Frightened]: `A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.<br/>
-  The creature can’t willingly move closer to the source of its fear.`,
-  [Condition.Grappled]: `A grappled creature’s speed becomes 0, and it can’t benefit from any bonus to its speed.<br/>
-  The condition ends if the grappler is incapacitated (see the condition).<br/>
-  The condition also ends if an effect removes the grappled creature from the reach of the grappler or grappling effect, such as when a creature is hurled away by the thunderwave spell.`,
-  [Condition.Guidance]: `Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice. It can roll the die before or after making the ability check. The spell then ends.`,
+  [Condition.Frightened]: `A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.
+The creature can’t willingly move closer to the source of its fear.`,
+  [Condition.Grappled]: `A grappled creature’s speed becomes 0, and it can’t benefit from any bonus to its speed.
+The condition ends if the grappler is incapacitated (see the condition).
+The condition also ends if an effect removes the grappled creature from the reach of the grappler or grappling effect, such as when a creature is hurled away by the thunderwave spell.`,
+  [Condition.Guidance]: `Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice.
+It can roll the die before or after making the ability check. The spell then ends.`,
   [Condition.Incapacitated]: `An incapacitated creature can’t take actions or reactions.`,
-  [Condition.InspiredByBard]: `Once within the next 10 minutes, the creature can roll the bardic inspiration die and add the number rolled to one ability check, attack roll, or saving throw it makes.<br/>
-  The creature can wait until after it rolls the d20 before deciding to use the Bardic Inspiration die, but must decide before the DM says whether the roll succeeds or fails. <br/>
-  Once the Bardic Inspiration die is rolled, it is lost.<br/>A creature can have only one Bardic Inspiration die at a time.`,
-  [Condition.Invisible]: `An invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. The creature’s location can be detected by any noise it makes or any tracks it leaves.<br/>
-  Attack rolls against the creature have disadvantage, and the creature’s attack rolls have advantage.`,
-  [Condition.Paralyzed]: `A paralyzed creature is incapacitated (see the condition) and can’t move or speak.<br/>
-  The creature automatically fails Strength and Dexterity saving throws.<br/>
-  Attack rolls against the creature have advantage.<br/>
-  Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.`,
-  [Condition.Petrified]: `A petrified creature is transformed, along with any nonmagical object it is wearing or carrying, into a solid inanimate substance (usually stone). Its weight increases by a factor of ten, and it ceases aging.<br/>
-  The creature is incapacitated (see the condition), can’t move or speak, and is unaware of its surroundings.<br/>
-  Attack rolls against the creature have advantage.<br/>
-  The creature automatically fails Strength and Dexterity saving throws.<br/>
-  The creature has resistance to all damage.<br/>
-  The creature is immune to poison and disease, although a poison or disease already in its system is suspended, not neutralized.`,
+  [Condition.InspiredByBard]: `Once within the next 10 minutes, the creature can roll the bardic inspiration die and add the number rolled to one ability check, attack roll, or saving throw it makes.
+The creature can wait until after it rolls the d20 before deciding to use the Bardic Inspiration die, but must decide before the DM says whether the roll succeeds or fails.
+Once the Bardic Inspiration die is rolled, it is lost.A creature can have only one Bardic Inspiration die at a time.`,
+  [Condition.Invisible]: `An invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured.
+The creature’s location can be detected by any noise it makes or any tracks it leaves.
+Attack rolls against the creature have disadvantage, and the creature’s attack rolls have advantage.`,
+  [Condition.Paralyzed]: `A paralyzed creature is incapacitated (see the condition) and can’t move or speak.
+The creature automatically fails Strength and Dexterity saving throws.
+Attack rolls against the creature have advantage.
+Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.`,
+  [Condition.Petrified]: `A petrified creature is transformed, along with any nonmagical object it is wearing or carrying, into a solid inanimate substance (usually stone).
+Its weight increases by a factor of ten, and it ceases aging.
+The creature is incapacitated (see the condition), can’t move or speak, and is unaware of its surroundings.
+Attack rolls against the creature have advantage.
+The creature automatically fails Strength and Dexterity saving throws.
+The creature has resistance to all damage.
+The creature is immune to poison and disease, although a poison or disease already in its system is suspended, not neutralized.`,
   [Condition.Poisoned]: `A poisoned creature has disadvantage on attack rolls and ability checks.`,
-  [Condition.Prone]: `A prone creature’s only movement option is to crawl, unless it stands up and thereby ends the condition.<br/>
-  The creature has disadvantage on attack rolls.<br/>
-  An attack roll against the creature has advantage if the attacker is within 5 feet of the creature. Otherwise, the attack roll has disadvantage.`,
-  [Condition.Restrained]: `A restrained creature’s speed becomes 0, and it can’t benefit from any bonus to its speed.<br/>
-  Attack rolls against the creature have advantage, and the creature’s attack rolls have disadvantage.<br/>
-  The creature has disadvantage on Dexterity saving throws.`,
-  [Condition.Stunned]: `A stunned creature is incapacitated (see the condition), can’t move, and can speak only falteringly.<br/>
-  The creature automatically fails Strength and Dexterity saving throws.<br/>
-  Attack rolls against the creature have advantage.`,
-  [Condition.Unconscious]: `An unconscious creature is incapacitated (see the condition), can’t move or speak, and is unaware of its surroundings.<br/>
-  The creature drops whatever it’s holding and falls prone.<br/>
-  The creature automatically fails Strength and Dexterity saving throws.<br/>
-  Attack rolls against the creature have advantage.<br/>
-  Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.`,
-  [Condition.Stabilized]: `A stable creature doesn’t make death saving throws, even though it has 0 hit points, but it does remain unconscious. The creature stops being stable, and must start making death saving throws again, if it takes any damage. A stable creature that isn’t healed regains 1 hit point after 1d4 hours.`,
+  [Condition.Posessed]: `Multiple creatures in DnD have the ability to posess other creatures.
+Usually this involves a charisma or a wisdom saving throw and incapacitating and taking control over the posessed target.
+Specific mechanics are usually listed in the creatures ability description.`,
+  [Condition.Prone]: `A prone creature’s only movement option is to crawl, unless it stands up and thereby ends the condition.
+The creature has disadvantage on attack rolls.
+An attack roll against the creature has advantage if the attacker is within 5 feet of the creature. Otherwise, the attack roll has disadvantage.`,
+  [Condition.Restrained]: `A restrained creature’s speed becomes 0, and it can’t benefit from any bonus to its speed.
+Attack rolls against the creature have advantage, and the creature’s attack rolls have disadvantage.
+The creature has disadvantage on Dexterity saving throws.`,
+  [Condition.Stunned]: `A stunned creature is incapacitated (see the condition), can’t move, and can speak only falteringly.
+The creature automatically fails Strength and Dexterity saving throws.
+Attack rolls against the creature have advantage.`,
+  [Condition.Unconscious]: `An unconscious creature is incapacitated (see the condition), can’t move or speak, and is unaware of its surroundings.
+The creature drops whatever it’s holding and falls prone.
+The creature automatically fails Strength and Dexterity saving throws.
+Attack rolls against the creature have advantage.
+Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.`,
+  [Condition.Stabilized]: `A stable creature doesn’t make death saving throws, even though it has 0 hit points, but it does remain unconscious.
+The creature stops being stable, and must start making death saving throws again, if it takes any damage.
+A stable creature that isn’t healed regains 1 hit point after 1d4 hours.`,
   [Condition.Shield_of_Faith]: `+2 bonus to AC for the duration`,
   [Condition.Reaction_Used]: 'No reaction on this round',
   [Condition.Mage_Armor]: `Target's base AC becomes 13 + its Dexterity modifier`,
-  [Condition.HalfCover]: `A target with half cover has a +2 bonus to AC and Dexterity saving throws. A target has half cover if an obstacle blocks at least half of its body. The obstacle might be a low wall, a large piece of furniture, a narrow tree trunk, or a creature, whether that creature is an enemy or a friend.`,
-  [Condition.ThreeQuartersCover]: `A target with three-quarters cover has a +5 bonus to AC and Dexterity saving throws. A target has three-quarters cover if about three-quarters of it is covered by an obstacle. The obstacle might be a portcullis, an arrow slit, or a thick tree trunk.`,
-  [Condition.TotalCover]: `A target with total cover can't be targeted directly by an attack or a spell, although some spells can reach such a target by including it in an area of effect. A target has total cover if it is completely concealed by an obstacle.`,
-  [Condition.Hex]: `Caster of the Hex deals an extra 1d6 necrotic damage to the target whenever they hit it with an attack. Also, The target has disadvantage on one chosen ability checks.`,
-  [Condition.Hidden]: `When you attack a target that you can't see, you have disadvantage on the attack roll.<br/> When a creature can't see you, you have advantage on attack rolls against it. If you are hidden--both unseen and unheard--when you make an attack, you give away your location when the attack hits or misses.`,
+  [Condition.HalfCover]: `A target with half cover has a +2 bonus to AC and Dexterity saving throws. A target has half cover if an obstacle blocks at least half of its body.
+The obstacle might be a low wall, a large piece of furniture, a narrow tree trunk, or a creature, whether that creature is an enemy or a friend.`,
+  [Condition.ThreeQuartersCover]: `A target with three-quarters cover has a +5 bonus to AC and Dexterity saving throws. A target has three-quarters cover if about three-quarters of it is covered by an obstacle.
+The obstacle might be a portcullis, an arrow slit, or a thick tree trunk.`,
+  [Condition.TotalCover]: `A target with total cover can't be targeted directly by an attack or a spell, although some spells can reach such a target by including it in an area of effect.
+A target has total cover if it is completely concealed by an obstacle.`,
+  [Condition.Hex]: `Caster of the Hex deals an extra 1d6 necrotic damage to the target whenever they hit it with an attack.
+Also, The target has disadvantage on one chosen ability checks.`,
+  [Condition.Hidden]: `When you attack a target that you can't see, you have disadvantage on the attack roll.
+When a creature can't see you, you have advantage on attack rolls against it. If you are hidden--both unseen and unheard--when you make an attack, you give away your location when the attack hits or misses.`,
   [Condition.Hasted]: `Speed is doubled, +2 bonus to AC, advantage on Dexterity saving throws, an additional action on each of its turns. That action can be used only to take the Attack (one weapon attack only), Dash, Disengage, Hide, or Use an Object action.`,
-  [Condition.Concentration]: `Whenever you take damage while you are concentrating on a spell, you must make a Constitution saving throw to maintain your concentration. The DC equals half the damage you take (minimum of 10). If you take damage from multiple sources, such as an arrow and a dragon’s breath, you make a separate saving throw for each source of damage.`,
+  [Condition.Concentration]: `Whenever you take damage while you are concentrating on a spell, you must make a Constitution saving throw to maintain your concentration. The DC equals half the damage you take (minimum of 10).
+If you take damage from multiple sources, such as an arrow and a dragon’s breath, you make a separate saving throw for each source of damage.`,
   [Condition.Blessed]: `Whenever a target makes an attack roll or a saving throw before the spell ends, the target can roll a d4 and add the number rolled to the attack roll or saving throw.`,
   [Condition.Baned]: `Whenever a target that fails this saving throw makes an attack roll or a saving throw before the spell ends, the target must roll a d4 and subtract the number rolled from the attack roll or saving throw.`
 }
@@ -206,14 +232,26 @@ export const ConditionToIconMap = Object.values(Condition).reduce((accumulator, 
   accumulator[key] = (
     <Tooltip
       title={
-        <React.Fragment>
+        <>
           <Typography variant="h6">{(key[0].toUpperCase() + key.slice(1)).replaceAll('_', ' ')}</Typography>
-          <Typography variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              whiteSpace: 'pre-wrap'
+            }}
+          >
             <span dangerouslySetInnerHTML={{ __html: ConditionDescription[key] || '' }} />
           </Typography>
-        </React.Fragment>
+        </>
       }
-      placement="top"
+      placement="top-start"
+      PopperProps={{
+        sx: {
+          '& .MuiTooltip-tooltip': {
+            maxWidth: '450px'
+          }
+        }
+      }}
     >
       <span
         style={{
