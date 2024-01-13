@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useEffect, useMemo, useState } from 'react'
-import { combatTrackerState, customCharactersState, errorState, monsterState } from 'infrastructure/dataAccess/atoms'
+import { combatTrackerState, customCharactersState, monsterState } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './MonsterStats.styles'
 import { Autocomplete, Box, Button, ButtonGroup, CircularProgress, TextField, Tooltip } from '@mui/material'

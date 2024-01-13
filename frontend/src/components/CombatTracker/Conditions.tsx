@@ -360,12 +360,17 @@ export const getConditionImmunitiesList = () => {
     Condition.InspiredByBard,
     Condition.Hex,
     Condition.Hasted,
+    Condition.Hidden,
+    Condition.HalfCover,
+    Condition.ThreeQuartersCover,
+    Condition.TotalCover,
     Condition.Mage_Armor,
     Condition.MirrorImage,
     Condition.Reaction_Used,
     Condition.Stabilized,
     Condition.Shield_of_Faith,
     Condition.Raging,
-    Condition.Invisible
+    Condition.Invisible,
+    Condition.Unconscious
   )
 }

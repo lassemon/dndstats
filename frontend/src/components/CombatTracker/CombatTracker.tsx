@@ -1066,7 +1066,11 @@ export const CombatTracker: React.FC = () => {
                         }}
                       >
                         {character.imageElement && (
-                          <img style={{ maxHeight: '99%' }} alt={character.imageElement?.props.alt} src={`${character.imageElement?.props.src}`} />
+                          <img
+                            style={{ maxHeight: '99%', minHeight: '80%' }}
+                            alt={character.imageElement?.props.alt}
+                            src={`${character.imageElement?.props.src}`}
+                          />
                         )}
                       </DialogContent>
                       <DialogActions>

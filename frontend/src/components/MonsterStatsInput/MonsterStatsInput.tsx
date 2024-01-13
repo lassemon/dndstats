@@ -72,7 +72,6 @@ export const MonsterStatsInput: React.FC = () => {
       }
     } catch (error) {
       setError(new Error(error?.toString()))
-      return null
     }
   }
 

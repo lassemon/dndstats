@@ -14,7 +14,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = (props) => {
 
   useEffect(() => {
     setError(new Error(error.message))
-  }, [error])
+  }, [error, setError])
 
   const resetError = () => {
     resetErrorBoundary()
