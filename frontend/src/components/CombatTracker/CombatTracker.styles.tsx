@@ -116,7 +116,8 @@ export const useStyles = makeStyles()((theme) => ({
   nameTextContainer: {
     margin: '0 0 0 0.3em',
     padding: '0 0 0 0',
-    minWidth: '10%'
+    minWidth: '10%',
+    width: '14%'
   },
   nameText: {
     textAlign: 'left',
