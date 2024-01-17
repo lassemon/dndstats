@@ -853,21 +853,38 @@ export const CombatTracker: React.FC = () => {
                       <DialogTitle id={`concentration-dialog-title-${index}`}>{`Character is concentrating on a spell`}</DialogTitle>
                       <DialogContent>
                         <Typography
-                          variant="body1"
+                          variant="body2"
                           paragraph={false}
                           sx={{
-                            margin: '0 0 2em 0'
+                            margin: '0 0 0 0'
+                          }}
+                        >
+                          and must make a <strong>constitution saving throw of</strong>
+                        </Typography>
+                        <Typography
+                          variant="h3"
+                          paragraph={false}
+                          sx={{
+                            margin: '0 0 0.3em 0',
+                            textAlign: 'center'
+                          }}
+                        >
+                          {' '}
+                          DC{' '}
+                          {damageForConcentrationCheck &&
+                            ` ${Math.floor(damageForConcentrationCheck / 2) <= 10 ? 10 : Math.floor(damageForConcentrationCheck / 2)}`}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          paragraph={false}
+                          sx={{
+                            margin: '0 0 1em 0'
                           }}
                         >
                           The DC of a concentration check is either 10 or half of the total damage the character takes — whichever value is greater.
                         </Typography>
-                        <Typography variant="body1" paragraph={false}>
-                          The damage just taken was {damageForConcentrationCheck} so{' '}
-                          <strong>
-                            the DC for this concentration check is
-                            {damageForConcentrationCheck &&
-                              ` ${Math.floor(damageForConcentrationCheck / 2) <= 10 ? 10 : Math.floor(damageForConcentrationCheck / 2)}`}
-                          </strong>
+                        <Typography variant="body2" paragraph={false}>
+                          The damage just taken was {damageForConcentrationCheck}.
                         </Typography>
                       </DialogContent>
                       <DialogActions>
