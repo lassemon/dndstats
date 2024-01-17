@@ -572,9 +572,12 @@ class Character extends ValueObject {
     return this._speed
   }
   public get speed_label() {
-    return Object.entries(this.speed || '')
+    const walkingSpeed = _.pick(this.speed, 'walk')
+    const otherSpeeds = Object.entries(_.omit(this.speed, 'walk') || '')
       .map(([key, value]) => `${key !== 'walk' ? key : ''} ${value}`)
       .join(', ')
+
+    return `${!_.isEmpty(walkingSpeed) ? walkingSpeed.walk + ', ' : ''}${otherSpeeds}`
   }
   public set speed(value) {
     this._speed = value
