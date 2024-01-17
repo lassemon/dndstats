@@ -99,10 +99,11 @@ const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) 
       ...(challengeRating.xp !== '' ? { xp: parseFloat(challengeRating.xp.toString()) } : { xp: undefined })
     }
     const oldValues = {
-      ...(character.challenge_rating ? { challenge_rating: parseFloat(character.challenge_rating.toString()) } : { challenge_rating: undefined }),
+      ...(character.challenge_rating ? { challenge_rating: parseFloat(character.challenge_rating.toString()) } : { challenge_rating: 0 }),
       ...(character.xp ? { xp: parseFloat(character.xp.toString()) } : { xp: undefined })
     }
     const hasChanged = !_.isEqual(oldValues, newValues)
+    console.log('challenge rating changed', hasChanged)
     if (hasChanged) {
       const characterCopy = character.clone(newValues)
       setCharacter(characterCopy)

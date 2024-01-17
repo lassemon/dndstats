@@ -110,7 +110,7 @@ class Character extends ValueObject {
 
       languages = '',
       proficiency_bonus = 0,
-      challenge_rating = 0,
+      challenge_rating,
       xp = 0,
       actions = [],
       reactions = [],
@@ -718,7 +718,9 @@ class Character extends ValueObject {
   }
   public get challenge_rating_label() {
     const challengeRatingAsFraction =
-      this._challenge_rating > 0 && this._challenge_rating < 1 ? Character.getChallengeRatingAsFraction(this._challenge_rating) : this._challenge_rating
+      (this._challenge_rating || 0) > 0 && (this._challenge_rating || 1) < 1
+        ? Character.getChallengeRatingAsFraction(this._challenge_rating || 0)
+        : this._challenge_rating
     return `${challengeRatingAsFraction}${this.xp ? ` (${this.xp} XP)` : ''}`
   }
   public static getChallengeRatingAsFraction(challengeRating: number) {

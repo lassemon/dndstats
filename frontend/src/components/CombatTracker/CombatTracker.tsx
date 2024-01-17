@@ -1330,12 +1330,13 @@ export const CombatTracker: React.FC = () => {
       </div>
       <div className={`${classes.actionsContainer}`}>
         {currentCombat.ongoing ? (
-          <Button variant="contained" color="warning" onClick={() => setCombatOngoing(false)}>
+          <Button variant="contained" size="large" color="warning" onClick={() => setCombatOngoing(false)}>
             Stop combat
           </Button>
         ) : (
           <Button
             variant="contained"
+            size="large"
             onClick={() => {
               onSort()
               setCombatOngoing(true)
@@ -1348,6 +1349,7 @@ export const CombatTracker: React.FC = () => {
           <>
             <Button
               variant="contained"
+              size="large"
               color="info"
               onClick={() => {
                 setCurrentTurn(false)
@@ -1357,6 +1359,7 @@ export const CombatTracker: React.FC = () => {
             </Button>
             <Button
               variant="contained"
+              size="large"
               color="info"
               onClick={() => {
                 setCurrentTurn(true)
@@ -1380,7 +1383,7 @@ export const CombatTracker: React.FC = () => {
               })
             }}
           >
-            '' Reset combat
+            Reset combat
           </Button>
         ) : (
           <div style={{ display: 'flex', gap: '1em' }}>

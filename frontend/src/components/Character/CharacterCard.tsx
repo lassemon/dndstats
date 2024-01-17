@@ -169,7 +169,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
       const hasChanged = !_.isEqual(character.proficiency_bonus, parseInt(value.toString()))
       if (hasChanged) {
         const characterClone = character.clone()
-        characterClone.proficiency_bonus = parseInt(value.toString()) || 0
+        characterClone.proficiency_bonus = parseInt(value.toString())
         setOnChangeTrigger(uuid())
         return characterClone
       }
