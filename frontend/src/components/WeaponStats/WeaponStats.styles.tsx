@@ -3,16 +3,18 @@ import { makeStyles } from 'tss-react/mui'
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
   container: {
-    width: '60%'
+    width: '60%',
+    '@media print': {
+      '&&': {
+        width: '100%'
+      }
+    }
   },
   mediumContainer: {
     width: '80%'
   },
   smallContainer: {
     width: '95%'
-  },
-  printContainer: {
-    width: '100%'
   },
   imageContainer: {
     display: 'flex',

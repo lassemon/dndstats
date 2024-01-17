@@ -2,7 +2,6 @@ import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { Fragment, useMemo } from 'react'
 import { weaponState } from 'infrastructure/dataAccess/atoms'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import classNames from 'classnames/bind'
 
 import useStyles from './WeaponStats.styles'
@@ -22,7 +21,6 @@ export const WeaponStats: React.FC = () => {
   const [currentWeapon] = useAtom(useMemo(() => weaponState, []))
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
-  const isPrint = useMediaQuery('print')
 
   if (!currentWeapon) {
     return <LoadingIndicator />
@@ -33,8 +31,7 @@ export const WeaponStats: React.FC = () => {
       className={cx({
         [classes.container]: true,
         [classes.smallContainer]: isPortrait,
-        [classes.mediumContainer]: !isPortrait,
-        [classes.printContainer]: isPrint
+        [classes.mediumContainer]: !isPortrait
       })}
     >
       <div className={classes.topContainer}>

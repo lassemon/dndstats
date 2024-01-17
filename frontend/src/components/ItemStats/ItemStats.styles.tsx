@@ -4,7 +4,12 @@ import { makeStyles } from 'tss-react/mui'
 export const useStyles = makeStyles()((theme) => {
   return {
     container: {
-      width: '55%'
+      width: '55%',
+      '@media print': {
+        '&&&': {
+          width: '100%'
+        }
+      }
     },
     smallContainer: {
       '&&': {
@@ -15,9 +20,6 @@ export const useStyles = makeStyles()((theme) => {
       '&&': {
         width: '65%'
       }
-    },
-    printContainer: {
-      width: '100%'
     },
     root: {
       display: 'flex'

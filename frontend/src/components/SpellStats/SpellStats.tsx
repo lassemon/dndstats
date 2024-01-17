@@ -40,7 +40,6 @@ export const SpellStats: React.FC = () => {
   const [currentSpell] = useAtom(useMemo(() => spellState, []))
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
-  const isPrint = useMediaQuery('print')
   const theme = useTheme()
   const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
   const [inlineFeatures, setInlineFeatures] = useState(true)
@@ -59,8 +58,7 @@ export const SpellStats: React.FC = () => {
         className={cx({
           [classes.container]: true,
           [classes.smallContainer]: isPortrait,
-          [classes.largeContainer]: isLarge,
-          [classes.printContainer]: isPrint
+          [classes.largeContainer]: isLarge
         })}
       >
         <div className={classes.topContainer}>

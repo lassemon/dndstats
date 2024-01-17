@@ -710,7 +710,7 @@ class Character extends ValueObject {
     return getNumberWithSign(this.proficiency_bonus)
   }
   public set proficiency_bonus(value) {
-    this._proficiency_bonus = value
+    this._proficiency_bonus = value || 0
   }
 
   public get challenge_rating() {

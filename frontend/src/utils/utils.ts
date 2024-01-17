@@ -4,7 +4,7 @@ export const getNumberWithSign = (theNumber: number) => {
   if (theNumber > 0) {
     return '+' + theNumber
   } else {
-    return theNumber.toString()
+    return theNumber?.toString()
   }
 }
 

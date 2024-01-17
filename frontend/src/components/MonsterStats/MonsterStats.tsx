@@ -70,11 +70,11 @@ export const MonsterStats: React.FC = () => {
           }
         })
       }
-      const currentMonsterExistsingCombatTracker = combatTracker.characters.find((combatTrackerCharacter) => {
+      const currentMonsterInCombatTracker = combatTracker.characters.find((combatTrackerCharacter) => {
         return combatTrackerCharacter.id === currentMonster?.id
       })
-      if (!!currentMonsterExistsingCombatTracker) {
-        setCurrentMonster(currentMonsterExistsingCombatTracker)
+      if (!!currentMonsterInCombatTracker) {
+        setCurrentMonster(currentMonsterInCombatTracker)
       }
     }
   }, [])
@@ -193,6 +193,7 @@ export const MonsterStats: React.FC = () => {
     <>
       <div
         className={cx({
+          [classes.root]: true,
           [classes.rootPortrait]: isPortrait,
           [classes.rootLandscape]: !isPortrait
         })}
@@ -224,89 +225,91 @@ export const MonsterStats: React.FC = () => {
               <DescriptionBlock key={`description`} dangerouslySetInnerHTML={{ __html: currentMonster.description || '' }} />
             </div>
           )}
-          <div className={`${classes.monsterActionsContainer} ${monsterActionsVisible ? '' : classes.hidden}`}>
-            <Autocomplete
-              id={`add-monster-dropdown`}
-              blurOnSelect
-              clearOnBlur
-              fullWidth
-              disableClearable
-              filterSelectedOptions
-              groupBy={(option) => option.source}
-              className={`${classes.autocomplete}`}
-              value={selectedMonster}
-              loading={loadingMonsterList}
-              options={monsterList.sort((a, b) => b.source.localeCompare(a.source))}
-              onChange={onSelectMonster}
-              getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
-              PaperComponent={AutoCompleteItem}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select Monster"
-                  variant="filled"
-                  size="small"
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <React.Fragment>
-                        {loadingMonsterList ? <CircularProgress color="inherit" size={20} /> : null}
-                        {params.InputProps.endAdornment}
-                      </React.Fragment>
-                    )
-                  }}
-                />
-              )}
-              sx={{
-                '&&': {
-                  margin: '1.5em 0 0 0'
-                }
-              }}
-            />
-            <ButtonGroup
-              orientation="vertical"
-              size="small"
-              variant="text"
-              color="secondary"
-              sx={{
-                overflowY: 'auto',
-                maxHeight: '20em',
-                margin: '1em 0'
-              }}
-            >
-              {customCharacterList.map((customCharacter, index) => {
-                return (
-                  <ButtonGroup key={index} size="small" variant="text" color="secondary">
-                    <Button
-                      onClick={onSelectCustomCharacter(index)}
-                      fullWidth
-                      sx={{
-                        '&&': {
-                          borderRight: 0
-                        }
-                      }}
-                    >
-                      {customCharacter.name}
+          <Box displayPrint="none">
+            <div className={`${classes.monsterActionsContainer} ${monsterActionsVisible ? '' : classes.hidden}`}>
+              <Autocomplete
+                id={`add-monster-dropdown`}
+                blurOnSelect
+                clearOnBlur
+                fullWidth
+                disableClearable
+                filterSelectedOptions
+                groupBy={(option) => option.source}
+                className={`${classes.autocomplete}`}
+                value={selectedMonster}
+                loading={loadingMonsterList}
+                options={monsterList.sort((a, b) => b.source.localeCompare(a.source))}
+                onChange={onSelectMonster}
+                getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
+                PaperComponent={AutoCompleteItem}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Monster"
+                    variant="filled"
+                    size="small"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <React.Fragment>
+                          {loadingMonsterList ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </React.Fragment>
+                      )
+                    }}
+                  />
+                )}
+                sx={{
+                  '&&': {
+                    margin: '1.5em 0 0 0'
+                  }
+                }}
+              />
+              <ButtonGroup
+                orientation="vertical"
+                size="small"
+                variant="text"
+                color="secondary"
+                sx={{
+                  overflowY: 'auto',
+                  maxHeight: '20em',
+                  margin: '1em 0'
+                }}
+              >
+                {customCharacterList.map((customCharacter, index) => {
+                  return (
+                    <ButtonGroup key={index} size="small" variant="text" color="secondary">
+                      <Button
+                        onClick={onSelectCustomCharacter(index)}
+                        fullWidth
+                        sx={{
+                          '&&': {
+                            borderRight: 0
+                          }
+                        }}
+                      >
+                        {customCharacter.name}
+                      </Button>
+                      <DeleteButton size="small" onClick={onDeleteCustomCharacter(index)} />
+                    </ButtonGroup>
+                  )
+                })}
+              </ButtonGroup>
+              {monsterSavedInHomebrew ? (
+                <Tooltip title="No changes to be saved" placement="top-start">
+                  <div>
+                    <Button variant="contained" onClick={onSaveCustomCharacter} disabled fullWidth>
+                      Save as homebrew character
                     </Button>
-                    <DeleteButton size="small" onClick={onDeleteCustomCharacter(index)} />
-                  </ButtonGroup>
-                )
-              })}
-            </ButtonGroup>
-            {monsterSavedInHomebrew ? (
-              <Tooltip title="No changes to be saved" placement="top-start">
-                <div>
-                  <Button variant="contained" onClick={onSaveCustomCharacter} disabled fullWidth>
-                    Save as homebrew character
-                  </Button>
-                </div>
-              </Tooltip>
-            ) : (
-              <Button variant="contained" onClick={onSaveCustomCharacter}>
-                Save as homebrew character
-              </Button>
-            )}
-          </div>
+                  </div>
+                </Tooltip>
+              ) : (
+                <Button variant="contained" onClick={onSaveCustomCharacter}>
+                  Save as homebrew character
+                </Button>
+              )}
+            </div>
+          </Box>
         </div>
       </div>
       <Box displayPrint="none">

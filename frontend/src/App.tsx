@@ -41,12 +41,17 @@ const App: React.FC = () => {
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
 
+  const _printDefer = () => {
+    setTimeout(window.print, 100)
+  }
+
   const handleChange = (event: any, newValue: string) => {
     setValue(newValue)
   }
 
   const onPrint = () => {
-    window.print()
+    _printDefer()
+    return false
   }
 
   const Main = () => {

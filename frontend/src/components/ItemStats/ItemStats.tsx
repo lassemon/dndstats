@@ -1,7 +1,6 @@
 import StatsContainer from 'components/StatsContainer'
 import React, { useMemo, useState } from 'react'
 import { itemState } from 'infrastructure/dataAccess/atoms'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import classNames from 'classnames/bind'
 
 import useStyles from './ItemStats.styles'
@@ -34,7 +33,6 @@ export const ItemStats: React.FC = () => {
   const [currentItem] = useAtom(useMemo(() => itemState, []))
   const [inlineFeatures, setInlineFeatures] = useState(false)
 
-  const isPrint = useMediaQuery('print')
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
 
@@ -52,8 +50,7 @@ export const ItemStats: React.FC = () => {
         className={cx({
           [classes.container]: true,
           [classes.smallContainer]: isPortrait,
-          [classes.mediumContainer]: !isPortrait,
-          [classes.printContainer]: isPrint
+          [classes.mediumContainer]: !isPortrait
         })}
       >
         <div className={classes.root}>

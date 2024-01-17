@@ -2,6 +2,15 @@ import { makeStyles } from 'tss-react/mui'
 
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
+  root: {
+    '@media print': {
+      '&&&': {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column-reverse'
+      }
+    }
+  },
   rootPortrait: {
     display: 'flex',
     flexDirection: 'column',
@@ -70,7 +79,8 @@ export const useStyles = makeStyles()((theme) => ({
     padding: '0',
     borderTop: '3px solid #1b1b1b',
     borderBottom: '3px solid #1b1b1b',
-    boxShadow: theme.custom.boxShadow
+    boxShadow: theme.custom.boxShadow,
+    breakInside: 'avoid'
   },
   monsterContainer: {
     flex: '1 0 60%'

@@ -3,6 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
   root: {
+    breakInside: 'avoid',
     '& .editing': {
       backgroundColor: 'rgba(235,145,20,0.2)',
       borderRadius: '0.5em',
@@ -17,6 +18,12 @@ export const useStyles = makeStyles()((theme) => ({
         padding: 0,
         margin: 0,
         backgroundColor: 'transparent'
+      }
+    },
+    '@media print': {
+      '&&': {
+        width: '100%',
+        marginTop: '3em'
       }
     }
   },

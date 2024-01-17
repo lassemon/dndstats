@@ -165,6 +165,9 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
             sx={{
               width: `${editWidth}em`
             }}
+            InputLabelProps={{
+              shrink: true
+            }}
           />
         </>
       )}
