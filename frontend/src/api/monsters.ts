@@ -2,7 +2,7 @@ import { Source } from 'interfaces'
 import { get } from 'utils/fetch'
 
 export const getMonsterList = async () => {
-  const monsterListResult = await get('/api/monsters')
+  const monsterListResult = await get<any>({ endpoint: '/monsters' })
   return monsterListResult.results.map((monster: any) => {
     return {
       ...monster,
@@ -13,5 +13,5 @@ export const getMonsterList = async () => {
 }
 
 export const getMonster = async (monsterUrl: string) => {
-  return await get(monsterUrl)
+  return await get<any>({ endpoint: monsterUrl })
 }

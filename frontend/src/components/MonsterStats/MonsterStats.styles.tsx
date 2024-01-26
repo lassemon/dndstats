@@ -72,7 +72,7 @@ export const useStyles = makeStyles()((theme) => ({
     gap: '0.5em'
   },
   hidden: {
-    visibility: 'hidden'
+    display: 'none'
   },
   mainDescription: {
     background: '#e0e4c3',

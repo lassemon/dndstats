@@ -194,7 +194,6 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
   const saveConditionally = useRef(
     _.throttle(
       (key: string, characterToSave: Character) => {
-        //console.log('saving conditionally', characterToSave.toJSON())
         if (presentationMode) {
           onChange(key || '', characterToSave)
         } else {

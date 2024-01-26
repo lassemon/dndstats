@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useEffect, useMemo, useState } from 'react'
-import { combatTrackerState, customCharactersState, monsterState } from 'infrastructure/dataAccess/atoms'
+import { CombatAtom, CustomCharactersAtom, combatTrackerState, customCharactersState, monsterState } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './MonsterStats.styles'
 import { Autocomplete, Box, Button, ButtonGroup, CircularProgress, TextField, Tooltip } from '@mui/material'
@@ -34,6 +34,8 @@ const DescriptionBlock: React.FC<HTMLAttributes<HTMLParagraphElement>> = (props)
   return <p className={classes.blockDescription}>{children}</p>
 }
 
+type Updater = (customCharacters: CustomCharactersAtom) => CustomCharactersAtom
+
 export const MonsterStats: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
@@ -55,54 +57,67 @@ export const MonsterStats: React.FC = () => {
   const existingCustomCharacter = customCharacterList.find((customCharacter) => customCharacter.id === currentMonster?.id)
   const monsterSavedInHomebrew = currentMonster?.isEqual(existingCustomCharacter)
 
-  // sync characters in custom character list from combat tracker
-  // NOTE: DO NOT change combat tracker state in this file, it will cause an infinite loop
-  useEffect(() => {
-    if (combatTracker) {
-      const customCharactersExistingInCombatTracker = combatTracker.characters.filter((combatTrackerCharacter) => {
-        return customCharacterList.find((customCharacter) => customCharacter.id === combatTrackerCharacter.id)
-      })
-      if (!_.isEmpty(customCharactersExistingInCombatTracker)) {
-        setCustomCharacters((customCharacters) => {
-          return {
-            ...customCharacters,
-            characters: _.unionBy(customCharactersExistingInCombatTracker, customCharacters.characters, (character) => character.id)
-          }
-        })
-      }
-      const currentMonsterInCombatTracker = combatTracker.characters.find((combatTrackerCharacter) => {
-        return combatTrackerCharacter.id === currentMonster?.id
-      })
-      if (!!currentMonsterInCombatTracker) {
-        setCurrentMonster(currentMonsterInCombatTracker)
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoadingMonsterList(true)
-      const monsters = await getMonsterList()
-      const customCharacterOptions: MonsterListOption[] = customCharacterList.map((customCharacter) => {
+  const syncCombatTrackerWithCustomCharacterList = (_combatTracker: CombatAtom) => {
+    const customCharactersExistingInCombatTracker = _combatTracker.characters.filter((combatTrackerCharacter) => {
+      return customCharacterList.find((customCharacter) => customCharacter.id === combatTrackerCharacter.id)
+    })
+    if (!_.isEmpty(customCharactersExistingInCombatTracker)) {
+      setCustomCharacters((customCharacters) => {
         return {
-          id: customCharacter.id,
-          name: customCharacter.name,
-          url: undefined,
-          source: customCharacter.source
+          ...customCharacters,
+          characters: _.unionBy(customCharactersExistingInCombatTracker, customCharacters.characters, (character) => character.id)
         }
       })
-      setMonsterList([emptyMonster, ...monsters, ...customCharacterOptions])
-      setLoadingMonsterList(false)
+    }
+    const currentMonsterInCombatTracker = _combatTracker.characters.find((combatTrackerCharacter) => {
+      return combatTrackerCharacter.id === currentMonster?.id
+    })
+    if (!!currentMonsterInCombatTracker) {
+      setCurrentMonster(currentMonsterInCombatTracker)
+    }
+  }
+
+  const fetchMonsterList = () => {
+    const fetchData = async () => {
+      setLoadingMonsterList(true)
+      if (!loadingMonsterList) {
+        const monsters = await getMonsterList()
+        const newMonsterList = [...monsterList, ...monsters]
+        setMonsterList(newMonsterList)
+        setLoadingMonsterList(false)
+      }
     }
 
     fetchData().catch((error) => {
       setLoadingMonsterList(false)
       console.error(error)
     })
+  }
+
+  // sync characters in custom character list from combat tracker
+  // NOTE: DO NOT change combat tracker state in this file, it will cause an infinite loop
+  useEffect(() => {
+    if (combatTracker) {
+      syncCombatTrackerWithCustomCharacterList(combatTracker)
+    }
+
+    fetchMonsterList()
+  }, [])
+
+  useEffect(() => {
+    const customCharacterOptions: MonsterListOption[] = [...customCharacterList].map((customCharacter) => {
+      return {
+        id: customCharacter.id,
+        name: customCharacter.name,
+        url: undefined,
+        source: customCharacter.source
+      }
+    })
+    setMonsterList([...monsterList, ...customCharacterOptions])
   }, [customCharacterList])
 
   const onChangeMonster = (key: string, character: Character) => {
-    setCurrentMonster((currentMonster) => {
+    setCurrentMonster((currentMonster: any) => {
       return currentMonster?.clone(character.toJSON())
     })
   }
@@ -215,16 +230,6 @@ export const MonsterStats: React.FC = () => {
           </div>
         </ErrorBoundary>
         <div className={classes.rightContainer}>
-          {currentMonster.imageElement && (
-            <div className={`${classes.imageContainer}`}>
-              <img alt={currentMonster.imageElement?.props.alt} src={`${currentMonster.imageElement?.props.src}`} />
-            </div>
-          )}
-          {currentMonster.description && (
-            <div className={classes.mainDescription}>
-              <DescriptionBlock key={`description`} dangerouslySetInnerHTML={{ __html: currentMonster.description || '' }} />
-            </div>
-          )}
           <Box displayPrint="none">
             <div className={`${classes.monsterActionsContainer} ${monsterActionsVisible ? '' : classes.hidden}`}>
               <Autocomplete
@@ -310,6 +315,16 @@ export const MonsterStats: React.FC = () => {
               )}
             </div>
           </Box>
+          {currentMonster.imageElement && (
+            <div className={`${classes.imageContainer}`}>
+              <img alt={currentMonster.imageElement?.props.alt} src={`${currentMonster.imageElement?.props.src}`} />
+            </div>
+          )}
+          {currentMonster.description && (
+            <div className={classes.mainDescription}>
+              <DescriptionBlock key={`description`} dangerouslySetInnerHTML={{ __html: currentMonster.description || '' }} />
+            </div>
+          )}
         </div>
       </div>
       <Box displayPrint="none">

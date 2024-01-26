@@ -57,7 +57,7 @@ export const useStyles = makeStyles()((theme) => {
       borderBottom: '3px solid #1b1b1b'
     },
     blockDescription: {
-      margin: '0.5em'
+      margin: '0 0.5em 0.5em 0.5em'
     },
     inlineDescription: {
       display: 'inline'

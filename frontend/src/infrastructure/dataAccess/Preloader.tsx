@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai'
 import { combatTrackerState, itemState, monsterState, spellState, weaponState } from './atoms'
 
-export const Preloader = () => {
+const Preloader = () => {
   useAtomValue(itemState)
   useAtomValue(spellState)
   useAtomValue(weaponState)
@@ -9,3 +9,5 @@ export const Preloader = () => {
   useAtomValue(combatTrackerState)
   return null
 }
+
+export default Preloader

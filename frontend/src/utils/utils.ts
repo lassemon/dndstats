@@ -66,3 +66,17 @@ export const getlowestfraction = (x0: number) => {
 
   return h + '/' + k
 }
+
+export const scheduleAsyncFunction = (asyncFunction: Function, timeout: number, condition?: boolean) => {
+  asyncFunction()
+    .catch(console.error)
+    .finally(() => {
+      if (condition) {
+        setTimeout(scheduleAsyncFunction, timeout, asyncFunction)
+      }
+    })
+}
+
+export const isPromise = <T>(value: T | Promise<T>): value is Promise<T> => {
+  return !!value && typeof (value as any).then === 'function'
+}

@@ -3,7 +3,6 @@ import {
   Button,
   CircularProgress,
   ClickAwayListener,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -12,7 +11,6 @@ import {
   MenuItem,
   Popover,
   Select,
-  Slide,
   TextField,
   Tooltip,
   Typography,
@@ -40,7 +38,6 @@ import EditableText from './EditableText'
 import { ConditionToIconMap } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
 import Settings from '@mui/icons-material/Settings'
-import { TransitionProps } from '@mui/material/transitions'
 import { DamageTypeToIconMap } from './DamageTypes'
 import StatusModifiers from './StatusModifiers'
 import CharacterCard from '../Character/CharacterCard'
@@ -56,6 +53,7 @@ import LoadingIndicator from 'components/LoadingIndicator'
 import DownloadJSON from 'components/DownloadJSON/DownloadJSON'
 import UploadJSON from 'components/UploadJSON'
 import { defaultCombat } from 'services/defaults'
+import Dialog from 'components/Dialog'
 
 const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
   return {
@@ -81,15 +79,6 @@ const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
       backgroundColor: theme.palette.grey[400]
     }
   }
-})
-
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />
 })
 
 export const CombatTracker: React.FC = () => {
@@ -157,26 +146,32 @@ export const CombatTracker: React.FC = () => {
   }, [setCurrentCombat, customCharacterList])
 
   useEffect(() => {
+    const customCharacterOptions: MonsterListOption[] = customCharacterList.map((customCharacter) => {
+      return {
+        id: customCharacter.id,
+        name: customCharacter.name,
+        url: undefined,
+        source: customCharacter.source
+      }
+    })
+
     const fetchData = async () => {
       setLoadingMonsterList(true)
-      //console.log('getting monster list, old monster list', monsterList)
       // TODO: do not fetch monster list if old monsterList already is populated
       // UNLESS last updated of monsterList is x amount in the past
       // save last updated into localStorage?
-      const monsters = await getMonsterList()
-      const customCharacterOptions: MonsterListOption[] = customCharacterList.map((customCharacter) => {
-        return {
-          id: customCharacter.id,
-          name: customCharacter.name,
-          url: undefined,
-          source: customCharacter.source
-        }
-      })
-      setMonsterList([emptyMonster, ...monsters, ...customCharacterOptions])
-      setLoadingMonsterList(false)
+      if (!loadingMonsterList) {
+        const monsters = await getMonsterList()
+        setMonsterList([emptyMonster, ...monsters, ...customCharacterOptions])
+        setLoadingMonsterList(false)
+      }
     }
 
-    fetchData().catch(console.error)
+    fetchData().catch((error) => {
+      setMonsterList([emptyMonster, ...customCharacterOptions])
+      setLoadingMonsterList(false)
+      console.error(error)
+    })
   }, [customCharacterList])
 
   useEffect(() => {
@@ -828,7 +823,7 @@ export const CombatTracker: React.FC = () => {
                         </Tooltip>
                       )}
                     </div>
-                    <Dialog open={regenDialogOpen} onClose={() => closeRegenDialog(index)} TransitionComponent={Transition}>
+                    <Dialog open={regenDialogOpen} onClose={() => closeRegenDialog(index)}>
                       <DialogTitle id={`regen-dialog-title-${index}`}>{`Regen ${character.name} for ${character.regeneration} HP this turn?`}</DialogTitle>
                       <DialogContent>
                         <Typography variant="body2" paragraph={false}>
@@ -849,7 +844,7 @@ export const CombatTracker: React.FC = () => {
                         </Button>
                       </DialogActions>
                     </Dialog>
-                    <Dialog open={concentrationDialogOpen} onClose={() => closeConcentrationDialog(index)} TransitionComponent={Transition}>
+                    <Dialog open={concentrationDialogOpen} onClose={() => closeConcentrationDialog(index)}>
                       <DialogTitle id={`concentration-dialog-title-${index}`}>{`Character is concentrating on a spell`}</DialogTitle>
                       <DialogContent>
                         <Typography
@@ -1062,7 +1057,6 @@ export const CombatTracker: React.FC = () => {
                     <Dialog
                       open={imageDialogOpen}
                       onClose={() => closeImageDialog(index)}
-                      TransitionComponent={Transition}
                       fullScreen
                       PaperProps={{
                         sx: {

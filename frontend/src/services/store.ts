@@ -3,7 +3,7 @@ import _ from 'lodash'
 export const load = async <T extends unknown>(key: string): Promise<T> => {
   const storedItem = JSON.parse(localStorage.getItem(key) || '{}')
   return await Promise.resolve(!_.isEmpty(storedItem) ? storedItem : null)
-  //return await new Promise((resolve) => setTimeout(resolve, 1500, !_.isEmpty(storedItem) ? storedItem : null))
+  //return await new Promise((resolve) => setTimeout(resolve, 2500, !_.isEmpty(storedItem) ? storedItem : null))
 }
 
 export const store = async (key: string, data: any) => {

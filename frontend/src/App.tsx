@@ -6,7 +6,7 @@ import ItemStatsLayout from 'layouts/ItemStatsLayout'
 import MonsterStatsLayout from 'layouts/MonsterStatsLayout'
 import SpellStatsLayout from 'layouts/SpellStatsLayout'
 import WeaponStatsLayout from 'layouts/WeaponStatsLayout'
-import React, { useState } from 'react'
+import React, { useState, lazy } from 'react'
 import theme from 'theme'
 import { Routes, Route, Outlet, Link } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -15,9 +15,11 @@ import useStyles from './App.styles'
 import LoadingIndicator from 'components/LoadingIndicator'
 import { clearAll } from 'services/store'
 import { useOrientation } from 'utils/hooks'
-import { Preloader } from 'infrastructure/dataAccess/Preloader'
+
 import ErrorDisplay from 'components/ErrorDisplay'
 import ErrorFallback from 'components/ErrorFallback'
+
+import Login from 'components/Login'
 
 const TABS = {
   '/item': 'Item Stats',
@@ -34,6 +36,8 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`
   }
 }
+
+const Preloader = lazy(() => import('infrastructure/dataAccess/Preloader'))
 
 const App: React.FC = () => {
   const { classes } = useStyles()
@@ -112,6 +116,9 @@ const App: React.FC = () => {
                     Reset All
                   </Button>
                 </Tooltip>
+                <React.Suspense fallback={<LoadingIndicator />}>
+                  <Login />
+                </React.Suspense>
               </Toolbar>
             </AppBar>
           </Box>

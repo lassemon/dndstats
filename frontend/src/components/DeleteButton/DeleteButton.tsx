@@ -1,6 +1,6 @@
+import React from 'react'
 import { IconButton, IconButtonProps } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
-import React from 'react'
 
 import useStyles from './DeleteButton.styles'
 
