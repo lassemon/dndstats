@@ -60,16 +60,16 @@ export const ItemStats: React.FC = () => {
             {currentItem.features.map((feature: any, key: any) => {
               return (
                 <div className={classes.featureContainer} key={key}>
-                  {feature.featureName && <h3 className={classes.featureName}>{feature.featureName}</h3>}
+                  {feature.featureName && <h4 className={classes.featureName}>{feature.featureName}</h4>}
                   {feature.featureDescription &&
                     (inlineFeatures || !feature.featureName ? (
                       <DescriptionInline>{feature.featureDescription}</DescriptionInline>
                     ) : (
-                      <div>
+                      <>
                         {feature.featureDescription.split('\n').map((value: any, key: any) => {
                           return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
                         })}
-                      </div>
+                      </>
                     ))}
                 </div>
               )

@@ -54,7 +54,10 @@ export const useStyles = makeStyles()((theme) => {
       padding: '0',
       margin: '1em 0 0 0',
       borderTop: '3px solid #1b1b1b',
-      borderBottom: '3px solid #1b1b1b'
+      borderBottom: '3px solid #1b1b1b',
+      '&> p': {
+        margin: '0.5em'
+      }
     },
     blockDescription: {
       margin: '0 0.5em 0.5em 0.5em'
@@ -67,7 +70,6 @@ export const useStyles = makeStyles()((theme) => {
     },
     featureName: {
       color: '#1b1b1b',
-      fontSize: '1rem',
       display: 'inline',
       letterSpacing: '1px',
       fontVariant: 'small-caps',
