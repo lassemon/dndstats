@@ -13,5 +13,5 @@ export const getMonsterList = async () => {
 }
 
 export const getMonster = async (monsterUrl: string) => {
-  return await get<any>({ endpoint: monsterUrl })
+  return await get<any>({ endpoint: monsterUrl.replace('/api', '') })
 }

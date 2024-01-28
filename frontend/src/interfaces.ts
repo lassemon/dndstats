@@ -219,16 +219,3 @@ export enum Senses {
 }
 
 export type CharacterSenses = { [key in Senses]?: string }
-
-export interface Spell {
-  name: string
-  shortDescription: string
-  mainDescription: string
-  features: Array<{ featureName: string; featureDescription: string }>
-  athigherlevels: string
-  castingtime: string
-  range: string
-  components: string
-  duration: string
-  classes: string
-}

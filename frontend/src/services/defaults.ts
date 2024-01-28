@@ -3,8 +3,20 @@ import mjolnirImage from 'assets/mjolnirImage'
 import shieldImage from 'assets/shieldImage'
 import Character from 'domain/entities/Character'
 import { AbilityScores } from 'domain/services/FifthESRDService'
-import { PlayerType, Condition, DamageType, Source, Spell, Skill, Senses, Speed } from 'interfaces'
+import { PlayerType, Condition, DamageType, Source, Skill, Senses, Speed } from 'interfaces'
 import React from 'react'
+
+export interface Item {
+  image: {
+    alt: string
+    src: string
+    hash: number
+  }
+  name: string
+  shortDescription: string
+  mainDescription: string
+  features: Array<{ featureName: string; featureDescription: string }>
+}
 
 export const defaultItem = {
   image: React.createElement('img', {
@@ -27,17 +39,31 @@ export const defaultItem = {
   ]
 }
 
-export const defaultSpell = {
+export interface Spell {
+  name: string
+  shortDescription: string
+  mainDescription: string
+  features: Array<{ featureName: string; featureDescription: string }>
+  athigherlevels: string
+  castingtime: string
+  range: string
+  components: string
+  duration: string
+  classes: string
+}
+
+export const defaultSpell: Spell = {
   name: 'Eldritch Blast',
   shortDescription: 'Evocation cantrip',
   mainDescription: `A beam of crackling energy streaks toward a creature within range. Make a ranged spell Attack against the target. On a hit, the target takes 1d10 force damage.`,
+  features: [],
   athigherlevels: `The spell creates more than one beam when you reach higher levels: two beams at 5th Level, three beams at 11th level, and four beams at 17th level. You can direct the beams at the same target or at different ones. Make a separate Attack roll for each beam.`,
   castingtime: '1 action',
   range: '120 feet',
   components: 'V, S',
   duration: 'Instantaneous',
   classes: 'Warlock'
-} as Spell
+}
 
 export const defaultWeapon = {
   image: React.createElement('img', {
@@ -61,6 +87,7 @@ On a failed save you become exhausted (level of 3) for the duration of the next 
   weight: '2 lb.',
   properties: 'Light, finesse, +4d6 thunder damage'
 }
+export type Weapon = typeof defaultWeapon
 
 export const defaultMonster = new Character({
   imageElement: React.createElement('img', {
@@ -163,6 +190,7 @@ export const defaultMonster = new Character({
     }
   ]
 })
+export type Monster = typeof defaultMonster
 
 export const defaultCombat = {
   ongoing: false,
@@ -232,6 +260,7 @@ export const defaultCombat = {
     })
   ]
 }
+export type Combat = typeof defaultCombat
 
 export const defaultCustomCharacters = {
   characters: [] as Character[]

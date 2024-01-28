@@ -1,5 +1,5 @@
 import Character from 'domain/entities/Character'
-import { defaultCustomCharacters, defaultCombat, defaultItem, defaultMonster, defaultSpell, defaultWeapon } from 'services/defaults'
+import { defaultCustomCharacters, defaultCombat, defaultItem, defaultMonster, defaultSpell, defaultWeapon, Item } from 'services/defaults'
 import { load, store } from 'services/store'
 
 import { atom } from 'jotai'
@@ -17,6 +17,7 @@ interface AuthState {
 }
 
 export type CombatAtom = typeof defaultCombat
+export type ItemAtom = Item
 export type CustomCharactersAtom = typeof defaultCustomCharacters
 
 export const errorState = atom<Error | null>(null)

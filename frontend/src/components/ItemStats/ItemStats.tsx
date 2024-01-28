@@ -4,7 +4,7 @@ import { itemState } from 'infrastructure/dataAccess/atoms'
 import classNames from 'classnames/bind'
 
 import useStyles from './ItemStats.styles'
-import { Box, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
+import { Box, Button, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 import { useOrientation } from 'utils/hooks'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
@@ -38,6 +38,10 @@ export const ItemStats: React.FC = () => {
 
   const onChangeInlineFeatures = () => {
     setInlineFeatures((_inlineFeatures) => !_inlineFeatures)
+  }
+
+  const onSave = () => {
+    console.log('i want to save', currentItem)
   }
 
   if (!currentItem) {
@@ -88,8 +92,11 @@ export const ItemStats: React.FC = () => {
         </div>
       </StatsContainer>
       <Box displayPrint="none">
-        <FormGroup>
+        <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', margin: '1em 0 0 0' }}>
           <FormControlLabel control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />} label="Inline features" />
+          <Button variant="contained" onClick={onSave}>
+            Save Item
+          </Button>
         </FormGroup>
       </Box>
     </>

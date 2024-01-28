@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { DateTime } from 'luxon'
 
 export const load = async <T extends unknown>(key: string): Promise<T> => {
   const storedItem = JSON.parse(localStorage.getItem(key) || '{}')
@@ -7,7 +8,7 @@ export const load = async <T extends unknown>(key: string): Promise<T> => {
 }
 
 export const store = async (key: string, data: any) => {
-  return await Promise.resolve(localStorage.setItem(key, JSON.stringify(data)))
+  return await Promise.resolve(localStorage.setItem(key, JSON.stringify({ ...data, updated: DateTime.now().toUnixInteger() })))
   //return await new Promise((resolve) => setTimeout(resolve, 1500, localStorage.setItem(key, JSON.stringify(data))))
   //await new Promise((resolve, reject) => setTimeout(reject, 1500, new StorageSyncError('VIRHEEE')))
 }
