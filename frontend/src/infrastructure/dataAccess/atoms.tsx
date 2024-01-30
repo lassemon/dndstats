@@ -39,7 +39,7 @@ const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, p
     })
   )
   const derivedAtom = atom(
-    async (get) => await get(baseAtom),
+    (get) => get(baseAtom), // do not set this to async, it will cause the page to jump on each re-render
     (get, set, update: UpdateParam<T>) => {
       const getNextValue = (oldValue: T) => {
         const parsedValue = update instanceof Function ? update(oldValue) : (update as T)
