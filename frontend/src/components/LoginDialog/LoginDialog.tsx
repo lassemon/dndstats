@@ -64,7 +64,15 @@ const LoginDialog: React.FC<LoginDialogProps> = (props) => {
   }
 
   return (
-    <Dialog open={open} onClose={closeLoginDialog}>
+    <Dialog
+      open={open}
+      onClose={closeLoginDialog}
+      PaperProps={{
+        sx: (theme) => ({
+          background: theme.palette.primary.main
+        })
+      }}
+    >
       <DialogTitle
         sx={{
           paddingBottom: '0.5em'

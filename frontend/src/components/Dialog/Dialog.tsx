@@ -12,17 +12,7 @@ const Transition = React.forwardRef(function Transition(
 })
 
 const Dialog: React.FC<DialogProps> = (props) => {
-  return (
-    <MuiDialog
-      TransitionComponent={Transition}
-      {...props}
-      PaperProps={{
-        sx: (theme) => ({
-          background: theme.palette.primary.main
-        })
-      }}
-    />
-  )
+  return <MuiDialog TransitionComponent={Transition} {...props} />
 }
 
 export default Dialog
