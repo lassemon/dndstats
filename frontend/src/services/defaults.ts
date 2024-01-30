@@ -5,20 +5,19 @@ import Character from 'domain/entities/Character'
 import { AbilityScores } from 'domain/services/FifthESRDService'
 import { PlayerType, Condition, DamageType, Source, Skill, Senses, Speed } from 'interfaces'
 import React from 'react'
+import { uuid } from 'utils/utils'
 
 export interface Item {
-  image: {
-    alt: string
-    src: string
-    hash: number
-  }
+  id: string
+  image: React.ReactElement
   name: string
   shortDescription: string
   mainDescription: string
   features: Array<{ featureName: string; featureDescription: string }>
 }
 
-export const defaultItem = {
+export const defaultItem: Item = {
+  id: uuid(),
   image: React.createElement('img', {
     alt: 'greatshield',
     src: shieldImage,

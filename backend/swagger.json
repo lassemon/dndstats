@@ -379,7 +379,27 @@
 				"parameters": []
 			}
 		},
-		"/{category}/{itemType}": {
+		"/monsters": {
+			"get": {
+				"operationId": "Search",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Api"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/monsters/{monsterName}": {
 			"get": {
 				"operationId": "Get",
 				"responses": {
@@ -399,15 +419,7 @@
 				"parameters": [
 					{
 						"in": "path",
-						"name": "category",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "itemType",
+						"name": "monsterName",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -416,12 +428,12 @@
 				]
 			}
 		},
-		"/{category}": {
-			"get": {
-				"operationId": "Search",
+		"/item": {
+			"post": {
+				"operationId": "Create",
 				"responses": {
-					"200": {
-						"description": "Ok",
+					"201": {
+						"description": "Created",
 						"content": {
 							"application/json": {
 								"schema": {}
@@ -433,24 +445,15 @@
 					"Api"
 				],
 				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "category",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "name",
-						"required": false,
-						"schema": {
-							"type": "string"
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
 						}
 					}
-				]
+				}
 			}
 		},
 		"/auth/login": {
@@ -506,11 +509,7 @@
 				"tags": [
 					"Auth"
 				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
+				"security": [],
 				"parameters": []
 			}
 		},
@@ -557,11 +556,7 @@
 				"tags": [
 					"Auth"
 				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
+				"security": [],
 				"parameters": []
 			}
 		}

@@ -15,10 +15,6 @@ export const logout = async () => {
   return await post({ endpoint: '/auth/logout' })
 }
 
-export const refreshToken = async () => {
-  return await post({ endpoint: 'auth/refresh' })
-}
-
 export const status = async () => {
   return get({ endpoint: '/auth/status' })
 }

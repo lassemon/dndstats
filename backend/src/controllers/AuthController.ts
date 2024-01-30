@@ -1,28 +1,31 @@
 import express from 'express'
 import ApiError from '/domain/errors/ApiError'
 import Encryption from 'security/Encryption'
-import { Body, Controller, Get, Post, Request, Response, Route, Security, Tags } from 'tsoa'
+import { Body, Controller, Get, Middlewares, Post, Request, Response, Route, Tags } from 'tsoa'
 import { ILoginRequest } from '../interfaces/requests'
 import { IUser, IUserResponse } from '../interfaces/user'
-import UserService from '/services/UserService'
+//import UserService from '/services/UserService'
 import Authorization from '/security/Authorization'
 import Logger from '/utils/Logger'
 import { DateTime } from 'luxon'
 import UserMapper from '/mappers/UserMapper'
+import Authentication from '/security/Authentication'
+import passport from 'passport'
 
 const log = new Logger('AuthController')
 const refreshTokenList = {} as { [key: string]: IUser }
+const authentication = new Authentication(passport)
 
 @Route('/auth')
 export class AuthController extends Controller {
-  private userService: UserService
+  //private userService: UserService
   private userMapper: UserMapper
   private authorization: Authorization
   private cookies
 
   constructor() {
     super()
-    this.userService = new UserService()
+    //this.userService = new UserService()
     this.userMapper = new UserMapper()
     this.authorization = new Authorization()
     this.cookies = {}
@@ -65,7 +68,6 @@ export class AuthController extends Controller {
   }
 
   @Tags('Auth')
-  @Security('jwt')
   @Response(401, 'Unauthorized')
   @Response(200, 'Success')
   @Post('logout')
@@ -84,7 +86,6 @@ export class AuthController extends Controller {
   @Response(200, 'Success')
   @Post('refresh')
   public async refresh(@Request() request: express.Request): Promise<boolean> {
-    console.log('called refresh', request.cookies)
     if (request && request.cookies && request.cookies.refreshToken in refreshTokenList) {
       const refreshToken = this.authorization.decodeToken(request.cookies.refreshToken)
 
@@ -93,7 +94,8 @@ export class AuthController extends Controller {
         throw new ApiError(401, 'Unauthorized')
       }
 
-      const user: IUser = await this.userService.findById(refreshToken.user)
+      //const user: IUser = await this.userService.findById(refreshToken.user)
+      const user = { id: 1, name: 'test', email: 'testemail', password: await Encryption.encrypt('test'), created: new Date() } //await this.userService.findByName(username)
       const newAuthToken = this.authorization.createAuthToken(user)
 
       this.setCookies({
@@ -112,9 +114,10 @@ export class AuthController extends Controller {
   }
 
   @Tags('Auth')
-  @Security('jwt')
+  @Middlewares(authentication.authenticationMiddleware())
   @Get('status')
-  public async status(): Promise<boolean> {
+  public async status(@Request() request: express.Request): Promise<boolean> {
+    log.debug(`calling status to see if authenticated. isAuthenticated: ${request?.isAuthenticated()}.`)
     return true
   }
 

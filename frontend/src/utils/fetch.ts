@@ -1,5 +1,4 @@
 import ApiError from 'domain/errors/ApiError'
-import RefreshTokenError from 'domain/errors/RefreshTokenError'
 
 const API_ROOT = '/api/v1'
 
@@ -16,7 +15,7 @@ export const get = async <T>(options: IAjaxOptions): Promise<T> => {
   const url = buildQueryUrl(options)
   const response = await fetch(url)
   return await handleApiResponse(response).catch((error) => {
-    return refreshTokenAndRetry(error, post, options)
+    return refreshTokenAndRetry(error, get, options)
   })
 }
 
@@ -63,27 +62,26 @@ const handleApiResponse = async (response: Response): Promise<any> => {
 const refreshTokenAndRetry = async (error: any, operation: FetchOperation, options: IAjaxOptions) => {
   if (error.status === 401 && !options.noRefresh) {
     await refreshToken()
-    const response = await retryOperation(operation, options)
+    const response = await retryOperation(operation, options).catch(() => {
+      throw error
+    })
     return handleApiResponse(response)
   }
-  throw error
 }
 
 const refreshToken = async (): Promise<any> => {
-  const url = buildQueryUrl({
-    endpoint: 'auth/refresh'
+  const url = buildQueryUrl({ endpoint: '/auth/refresh' })
+  return await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    }
   })
-  return post({ endpoint: url })
-    .then((response: any) => {
-      return response.data
-    })
-    .catch(() => {
-      throw new RefreshTokenError(401, 'Unauthorized')
-    })
 }
 
 const retryOperation = async (operation: FetchOperation, options: IAjaxOptions) => {
-  return await operation(options)
+  return await operation({ ...options, noRefresh: true })
 }
 
 const buildQueryUrl = (options: IAjaxOptions) => {

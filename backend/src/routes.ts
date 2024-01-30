@@ -13,6 +13,8 @@ import { PingController2 } from './controllers/PingController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PingController3 } from './controllers/PingController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { MonsterController } from './controllers/MonsterController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ItemController } from './controllers/ItemController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AuthController } from './controllers/AuthController';
@@ -317,15 +319,13 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/v1/:category/:itemType',
-            ...(fetchMiddlewares<RequestHandler>(ItemController)),
-            ...(fetchMiddlewares<RequestHandler>(ItemController.prototype.get)),
+        app.get('/api/v1/monsters',
+            ...(fetchMiddlewares<RequestHandler>(MonsterController)),
+            ...(fetchMiddlewares<RequestHandler>(MonsterController.prototype.search)),
 
-            function ItemController_get(request: any, response: any, next: any) {
+            function MonsterController_search(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    category: {"in":"path","name":"category","required":true,"dataType":"string"},
-                    itemType: {"in":"path","name":"itemType","required":true,"dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -334,7 +334,35 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = getValidatedArgs(args, request, response);
 
-                const controller = new ItemController();
+                const controller = new MonsterController();
+
+
+              const promise = controller.search.apply(controller, validatedArgs as any);
+              // CHANGED
+              promiseHandler(controller, promise, undefined, request, response, next);
+              // END OF CHANGED
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/v1/monsters/:monsterName',
+            ...(fetchMiddlewares<RequestHandler>(MonsterController)),
+            ...(fetchMiddlewares<RequestHandler>(MonsterController.prototype.get)),
+
+            function MonsterController_get(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    monsterName: {"in":"path","name":"monsterName","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new MonsterController();
 
 
               const promise = controller.get.apply(controller, validatedArgs as any);
@@ -346,15 +374,14 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/v1/:category',
+        app.post('/api/v1/item',
             ...(fetchMiddlewares<RequestHandler>(ItemController)),
-            ...(fetchMiddlewares<RequestHandler>(ItemController.prototype.search)),
+            ...(fetchMiddlewares<RequestHandler>(ItemController.prototype.create)),
 
-            function ItemController_search(request: any, response: any, next: any) {
+            function ItemController_create(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    category: {"in":"path","name":"category","required":true,"dataType":"string"},
-                    name: {"in":"query","name":"name","dataType":"string"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"dataType":"any"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -366,9 +393,9 @@ export function RegisterRoutes(app: Router) {
                 const controller = new ItemController();
 
 
-              const promise = controller.search.apply(controller, validatedArgs as any);
+              const promise = controller.create.apply(controller, validatedArgs as any);
               // CHANGED
-              promiseHandler(controller, promise, undefined, request, response, next);
+              promiseHandler(controller, promise, 201, request, response, next);
               // END OF CHANGED
             } catch (err) {
                 return next(err);
@@ -403,7 +430,6 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/v1/auth/logout',
-            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
             ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.logout)),
 
@@ -457,12 +483,12 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/v1/auth/status',
-            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(AuthController)),
             ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.status)),
 
             function AuthController_status(request: any, response: any, next: any) {
             const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

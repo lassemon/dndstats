@@ -1,4 +1,5 @@
 import _, { capitalize } from 'lodash'
+import { v4 as _uuid } from 'uuid'
 
 export const getNumberWithSign = (theNumber: number) => {
   if (theNumber > 0) {
@@ -39,6 +40,10 @@ export const objectWithoutEmptyOrUndefined = <T extends { [key: string]: any }>(
 }
 
 export const uuid = (): string => {
+  return _uuid()
+}
+
+export const unixtimeNow = (): string => {
   return String(Date.now())
 }
 
@@ -67,14 +72,25 @@ export const getlowestfraction = (x0: number) => {
   return h + '/' + k
 }
 
-export const scheduleAsyncFunction = (asyncFunction: Function, timeout: number, condition?: boolean) => {
-  asyncFunction()
-    .catch(console.error)
-    .finally(() => {
-      if (condition) {
-        setTimeout(scheduleAsyncFunction, timeout, asyncFunction)
-      }
-    })
+export const scheduleAsyncFunction = async (
+  asyncFunction: Function,
+  timeout: number,
+  shouldContinue: () => boolean,
+  setTimeoutId: (id: NodeJS.Timeout | undefined) => void,
+  setCurrentPromise: (promise: Promise<any>) => void
+) => {
+  if (shouldContinue()) {
+    const promise = asyncFunction()
+      .catch((error: any) => {
+        console.log('scheduleAsyncFunction ERROR', error)
+        throw error
+      })
+      .finally(() => {
+        const timeoutId = setTimeout(scheduleAsyncFunction, timeout, asyncFunction, timeout, shouldContinue, setTimeoutId, setCurrentPromise)
+        setTimeoutId(timeoutId)
+      })
+    setCurrentPromise(promise)
+  }
 }
 
 export const isPromise = <T>(value: T | Promise<T>): value is Promise<T> => {

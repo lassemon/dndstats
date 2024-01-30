@@ -1,6 +1,6 @@
 import StatsContainer from 'components/StatsContainer'
 import React, { useMemo, useState } from 'react'
-import { itemState } from 'infrastructure/dataAccess/atoms'
+import { errorState, itemState } from 'infrastructure/dataAccess/atoms'
 import classNames from 'classnames/bind'
 
 import useStyles from './ItemStats.styles'
@@ -8,6 +8,7 @@ import { Box, Button, Checkbox, FormControlLabel, FormGroup } from '@mui/materia
 import { useOrientation } from 'utils/hooks'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
+import { saveItem } from 'api/items'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -30,8 +31,9 @@ const MainDescription: React.FC = (props) => {
 export const ItemStats: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
-  const [currentItem] = useAtom(useMemo(() => itemState, []))
+  const [currentItem, setCurrentItem] = useAtom(useMemo(() => itemState, []))
   const [inlineFeatures, setInlineFeatures] = useState(false)
+  const [error, setError] = useAtom(React.useMemo(() => errorState, []))
 
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
@@ -41,7 +43,15 @@ export const ItemStats: React.FC = () => {
   }
 
   const onSave = () => {
-    console.log('i want to save', currentItem)
+    if (currentItem) {
+      if (error) {
+        setError(null)
+      }
+      setCurrentItem(currentItem)
+      saveItem(currentItem).catch((error) => {
+        setError(error)
+      })
+    }
   }
 
   if (!currentItem) {

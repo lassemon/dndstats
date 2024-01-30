@@ -1,26 +1,25 @@
-import { ItemService } from 'services/ItemService'
-import { Controller, Get, Middlewares, Path, Query, Request, Route, Tags } from 'tsoa'
-import { constructUrl } from 'utils/url'
-import express from 'express'
+import { Body, Controller, Middlewares, Post, Request, Route, SuccessResponse, Tags } from 'tsoa'
 import passport from 'passport'
 import Authentication from '/security/Authentication'
+import express from 'express'
+import ApiError from '/domain/errors/ApiError'
 const authentication = new Authentication(passport)
+
 @Route('/')
 @Middlewares(authentication.passThroughAuthenticationMiddleware())
 export class ItemController extends Controller {
   @Tags('Api')
-  @Get('{category}/{itemType}')
-  public async get(@Request() request: express.Request, @Path() category: string, @Path() itemType?: string): Promise<any> {
-    console.log('calling monster list isAuthenticated', request?.isAuthenticated())
-    const path = constructUrl([category, itemType])
-    return new ItemService().get(path)
-  }
+  @SuccessResponse('201', 'Created')
+  @Post('item/')
+  public async create(@Request() request: express.Request, @Body() requestBody: any): Promise<any> {
+    console.log('creating item request', request)
+    console.log('creating item isAuthenticated', request?.isAuthenticated())
+    if (!request?.isAuthenticated()) {
+      throw new ApiError(401, 'Unauthorized', 'Must be logged in to do that')
+    }
+    console.log('creating item body', requestBody)
 
-  @Tags('Api')
-  @Get('{category}/')
-  public async search(@Request() request: express.Request, @Path() category: string, @Query() name?: string): Promise<any> {
-    console.log('calling monster list isAuthenticated', request?.isAuthenticated())
-    const path = constructUrl([category])
-    return new ItemService().get(path, name)
+    //return new ItemService().get(path)
+    return { ...requestBody, wasAtBackEnd: true }
   }
 }

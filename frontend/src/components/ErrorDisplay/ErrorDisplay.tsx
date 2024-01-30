@@ -23,23 +23,23 @@ export const ErrorDisplay: React.FC = () => {
     return null
   }
 
-  let message = `Error: `
+  let errorHeader = `Error: `
 
   switch (error.constructor) {
     case StorageSyncError:
-      message += 'Saving change to storage failed. This is most commonly caused by too large image file. Try uploading a smaller image.'
+      errorHeader += 'Saving change to storage failed. This is most commonly caused by too large image file. Try uploading a smaller image.'
       break
     case StorageParseError:
-      message += 'Invalid data. Parsing failed!'
+      errorHeader += 'Invalid data. Parsing failed!'
       break
     default:
-      message += 'Unknown error'
+      errorHeader += (error as any)?.statusText || 'Unknown error'
   }
 
   return (
     <Snackbar open={!!error} autoHideDuration={12000} onClose={handleClose}>
       <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-        <Typography variant="body2">{message}</Typography>
+        <Typography variant="body2">{errorHeader}</Typography>
         <Typography variant="caption" sx={{ margin: '0 0 0 1em' }}>
           {error.message}
         </Typography>

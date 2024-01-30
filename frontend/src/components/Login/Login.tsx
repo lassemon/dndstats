@@ -1,15 +1,57 @@
-import { Button } from '@mui/material'
-import React, { useState } from 'react'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 
 import LoginDialog from 'components/LoginDialog'
 import { useAtom } from 'jotai'
 import { authState } from 'infrastructure/dataAccess/atoms'
 import { IUserResponse, logout, status } from 'api/auth'
-import { scheduleAsyncFunction } from 'utils/utils'
+import { isPromise, scheduleAsyncFunction, uuid } from 'utils/utils'
+import _ from 'lodash'
 
 const Login: React.FC = () => {
   const [auth, setAuthState] = useAtom(authState)
   const [isLoginDialogOpen, setLoginDialogOpen] = useState(false)
+  const [isLoggedOutDialogOpen, setLoggedOutDialogOpen] = useState(false)
+  const [startPollingTrigger, setStartPollingTrigger] = useState<string>('')
+
+  useEffect(() => {
+    let isMounted = true
+    let intervalId: NodeJS.Timeout | undefined
+
+    const shouldContinuePolling = () => {
+      return auth.loggedIn && isMounted
+    }
+    // calling status every 10 seconds ensures that if the jwt token expires, the refreshToken
+    // functionality should recreate the token. This should ensure the user staying
+    // logged in as long as the browser tab remains active
+    try {
+      scheduleAsyncFunction(
+        status,
+        5000,
+        shouldContinuePolling,
+        (_intervalId) => {
+          if (_intervalId) {
+            intervalId = _intervalId
+          }
+        },
+        (pollingPromise) => {
+          pollingPromise.catch((error) => {
+            console.log('caught status polling error', error)
+            clearTimeout(intervalId)
+            setLoggedOutDialogOpen(true)
+          })
+        }
+      )
+    } catch (error) {
+      console.log('caught status polling IN TRY CATCH', error)
+      clearTimeout(intervalId)
+      setLoggedOutDialogOpen(true)
+    }
+    return () => {
+      isMounted = false
+      clearTimeout(intervalId)
+    }
+  }, [auth.loggedIn, startPollingTrigger])
 
   const openLoginDialog = () => {
     setLoginDialogOpen(true)
@@ -20,19 +62,18 @@ const Login: React.FC = () => {
   }
 
   const handleLoginSuccess = (successResponse: IUserResponse) => {
+    const loggedIn = successResponse && !_.isEmpty(successResponse)
     setAuthState((_authState) => {
       return {
         ..._authState,
-        loggedIn: true,
-        user: successResponse
+        loggedIn: loggedIn,
+        user: loggedIn ? successResponse : undefined
       }
     })
     setLoginDialogOpen(false)
-    if (auth?.loggedIn) {
-      // calling status every 10 seconds ensures that if the jwt token expires, the refreshToken
-      // functionality should recreate the token. This should ensure the user staying
-      // logged in as long as the browser tab remains active
-      scheduleAsyncFunction(status, 1000, auth.loggedIn)
+
+    if (loggedIn) {
+      setStartPollingTrigger(uuid())
     }
   }
 
@@ -47,6 +88,11 @@ const Login: React.FC = () => {
     })
   }
 
+  const closeLoggedOutDialog = () => {
+    setLoggedOutDialogOpen(false)
+    onLogout()
+  }
+
   return (
     <>
       {!auth?.loggedIn ? (
@@ -59,6 +105,23 @@ const Login: React.FC = () => {
         </Button>
       )}
       <LoginDialog open={isLoginDialogOpen} onClose={closeLoginDialog} onLoginSuccess={handleLoginSuccess} />
+      <Dialog open={isLoggedOutDialogOpen} onClose={closeLoggedOutDialog}>
+        <DialogTitle
+          sx={{
+            paddingBottom: '0.5em'
+          }}
+        >
+          Login Expired
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="caption">You have been logged out while you were away</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={closeLoggedOutDialog}>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

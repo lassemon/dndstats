@@ -11,7 +11,7 @@ const authentication = new Authentication(passport)
 
 // Use body parser to read sent json payloads
 app.use(urlencoded({ extended: true }))
-app.use(json())
+app.use(json({ limit: '50mb' }))
 // CookieParser Middleware
 app.use(cookieParser())
 app.use(authentication.initialize())

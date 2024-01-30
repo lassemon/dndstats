@@ -120,7 +120,8 @@ export enum MonsterSubtype {
   GNOLL = 'gnoll',
   GRIMLOCK = 'grimlock',
   LIZARDFOLK = 'lizardfolk',
-  GNOME = 'gnome'
+  GNOME = 'gnome',
+  MACHINE = 'machine'
 }
 
 export enum Source {

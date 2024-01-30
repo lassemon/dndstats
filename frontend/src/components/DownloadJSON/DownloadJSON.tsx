@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from '@mui/material'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
+import { unixtimeNow } from 'utils/utils'
 
 interface DownloadJSONProps {
   data: { [key: string]: any }
@@ -12,7 +13,7 @@ const DownloadJSON: React.FC<DownloadJSONProps> = (props) => {
 
   const downloadFile = () => {
     // Assuming myData is the state you want to download
-    const _fileName = `${fileName}_${Date.now()}`
+    const _fileName = `${fileName}_${unixtimeNow()}`
     const json = JSON.stringify(data, null, 2)
     const blob = new Blob([json], { type: 'application/json' })
     const href = URL.createObjectURL(blob)
