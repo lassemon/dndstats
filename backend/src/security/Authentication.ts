@@ -4,6 +4,7 @@ import { PassportStatic } from 'passport'
 import { Strategy as JwtStrategy, ExtractJwt, VerifiedCallback, StrategyOptions } from 'passport-jwt'
 //import UserService from 'services/UserService'
 import express from 'express'
+import ApiError from '/domain/errors/ApiError'
 
 export default class Authentication {
   private passport: PassportStatic
@@ -54,8 +55,28 @@ export default class Authentication {
     }
   }
 
-  public authenticationMiddleware = () => {
-    return this.passport.authenticate('jwt', { session: false })
+  public authenticationMiddleware = (...args: any[]) => {
+    return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+      const passportAuthenticator = this.passport.authenticate(
+        'jwt',
+        { session: false },
+        (err: any, user: Express.User | false | null, info: object | string | Array<string | undefined>) => {
+          if (err) {
+            return res.status(500).json(err)
+          }
+          if (!user) {
+            // Authentication failed
+            throw new ApiError(401, 'Unauthorized')
+          }
+          if (user) {
+            req.user = user
+          }
+          // Proceed to the next middleware, user might be undefined if not authenticated
+          return next()
+        }
+      )
+      passportAuthenticator(req, res, next)
+    }
   }
 
   public passThroughAuthenticationMiddleware = () => {

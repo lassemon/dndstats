@@ -24,29 +24,22 @@ const Login: React.FC = () => {
     // calling status every 10 seconds ensures that if the jwt token expires, the refreshToken
     // functionality should recreate the token. This should ensure the user staying
     // logged in as long as the browser tab remains active
-    try {
-      scheduleAsyncFunction(
-        status,
-        5000,
-        shouldContinuePolling,
-        (_intervalId) => {
-          if (_intervalId) {
-            intervalId = _intervalId
-          }
-        },
-        (pollingPromise) => {
-          pollingPromise.catch((error) => {
-            console.log('caught status polling error', error)
-            clearTimeout(intervalId)
-            setLoggedOutDialogOpen(true)
-          })
+    scheduleAsyncFunction(
+      status,
+      10000,
+      shouldContinuePolling,
+      (_intervalId) => {
+        if (_intervalId) {
+          intervalId = _intervalId
         }
-      )
-    } catch (error) {
-      console.log('caught status polling IN TRY CATCH', error)
-      clearTimeout(intervalId)
-      setLoggedOutDialogOpen(true)
-    }
+      },
+      (pollingPromise) => {
+        pollingPromise.catch((error) => {
+          clearTimeout(intervalId)
+          setLoggedOutDialogOpen(true)
+        })
+      }
+    )
     return () => {
       isMounted = false
       clearTimeout(intervalId)

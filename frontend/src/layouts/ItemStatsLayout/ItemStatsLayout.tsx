@@ -4,7 +4,7 @@ import StatsLayout from 'layouts/StatsLayout'
 import React from 'react'
 
 const ItemStatsLayout: React.FC = () => {
-  return <StatsLayout statsComponent={<ItemStats />} inputComponent={<ItemStatsInput />} widthPoint={12} />
+  return <StatsLayout statsComponent={<ItemStats />} inputComponent={<ItemStatsInput />} />
 }
 
 export default ItemStatsLayout

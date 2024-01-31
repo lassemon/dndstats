@@ -4,13 +4,7 @@ import StatsLayout from 'layouts/StatsLayout'
 import React from 'react'
 
 const WeaponStatsLayout: React.FC = () => {
-  return (
-    <StatsLayout
-      statsComponent={<WeaponStats />}
-      inputComponent={<WeaponStatsInput />}
-      widthPoint={8}
-    />
-  )
+  return <StatsLayout statsComponent={<WeaponStats />} inputComponent={<WeaponStatsInput />} />
 }
 
 export default WeaponStatsLayout

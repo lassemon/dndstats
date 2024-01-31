@@ -116,9 +116,9 @@ export class AuthController extends Controller {
   @Tags('Auth')
   @Middlewares(authentication.authenticationMiddleware())
   @Get('status')
-  public async status(@Request() request: express.Request): Promise<boolean> {
+  public async status(@Request() request: express.Request): Promise<IUserResponse> {
     log.debug(`calling status to see if authenticated. isAuthenticated: ${request?.isAuthenticated()}.`)
-    return true
+    return request.user as IUserResponse //await this.userService.findByName(username)
   }
 
   public requestMiddleware(request: express.Request, response: express.Response, next: express.NextFunction) {

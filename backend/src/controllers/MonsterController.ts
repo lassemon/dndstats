@@ -20,7 +20,7 @@ export class MonsterController extends Controller {
   @Tags('Api')
   @Get('monsters/{monsterName}')
   public async get(@Request() request: express.Request, @Path() monsterName?: string): Promise<any> {
-    console.log('calling monster list isAuthenticated', request?.isAuthenticated())
+    console.log('calling monster isAuthenticated', request?.isAuthenticated())
     const path = constructUrl(['monsters', monsterName])
     return new ItemService().get(path)
   }

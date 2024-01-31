@@ -9,7 +9,6 @@ import PlusButton from 'components/PlusButton'
 interface StatsLayoutProps {
   statsComponent?: React.ReactNode
   inputComponent: React.ReactNode
-  widthPoint?: GridSize
   sx?: any
 }
 

@@ -80,15 +80,10 @@ export const scheduleAsyncFunction = async (
   setCurrentPromise: (promise: Promise<any>) => void
 ) => {
   if (shouldContinue()) {
-    const promise = asyncFunction()
-      .catch((error: any) => {
-        console.log('scheduleAsyncFunction ERROR', error)
-        throw error
-      })
-      .finally(() => {
-        const timeoutId = setTimeout(scheduleAsyncFunction, timeout, asyncFunction, timeout, shouldContinue, setTimeoutId, setCurrentPromise)
-        setTimeoutId(timeoutId)
-      })
+    const promise = asyncFunction().finally(() => {
+      const timeoutId = setTimeout(scheduleAsyncFunction, timeout, asyncFunction, timeout, shouldContinue, setTimeoutId, setCurrentPromise)
+      setTimeoutId(timeoutId)
+    })
     setCurrentPromise(promise)
   }
 }

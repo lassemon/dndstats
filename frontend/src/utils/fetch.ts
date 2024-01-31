@@ -9,30 +9,34 @@ export interface IAjaxOptions {
   noRefresh?: boolean
 }
 
-type FetchOperation = (options: IAjaxOptions) => Promise<Response>
+type FetchOperation<T> = (options: IAjaxOptions) => Promise<T>
 
 export const get = async <T>(options: IAjaxOptions): Promise<T> => {
   const url = buildQueryUrl(options)
-  const response = await fetch(url)
-  return await handleApiResponse(response).catch((error) => {
-    return refreshTokenAndRetry(error, get, options)
-  })
+  try {
+    const response = await fetch(url)
+    return await handleApiResponse(response)
+  } catch (error) {
+    return await refreshTokenAndRetry<T>(error, get, options)
+  }
 }
 
 export const post = async <T>(options: IAjaxOptions): Promise<T> => {
   const url = buildQueryUrl(options)
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: JSON.stringify(options.payload) // body data type must match "Content-Type" header
-  })
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: JSON.stringify(options.payload) // body data type must match "Content-Type" header
+    })
 
-  return await handleApiResponse(response).catch((error) => {
-    return refreshTokenAndRetry(error, post, options)
-  })
+    return await handleApiResponse(response)
+  } catch (error) {
+    return await refreshTokenAndRetry<T>(error, get, options)
+  }
 }
 
 const handleApiResponse = async (response: Response): Promise<any> => {
@@ -59,14 +63,12 @@ const handleApiResponse = async (response: Response): Promise<any> => {
   return await response.json()
 }
 
-const refreshTokenAndRetry = async (error: any, operation: FetchOperation, options: IAjaxOptions) => {
+const refreshTokenAndRetry = async <T>(error: any, operation: FetchOperation<T>, options: IAjaxOptions): Promise<T> => {
   if (error.status === 401 && !options.noRefresh) {
     await refreshToken()
-    const response = await retryOperation(operation, options).catch(() => {
-      throw error
-    })
-    return handleApiResponse(response)
+    return await retryOperation(operation, options)
   }
+  throw error
 }
 
 const refreshToken = async (): Promise<any> => {
@@ -75,12 +77,11 @@ const refreshToken = async (): Promise<any> => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
     }
   })
 }
 
-const retryOperation = async (operation: FetchOperation, options: IAjaxOptions) => {
+const retryOperation = async <T>(operation: FetchOperation<T>, options: IAjaxOptions) => {
   return await operation({ ...options, noRefresh: true })
 }
 

@@ -4,13 +4,7 @@ import StatsLayout from 'layouts/StatsLayout'
 import React from 'react'
 
 const SpellStatsLayout: React.FC = () => {
-  return (
-    <StatsLayout
-      statsComponent={<SpellStats />}
-      inputComponent={<SpellStatsInput />}
-      widthPoint={5}
-    />
-  )
+  return <StatsLayout statsComponent={<SpellStats />} inputComponent={<SpellStatsInput />} />
 }
 
 export default SpellStatsLayout
