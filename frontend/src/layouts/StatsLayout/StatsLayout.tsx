@@ -52,7 +52,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
       rowSpacing={2}
       style={{
         margin: 0,
-        width: '100%'
+        height: '100%'
       }}
       sx={sx ? sx : {}}
     >
@@ -91,9 +91,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
         </Grid>
       )}
       <Grid item={true} xs={12}>
-        <Box display="block" displayPrint="none">
-          {inputComponent}
-        </Box>
+        {inputComponent}
       </Grid>
     </Grid>
   )
