@@ -1,7 +1,7 @@
 import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { CSSProperties, Fragment, useMemo, useState } from 'react'
-import { spellState } from 'infrastructure/dataAccess/atoms'
+import { spellAtom } from 'infrastructure/dataAccess/atoms'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import classNames from 'classnames/bind'
 
@@ -37,7 +37,7 @@ const MainDescription: React.FC = (props) => {
 export const SpellStats: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
-  const [currentSpell] = useAtom(useMemo(() => spellState, []))
+  const [currentSpell] = useAtom(useMemo(() => spellAtom, []))
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
   const theme = useTheme()

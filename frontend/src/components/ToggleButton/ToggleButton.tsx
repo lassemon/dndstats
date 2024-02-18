@@ -14,7 +14,7 @@ const ToggleButton: React.FC<ToggleButtonProps> = (props) => {
   const { classes } = useStyles()
   const [value, setValue] = useState(true)
 
-  const internalOnClick = (event: any) => {
+  const internalOnClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setValue(!value)
     onClick(event)
   }

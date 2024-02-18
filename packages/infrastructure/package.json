@@ -1,0 +1,24 @@
+{
+  "name": "@dmtool/infrastructure",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./lib/index.js"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@dmtool/domain": "^1.0.0",
+    "fs": "^0.0.1-security",
+    "luxon": "^3.4.4",
+    "sharp": "^0.33.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

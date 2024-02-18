@@ -1,10 +1,12 @@
-import { PlayerType, Condition, DamageType, Source, CharacterSenses } from 'interfaces'
+import { PlayerType, Condition, DamageType, CharacterSenses } from 'interfaces'
 import ValueObject from './ValueObject'
 import _, { capitalize } from 'lodash'
 import { ConditionEffects, getConditionEffects, getPrintableConditions } from 'components/CombatTracker/Conditions'
-import { getNumberWithSign, getlowestfraction, upsertToArray, uuid } from 'utils/utils'
+import { getNumberWithSign, getlowestfraction, upsertToArray } from 'utils/utils'
 import { Action, ArmorClass, ArmorClassType, FifthESRDMonster, FifthESRDService, Proficiency, SpecialAbility } from 'domain/services/FifthESRDService'
 import { ReactElement } from 'react'
+import { uuid } from '@dmtool/common'
+import { Source } from '@dmtool/domain'
 export interface ICharacter extends Partial<FifthESRDMonster> {
   id?: string
   index?: string

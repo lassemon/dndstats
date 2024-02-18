@@ -4,7 +4,6 @@ import { makeStyles } from 'tss-react/mui'
 export const useStyles = makeStyles()((theme) => {
   return {
     container: {
-      width: '55%',
       '@media print': {
         '&&&': {
           width: '100%'
@@ -18,7 +17,7 @@ export const useStyles = makeStyles()((theme) => {
     },
     mediumContainer: {
       '&&': {
-        width: '65%'
+        width: '80%'
       }
     },
     root: {
@@ -29,6 +28,12 @@ export const useStyles = makeStyles()((theme) => {
       alignItems: 'center',
       '& > img': {
         width: '100%'
+      },
+      '& > div': {
+        alignItems: 'center',
+        '& .MuiCircularProgress-root': {
+          margin: '6em'
+        }
       }
     },
     textContainer: {
@@ -75,6 +80,17 @@ export const useStyles = makeStyles()((theme) => {
       fontVariant: 'small-caps',
       padding: '0 4px 0 0',
       margin: 0
+    },
+    autocomplete: {
+      '& .MuiAutocomplete-tag': {
+        display: 'none'
+      },
+      '& .MuiInputLabel-animated': {
+        transform: 'translate(0, -20px) scale(0.75)'
+      },
+      '& legend': {
+        maxWidth: '100%'
+      }
     }
   }
 })

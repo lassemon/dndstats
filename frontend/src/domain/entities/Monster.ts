@@ -1,4 +1,4 @@
-import { Source } from 'interfaces'
+import { Source } from '@dmtool/domain'
 
 export const emptyMonster = { id: '', name: '', url: '', source: Source.HomeBrew }
 

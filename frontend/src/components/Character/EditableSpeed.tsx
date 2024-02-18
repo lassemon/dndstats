@@ -86,8 +86,9 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   }
 
   const onChangeValue = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target
     setSpeed((speed) => {
-      return { ..._.cloneDeep(speed), [key]: event.target.value } // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
+      return { ..._.cloneDeep(speed), [key]: value } // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
     })
   }
 

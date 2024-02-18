@@ -96,7 +96,7 @@ const EditableConditionList: React.FC<EditableConditionListProps> = (props) => {
     }
   }
 
-  const onChangeValue = (event: any, newConditionList: APIReference[]) => {
+  const onChangeValue = (event: React.SyntheticEvent<Element, Event>, newConditionList: APIReference[]) => {
     setConditionList(newConditionList)
     // has changed is not needed here because Autocomplete does not trigger onChange event otherwise
     if (!presentationMode) {

@@ -4,7 +4,6 @@
 export default class ApiError extends Error {
   public status: number
   public statusText: string
-  public response?: string
   public context?: any
 
   constructor(status: number, statusText: string, message?: string, context?: any) {

@@ -1,7 +1,7 @@
 import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { Fragment, useMemo } from 'react'
-import { weaponState } from 'infrastructure/dataAccess/atoms'
+import { weaponAtom } from 'infrastructure/dataAccess/atoms'
 import classNames from 'classnames/bind'
 
 import useStyles from './WeaponStats.styles'
@@ -18,7 +18,7 @@ const DescriptionBlock: React.FC = (props) => {
 export const WeaponStats: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
-  const [currentWeapon] = useAtom(useMemo(() => weaponState, []))
+  const [currentWeapon] = useAtom(useMemo(() => weaponAtom, []))
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
 

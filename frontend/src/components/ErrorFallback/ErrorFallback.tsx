@@ -1,5 +1,5 @@
 import { Button } from '@mui/material'
-import { errorState } from 'infrastructure/dataAccess/atoms'
+import { errorAtom } from 'infrastructure/dataAccess/atoms'
 import { useAtom } from 'jotai'
 import React, { useEffect } from 'react'
 import { FallbackProps } from 'react-error-boundary'
@@ -10,7 +10,7 @@ interface ErrorFallbackProps extends FallbackProps {
 
 const ErrorFallback: React.FC<ErrorFallbackProps> = (props) => {
   const { error, resetErrorBoundary, className } = props
-  const [, setError] = useAtom(errorState)
+  const [, setError] = useAtom(errorAtom)
 
   useEffect(() => {
     setError(new Error(error.message))

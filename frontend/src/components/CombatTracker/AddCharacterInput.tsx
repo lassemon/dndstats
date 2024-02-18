@@ -39,51 +39,52 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
   }
 
   const onCharacterACChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    event.persist()
+    const { value } = event.target
     setCharacter((character) => {
       return {
         ...character,
-        armorClass: event.target.value
+        armorClass: value
       }
     })
   }
 
   const onCharacterInitChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    event.persist()
+    const { value } = event.target
     setCharacter((character) => {
       return {
         ...character,
-        init: event.target.value
+        init: value
       }
     })
   }
 
   const onCharacterNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    event.persist()
+    const { value } = event.target
     setCharacter((character) => {
       return {
         ...character,
-        name: event.target.value
+        name: value
       }
     })
   }
 
   const onCharacterHpChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    event.persist()
+    const { value } = event.target
     setCharacterInputError(false)
     setCharacter((character) => {
       return {
         ...character,
-        hit_points: event.target.value
+        hit_points: value
       }
     })
   }
 
   const onChangePlayerType = (event: SelectChangeEvent<PlayerType>) => {
+    const { value } = event.target
     setCharacter((character) => {
       return {
         ...character,
-        player_type: event.target.value as PlayerType
+        player_type: value as PlayerType
       }
     })
   }

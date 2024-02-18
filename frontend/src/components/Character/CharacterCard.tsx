@@ -23,10 +23,10 @@ import EditableLanguages from './EditableLanguages'
 import EditableKeyValue from './EditableKeyValue'
 import EditableChallengeRating from './EditableChallengeRating'
 import EditableSenses from './EditableSenses'
-import { uuid } from 'utils/utils'
 import EditableActions from './EditableActions'
 import EditableSpecialAbilities from './EditableSpecialAbilities'
 import EditableDescription from './EditableDescription'
+import { uuid } from '@dmtool/common'
 
 interface CharacterCardProps {
   character: Character

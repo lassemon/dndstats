@@ -1,4 +1,4 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, TextField, TextFieldProps } from '@mui/material'
+import { Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, TextFieldProps } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import Tooltip from '@mui/material/Tooltip'
 import { makeStyles } from 'tss-react/mui'
@@ -88,9 +88,10 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
   }
 
   const onChangeValue = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target
     setArmorClasses((armorClasses) => {
       let newArmorClass = _.cloneDeep(armorClasses[index]) // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
-      newArmorClass = { type: newArmorClass.type, value: parseInt(event.target.value) }
+      newArmorClass = { type: newArmorClass.type, value: parseInt(value) }
       if (Character.getArmorClassDetailPath(newArmorClass)) {
         _.set(newArmorClass, Character.getArmorClassNamePath(newArmorClass), '')
         _.set(newArmorClass, Character.getArmorClassIndexPath(newArmorClass), '')
@@ -99,10 +100,11 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
     })
   }
 
-  const onChangeType = (index: number) => (event: any) => {
+  const onChangeType = (index: number) => (event: SelectChangeEvent) => {
+    const { value } = event.target
     setArmorClasses((armorClasses) => {
       let newArmorClass = _.cloneDeep(armorClasses[index]) // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
-      newArmorClass = { type: event.target.value, value: newArmorClass.value }
+      newArmorClass = { type: value, value: newArmorClass.value }
       if (Character.getArmorClassDetailPath(newArmorClass)) {
         _.set(newArmorClass, Character.getArmorClassNamePath(newArmorClass), '')
         _.set(newArmorClass, Character.getArmorClassIndexPath(newArmorClass), '')
@@ -112,10 +114,11 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
   }
 
   const onChangeDetail = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target
     setArmorClasses((armorClasses) => {
       const newArmorClass = _.cloneDeep(armorClasses[index]) // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
-      _.set(newArmorClass, Character.getArmorClassNamePath(newArmorClass), event.target.value || '')
-      _.set(newArmorClass, Character.getArmorClassIndexPath(newArmorClass), (event.target.value || '').toLowerCase())
+      _.set(newArmorClass, Character.getArmorClassNamePath(newArmorClass), value || '')
+      _.set(newArmorClass, Character.getArmorClassIndexPath(newArmorClass), (value || '').toLowerCase())
       return replaceItemAtIndex(armorClasses, index, newArmorClass)
     })
   }

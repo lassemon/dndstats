@@ -1,11 +1,11 @@
 import connection from 'infrastructure/database/connection'
 import ApiError from '/domain/errors/ApiError'
-import { IUserInsertRequest, IUserUpdateRequest } from 'interfaces/requests'
-import { IDBUser, IUser } from 'interfaces/user'
 import { isEmpty } from 'lodash'
 import UserMapper from 'mappers/UserMapper'
 import UserModel from 'models/UserModel'
-import Logger from 'utils/Logger'
+import { Logger } from '@dmtool/common'
+import { User, UserUpdateRequest } from '@dmtool/domain'
+import { UserInsertRequest } from '@dmtool/domain/src/entities/User'
 
 const log = new Logger('UserService')
 
@@ -21,7 +21,7 @@ export default class UserService {
     this.userMapper = new UserMapper()
   }
 
-  public async getAll(): Promise<IUser[]> {
+  public async getAll(): Promise<User[]> {
     try {
       const users = await this.userModel.getAll()
       return this.userMapper.serializeAll(users)
@@ -34,9 +34,9 @@ export default class UserService {
     }
   }
 
-  public async find(filter: any): Promise<IUser[]> {
+  public async find(filter: any): Promise<User[]> {
     try {
-      const users = (await this.userModel.find(filter)) as IDBUser[]
+      const users = (await this.userModel.find(filter)) as User[]
       if (isEmpty(users)) {
         throw new ApiError(404, 'UserNotFound', 'Users not found')
       }
@@ -50,7 +50,7 @@ export default class UserService {
     }
   }
 
-  public async findById(id: number): Promise<IUser> {
+  public async findById(id: number): Promise<User> {
     try {
       const user = await this.userModel.findById(id)
       if (isEmpty(user)) {
@@ -66,7 +66,7 @@ export default class UserService {
     }
   }
 
-  public async findByName(username: string): Promise<IUser> {
+  public async findByName(username: string): Promise<User> {
     try {
       const user = await this.userModel.findByName(username)
       if (isEmpty(user)) {
@@ -94,7 +94,7 @@ export default class UserService {
     }
   }
 
-  public async insert(insertRequest: IUserInsertRequest): Promise<IUser> {
+  public async insert(insertRequest: UserInsertRequest): Promise<User> {
     try {
       const userInsert = await this.userMapper.mapInsertToQuery(insertRequest)
       const user = await this.userModel.insert(userInsert)
@@ -108,10 +108,10 @@ export default class UserService {
     }
   }
 
-  public async update(updateRequest: IUserUpdateRequest): Promise<IUser> {
+  public async update(updateRequest: UserUpdateRequest, loggedInUser: User): Promise<User> {
     try {
-      const userUpdate = await this.userMapper.mapUpdateToQuery(updateRequest)
-      const user = (await this.userModel.update(userUpdate)) as IDBUser
+      const userUpdate = await this.userMapper.mapUpdateToQuery(updateRequest, loggedInUser)
+      const user = (await this.userModel.update(userUpdate)) as User
       return this.userMapper.serialize(user)
     } catch (error) {
       if (error instanceof ApiError) {

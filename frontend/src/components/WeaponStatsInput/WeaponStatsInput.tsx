@@ -5,21 +5,24 @@ import StatsInputContainer from 'components/StatsInputContainer'
 import TaperedRule from 'components/TaperedRule'
 import { useAtom } from 'jotai'
 import React, { Fragment, useMemo } from 'react'
-import { weaponState } from 'infrastructure/dataAccess/atoms'
+import { weaponAtom } from 'infrastructure/dataAccess/atoms'
 
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
 }
 
 export const WeaponStatsInput: React.FC = () => {
-  const [currentWeapon, setCurrentWeapon] = useAtom(useMemo(() => weaponState, []))
+  const [currentWeapon, setCurrentWeapon] = useAtom(useMemo(() => weaponAtom, []))
 
-  const onChange = (name: string) => (event: any) =>
+  const onChange = (name: string) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    event.preventDefault()
+    const { value } = event.target
     setCurrentWeapon((weapon) => {
       if (weapon) {
-        return { ...weapon, [name]: event.target.value }
+        return { ...weapon, [name]: value }
       }
     })
+  }
 
   const onAddFeature = () => {
     setCurrentWeapon((weapon) => {
@@ -38,11 +41,12 @@ export const WeaponStatsInput: React.FC = () => {
     })
   }
 
-  const onChangeFeatureName = (index: number) => (event: any) => {
+  const onChangeFeatureName = (index: number) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const { value } = event.target
     setCurrentWeapon((weapon) => {
       if (weapon) {
         const featuresCopy = replaceItemAtIndex(weapon.features, index, {
-          featureName: event.target.value,
+          featureName: value,
           featureDescription: weapon.features[index].featureDescription
         })
         return {
@@ -53,13 +57,15 @@ export const WeaponStatsInput: React.FC = () => {
     })
   }
 
-  const onChangeFeatureDescription = (index: number) => (event: any) => {
+  const onChangeFeatureDescription = (index: number) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const { value } = event.target
     setCurrentWeapon((weapon) => {
       if (weapon) {
         const featuresCopy = replaceItemAtIndex(weapon.features, index, {
           featureName: weapon.features[index].featureName,
-          featureDescription: event.target.value
+          featureDescription: value
         })
+
         return {
           ...weapon,
           features: featuresCopy
@@ -97,8 +103,8 @@ export const WeaponStatsInput: React.FC = () => {
     })
   }
 
-  const onUpload = (event: any) => {
-    const imageFile = event.target.files[0]
+  const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const imageFile = (event.target.files || [])[0]
 
     if (imageFile) {
       var reader = new FileReader()

@@ -1,75 +1,116 @@
 import UserMapper from 'mappers/UserMapper'
-import UserService from 'services/UserService'
-import { Body, Controller, Delete, Get, Post, Put, Response, Route, Security, SuccessResponse, Tags } from 'tsoa'
-import Logger from 'utils/Logger'
-import { IUserInsertRequest, IUserUpdateRequest } from '../interfaces/requests'
-import { IUserResponse } from '../interfaces/user'
+import { Body, Controller, Delete, Get, Middlewares, Post, Put, Request, Response, Route, SuccessResponse, Tags } from 'tsoa'
+import { Logger } from '@dmtool/common'
+import { UserResponse, UserUpdateRequest } from '@dmtool/domain'
+import UserRepository from '/infrastructure/repositories/UserRepository'
+import { UserInsertRequest } from '@dmtool/domain'
+import Authentication from '/security/Authentication'
+import passport from 'passport'
+import ApiError from '/domain/errors/ApiError'
+import { AuthenticatedRequest } from '/infrastructure/entities/AuthenticatedRequest'
+import { UpdateUserUseCase } from '/useCases/UpdateUserUseCase'
+import { UserService } from './application/services/UserService'
+import { throwIllegalArgument, throwUnknownError } from '/utils/errorUtil'
 
 const log = new Logger('UserController')
+const authentication = new Authentication(passport)
 
-@Route('/users')
+const userMapper = new UserMapper()
+const userRepository = new UserRepository()
+const userService = new UserService(userRepository)
+const updateUserUseCase = new UpdateUserUseCase(userMapper, userRepository, userService)
+
+@Route('/user')
 export class UserController extends Controller {
-  private userService: UserService
-  private userMapper: UserMapper
-
   constructor() {
     super()
-    this.userService = new UserService()
-    this.userMapper = new UserMapper()
   }
 
-  @Tags('users')
+  @Tags('user')
   @Get()
-  public async getAll(): Promise<IUserResponse[]> {
+  @Middlewares(authentication.authenticationMiddleware())
+  public async getAll(@Request() request: AuthenticatedRequest): Promise<UserResponse[]> {
+    if (!request.user) {
+      throw new ApiError(401, 'Unauthorized')
+    }
     log.debug('getting all users')
-    return this.userMapper.mapAllToResponse(await this.userService.getAll())
+    return userMapper.mapAllToResponse(await userRepository.getAll())
   }
 
-  @Tags('users')
+  @Tags('user')
   @Get('{id}')
+  @Middlewares(authentication.authenticationMiddleware())
   @Response(404, 'Not Found')
   @SuccessResponse(200, 'Ok')
-  public async get(id: number): Promise<IUserResponse> {
+  public async get(@Request() request: AuthenticatedRequest, id: string): Promise<UserResponse> {
+    if (!request.user) {
+      throw new ApiError(401, 'Unauthorized')
+    }
     log.debug('getting user with id: ' + id)
-    return this.userMapper.mapToResponse(await this.userService.findById(id))
+    const user = await userRepository.getById(id)
+    if (!user.active) {
+      throw new ApiError(404, 'NotFound')
+    }
+    return userMapper.mapToResponse(user)
   }
 
-  @Tags('users')
+  @Tags('user')
   @Post()
-  @Security('jwt')
+  @Middlewares(authentication.authenticationMiddleware())
   @Response(401, 'Unauthorized')
   @Response(409, 'Conflict')
   @Response(400, 'Bad Request')
   @SuccessResponse(200, 'Ok')
-  public async insert(@Body() request: IUserInsertRequest): Promise<IUserResponse> {
+  public async insert(@Request() request: AuthenticatedRequest, @Body() requestBody: UserInsertRequest): Promise<UserResponse> {
+    if (!request.user) {
+      throw new ApiError(401, 'Unauthorized')
+    }
+
     log.debug('inserting user: ' + JSON.stringify(request))
-    return this.userMapper.mapToResponse(await this.userService.insert(request))
+    const userInsert = await userMapper.mapInsertToQuery(requestBody)
+    const user = await userRepository.create(userInsert)
+    if (!user.active) {
+      throw new ApiError(404, 'NotFound')
+    }
+    return userMapper.mapToResponse(user)
   }
 
-  @Tags('users')
+  @Tags('user')
   @Put()
-  @Security('jwt')
+  @Middlewares(authentication.authenticationMiddleware())
   @Response(401, 'Unauthorized')
   @Response(404, 'Not Found')
   @SuccessResponse(200, 'Ok')
-  public async put(@Body() request: IUserUpdateRequest): Promise<IUserResponse> {
+  public async put(@Request() request: AuthenticatedRequest, @Body() requestBody: UserUpdateRequest): Promise<UserResponse> {
     // TODO validate that logged in user is the same as the one being updated
-    log.debug('updating user with id: ' + request.id)
-    return this.userMapper.mapToResponse(await this.userService.update(request))
+    if (!request.user) {
+      throw new ApiError(401, 'Unauthorized')
+    }
+    const dbUser = await userRepository.getById(request.user.id)
+    if (!dbUser.active) {
+      throw new ApiError(404, 'NotFound')
+    }
+
+    log.debug('updating user with: ' + request)
+    return await updateUserUseCase.execute({
+      userUpdateRequest: requestBody,
+      loggedInUser: request.user,
+      unknownError: throwUnknownError,
+      invalidArgument: throwIllegalArgument
+    })
   }
 
-  @Tags('users')
+  @Tags('user')
   @Delete('{id}')
-  @Security('jwt')
+  @Middlewares(authentication.authenticationMiddleware())
   @Response(401, 'Unauthorized')
   @Response(404, 'Not Found')
   @SuccessResponse(200, 'Ok')
-  public async delete(id: number): Promise<boolean> {
+  public async delete(@Request() request: AuthenticatedRequest, id: string): Promise<void> {
+    if (!request.user) {
+      throw new ApiError(401, 'Unauthorized')
+    }
     log.debug('deactivating user with id: ' + id)
-    return this.userService.remove(id)
-  }
-
-  public setService(service: UserService) {
-    this.userService = service
+    await userRepository.deactivate(id)
   }
 }

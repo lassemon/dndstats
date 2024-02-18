@@ -7,11 +7,23 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"IUserResponse": {
+			"UserRole": {
+				"enum": [
+					"superAdmin",
+					"admin",
+					"creator",
+					"editor",
+					"viewer",
+					"player",
+					"dm",
+					"moderator"
+				],
+				"type": "string"
+			},
+			"UserResponse": {
 				"properties": {
 					"id": {
-						"type": "number",
-						"format": "double"
+						"type": "string"
 					},
 					"name": {
 						"type": "string"
@@ -19,61 +31,316 @@
 					"email": {
 						"type": "string"
 					},
-					"created": {
+					"roles": {
+						"items": {
+							"$ref": "#/components/schemas/UserRole"
+						},
+						"type": "array"
+					},
+					"createdAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedAt": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"email",
+					"roles",
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserInsertRequest": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial__name-string--email-string--oldPassword-string--newPassword-string__": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"oldPassword": {
+						"type": "string"
+					},
+					"newPassword": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"UserUpdateRequest": {
+				"$ref": "#/components/schemas/Partial__name-string--email-string--oldPassword-string--newPassword-string__"
+			},
+			"ProfileResponse": {
+				"properties": {
+					"itemsCreated": {
+						"type": "number",
+						"format": "double"
+					},
+					"spellsCreated": {
+						"type": "number",
+						"format": "double"
+					},
+					"weaponsCreated": {
+						"type": "number",
+						"format": "double"
+					},
+					"monstersCreated": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"itemsCreated",
+					"spellsCreated",
+					"weaponsCreated",
+					"monstersCreated"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Visibility": {
+				"enum": [
+					"public",
+					"logged_in",
+					"private"
+				],
+				"type": "string"
+			},
+			"Item": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"visibility": {
+						"$ref": "#/components/schemas/Visibility"
+					},
+					"source": {
 						"type": "string",
-						"format": "date-time"
-					}
-				},
-				"required": [
-					"id",
-					"name",
-					"email",
-					"created"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IUserInsertRequest": {
-				"properties": {
-					"name": {
+						"enum": [
+							"5th_e_SRD",
+							"Homebrew"
+						],
+						"nullable": false
+					},
+					"createdBy": {
 						"type": "string"
 					},
-					"email": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"name",
-					"email",
-					"password"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"IUserUpdateRequest": {
-				"properties": {
-					"id": {
+					"createdAt": {
 						"type": "number",
 						"format": "double"
 					},
+					"updatedAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"imageId": {
+						"type": "string",
+						"nullable": true
+					},
 					"name": {
 						"type": "string"
 					},
-					"email": {
+					"shortDescription": {
 						"type": "string"
 					},
-					"password": {
+					"mainDescription": {
 						"type": "string"
+					},
+					"price": {
+						"type": "string",
+						"nullable": true
+					},
+					"rarity": {
+						"type": "string",
+						"nullable": true
+					},
+					"weight": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"features": {
+						"items": {
+							"properties": {
+								"featureDescription": {
+									"type": "string"
+								},
+								"featureName": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"featureDescription",
+								"featureName"
+							],
+							"type": "object"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
 					"id",
+					"visibility",
+					"source",
+					"createdBy",
+					"createdAt",
+					"imageId",
 					"name",
-					"email",
-					"password"
+					"shortDescription",
+					"mainDescription",
+					"price",
+					"rarity",
+					"weight",
+					"features"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ImageMetadata": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"visibility": {
+						"$ref": "#/components/schemas/Visibility"
+					},
+					"source": {
+						"type": "string",
+						"enum": [
+							"5th_e_SRD",
+							"Homebrew"
+						],
+						"nullable": false
+					},
+					"createdBy": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"fileName": {
+						"type": "string"
+					},
+					"mimeType": {
+						"type": "string"
+					},
+					"size": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"ownerId": {
+						"type": "string"
+					},
+					"ownerType": {
+						"type": "string",
+						"enum": [
+							"item",
+							"weapon",
+							"monster"
+						],
+						"nullable": false
+					}
+				},
+				"required": [
+					"id",
+					"visibility",
+					"source",
+					"createdBy",
+					"createdAt",
+					"fileName",
+					"mimeType",
+					"size"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Image": {
+				"properties": {
+					"metadata": {
+						"$ref": "#/components/schemas/ImageMetadata"
+					},
+					"base64": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"metadata",
+					"base64"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ItemUpdateResponse": {
+				"properties": {
+					"item": {
+						"$ref": "#/components/schemas/Item"
+					},
+					"image": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Image"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"item"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ItemUpdateRequest": {
+				"properties": {
+					"item": {
+						"$ref": "#/components/schemas/Item"
+					},
+					"image": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Image"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"item"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -116,7 +383,7 @@
 		}
 	},
 	"info": {
-		"title": "stats_backend",
+		"title": "backend",
 		"version": "1.0.0",
 		"license": {
 			"name": "ISC"
@@ -124,7 +391,7 @@
 		"contact": {}
 	},
 	"paths": {
-		"/users": {
+		"/user": {
 			"get": {
 				"operationId": "GetAll",
 				"responses": {
@@ -134,7 +401,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/IUserResponse"
+										"$ref": "#/components/schemas/UserResponse"
 									},
 									"type": "array"
 								}
@@ -143,7 +410,7 @@
 					}
 				},
 				"tags": [
-					"users"
+					"user"
 				],
 				"security": [],
 				"parameters": []
@@ -156,7 +423,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IUserResponse"
+									"$ref": "#/components/schemas/UserResponse"
 								}
 							}
 						}
@@ -172,20 +439,16 @@
 					}
 				},
 				"tags": [
-					"users"
+					"user"
 				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
+				"security": [],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/IUserInsertRequest"
+								"$ref": "#/components/schemas/UserInsertRequest"
 							}
 						}
 					}
@@ -199,7 +462,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IUserResponse"
+									"$ref": "#/components/schemas/UserResponse"
 								}
 							}
 						}
@@ -212,27 +475,23 @@
 					}
 				},
 				"tags": [
-					"users"
+					"user"
 				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
+				"security": [],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/IUserUpdateRequest"
+								"$ref": "#/components/schemas/UserUpdateRequest"
 							}
 						}
 					}
 				}
 			}
 		},
-		"/users/{id}": {
+		"/user/{id}": {
 			"get": {
 				"operationId": "Get",
 				"responses": {
@@ -241,7 +500,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IUserResponse"
+									"$ref": "#/components/schemas/UserResponse"
 								}
 							}
 						}
@@ -251,7 +510,7 @@
 					}
 				},
 				"tags": [
-					"users"
+					"user"
 				],
 				"security": [],
 				"parameters": [
@@ -260,8 +519,7 @@
 						"name": "id",
 						"required": true,
 						"schema": {
-							"format": "double",
-							"type": "number"
+							"type": "string"
 						}
 					}
 				]
@@ -270,14 +528,7 @@
 				"operationId": "Delete",
 				"responses": {
 					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "boolean"
-								}
-							}
-						}
+						"description": "Ok"
 					},
 					"401": {
 						"description": "Unauthorized"
@@ -287,24 +538,41 @@
 					}
 				},
 				"tags": [
-					"users"
+					"user"
 				],
-				"security": [
-					{
-						"jwt": []
-					}
-				],
+				"security": [],
 				"parameters": [
 					{
 						"in": "path",
 						"name": "id",
 						"required": true,
 						"schema": {
-							"format": "double",
-							"type": "number"
+							"type": "string"
 						}
 					}
 				]
+			}
+		},
+		"/profile": {
+			"get": {
+				"operationId": "GetAll",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProfileResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"profile"
+				],
+				"security": [],
+				"parameters": []
 			}
 		},
 		"/": {
@@ -393,7 +661,7 @@
 					}
 				},
 				"tags": [
-					"Api"
+					"Monster"
 				],
 				"security": [],
 				"parameters": []
@@ -413,7 +681,7 @@
 					}
 				},
 				"tags": [
-					"Api"
+					"Monster"
 				],
 				"security": [],
 				"parameters": [
@@ -428,21 +696,102 @@
 				]
 			}
 		},
-		"/item": {
-			"post": {
-				"operationId": "Create",
+		"/items": {
+			"get": {
+				"operationId": "GetAll",
 				"responses": {
-					"201": {
-						"description": "Created",
+					"200": {
+						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Item"
+									},
+									"type": "array"
+								}
 							}
 						}
 					}
 				},
 				"tags": [
-					"Api"
+					"Item"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/items/{userId}": {
+			"get": {
+				"operationId": "GetAllForUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Item"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Item"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/item": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Item"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Item"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "Update",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ItemUpdateResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Item"
 				],
 				"security": [],
 				"parameters": [],
@@ -450,7 +799,133 @@
 					"required": true,
 					"content": {
 						"application/json": {
-							"schema": {}
+							"schema": {
+								"$ref": "#/components/schemas/ItemUpdateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/item/{itemId}": {
+			"get": {
+				"operationId": "GetItem",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Item"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Item"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteIem",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Item"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Item"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/image/{imageId}": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "Image not found"
+					}
+				},
+				"tags": [
+					"Image"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "imageId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/image": {
+			"post": {
+				"operationId": "UploadImage",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Image"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Image"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Image"
+							}
 						}
 					}
 				}
@@ -465,7 +940,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IUserResponse"
+									"$ref": "#/components/schemas/UserResponse"
 								}
 							}
 						}
@@ -547,7 +1022,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IUserResponse"
+									"$ref": "#/components/schemas/UserResponse"
 								}
 							}
 						}

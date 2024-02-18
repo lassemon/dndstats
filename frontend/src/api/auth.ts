@@ -1,20 +1,14 @@
-import { get, post } from 'utils/fetch'
-
-export interface IUserResponse {
-  id: number
-  name: string
-  email: string
-  created: Date
-}
+import { UserResponse } from '@dmtool/domain'
+import { getJson, postJson } from 'infrastructure/dataAccess/http/fetch'
 
 export const login = async (loginPayload: { username: string; password: string }) => {
-  return await post<IUserResponse>({ endpoint: '/auth/login', payload: loginPayload, noRefresh: true })
+  return await postJson<UserResponse>({ endpoint: '/auth/login', payload: loginPayload, noRefresh: true })
 }
 
 export const logout = async () => {
-  return await post({ endpoint: '/auth/logout' })
+  return await postJson({ endpoint: '/auth/logout' })
 }
 
 export const status = async () => {
-  return get({ endpoint: '/auth/status' })
+  return getJson({ endpoint: '/auth/status' })
 }

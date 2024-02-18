@@ -99,9 +99,10 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
   }
 
   const onChangeValue = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target
     setSkills((_skills) => {
       // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
-      return { ..._.cloneDeep(_skills), [key]: event.target.value }
+      return { ..._.cloneDeep(_skills), [key]: value }
     })
   }
 

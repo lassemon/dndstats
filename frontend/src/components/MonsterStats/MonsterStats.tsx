@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useEffect, useMemo, useState } from 'react'
-import { CombatAtom, CustomCharactersAtom, combatTrackerState, customCharactersState, monsterState } from 'infrastructure/dataAccess/atoms'
+import { CombatAtom, combatTrackerAtom, customCharactersAtom, monsterAtom } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './MonsterStats.styles'
 import { Autocomplete, Box, Button, ButtonGroup, CircularProgress, TextField, Tooltip } from '@mui/material'
@@ -8,7 +8,7 @@ import { getMonster, getMonsterList } from 'api/monsters'
 import { FifthESRDMonster } from 'domain/services/FifthESRDService'
 import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
 import Character from 'domain/entities/Character'
-import { PlayerType, Source } from 'interfaces'
+import { PlayerType } from 'interfaces'
 import CharacterCard from 'components/Character/CharacterCard'
 import { upsertToArray } from 'utils/utils'
 import DeleteButton from 'components/DeleteButton'
@@ -22,6 +22,7 @@ import classNames from 'classnames'
 import Showdown from 'showdown'
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from 'components/ErrorFallback'
+import { Source } from '@dmtool/domain'
 
 const DescriptionBlock: React.FC<HTMLAttributes<HTMLParagraphElement>> = (props) => {
   const { children } = props
@@ -34,16 +35,14 @@ const DescriptionBlock: React.FC<HTMLAttributes<HTMLParagraphElement>> = (props)
   return <p className={classes.blockDescription}>{children}</p>
 }
 
-type Updater = (customCharacters: CustomCharactersAtom) => CustomCharactersAtom
-
 export const MonsterStats: React.FC = () => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
-  const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterState, []))
+  const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterAtom, []))
 
-  const [customCharacters, setCustomCharacters] = useAtom(useMemo(() => customCharactersState, []))
+  const [customCharacters, setCustomCharacters] = useAtom(useMemo(() => customCharactersAtom, []))
   const customCharacterList = customCharacters?.characters || []
-  const [combatTracker] = useAtom(useMemo(() => combatTrackerState, []))
+  const [combatTracker] = useAtom(useMemo(() => combatTrackerAtom, []))
 
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
@@ -79,8 +78,8 @@ export const MonsterStats: React.FC = () => {
 
   const fetchMonsterList = () => {
     const fetchData = async () => {
-      setLoadingMonsterList(true)
       if (!loadingMonsterList) {
+        setLoadingMonsterList(true)
         const monsters = await getMonsterList()
         const newMonsterList = [...monsterList, ...monsters]
         setMonsterList(newMonsterList)

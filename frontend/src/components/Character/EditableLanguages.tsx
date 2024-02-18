@@ -103,7 +103,7 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
     }
   }
 
-  const onChangeValue = (event: any, newLanguageList: string[]) => {
+  const onChangeValue = (event: React.SyntheticEvent<Element, Event>, newLanguageList: string[]) => {
     setLanguageList(newLanguageList)
     if (!presentationMode) {
       onChange(formatLanguagesForSave(newLanguageList, customLanguages))

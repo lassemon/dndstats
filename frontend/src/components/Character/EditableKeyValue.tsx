@@ -113,11 +113,12 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
     }
   }
 
-  const internalOnChange = (event: any) => {
-    setValue(event.target.value)
+  const internalOnChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { value } = event.target
+    setValue(value)
   }
 
-  const onEnter = (event: any) => {
+  const onEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.keyCode === 13) {
       if (!isText && !disabled) {
         const hasChanged = value !== _value

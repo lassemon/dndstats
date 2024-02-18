@@ -95,7 +95,7 @@ const EditableDamageList: React.FC<EditableDamageListProps> = (props) => {
     }
   }
 
-  const onChangeValue = (event: any, newDamageList: DamageType[]) => {
+  const onChangeValue = (event: React.SyntheticEvent<Element, Event>, newDamageList: DamageType[]) => {
     setDamageList(newDamageList)
     if (!presentationMode) {
       onChange(newDamageList)

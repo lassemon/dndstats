@@ -2,13 +2,13 @@ import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
 import { useAtom } from 'jotai'
 import React, { useMemo } from 'react'
-import { errorState, monsterState } from 'infrastructure/dataAccess/atoms'
+import { errorAtom, monsterAtom } from 'infrastructure/dataAccess/atoms'
 import { makeStyles } from 'tss-react/mui'
 import DownloadJSON from 'components/DownloadJSON'
 import UploadJSON from 'components/UploadJSON'
 import Character from 'domain/entities/Character'
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles()(() => ({
   inputContainer: {
     '&&': {
       gap: '1em',
@@ -22,8 +22,8 @@ const useStyles = makeStyles()((theme) => ({
 }))
 
 export const MonsterStatsInput: React.FC = () => {
-  const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterState, []))
-  const [, setError] = useAtom(React.useMemo(() => errorState, []))
+  const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterAtom, []))
+  const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
   const { classes } = useStyles()
 
   const onDeleteImage = () => {
@@ -39,8 +39,8 @@ export const MonsterStatsInput: React.FC = () => {
     })
   }
 
-  const onUpload = (event: any) => {
-    const imageFile = event.target.files[0]
+  const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const imageFile = (event.target.files || [])[0]
 
     if (imageFile) {
       const reader = new FileReader()

@@ -2,17 +2,17 @@ import React, { useState } from 'react'
 import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
 import Dialog from 'components/Dialog'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import { IUserResponse, login } from 'api/auth'
+import { login } from 'api/auth'
+import { UserResponse } from '@dmtool/domain'
 
 interface LoginDialogProps {
   open: boolean
   onClose: () => void
-  onLoginSuccess: (response: IUserResponse) => void // Adjust the type as needed
+  onLoginSuccess: (response: UserResponse) => void // Adjust the type as needed
 }
 
 const LoginDialog: React.FC<LoginDialogProps> = (props) => {
   const { open, onClose, onLoginSuccess } = props
-
   const [userState, setUserState] = useState({ username: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
@@ -27,21 +27,23 @@ const LoginDialog: React.FC<LoginDialogProps> = (props) => {
   }
 
   const onChangeUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target
     setError('')
     setUserState((_userState) => {
       return {
         ..._userState,
-        username: event.target.value
+        username: value
       }
     })
   }
 
   const onChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target
     setError('')
     setUserState((_userState) => {
       return {
         ..._userState,
-        password: event.target.value
+        password: value
       }
     })
   }

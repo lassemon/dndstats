@@ -4,16 +4,17 @@ import StatsInputContainer from 'components/StatsInputContainer'
 import { useAtom } from 'jotai'
 import _ from 'lodash'
 import React, { Fragment, useMemo } from 'react'
-import { spellState } from 'infrastructure/dataAccess/atoms'
+import { spellAtom } from 'infrastructure/dataAccess/atoms'
 import { replaceItemAtIndex } from 'utils/utils'
 
 export const SpellStatsInput: React.FC = () => {
-  const [currentSpell, setCurrentSpell] = useAtom(useMemo(() => spellState, []))
+  const [currentSpell, setCurrentSpell] = useAtom(useMemo(() => spellAtom, []))
 
-  const onChange = (name: string) => (event: any) => {
+  const onChange = (name: string) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const { value } = event.target
     setCurrentSpell((spell) => {
       if (spell) {
-        return { ...spell, [name]: event.target.value }
+        return { ...spell, [name]: value }
       }
     })
   }
@@ -31,11 +32,12 @@ export const SpellStatsInput: React.FC = () => {
     })
   }
 
-  const onChangeFeatureName = (index: number) => (event: any) => {
+  const onChangeFeatureName = (index: number) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const { value } = event.target
     setCurrentSpell((spell) => {
       if (spell) {
         const featuresCopy = replaceItemAtIndex(spell.features, index, {
-          featureName: event.target.value,
+          featureName: value,
           featureDescription: spell.features[index].featureDescription
         })
         return {
@@ -46,12 +48,13 @@ export const SpellStatsInput: React.FC = () => {
     })
   }
 
-  const onChangeFeatureDescription = (index: number) => (event: any) => {
+  const onChangeFeatureDescription = (index: number) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const { value } = event.target
     setCurrentSpell((spell) => {
       if (spell) {
         const featuresCopy = replaceItemAtIndex(spell.features, index, {
           featureName: spell.features[index].featureName,
-          featureDescription: event.target.value
+          featureDescription: value
         })
         return {
           ...spell,

@@ -1,18 +1,18 @@
 import Character from 'domain/entities/Character'
-import { defaultCustomCharacters, defaultCombat, defaultItem, defaultMonster, defaultSpell, defaultWeapon, Item } from 'services/defaults'
-import { load, store } from 'services/store'
+import { defaultCustomCharacters, defaultCombat, defaultItem, defaultMonster, defaultSpell, defaultWeapon } from 'services/defaults'
+import { load, store } from 'infrastructure/localStorage/LocalStorage'
 
 import { atom } from 'jotai'
 import { StorageParseError, StorageSyncError } from 'domain/errors/StorageError'
-import { IUserResponse } from 'api/auth'
 import { isPromise } from 'utils/utils'
+import { Item, UserResponse } from '@dmtool/domain'
 
 type UpdateFunction<T> = (oldValue: T) => T | undefined
 type UpdateParam<T> = UpdateFunction<T> | T
 type DataOrPromise<T> = T | Promise<T>
 
 interface AuthState {
-  user?: IUserResponse
+  user?: UserResponse
   loggedIn: boolean
 }
 
@@ -20,7 +20,7 @@ export type CombatAtom = typeof defaultCombat
 export type ItemAtom = Item
 export type CustomCharactersAtom = typeof defaultCustomCharacters
 
-export const errorState = atom<Error | null>(null)
+export const errorAtom = atom<Error | null>(null)
 
 type LoadParser<T> = (value: T) => T
 type SaveParser<T> = (value: T) => { [key: string]: any }
@@ -53,10 +53,10 @@ const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, p
             })
             .catch((error) => {
               console.error(error)
-              set(errorState, new StorageSyncError(error && error.message ? error.message : error))
+              set(errorAtom, new StorageSyncError(error && error.message ? error.message : error))
             })
         } catch (error) {
-          set(errorState, new StorageParseError(error?.toString()))
+          set(errorAtom, new StorageParseError(error?.toString()))
         }
       }
       const oldValueDataOrPromise = get(baseAtom)
@@ -76,15 +76,15 @@ const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, p
   return derivedAtom
 }
 
-export const authState = atomWithAsyncStorage<AuthState>('authState', { loggedIn: false })
+export const authAtom = atomWithAsyncStorage<AuthState>('authState', { loggedIn: false })
 
-export const itemState = atomWithAsyncStorage<typeof defaultItem | null>('itemState', defaultItem)
+export const itemAtom = atomWithAsyncStorage<typeof defaultItem | null>('itemState', defaultItem)
 
-export const spellState = atomWithAsyncStorage<typeof defaultSpell | null>('spellState', defaultSpell)
+export const spellAtom = atomWithAsyncStorage<typeof defaultSpell | null>('spellState', defaultSpell)
 
-export const weaponState = atomWithAsyncStorage<typeof defaultWeapon | null>('weaponState', defaultWeapon)
+export const weaponAtom = atomWithAsyncStorage<typeof defaultWeapon | null>('weaponState', defaultWeapon)
 
-export const monsterState = atomWithAsyncStorage<typeof defaultMonster | null>('monsterState', defaultMonster, {
+export const monsterAtom = atomWithAsyncStorage<typeof defaultMonster | null>('monsterState', defaultMonster, {
   loadParser: (monsterInStore) => {
     return monsterInStore ? Character.fromJSON(monsterInStore) : null
   },
@@ -93,7 +93,7 @@ export const monsterState = atomWithAsyncStorage<typeof defaultMonster | null>('
   }
 })
 
-export const combatTrackerState = atomWithAsyncStorage<CombatAtom>('combatTrackerState', defaultCombat, {
+export const combatTrackerAtom = atomWithAsyncStorage<CombatAtom>('combatTrackerState', defaultCombat, {
   loadParser: (state) => {
     return {
       ...defaultCombat,
@@ -109,7 +109,7 @@ export const combatTrackerState = atomWithAsyncStorage<CombatAtom>('combatTracke
   }
 })
 
-export const customCharactersState = atomWithAsyncStorage<typeof defaultCustomCharacters>('customCharactersState', defaultCustomCharacters, {
+export const customCharactersAtom = atomWithAsyncStorage<typeof defaultCustomCharacters>('customCharactersState', defaultCustomCharacters, {
   loadParser: (state) => {
     return {
       ...defaultCustomCharacters,

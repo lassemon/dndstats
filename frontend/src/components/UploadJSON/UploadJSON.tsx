@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import { useAtom } from 'jotai'
-import { errorState } from 'infrastructure/dataAccess/atoms'
+import { errorAtom } from 'infrastructure/dataAccess/atoms'
 import { StorageParseError } from 'domain/errors/StorageError'
 
 const VisuallyHiddenInput = styled('input')({
@@ -20,7 +20,7 @@ const VisuallyHiddenInput = styled('input')({
 
 const UploadButton: React.FC<{ onUpload: (file?: { [key: string]: any }) => void }> = (props) => {
   const { children, onUpload } = props
-  const [, setError] = useAtom(React.useMemo(() => errorState, []))
+  const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
 
   const readFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileReader = new FileReader()

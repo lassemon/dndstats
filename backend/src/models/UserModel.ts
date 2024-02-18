@@ -1,13 +1,12 @@
+import { User, UserInsertQuery } from '@dmtool/domain/src/entities/User'
 import Model from '@ruanmartinelli/knex-model'
-import { IUserInsertQuery } from 'interfaces/requests'
-import { IDBUser } from 'interfaces/user'
 
 export default class UserModel extends Model {
   constructor(options: any) {
     super(options)
   }
 
-  public getAll(): Promise<IDBUser[]> {
+  public getAll(): Promise<User[]> {
     return new Promise((resolve, reject) => {
       this.knex('users')
         .select('*')
@@ -21,7 +20,7 @@ export default class UserModel extends Model {
     })
   }
 
-  public findById(id: number): Promise<IDBUser> {
+  public findById(id: number): Promise<User> {
     return new Promise((resolve, reject) => {
       this.knex('users')
         .select('*')
@@ -37,7 +36,7 @@ export default class UserModel extends Model {
     })
   }
 
-  public findByName(username: string): Promise<IDBUser> {
+  public findByName(username: string): Promise<User> {
     return new Promise((resolve, reject) => {
       this.knex('users')
         .select('*')
@@ -53,7 +52,7 @@ export default class UserModel extends Model {
     })
   }
 
-  public insert(user: IUserInsertQuery): Promise<IDBUser> {
+  public insert(user: UserInsertQuery): Promise<User> {
     return this.knex('users').insert(user, '*').first()
   }
 

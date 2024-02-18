@@ -1,4 +1,5 @@
 import _, { capitalize } from 'lodash'
+import { DateTime } from 'luxon'
 import { v4 as _uuid } from 'uuid'
 
 export const getNumberWithSign = (theNumber: number) => {
@@ -39,12 +40,12 @@ export const objectWithoutEmptyOrUndefined = <T extends { [key: string]: any }>(
     .valueOf()
 }
 
-export const uuid = (): string => {
-  return _uuid()
+export const unixtimeNow = (): number => {
+  return DateTime.now().toUnixInteger()
 }
 
-export const unixtimeNow = (): string => {
-  return String(Date.now())
+export const dateStringFromUnixTime = (unixtime: number): string => {
+  return DateTime.fromSeconds(unixtime).setZone('Europe/Helsinki').toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
 }
 
 export const getlowestfraction = (x0: number) => {

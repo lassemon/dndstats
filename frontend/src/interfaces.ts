@@ -124,11 +124,6 @@ export enum MonsterSubtype {
   MACHINE = 'machine'
 }
 
-export enum Source {
-  FifthESRD = '5th_e_SRD',
-  HomeBrew = 'Homebrew'
-}
-
 export enum DamageType {
   Adamantine = 'adamantine',
   Slashing = 'slashing',

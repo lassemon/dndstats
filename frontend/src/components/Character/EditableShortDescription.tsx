@@ -71,51 +71,55 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
   }
 
   const onChangeSize = (event: SelectChangeEvent<string>) => {
+    const { value } = event.target
     setShortDescription((shortDescription) => {
       return {
         ...shortDescription,
-        size: event.target.value
+        size: value
       }
     })
     if (!presentationMode) {
-      setCharacter(character.clone({ ...shortDescription, size: event.target.value }))
+      setCharacter(character.clone({ ...shortDescription, size: value }))
     }
   }
 
   const onChangeType = (event: SelectChangeEvent<string>) => {
+    const { value } = event.target
     setShortDescription((shortDescription) => {
       return {
         ...shortDescription,
-        type: event.target.value
+        type: value
       }
     })
     if (!presentationMode) {
-      setCharacter(character.clone({ ...shortDescription, type: event.target.value }))
+      setCharacter(character.clone({ ...shortDescription, type: value }))
     }
   }
 
   const onChangeSubtype = (event: SelectChangeEvent<string>) => {
+    const { value } = event.target
     setShortDescription((shortDescription) => {
       return {
         ...shortDescription,
-        subtype: event.target.value
+        subtype: value
       }
     })
     if (!presentationMode) {
-      setCharacter(character.clone({ ...shortDescription, subtype: event.target.value }))
+      setCharacter(character.clone({ ...shortDescription, subtype: value }))
     }
   }
 
   const onChangeAlignment = (event: SelectChangeEvent<string>) => {
+    const { value } = event.target
     setShortDescription((shortDescription) => {
       return {
         ...shortDescription,
-        alignment: event.target.value
+        alignment: value
       }
     })
     // has changed is not needed here because Select does not trigger onChange event otherwise
     if (!presentationMode) {
-      setCharacter(character.clone({ ...shortDescription, alignment: event.target.value }))
+      setCharacter(character.clone({ ...shortDescription, alignment: value }))
     }
   }
 

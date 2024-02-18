@@ -1,10 +1,12 @@
 import { IJwtPayload /*IUser*/ } from 'interfaces/user'
 import { isEmpty } from 'lodash'
 import { PassportStatic } from 'passport'
+import Encryption from 'security/Encryption'
 import { Strategy as JwtStrategy, ExtractJwt, VerifiedCallback, StrategyOptions } from 'passport-jwt'
 //import UserService from 'services/UserService'
 import express from 'express'
 import ApiError from '/domain/errors/ApiError'
+import { User } from '@dmtool/domain'
 
 export default class Authentication {
   private passport: PassportStatic
@@ -34,7 +36,15 @@ export default class Authentication {
       this.passport.use(
         new JwtStrategy(options, async (jwtPayload: IJwtPayload, done: VerifiedCallback) => {
           try {
-            const result = { id: 'yes' } // await userService.findById(jwtPayload.user)
+            const result = {
+              id: '1',
+              name: 'admin',
+              password: await Encryption.encrypt('test'),
+              email: '',
+              active: true,
+              createdAt: 1707508500,
+              updatedAt: 1707511589
+            } // await userService.findById(jwtPayload.user)
 
             if (isEmpty(result)) {
               return done(result, false)
@@ -60,7 +70,7 @@ export default class Authentication {
       const passportAuthenticator = this.passport.authenticate(
         'jwt',
         { session: false },
-        (err: any, user: Express.User | false | null, info: object | string | Array<string | undefined>) => {
+        (err: any, user: User | false | null, info: object | string | Array<string | undefined>) => {
           if (err) {
             return res.status(500).json(err)
           }
@@ -84,7 +94,7 @@ export default class Authentication {
       const passportAuthenticator = this.passport.authenticate(
         'jwt',
         { session: false },
-        (err: any, user: Express.User | false | null, info: object | string | Array<string | undefined>) => {
+        (err: any, user: User | false | null, info: object | string | Array<string | undefined>) => {
           if (err) {
             return next(err)
           }

@@ -9,17 +9,17 @@ export class Connection {
         client: 'mysql',
         debug: process.env.LOG_LEVEL === 'DEBUG',
         connection: {
-          host: process.env.DATABASE_HOST || 'db',
-          user: process.env.DATABASE_USER || '',
-          password: process.env.DATABASE_PASSWORD || '',
-          database: process.env.DATABASE_SCHEMA || ''
+          host: process.env.DATABASE_HOST || 'localhost',
+          user: process.env.DATABASE_USER || 'development',
+          password: process.env.DATABASE_PASSWORD || 'development123',
+          database: process.env.DATABASE_SCHEMA || 'dmtool'
         }
       })
     }
   }
 
-  public getKnex() {
-    return this.knexConnector
+  public getKnex(): Knex {
+    return this.knexConnector as Knex
   }
 }
 

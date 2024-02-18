@@ -3,14 +3,15 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert'
 import { StorageParseError, StorageSyncError } from 'domain/errors/StorageError'
 import { useAtom } from 'jotai'
 import React from 'react'
-import { errorState } from 'infrastructure/dataAccess/atoms'
+import { errorAtom } from 'infrastructure/dataAccess/atoms'
+import ApiError from 'domain/errors/ApiError'
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 })
 
 export const ErrorDisplay: React.FC = () => {
-  const [error, setError] = useAtom(errorState)
+  const [error, setError] = useAtom(errorAtom)
 
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -32,16 +33,21 @@ export const ErrorDisplay: React.FC = () => {
     case StorageParseError:
       errorHeader += 'Invalid data. Parsing failed!'
       break
+    case ApiError:
+      errorHeader += 'Request failed.'
+      break
     default:
       errorHeader += (error as any)?.statusText || 'Unknown error'
   }
 
   return (
-    <Snackbar open={!!error} autoHideDuration={12000} onClose={handleClose}>
+    <Snackbar open={!!error} autoHideDuration={120000} onClose={handleClose}>
       <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
         <Typography variant="body2">{errorHeader}</Typography>
-        <Typography variant="caption" sx={{ margin: '0 0 0 1em' }}>
-          {error.message}
+        <Typography variant="body2" sx={{ margin: '0 0 0 0.5em' }}>
+          <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>
+            {error.message}
+          </Typography>
         </Typography>
       </Alert>
     </Snackbar>

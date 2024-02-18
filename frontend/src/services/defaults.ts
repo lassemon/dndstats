@@ -1,28 +1,17 @@
+import { ITEM_DEFAULTS } from '@dmtool/application'
+import { uuid } from '@dmtool/common'
+import { Item, Source, Visibility } from '@dmtool/domain'
 import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
-import shieldImage from 'assets/shieldImage'
 import Character from 'domain/entities/Character'
 import { AbilityScores } from 'domain/services/FifthESRDService'
-import { PlayerType, Condition, DamageType, Source, Skill, Senses, Speed } from 'interfaces'
+import { PlayerType, Condition, DamageType, Skill, Senses, Speed } from 'interfaces'
 import React from 'react'
-import { uuid } from 'utils/utils'
-
-export interface Item {
-  id: string
-  image: React.ReactElement
-  name: string
-  shortDescription: string
-  mainDescription: string
-  features: Array<{ featureName: string; featureDescription: string }>
-}
+import { unixtimeNow } from 'utils/utils'
 
 export const defaultItem: Item = {
-  id: uuid(),
-  image: React.createElement('img', {
-    alt: 'greatshield',
-    src: shieldImage,
-    hash: 0
-  }),
+  id: ITEM_DEFAULTS.DEFAULT_ITEM_ID,
+  imageId: null,
   name: 'Greatshield of Artorias',
   shortDescription: 'Shield, artifact (requires attunement, 18 str)',
   mainDescription: `Shield beloning to the great Abysswalker, Knight Artorias. Boast consistent defense and divine protection againts various status effects.`,
@@ -35,7 +24,14 @@ export const defaultItem: Item = {
       featureName: 'Divine Resistance',
       featureDescription: `You are resistant to fire, force and necrotic damage while wielding this shield.`
     }
-  ]
+  ],
+  price: null,
+  rarity: null,
+  weight: null,
+  source: Source.HomeBrew,
+  visibility: Visibility.PUBLIC,
+  createdBy: '1',
+  createdAt: unixtimeNow()
 }
 
 export interface Spell {

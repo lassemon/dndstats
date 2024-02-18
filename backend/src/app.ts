@@ -3,7 +3,7 @@ import { RegisterRoutes } from './routes'
 import Authentication from 'security/Authentication'
 import passport from 'passport'
 import cookieParser from 'cookie-parser'
-import Logger from 'utils/Logger'
+import { Logger } from '@dmtool/common'
 
 const log = new Logger('App')
 const app = express()

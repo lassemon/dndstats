@@ -9,7 +9,7 @@ const authentication = new Authentication(passport)
 @Route('/')
 @Middlewares(authentication.passThroughAuthenticationMiddleware())
 export class MonsterController extends Controller {
-  @Tags('Api')
+  @Tags('Monster')
   @Get('monsters/')
   public async search(@Request() request: express.Request): Promise<any> {
     console.log('calling monster list isAuthenticated', request?.isAuthenticated())
@@ -17,7 +17,7 @@ export class MonsterController extends Controller {
     return new ItemService().get(path)
   }
 
-  @Tags('Api')
+  @Tags('Monster')
   @Get('monsters/{monsterName}')
   public async get(@Request() request: express.Request, @Path() monsterName?: string): Promise<any> {
     console.log('calling monster isAuthenticated', request?.isAuthenticated())

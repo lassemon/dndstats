@@ -3,13 +3,15 @@ import React, { useEffect, useState } from 'react'
 
 import LoginDialog from 'components/LoginDialog'
 import { useAtom } from 'jotai'
-import { authState } from 'infrastructure/dataAccess/atoms'
-import { IUserResponse, logout, status } from 'api/auth'
-import { isPromise, scheduleAsyncFunction, uuid } from 'utils/utils'
+import { authAtom } from 'infrastructure/dataAccess/atoms'
+import { logout, status } from 'api/auth'
+import { scheduleAsyncFunction } from 'utils/utils'
 import _ from 'lodash'
+import { uuid } from '@dmtool/common'
+import { UserResponse } from '@dmtool/domain'
 
 const Login: React.FC = () => {
-  const [auth, setAuthState] = useAtom(authState)
+  const [authState, setAuthState] = useAtom(authAtom)
   const [isLoginDialogOpen, setLoginDialogOpen] = useState(false)
   const [isLoggedOutDialogOpen, setLoggedOutDialogOpen] = useState(false)
   const [startPollingTrigger, setStartPollingTrigger] = useState<string>('')
@@ -19,14 +21,14 @@ const Login: React.FC = () => {
     let intervalId: NodeJS.Timeout | undefined
 
     const shouldContinuePolling = () => {
-      return auth.loggedIn && isMounted
+      return authState.loggedIn && isMounted
     }
     // calling status every 10 seconds ensures that if the jwt token expires, the refreshToken
     // functionality should recreate the token. This should ensure the user staying
     // logged in as long as the browser tab remains active
     scheduleAsyncFunction(
       status,
-      10000,
+      60000,
       shouldContinuePolling,
       (_intervalId) => {
         if (_intervalId) {
@@ -44,7 +46,7 @@ const Login: React.FC = () => {
       isMounted = false
       clearTimeout(intervalId)
     }
-  }, [auth.loggedIn, startPollingTrigger])
+  }, [authState.loggedIn, startPollingTrigger])
 
   const openLoginDialog = () => {
     setLoginDialogOpen(true)
@@ -54,7 +56,7 @@ const Login: React.FC = () => {
     setLoginDialogOpen(false)
   }
 
-  const handleLoginSuccess = (successResponse: IUserResponse) => {
+  const handleLoginSuccess = (successResponse: UserResponse) => {
     const loggedIn = successResponse && !_.isEmpty(successResponse)
     setAuthState((_authState) => {
       return {
@@ -88,13 +90,9 @@ const Login: React.FC = () => {
 
   return (
     <>
-      {!auth?.loggedIn ? (
+      {!authState?.loggedIn && (
         <Button variant="contained" onClick={openLoginDialog}>
           Login
-        </Button>
-      ) : (
-        <Button variant="contained" onClick={onLogout}>
-          Logout {auth.user?.name}
         </Button>
       )}
       <LoginDialog open={isLoginDialogOpen} onClose={closeLoginDialog} onLoginSuccess={handleLoginSuccess} />

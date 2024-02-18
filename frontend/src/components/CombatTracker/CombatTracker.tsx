@@ -11,6 +11,7 @@ import {
   MenuItem,
   Popover,
   Select,
+  SelectChangeEvent,
   TextField,
   Tooltip,
   Typography,
@@ -26,14 +27,14 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import CurrentTurnIcon from '@mui/icons-material/ArrowForwardIos'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import React, { useEffect, useMemo, useState } from 'react'
-import { combatTrackerState, customCharactersState } from 'infrastructure/dataAccess/atoms'
+import { combatTrackerAtom, customCharactersAtom } from 'infrastructure/dataAccess/atoms'
 import _ from 'lodash'
 import classNames from 'classnames/bind'
 
 import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
-import { PlayerType, Condition, DamageType, Source } from 'interfaces'
+import { PlayerType, Condition, DamageType } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
@@ -54,6 +55,8 @@ import DownloadJSON from 'components/DownloadJSON/DownloadJSON'
 import UploadJSON from 'components/UploadJSON'
 import { defaultCombat } from 'services/defaults'
 import Dialog from 'components/Dialog'
+import { useOrientation } from 'utils/hooks'
+import { Source } from '@dmtool/domain'
 
 const BorderLinearProgress = withStyles(LinearProgress, (theme) => {
   return {
@@ -86,14 +89,17 @@ export const CombatTracker: React.FC = () => {
   const cx = classNames.bind(classes)
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
-  const [currentCombat, setCurrentCombat] = useAtom(useMemo(() => combatTrackerState, []))
+  const orientation = useOrientation()
+  const isPortrait = orientation === 'portrait'
+
+  const [currentCombat, setCurrentCombat] = useAtom(useMemo(() => combatTrackerAtom, []))
   const currentTurn = currentCombat?.turn
   const currentCharacters = currentCombat?.characters || []
   const currentCharacterAmount = currentCharacters?.length
 
   // TODO, enable custom character edit through combat tracker?
   // might be too complicated data flow
-  const [customCharacters] = useAtom(useMemo(() => customCharactersState, []))
+  const [customCharacters] = useAtom(useMemo(() => customCharactersAtom, []))
   const customCharacterList = customCharacters?.characters || []
 
   const [monsterList, setMonsterList] = useState<MonsterListOption[]>([emptyMonster] as MonsterListOption[])
@@ -114,7 +120,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const handleCharacterCardTooltipHover = (index: number) => (event: any) => {
+  const handleCharacterCardTooltipHover = (index: number) => () => {
     setCharacterCardTooltipsOpen((cardTooltipsOpen) => {
       return replaceItemAtIndex<boolean>(cardTooltipsOpen, index, true)
     })
@@ -506,14 +512,15 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onWriteTemporaryHitPoints = (index: number) => (event: any) => {
+  const onWriteTemporaryHitPoints = (index: number) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { value } = event.target
     setIncomingTempHPs((tempHPs) => {
-      return replaceItemAtIndex<string>(tempHPs, index, event.target.value)
+      return replaceItemAtIndex<string>(tempHPs, index, value)
     })
   }
 
-  const onChangeTemporaryHitPoints = (index: number) => (event: any, reason?: string) => {
-    if (event.keyCode === 13 || (reason === 'backdropClick' && incomingTempHPs[index] !== '')) {
+  const onChangeTemporaryHitPoints = (index: number) => (event: React.KeyboardEvent<HTMLDivElement> | {}, reason?: string) => {
+    if ((event as React.KeyboardEvent<HTMLDivElement>).keyCode === 13 || (reason === 'backdropClick' && incomingTempHPs[index] !== '')) {
       setCurrentCombat((combat) => {
         const character = combat.characters[index].clone()
         character.temporary_hit_points = parseInt(incomingTempHPs[index]) || 0
@@ -525,14 +532,15 @@ export const CombatTracker: React.FC = () => {
     }
   }
 
-  const onWriteRegeneration = (index: number) => (event: any) => {
+  const onWriteRegeneration = (index: number) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { value } = event.target
     setIncomingRegenerations((regenations) => {
-      return replaceItemAtIndex<string>(regenations, index, event.target.value)
+      return replaceItemAtIndex<string>(regenations, index, value)
     })
   }
 
-  const onChangeRegeneration = (index: number) => (event: any, reason?: string) => {
-    if (event.keyCode === 13 || (reason === 'backdropClick' && incomingRegenerations[index] !== '')) {
+  const onChangeRegeneration = (index: number) => (event: React.KeyboardEvent<HTMLDivElement> | {}, reason?: string) => {
+    if ((event as React.KeyboardEvent<HTMLDivElement>).keyCode === 13 || (reason === 'backdropClick' && incomingRegenerations[index] !== '')) {
       setCurrentCombat((combat) => {
         const character = combat.characters[index].clone()
         character.regeneration = parseInt(incomingRegenerations[index]) || 0
@@ -561,46 +569,48 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onSetIncomingDamage = (index: number) => (event: any) => {
+  const onSetIncomingDamage = (index: number) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { value } = event.target
     setIncomingDamages((damages) => {
-      return replaceItemAtIndex<string>(damages, index, event.target.value || '')
+      return replaceItemAtIndex<string>(damages, index, value || '')
     })
   }
 
-  const onDamageOrHealCharacter = (index: number) => (event: any) => {
-    if (event.keyCode === 13 || event.type === 'blur') {
-      setCurrentCombat((combat) => {
-        const character = combat.characters[index].clone()
+  const onDamageOrHealCharacter =
+    (index: number) => (event: React.KeyboardEvent<HTMLDivElement> | React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      if ((event as React.KeyboardEvent<HTMLDivElement>).keyCode === 13 || event.type === 'blur') {
+        setCurrentCombat((combat) => {
+          const character = combat.characters[index].clone()
 
-        const incomingHpChange = parseInt(incomingDamages[index]) || 0
-        const changingHp = incomingHpChange !== 0
-        const tryingToHeal = incomingHpChange > 0
+          const incomingHpChange = parseInt(incomingDamages[index]) || 0
+          const changingHp = incomingHpChange !== 0
+          const tryingToHeal = incomingHpChange > 0
 
-        if (changingHp) {
-          tryingToHeal ? character.heal(incomingHpChange) : character.takeDamage(incomingHpChange)
-          // setting temp hp input field value to be same as characters after taking damage
-          setIncomingTempHPs((tempHPs) => {
-            return replaceItemAtIndex<string>(tempHPs, index, String(character.temporary_hit_points || ''))
-          })
-          setIncomingDamages((damages) => {
-            return replaceItemAtIndex<string>(damages, index, '')
-          })
-          if (incomingHpChange < 0 && character.isConcentrating() && !character.isUnconscious() && currentCombat?.ongoing) {
-            setConcentrationDialogsOpen((_concentrationDialogs) => {
-              return replaceItemAtIndex(_concentrationDialogs, index, Math.abs(incomingHpChange))
+          if (changingHp) {
+            tryingToHeal ? character.heal(incomingHpChange) : character.takeDamage(incomingHpChange)
+            // setting temp hp input field value to be same as characters after taking damage
+            setIncomingTempHPs((tempHPs) => {
+              return replaceItemAtIndex<string>(tempHPs, index, String(character.temporary_hit_points || ''))
             })
+            setIncomingDamages((damages) => {
+              return replaceItemAtIndex<string>(damages, index, '')
+            })
+            if (incomingHpChange < 0 && character.isConcentrating() && !character.isUnconscious() && currentCombat?.ongoing) {
+              setConcentrationDialogsOpen((_concentrationDialogs) => {
+                return replaceItemAtIndex(_concentrationDialogs, index, Math.abs(incomingHpChange))
+              })
+            }
           }
-        }
 
-        return {
-          ...combat,
-          characters: replaceItemAtIndex<Character>(combat.characters, index, character)
-        }
-      })
+          return {
+            ...combat,
+            characters: replaceItemAtIndex<Character>(combat.characters, index, character)
+          }
+        })
+      }
     }
-  }
 
-  const onRemoveCondition = (index: number, condition: Condition) => (event: any) => {
+  const onRemoveCondition = (index: number, condition: Condition) => (event: React.MouseEvent<HTMLSpanElement>) => {
     // Mouse middle button
     if (event.button === 1) {
       setCurrentCombat((combat) => {
@@ -614,7 +624,7 @@ export const CombatTracker: React.FC = () => {
     }
   }
 
-  const onChangeCondition = (index: number) => (event: any, conditions: Condition[]) => {
+  const onChangeCondition = (index: number) => (event: React.SyntheticEvent<Element, Event>, conditions: Condition[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
       const incomingStunnedCondition = conditions.includes(Condition.Stunned)
@@ -630,7 +640,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeResistance = (index: number) => (event: any, resistances: DamageType[]) => {
+  const onChangeResistance = (index: number) => (event: React.SyntheticEvent<Element, Event>, resistances: DamageType[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
       character.damage_resistances = [...resistances]
@@ -641,7 +651,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeVulnerability = (index: number) => (event: any, vulnerabilities: DamageType[]) => {
+  const onChangeVulnerability = (index: number) => (event: React.SyntheticEvent<Element, Event>, vulnerabilities: DamageType[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
       character.damage_vulnerabilities = [...vulnerabilities]
@@ -652,7 +662,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeImmunity = (index: number) => (event: any, immunities: DamageType[]) => {
+  const onChangeImmunity = (index: number) => (event: React.SyntheticEvent<Element, Event>, immunities: DamageType[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
       character.damage_immunities = [...immunities]
@@ -663,10 +673,11 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeType = (index: number) => (event: any) => {
+  const onChangeType = (index: number) => (event: SelectChangeEvent<`${PlayerType}`>) => {
+    const { value } = event.target
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
-      character.player_type = event.target.value
+      character.player_type = value as `${PlayerType}`
       return {
         ...combat,
         characters: replaceItemAtIndex<Character>(combat.characters, index, character)
@@ -1078,7 +1089,12 @@ export const CombatTracker: React.FC = () => {
                       >
                         {character.imageElement && (
                           <img
-                            style={{ maxHeight: '99%', minHeight: '80%' }}
+                            style={{
+                              ...{
+                                maxHeight: '99%'
+                              },
+                              ...(isPortrait ? { minWidth: '95%' } : { minHeight: '80%' })
+                            }}
                             alt={character.imageElement?.props.alt}
                             src={`${character.imageElement?.props.src}`}
                           />
@@ -1140,7 +1156,10 @@ export const CombatTracker: React.FC = () => {
                         <AddBox />
                       </IconButton>
                     )}
-                    <IconButton style={{ color: 'rgba(0, 0, 0, 0.6)', marginRight: 0 }} onClick={(event: any) => openSettings(index, event)}>
+                    <IconButton
+                      style={{ color: 'rgba(0, 0, 0, 0.6)', marginRight: 0 }}
+                      onClick={(event: React.MouseEvent<HTMLButtonElement>) => openSettings(index, event)}
+                    >
                       <Settings />
                     </IconButton>
                     <Popover

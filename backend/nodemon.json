@@ -2,6 +2,6 @@
   "exec": "ts-node src/server.ts",
   "watch": ["src"],
   "ignore": ["build", "src/routes.ts"],
-  "ext": "ts",
+  "ext": "ts,json",
   "verbose": true
 }

@@ -101,8 +101,9 @@ const EditableSenses: React.FC<EditableSensesProps> = (props) => {
   }
 
   const onChangeValue = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target
     setInternalSenses((_senses) => {
-      return { ..._.cloneDeep(_senses), [key]: event.target.value } // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
+      return { ..._.cloneDeep(_senses), [key]: value } // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
     })
   }
 

@@ -320,7 +320,6 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   conditionList: {
-    margin: '0 0 0 -9px',
     display: 'flex',
     alignContent: 'center',
     position: 'relative',

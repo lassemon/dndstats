@@ -1,30 +1,34 @@
+import { User, UserResponse, UserRole, UserUpdateRequest } from '@dmtool/domain'
 import ApiError from '/domain/errors/ApiError'
-import { IUserInsertQuery, IUserInsertRequest, IUserUpdateQuery, IUserUpdateRequest } from 'interfaces/requests'
-import { IUserResponse } from 'interfaces/user'
-import { IDBUser, IUser } from 'interfaces/user'
 import Encryption from 'security/Encryption'
+import { UserInsertQuery, UserInsertRequest, UserUpdateQuery } from '@dmtool/domain/src/entities/User'
+import { uuid } from '@dmtool/common'
 
 export default class UserMapper {
-  public mapToResponse(user: IUser): IUserResponse {
+  public mapToResponse(user: User): UserResponse {
     return {
       id: user.id,
       name: user.name,
       email: user.email,
-      created: user.created
+      roles: user.roles,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
     }
   }
 
-  public mapAllToResponse(users: IUser[]): IUserResponse[] {
+  public mapAllToResponse(users: User[]): UserResponse[] {
     return users.map(this.mapToResponse, this)
   }
 
-  public async mapInsertToQuery(insertRequest: IUserInsertRequest): Promise<IUserInsertQuery> {
+  public async mapInsertToQuery(insertRequest: UserInsertRequest): Promise<UserInsertQuery> {
     const encryptedPassword = await Encryption.encrypt(insertRequest.password)
 
     const userInsert = {
       ...insertRequest,
+      id: uuid(),
       password: encryptedPassword,
       active: true,
+      roles: [UserRole.Viewer, UserRole.Creator], // TODO, get roles from frontend, insert defaults here?
       created: new Date()
     }
 
@@ -35,32 +39,37 @@ export default class UserMapper {
     return userInsert
   }
 
-  public async mapUpdateToQuery(updateRequest: IUserUpdateRequest): Promise<IUserUpdateQuery> {
-    const encryptedPassword = await Encryption.encrypt(updateRequest.password)
-
+  public async mapUpdateToQuery(updateRequest: UserUpdateRequest, loggedInUser: User): Promise<UserUpdateQuery> {
     const userInsert = {
       ...updateRequest,
-      password: encryptedPassword
+      ...(updateRequest.newPassword ? { password: await Encryption.encrypt(updateRequest.newPassword) } : {})
     }
 
-    if (updateRequest.password === userInsert.password) {
+    if (typeof userInsert.password !== 'undefined' && userInsert.password !== '' && userInsert.password === updateRequest.newPassword) {
       throw new ApiError(400, 'BadRequest', 'Attempted to add unencrypted password to database')
     }
 
-    return userInsert
+    return {
+      id: loggedInUser.id,
+      name: userInsert.name,
+      password: userInsert.password,
+      email: userInsert.email
+    }
   }
 
-  public serialize(user: IDBUser): IUser {
+  public serialize(user: User): User {
     return {
       id: user.id,
       name: user.name,
       password: user.password,
       email: user.email,
-      created: new Date(user.created)
+      roles: user.roles,
+      active: user.active,
+      createdAt: user.createdAt
     }
   }
 
-  public serializeAll(users: IDBUser[]): IUser[] {
+  public serializeAll(users: User[]): User[] {
     return users.map(this.serialize, this)
   }
 }

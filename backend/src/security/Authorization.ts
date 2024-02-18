@@ -1,7 +1,8 @@
-import { IJwtPayload, IUser } from 'interfaces/user'
+import { User } from '@dmtool/domain'
+import { IJwtPayload } from 'interfaces/user'
 import jwt from 'jsonwebtoken'
 import { DateTime, Duration } from 'luxon'
-import Logger from 'utils/Logger'
+import { Logger } from '@dmtool/common'
 
 const log = new Logger('Authorization')
 
@@ -12,7 +13,7 @@ export default class Authorization {
     this.identifier = process.env.IDENTIFIER || 'localhost'
   }
 
-  public createAuthToken = (user: IUser): string => {
+  public createAuthToken = (user: User): string => {
     const jwtTokenLife = parseInt(process.env.TOKEN_EXP || '15', 10)
     const jwtSecret = process.env.JWT_SECRET || 'jwtSecret'
     const expires = DateTime.now()
@@ -36,7 +37,7 @@ export default class Authorization {
     return authToken
   }
 
-  public createRefreshToken = (user: IUser): string => {
+  public createRefreshToken = (user: User): string => {
     const refreshTokenLife = parseInt(process.env.REFRESH_TOKEN_EXP || '720', 10)
     const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || 'refreshSecret'
     const expires = DateTime.now()

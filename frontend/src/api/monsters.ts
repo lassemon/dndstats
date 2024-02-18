@@ -1,8 +1,8 @@
-import { Source } from 'interfaces'
-import { get } from 'utils/fetch'
+import { Source } from '@dmtool/domain'
+import { getJson } from 'infrastructure/dataAccess/http/fetch'
 
 export const getMonsterList = async () => {
-  const monsterListResult = await get<any>({ endpoint: '/monsters' })
+  const monsterListResult = await getJson<any>({ endpoint: '/monsters' })
   return monsterListResult.results.map((monster: any) => {
     return {
       ...monster,
@@ -13,5 +13,5 @@ export const getMonsterList = async () => {
 }
 
 export const getMonster = async (monsterUrl: string) => {
-  return await get<any>({ endpoint: monsterUrl.replace('/api', '') })
+  return await getJson<any>({ endpoint: monsterUrl.replace('/api', '') })
 }

@@ -1,4 +1,4 @@
-import { Box, Grid, GridSize, Toolbar } from '@mui/material'
+import { Box, Grid, Toolbar } from '@mui/material'
 import React from 'react'
 import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'

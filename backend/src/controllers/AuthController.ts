@@ -3,68 +3,73 @@ import ApiError from '/domain/errors/ApiError'
 import Encryption from 'security/Encryption'
 import { Body, Controller, Get, Middlewares, Post, Request, Response, Route, Tags } from 'tsoa'
 import { ILoginRequest } from '../interfaces/requests'
-import { IUser, IUserResponse } from '../interfaces/user'
-//import UserService from '/services/UserService'
 import Authorization from '/security/Authorization'
-import Logger from '/utils/Logger'
+import { Logger } from '@dmtool/common'
 import { DateTime } from 'luxon'
 import UserMapper from '/mappers/UserMapper'
 import Authentication from '/security/Authentication'
 import passport from 'passport'
+import { User, UserResponse } from '@dmtool/domain'
+import UserRepository from '/infrastructure/repositories/UserRepository'
+import { DatabaseUserRepositoryInterface } from '@dmtool/application'
 
 const log = new Logger('AuthController')
-const refreshTokenList = {} as { [key: string]: IUser }
+const refreshTokenList = {} as { [key: string]: User }
 const authentication = new Authentication(passport)
 
 @Route('/auth')
 export class AuthController extends Controller {
-  //private userService: UserService
+  private userRepository: DatabaseUserRepositoryInterface
   private userMapper: UserMapper
   private authorization: Authorization
   private cookies
 
   constructor() {
     super()
-    //this.userService = new UserService()
+    this.userRepository = new UserRepository()
     this.userMapper = new UserMapper()
     this.authorization = new Authorization()
     this.cookies = {}
   }
 
   @Tags('Auth')
-  @Response<IUserResponse>(200, 'Success')
+  @Response<UserResponse>(200, 'Success')
   @Post('login')
-  public async login(@Body() loginParams: ILoginRequest): Promise<IUserResponse> {
-    //const username: string = loginParams.username
+  public async login(@Body() loginParams: ILoginRequest): Promise<UserResponse> {
+    const username: string = loginParams.username
     const password: string = loginParams.password
 
-    const user = { id: 1, name: 'test', email: 'testemail', password: await Encryption.encrypt('test'), created: new Date() } //await this.userService.findByName(username)
+    try {
+      const user = await this.userRepository.getByName(username)
 
-    if (!(await Encryption.compare(password, user.password))) {
+      if (!(await Encryption.compare(password, user.password)) || !user.active) {
+        throw new ApiError(401, 'Unauthorized', 'Incorrect username or password')
+      }
+
+      const authToken = this.authorization.createAuthToken(user)
+      const refreshToken = this.authorization.createRefreshToken(user)
+
+      this.setCookies({
+        token: {
+          value: authToken,
+          options: {
+            httpOnly: true
+          }
+        },
+        refreshToken: {
+          value: refreshToken,
+          options: {
+            httpOnly: true
+          }
+        }
+      })
+
+      refreshTokenList[refreshToken] = user
+
+      return this.userMapper.mapToResponse(user)
+    } catch (error) {
       throw new ApiError(401, 'Unauthorized', 'Incorrect username or password')
     }
-
-    const authToken = this.authorization.createAuthToken(user)
-    const refreshToken = this.authorization.createRefreshToken(user)
-
-    this.setCookies({
-      token: {
-        value: authToken,
-        options: {
-          httpOnly: true
-        }
-      },
-      refreshToken: {
-        value: refreshToken,
-        options: {
-          httpOnly: true
-        }
-      }
-    })
-
-    refreshTokenList[refreshToken] = user
-
-    return this.userMapper.mapToResponse(user)
   }
 
   @Tags('Auth')
@@ -94,8 +99,11 @@ export class AuthController extends Controller {
         throw new ApiError(401, 'Unauthorized')
       }
 
-      //const user: IUser = await this.userService.findById(refreshToken.user)
-      const user = { id: 1, name: 'test', email: 'testemail', password: await Encryption.encrypt('test'), created: new Date() } //await this.userService.findByName(username)
+      //const user: User = await this.userService.findById(refreshToken.user)
+      const user = { id: '1', name: 'admin', email: 'testemail', password: await Encryption.encrypt('test'), active: true, createdAt: 123, roles: [] } //await this.userService.findByName(username)
+      if (!user.active) {
+        throw new ApiError(404, 'NotFound')
+      }
       const newAuthToken = this.authorization.createAuthToken(user)
 
       this.setCookies({
@@ -116,9 +124,9 @@ export class AuthController extends Controller {
   @Tags('Auth')
   @Middlewares(authentication.authenticationMiddleware())
   @Get('status')
-  public async status(@Request() request: express.Request): Promise<IUserResponse> {
+  public async status(@Request() request: express.Request): Promise<UserResponse> {
     log.debug(`calling status to see if authenticated. isAuthenticated: ${request?.isAuthenticated()}.`)
-    return request.user as IUserResponse //await this.userService.findByName(username)
+    return this.userMapper.mapToResponse(request.user as User)
   }
 
   public requestMiddleware(request: express.Request, response: express.Response, next: express.NextFunction) {

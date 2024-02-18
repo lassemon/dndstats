@@ -100,7 +100,8 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
   }
 
   const onChangeValue = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(event.target.value.toString()) || ''
+    const { value } = event.target
+    const newValue = parseInt(value.toString()) || ''
     setSavingThrows((_savingThrows) => {
       // clonedeep is a MUST because otherwise the object is readonly and lodash set does nothing
       return { ..._.cloneDeep(_savingThrows), [key]: newValue }

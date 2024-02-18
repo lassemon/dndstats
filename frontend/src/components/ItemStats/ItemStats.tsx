@@ -1,113 +1,317 @@
-import StatsContainer from 'components/StatsContainer'
-import React, { useMemo, useState } from 'react'
-import { errorState, itemState } from 'infrastructure/dataAccess/atoms'
-import classNames from 'classnames/bind'
+import React, { useEffect, useRef, useState } from 'react'
+import _ from 'lodash'
+import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './ItemStats.styles'
-import { Box, Button, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
-import { useOrientation } from 'utils/hooks'
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  FormGroup,
+  TextField,
+  Typography
+} from '@mui/material'
 import { useAtom } from 'jotai'
-import LoadingIndicator from 'components/LoadingIndicator'
-import { saveItem } from 'api/items'
+import { Source, Visibility } from '@dmtool/domain'
+import { UpdateParam } from 'state/itemAtom'
+import { uuid } from '@dmtool/common'
+import { unixtimeNow } from 'utils/utils'
+import { ItemListOption, emptyItem } from 'domain/entities/Item'
+import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
+import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
+import { ITEM_DEFAULTS, ImageDTO, ItemDTO } from '@dmtool/application'
+import { useNavigate } from 'react-router-dom'
+import ItemCard from 'components/ItemCard'
 
-const DescriptionBlock: React.FC = (props) => {
-  const { children } = props
-  const { classes } = useStyles()
-  return <p className={classes.blockDescription}>{children}</p>
+interface ItemStatsProps {
+  item: ItemDTO | null
+  persistedItem: ItemDTO | null
+  setPersistedItem: React.Dispatch<React.SetStateAction<ItemDTO | null>>
+  setItem: (update: UpdateParam<ItemDTO | null>) => void
+  setItemId: React.Dispatch<React.SetStateAction<string>>
+  setImage: (update: UpdateParam<ImageDTO | null | undefined>) => void
+  itemRepository: FrontendItemRepositoryInterface
+  image?: ImageDTO | null
+  loadingItem: boolean
+  loadingImage: boolean
 }
 
-const DescriptionInline: React.FC = (props) => {
-  const { children } = props
-  const { classes } = useStyles()
-  return <p className={classes.inlineDescription}>{children}</p>
-}
+export const ItemStats: React.FC<ItemStatsProps> = ({
+  item,
+  persistedItem,
+  setPersistedItem,
+  setItem,
+  setItemId,
+  loadingItem,
+  itemRepository,
+  setImage,
+  image,
+  loadingImage
+}) => {
+  const controllersRef = useRef<AbortController[]>([])
 
-const MainDescription: React.FC = (props) => {
-  const { children } = props
   const { classes } = useStyles()
-  return <div className={classes.mainDescription}>{children}</div>
-}
-
-export const ItemStats: React.FC = () => {
-  const { classes } = useStyles()
-  const cx = classNames.bind(classes)
-  const [currentItem, setCurrentItem] = useAtom(useMemo(() => itemState, []))
   const [inlineFeatures, setInlineFeatures] = useState(false)
-  const [error, setError] = useAtom(React.useMemo(() => errorState, []))
+  const [itemList, setItemList] = useState<ItemListOption[]>([emptyItem] as ItemListOption[])
+  const [selectedItem, setSelectedItem] = useState(emptyItem)
+  const [loadingItemList, setLoadingItemList] = useState(false)
+  const [errorState, setError] = useAtom(React.useMemo(() => errorAtom, []))
+  const [authState] = useAtom(authAtom)
+  const navigate = useNavigate()
 
-  const orientation = useOrientation()
-  const isPortrait = orientation === 'portrait'
+  const [unsavedChangesDialogOpen, setUnsavedChangesDialogOpen] = useState<boolean>(false)
+
+  const fetchItemList = () => {
+    const fetchData = async () => {
+      if (!loadingItemList && authState.user) {
+        setLoadingItemList(true)
+        const controller = new AbortController()
+        controllersRef.current.push(controller)
+        const items = (await itemRepository.getAllForUser(authState.user.id, { signal: controller.signal })).map((item) => {
+          return {
+            id: item.id,
+            name: item.name,
+            source: item.source
+          }
+        })
+        const newItemList = [emptyItem, ...items]
+        setItemList(newItemList)
+        setLoadingItemList(false)
+      }
+    }
+
+    fetchData().catch((error) => {
+      setLoadingItemList(false)
+      console.error(error)
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      controllersRef.current.forEach((controller) => controller.abort())
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchItemList()
+  }, [authState])
+
+  const onSelectItem = async (event: React.SyntheticEvent, selected: ItemListOption | null | string) => {
+    if (selected && typeof selected !== 'string' && selected.id) {
+      navigate(`/stats/item/${selected.id}`)
+      setItemId(selected.id)
+    }
+
+    setSelectedItem(selectedItem)
+  }
 
   const onChangeInlineFeatures = () => {
     setInlineFeatures((_inlineFeatures) => !_inlineFeatures)
   }
 
-  const onSave = () => {
-    if (currentItem) {
-      if (error) {
-        setError(null)
-      }
-      setCurrentItem(currentItem)
-      saveItem(currentItem).catch((error) => {
-        setError(error)
-      })
+  const newItem = () => {
+    const newItemId = uuid()
+    const newItemDTO = new ItemDTO({
+      id: newItemId,
+      imageId: null,
+      name: 'New Item',
+      shortDescription: 'Short description',
+      mainDescription: 'Main Description',
+      features: [
+        {
+          featureName: 'Feature Name',
+          featureDescription: 'Feature Description'
+        }
+      ],
+      price: null,
+      rarity: null,
+      weight: null,
+      source: Source.HomeBrew,
+      visibility: Visibility.PUBLIC,
+      createdBy: authState.user?.id || '1',
+      createdAt: unixtimeNow()
+    })
+    setItem(newItemDTO)
+    setImage(null)
+    navigate(`/stats/item/${newItemId}`)
+  }
+
+  const onDelete = () => {
+    if (authState.loggedIn && authState.user && item) {
+      itemRepository
+        .delete(item.id)
+        .then((deletedItem) => {
+          navigate(`/stats/item/`)
+          setItemList((_itemList) => {
+            return _.filter(_itemList, (item) => item.id !== deletedItem.id)
+          })
+        })
+        .catch((error) => {
+          setError(error)
+        })
     }
   }
 
-  if (!currentItem) {
-    return <LoadingIndicator />
+  const onCreateNew = () => {
+    const unsavedChanged = !item?.isEqual(persistedItem)
+
+    if (unsavedChanged) {
+      setUnsavedChangesDialogOpen(true)
+    } else {
+      newItem()
+    }
+  }
+
+  const onSave = (callback?: () => void) => {
+    if (item) {
+      const newItem = item.clone()
+      const itemsWithSameNameCount = itemList.filter((_item) => _item?.name === newItem.name && _item.id !== newItem.id).length
+      if (itemsWithSameNameCount > 0) {
+        newItem.name = `${newItem.name} #${itemsWithSameNameCount + 1}`
+      }
+      if (errorState) {
+        setError(null)
+      }
+      setItem(newItem)
+      if (authState.loggedIn && authState.user) {
+        const controller = new AbortController()
+        controllersRef.current.push(controller)
+        itemRepository
+          .save(newItem, image?.parseForSaving(image.base64), { signal: controller.signal })
+          .then((itemSaveResponse) => {
+            const itemDTO = new ItemDTO(itemSaveResponse.item)
+            setPersistedItem(itemDTO)
+            setItem(itemDTO)
+            setImage(itemSaveResponse.image ? new ImageDTO(itemSaveResponse.image) : null)
+            fetchItemList()
+          })
+          .catch((error) => {
+            setError(error)
+          })
+          .finally(() => {
+            if (callback) {
+              callback()
+            }
+          })
+      }
+    }
+  }
+
+  const closeUnsavedChangesDialog = (saveChanges?: boolean, createNew?: boolean) => {
+    if (saveChanges) {
+      onSave(createNew ? newItem : undefined)
+    } else if (createNew === true) {
+      newItem()
+    }
+    setUnsavedChangesDialogOpen(false)
   }
 
   return (
     <>
-      <StatsContainer
-        className={cx({
-          [classes.container]: true,
-          [classes.smallContainer]: isPortrait,
-          [classes.mediumContainer]: !isPortrait
-        })}
-      >
-        <div className={classes.root}>
-          <div className={classes.textContainer}>
-            <h1 className={classes.name}>{currentItem.name}</h1>
-            <h2 className={classes.shortDescription}>{currentItem.shortDescription}</h2>
-            {currentItem.features.map((feature: any, key: any) => {
-              return (
-                <div className={classes.featureContainer} key={key}>
-                  {feature.featureName && <h4 className={classes.featureName}>{feature.featureName}</h4>}
-                  {feature.featureDescription &&
-                    (inlineFeatures || !feature.featureName ? (
-                      <DescriptionInline>{feature.featureDescription}</DescriptionInline>
-                    ) : (
-                      <>
-                        {feature.featureDescription.split('\n').map((value: any, key: any) => {
-                          return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
-                        })}
-                      </>
-                    ))}
-                </div>
-              )
-            })}
-            {currentItem.mainDescription && (
-              <MainDescription>
-                {currentItem.mainDescription.split('\n').map((value: any, key: any) => {
-                  return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
-                })}
-              </MainDescription>
-            )}
+      <Box style={{ display: 'flex', gap: '1em' }}>
+        <ItemCard item={item} loadingItem={loadingItem} image={image} loadingImage={loadingImage} inlineFeatures={inlineFeatures} />
+        {authState.loggedIn && (
+          <div
+            style={{
+              flex: '1 0 20%'
+            }}
+          >
+            <Autocomplete
+              id={`add-item-dropdown`}
+              blurOnSelect
+              clearOnBlur
+              fullWidth
+              disableClearable
+              filterSelectedOptions
+              groupBy={(option) => option.source}
+              className={`${classes.autocomplete}`}
+              value={selectedItem}
+              isOptionEqualToValue={(option, value) => option.id.toLowerCase() === value.id.toLowerCase()}
+              loading={loadingItemList}
+              options={itemList.sort((a, b) => b.source.localeCompare(a.source))}
+              onChange={onSelectItem}
+              getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
+              PaperComponent={AutoCompleteItem}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Item"
+                  variant="filled"
+                  size="small"
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <React.Fragment>
+                        {loadingItemList ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                      </React.Fragment>
+                    )
+                  }}
+                />
+              )}
+              sx={{
+                '&&': {
+                  margin: '1.5em 0 0 0'
+                }
+              }}
+            />
           </div>
-          <div className={classes.imageContainer}>
-            <img alt={currentItem.image.props.alt} src={`${currentItem.image.props.src}`} />
-          </div>
-        </div>
-      </StatsContainer>
+        )}
+      </Box>
       <Box displayPrint="none">
         <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', margin: '1em 0 0 0' }}>
-          <FormControlLabel control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />} label="Inline features" />
-          <Button variant="contained" onClick={onSave}>
-            Save Item
-          </Button>
+          <FormControlLabel
+            control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />}
+            label="Inline features"
+          />
+          {authState.loggedIn && (
+            <div style={{ display: 'flex', gap: '2em' }}>
+              <Button variant="contained" color="error" onClick={onDelete} disabled={item?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID}>
+                Delete Item
+              </Button>
+              <Button variant="contained" onClick={onCreateNew}>
+                New Item
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => onSave()}
+                disabled={item?.isEqual(persistedItem) || item?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID}
+              >
+                Save Item
+              </Button>
+            </div>
+          )}
         </FormGroup>
+        <Dialog open={unsavedChangesDialogOpen} onClose={() => closeUnsavedChangesDialog()} PaperProps={{ sx: { padding: '0.5em' } }}>
+          <DialogTitle id={`unsaved-changes`} sx={{ fontWeight: 'bold' }}>{`Unsaved changes`}</DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" paragraph={false}>
+              Are you sure you want to create a new item?
+            </Typography>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'space-between', alignItems: 'stretch' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginRight: '6em' }}>
+              <Button variant="outlined" color="secondary" onClick={() => closeUnsavedChangesDialog()}>
+                Cancel
+              </Button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: '0.5em' }}>
+              <Button variant="outlined" color="warning" onClick={() => closeUnsavedChangesDialog(false, true)}>
+                Discard changes and create
+              </Button>
+              <Button variant="outlined" color="success" onClick={() => closeUnsavedChangesDialog(true, true)}>
+                Save changes and create
+              </Button>
+            </div>
+          </DialogActions>
+        </Dialog>
       </Box>
     </>
   )
