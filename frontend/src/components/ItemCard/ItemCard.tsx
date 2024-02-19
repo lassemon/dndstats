@@ -100,7 +100,6 @@ const useStyles = makeStyles()((theme) => {
       fontSize: '1em',
       fontFamily: '"Helvetica", "Arial", sans-serif',
       flexBasis: '16.6%',
-      textTransform: 'capitalize',
       display: 'inline-block',
       marginInlineStart: '0.5em',
       whiteSpace: 'nowrap'

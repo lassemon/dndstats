@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (id, name, password, email, active, roles, createdAt, updatedAt) VALUES
-  ('1','admin','$2a$10$lZzKUHY5zCIbCcfKmv2RaOH412mNfemffeQUBKpGqsWOrsZZGsJmO','admin@admin.com',1,'["superAdmin", "admin", "creator"]',1707508500,1707511589);
+  ('1','dmtool','$2a$10$lZzKUHY5zCIbCcfKmv2RaOH412mNfemffeQUBKpGqsWOrsZZGsJmO','admin@admin.com',1,'["superAdmin", "admin", "creator"]',1707508500,1707511589);
 
 CREATE TABLE IF NOT EXISTS items  (
   id                varchar(255)      NOT NULL,
