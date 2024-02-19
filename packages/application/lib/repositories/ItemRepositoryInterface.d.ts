@@ -4,6 +4,7 @@ import { ItemUpdateResponse } from '../interfaces/http/Item';
 import { FetchOptions } from '../interfaces/http/Fetch';
 export interface DatabaseItemRepositoryInterface {
     getAll(): Promise<Item[]>;
+    getAllVisibleForLoggedInUser(): Promise<Item[]>;
     getAllForUser(userId: string): Promise<Item[]>;
     countItemsCreatedByUser(userId: string): Promise<number>;
     getById(itemId?: string): Promise<Item>;
@@ -15,5 +16,5 @@ export interface HttpItemRepositoryInterface {
     getAllForUser(userId: string, options?: FetchOptions): Promise<Item[]>;
     getById(itemId?: string, options?: FetchOptions): Promise<Item>;
     save(item: Item, image?: Image | null, options?: FetchOptions): Promise<ItemUpdateResponse>;
-    delete(itemId: string, options?: FetchOptions): Promise<void>;
+    delete(itemId: string, options?: FetchOptions): Promise<Item>;
 }

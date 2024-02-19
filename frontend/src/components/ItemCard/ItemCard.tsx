@@ -1,9 +1,9 @@
-import { ImageDTO } from '@dmtool/application'
-import { Item } from '@dmtool/domain'
+import { ImageDTO, ItemDTO } from '@dmtool/application'
+import { useMediaQuery, useTheme } from '@mui/material'
 import classNames from 'classnames'
 import LoadingIndicator from 'components/LoadingIndicator'
 import StatsContainer from 'components/StatsContainer'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { useOrientation } from 'utils/hooks'
 
@@ -86,6 +86,24 @@ const useStyles = makeStyles()((theme) => {
       fontVariant: 'small-caps',
       padding: '0 4px 0 0',
       margin: 0
+    },
+    statHeader: {
+      color: theme.status.blood,
+      fontSize: '1.1em',
+      lineHeight: '1.2em',
+      fontWeight: 'bold',
+      flexBasis: '16.6%',
+      textAlign: 'center'
+    },
+    statValue: {
+      color: theme.status.blood,
+      fontSize: '1em',
+      fontFamily: '"Helvetica", "Arial", sans-serif',
+      flexBasis: '16.6%',
+      textTransform: 'capitalize',
+      display: 'inline-block',
+      marginInlineStart: '0.5em',
+      whiteSpace: 'nowrap'
     }
   }
 })
@@ -108,19 +126,44 @@ const MainDescription: React.FC = (props) => {
   return <div className={classes.mainDescription}>{children}</div>
 }
 
+const TinyStat: React.FC<{ title: string; value?: string | number | null }> = (props) => {
+  const { title, value } = props
+  const { classes } = useStyles()
+  if (!value) {
+    return null
+  }
+
+  return (
+    <div className={classes.blockDescription}>
+      <span className={classes.statHeader}>{title}:</span>
+      <span className={classes.statValue}>{value}</span>
+    </div>
+  )
+}
+
 interface ItemCardProps {
-  item: Item | null
+  item: ItemDTO | null
   image?: ImageDTO | null
   loadingItem?: boolean
   loadingImage?: boolean
   inlineFeatures?: boolean
+  className?: string
 }
 
-export const ItemCard: React.FC<ItemCardProps> = ({ item, inlineFeatures = false, image = null, loadingItem = false, loadingImage = false }) => {
+export const ItemCard: React.FC<ItemCardProps> = ({
+  item,
+  inlineFeatures = false,
+  image = null,
+  loadingItem = false,
+  loadingImage = false,
+  className = ''
+}) => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
+  const theme = useTheme()
+  const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
 
   const itemImage = image
     ? React.createElement('img', {
@@ -136,59 +179,65 @@ export const ItemCard: React.FC<ItemCardProps> = ({ item, inlineFeatures = false
 
   return (
     <StatsContainer
-      className={cx({
+      className={cx(className, {
         [classes.container]: true,
         [classes.smallContainer]: isPortrait,
-        [classes.mediumContainer]: !isPortrait
+        [classes.mediumContainer]: !isPortrait && !isLarge
       })}
     >
       {!loadingItem ? (
-        <div className={classes.root}>
-          <div className={classes.textContainer}>
-            <h1 className={classes.name}>{item.name}</h1>
-            <h2 className={classes.shortDescription}>{item.shortDescription}</h2>
-            {item.features.map((feature: any, key: any) => {
-              return (
-                <div className={classes.featureContainer} key={key}>
-                  {feature.featureName && <h4 className={classes.featureName}>{feature.featureName}</h4>}
-                  {feature.featureDescription &&
-                    (inlineFeatures || !feature.featureName ? (
-                      <DescriptionInline>{feature.featureDescription}</DescriptionInline>
-                    ) : (
-                      <>
-                        {feature.featureDescription.split('\n').map((value: any, key: any) => {
-                          return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
-                        })}
-                      </>
-                    ))}
-                </div>
-              )
-            })}
-            {item.mainDescription && (
-              <MainDescription>
-                {item.mainDescription.split('\n').map((value: any, key: any) => {
-                  return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
-                })}
-              </MainDescription>
+        <>
+          <div className={classes.root}>
+            <div className={classes.textContainer}>
+              <h1 className={classes.name}>{item.name}</h1>
+              <h2 className={classes.shortDescription}>{item.shortDescription_label}</h2>
+              {item.features.map((feature: any, key: any) => {
+                return (
+                  <div className={classes.featureContainer} key={key}>
+                    {feature.featureName && <h4 className={classes.featureName}>{feature.featureName}</h4>}
+                    {feature.featureDescription &&
+                      (inlineFeatures || !feature.featureName ? (
+                        <DescriptionInline>{feature.featureDescription}</DescriptionInline>
+                      ) : (
+                        <>
+                          {feature.featureDescription.split('\n').map((value: any, key: any) => {
+                            return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
+                          })}
+                        </>
+                      ))}
+                  </div>
+                )
+              })}
+            </div>
+
+            {itemImage && !loadingImage && (
+              <div className={classes.imageContainer}>
+                <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
+              </div>
+            )}
+            {loadingImage && (
+              <div className={classes.imageContainer}>
+                <LoadingIndicator />
+              </div>
             )}
           </div>
-
-          {itemImage && !loadingImage && (
-            <div className={classes.imageContainer}>
-              <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
-            </div>
+          {item.mainDescription && (
+            <MainDescription>
+              {item.mainDescription.split('\n').map((value: any, key: any) => {
+                return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
+              })}
+            </MainDescription>
           )}
-          {loadingImage && (
-            <div className={classes.imageContainer}>
-              <LoadingIndicator />
-            </div>
-          )}
-        </div>
+        </>
       ) : (
         <div className={classes.textContainer}>
           <LoadingIndicator />
         </div>
       )}
+      <div style={{ display: 'flex', margin: '1em 0 -5px 0' }}>
+        <TinyStat title="weight" value={item.weight} />
+        <TinyStat title="price" value={item.price} />
+      </div>
     </StatsContainer>
   )
 }

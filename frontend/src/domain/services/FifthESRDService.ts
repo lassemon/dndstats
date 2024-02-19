@@ -34,7 +34,13 @@ type LegendaryAction = {
   dc?: DifficultyClass
 }
 
-export type ArmorClass = ArmorClassDex | ArmorClassNatural | ArmorClassArmor | ArmorClassSpell | ArmorClassCondition | { type: string; value: number }
+export type ArmorClass =
+  | ArmorClassDex
+  | ArmorClassNatural
+  | ArmorClassArmor
+  | ArmorClassSpell
+  | ArmorClassCondition
+  | { type: string; value: number }
 
 type ArmorClassDex = {
   _id?: boolean
@@ -72,6 +78,14 @@ type ArmorClassCondition = {
   value: number
   condition: APIReference // Condition
   desc?: string
+}
+
+export enum ItemRarity {
+  COMMON = 'common',
+  UNCOMMON = 'uncommon',
+  RARE = 'rare',
+  VERY_RARE = 'very_rare',
+  LEGENDARY = 'legendary'
 }
 
 export enum ArmorClassType {

@@ -1,5 +1,5 @@
 import { HttpItemRepositoryInterface } from '@dmtool/application'
-import { load, store } from './LocalStorage'
+import { clear, load, store } from './LocalStorage'
 import { Item } from '@dmtool/domain'
 
 const ITEM_STATE_NAME = 'itemState'
@@ -21,5 +21,9 @@ export class LocalStorageItemRepository implements LocalStorageItemRepositoryInt
     await store(ITEM_STATE_NAME, item)
     return item
   }
-  async delete(itemId: string) {}
+  async delete(itemId: string) {
+    const itemJSON = await load<Item>(ITEM_STATE_NAME)
+    await clear(ITEM_STATE_NAME)
+    return itemJSON
+  }
 }

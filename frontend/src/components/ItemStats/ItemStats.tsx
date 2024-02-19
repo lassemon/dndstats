@@ -19,16 +19,15 @@ import {
   Typography
 } from '@mui/material'
 import { useAtom } from 'jotai'
-import { Source, Visibility } from '@dmtool/domain'
 import { UpdateParam } from 'state/itemAtom'
 import { uuid } from '@dmtool/common'
-import { unixtimeNow } from 'utils/utils'
 import { ItemListOption, emptyItem } from 'domain/entities/Item'
 import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
 import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
 import { ITEM_DEFAULTS, ImageDTO, ItemDTO } from '@dmtool/application'
 import { useNavigate } from 'react-router-dom'
 import ItemCard from 'components/ItemCard'
+import { newItemDTO } from 'services/defaults'
 
 interface ItemStatsProps {
   item: ItemDTO | null
@@ -118,27 +117,7 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
 
   const newItem = () => {
     const newItemId = uuid()
-    const newItemDTO = new ItemDTO({
-      id: newItemId,
-      imageId: null,
-      name: 'New Item',
-      shortDescription: 'Short description',
-      mainDescription: 'Main Description',
-      features: [
-        {
-          featureName: 'Feature Name',
-          featureDescription: 'Feature Description'
-        }
-      ],
-      price: null,
-      rarity: null,
-      weight: null,
-      source: Source.HomeBrew,
-      visibility: Visibility.PUBLIC,
-      createdBy: authState.user?.id || '1',
-      createdAt: unixtimeNow()
-    })
-    setItem(newItemDTO)
+    setItem(newItemDTO.clone({ createdBy: authState.user?.id }))
     setImage(null)
     navigate(`/stats/item/${newItemId}`)
   }
@@ -160,7 +139,7 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
   }
 
   const onCreateNew = () => {
-    const unsavedChanged = !item?.isEqual(persistedItem)
+    const unsavedChanged = !item?.isEqual(persistedItem) && item?.id !== ITEM_DEFAULTS.DEFAULT_ITEM_ID
 
     if (unsavedChanged) {
       setUnsavedChangesDialogOpen(true)
@@ -267,18 +246,17 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
       </Box>
       <Box displayPrint="none">
         <FormGroup sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', margin: '1em 0 0 0' }}>
-          <FormControlLabel
-            control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />}
-            label="Inline features"
-          />
           {authState.loggedIn && (
             <div style={{ display: 'flex', gap: '2em' }}>
-              <Button variant="contained" color="error" onClick={onDelete} disabled={item?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={onDelete}
+                disabled={item?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || persistedItem?.name === 'New Item'}
+              >
                 Delete Item
               </Button>
-              <Button variant="contained" onClick={onCreateNew}>
-                New Item
-              </Button>
+
               <Button
                 variant="contained"
                 onClick={() => onSave()}
@@ -286,8 +264,15 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
               >
                 Save Item
               </Button>
+              <Button variant="contained" onClick={onCreateNew}>
+                New Item
+              </Button>
             </div>
           )}
+          <FormControlLabel
+            control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />}
+            label="Inline features"
+          />
         </FormGroup>
         <Dialog open={unsavedChangesDialogOpen} onClose={() => closeUnsavedChangesDialog()} PaperProps={{ sx: { padding: '0.5em' } }}>
           <DialogTitle id={`unsaved-changes`} sx={{ fontWeight: 'bold' }}>{`Unsaved changes`}</DialogTitle>

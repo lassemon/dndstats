@@ -1,4 +1,4 @@
-import { Button, Grid, TextField } from '@mui/material'
+import { Button, Grid, ListItemIcon, TextField } from '@mui/material'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import StatsInputContainer from 'components/StatsInputContainer'
 import { useAtom } from 'jotai'
@@ -6,9 +6,42 @@ import _ from 'lodash'
 import React, { Fragment, useMemo } from 'react'
 import { spellAtom } from 'infrastructure/dataAccess/atoms'
 import { replaceItemAtIndex } from 'utils/utils'
+import { makeStyles } from 'tss-react/mui'
+import { arrayMoveImmutable } from 'array-move'
+import { Container, Draggable } from 'react-smooth-dnd'
+import DragHandleIcon from '@mui/icons-material/DragHandle'
+
+export const useStyles = makeStyles()(() => ({
+  draggableContainer: {
+    position: 'relative'
+  },
+  dragIconContainer: {
+    position: 'absolute',
+    right: '1em',
+    zIndex: '100',
+    cursor: 'pointer',
+    minWidth: 'auto',
+    justifyContent: 'end',
+    '& > svg': {
+      fontSize: '1.5em'
+    }
+  }
+}))
 
 export const SpellStatsInput: React.FC = () => {
   const [currentSpell, setCurrentSpell] = useAtom(useMemo(() => spellAtom, []))
+  const { classes } = useStyles()
+
+  const onDrop = ({ removedIndex, addedIndex }: { removedIndex: any; addedIndex: any }) => {
+    setCurrentSpell((spell) => {
+      if (spell) {
+        return {
+          ...spell,
+          features: arrayMoveImmutable(spell.features, removedIndex, addedIndex)
+        }
+      }
+    })
+  }
 
   const onChange = (name: string) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { value } = event.target
@@ -92,7 +125,12 @@ export const SpellStatsInput: React.FC = () => {
           <TextField id="spell-name" label="Name" value={currentSpell.name} onChange={onChange('name')} />
         </Grid>
         <Grid item={true} xs={4}>
-          <TextField id="spell-short-description" label="Short Description" value={currentSpell.shortDescription} onChange={onChange('shortDescription')} />
+          <TextField
+            id="spell-short-description"
+            label="Short Description"
+            value={currentSpell.shortDescription}
+            onChange={onChange('shortDescription')}
+          />
         </Grid>
         <Grid item={true} xs={4}>
           <TextField id="spell-casting-time" label="Casting Time" value={currentSpell.castingtime} onChange={onChange('castingtime')} />
@@ -119,23 +157,33 @@ export const SpellStatsInput: React.FC = () => {
           />
         </Grid>
         <Grid item={true} xs={12}>
-          {!_.isEmpty(currentSpell.features) &&
-            currentSpell.features.map((feature, index) => {
-              return (
-                <Fragment key={index}>
-                  <FeatureInputContainer onDelete={onDeleteFeature(index)}>
-                    <TextField id={`item-${index}-feature-name`} label="Feature Name" value={feature.featureName} onChange={onChangeFeatureName(index)} />
-                    <TextField
-                      id={`item-${index}-feature-description`}
-                      label="Feature Description"
-                      value={feature.featureDescription}
-                      multiline={true}
-                      onChange={onChangeFeatureDescription(index)}
-                    />
-                  </FeatureInputContainer>
-                </Fragment>
-              )
-            })}
+          <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
+            {!_.isEmpty(currentSpell.features) &&
+              currentSpell.features.map((feature, index) => {
+                return (
+                  <Draggable key={index} className={`${classes.draggableContainer}`}>
+                    <FeatureInputContainer onDelete={onDeleteFeature(index)}>
+                      <ListItemIcon className={`drag-handle ${classes.dragIconContainer}`}>
+                        <DragHandleIcon fontSize="large" />
+                      </ListItemIcon>
+                      <TextField
+                        id={`item-${index}-feature-name`}
+                        label="Feature Name"
+                        value={feature.featureName}
+                        onChange={onChangeFeatureName(index)}
+                      />
+                      <TextField
+                        id={`item-${index}-feature-description`}
+                        label="Feature Description"
+                        value={feature.featureDescription}
+                        multiline={true}
+                        onChange={onChangeFeatureDescription(index)}
+                      />
+                    </FeatureInputContainer>
+                  </Draggable>
+                )
+              })}
+          </Container>
           <Button variant="contained" color="primary" onClick={onAddFeature}>
             Add feature
           </Button>

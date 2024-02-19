@@ -6,7 +6,7 @@ export interface Item extends Entity {
     mainDescription: string;
     price: string | null;
     rarity: string | null;
-    weight: number | null;
+    weight: string | null;
     features: Array<{
         featureName: string;
         featureDescription: string;

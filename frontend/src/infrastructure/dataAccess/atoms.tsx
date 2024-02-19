@@ -11,7 +11,7 @@ type UpdateFunction<T> = (oldValue: T) => T | undefined
 type UpdateParam<T> = UpdateFunction<T> | T
 type DataOrPromise<T> = T | Promise<T>
 
-interface AuthState {
+export interface AuthState {
   user?: UserResponse
   loggedIn: boolean
 }

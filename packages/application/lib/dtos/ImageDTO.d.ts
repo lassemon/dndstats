@@ -9,8 +9,8 @@ export declare class ImageDTO extends DTO<ImageDTO, ImageDTOProperties> {
     set id(value: string);
     get visibility(): Visibility;
     set visibility(value: Visibility);
-    get source(): "5th_e_SRD" | "Homebrew";
-    set source(value: "5th_e_SRD" | "Homebrew");
+    get source(): "5th_e_SRD" | "Homebrew" | "My_Items" | "System";
+    set source(value: "5th_e_SRD" | "Homebrew" | "My_Items" | "System");
     get fileName(): string;
     set fileName(value: string);
     get mimeType(): string;

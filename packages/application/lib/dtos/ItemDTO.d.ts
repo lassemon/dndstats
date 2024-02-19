@@ -9,15 +9,16 @@ export declare class ItemDTO extends DTO<ItemDTO, Item> {
     get name(): string;
     set name(value: string);
     get shortDescription(): string;
+    get shortDescription_label(): string;
     set shortDescription(value: string);
     get mainDescription(): string;
     set mainDescription(value: string);
-    get price(): string | null;
-    set price(value: string | null);
-    get rarity(): string | null;
-    set rarity(value: string | null);
-    get weight(): number | null;
-    set weight(value: number | null);
+    get price(): string;
+    set price(value: string);
+    get rarity(): string;
+    set rarity(value: string);
+    get weight(): string;
+    set weight(value: string);
     get features(): {
         featureName: string;
         featureDescription: string;
@@ -28,8 +29,8 @@ export declare class ItemDTO extends DTO<ItemDTO, Item> {
     }[]);
     get visibility(): import("@dmtool/domain").Visibility;
     set visibility(value: import("@dmtool/domain").Visibility);
-    get source(): "5th_e_SRD" | "Homebrew";
-    set source(value: "5th_e_SRD" | "Homebrew");
+    get source(): "5th_e_SRD" | "Homebrew" | "My_Items" | "System";
+    set source(value: "5th_e_SRD" | "Homebrew" | "My_Items" | "System");
     get createdBy(): string;
     set createdBy(value: string);
     get createdAt(): number;

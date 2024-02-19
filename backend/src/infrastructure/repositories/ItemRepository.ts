@@ -15,9 +15,17 @@ interface DBItem extends Omit<Item, 'features'> {
 
 class ItemRepository implements DatabaseItemRepositoryInterface {
   async getAll(): Promise<Item[]> {
-    return (await connection.select('*').from<any, DBItem[]>('items').orderBy('name')).map((item) => {
+    return (await connection.select('*').from<any, DBItem[]>('items').whereIn('visibility', ['public']).orderBy('name')).map((item) => {
       return { ...item, features: JSON.parse(item.features) }
     })
+  }
+
+  async getAllVisibleForLoggedInUser(): Promise<Item[]> {
+    return (await connection.select('*').from<any, DBItem[]>('items').whereIn('visibility', ['public', 'logged_in']).orderBy('name')).map(
+      (item) => {
+        return { ...item, features: JSON.parse(item.features) }
+      }
+    )
   }
 
   async getAllForUser(userId: string): Promise<Item[]> {

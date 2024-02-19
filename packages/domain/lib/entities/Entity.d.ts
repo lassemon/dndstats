@@ -1,7 +1,9 @@
 import { Visibility } from '../enums/Visibility';
 export declare enum Source {
     FifthESRD = "5th_e_SRD",
-    HomeBrew = "Homebrew"
+    HomeBrew = "Homebrew",
+    MyItem = "My_Items",
+    System = "System"
 }
 export interface Entity {
     id: string;

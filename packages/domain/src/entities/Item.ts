@@ -7,6 +7,6 @@ export interface Item extends Entity {
   mainDescription: string
   price: string | null
   rarity: string | null //TODO replace with enum
-  weight: number | null
+  weight: string | null
   features: Array<{ featureName: string; featureDescription: string }>
 }

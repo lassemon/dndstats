@@ -1,3 +1,4 @@
+import { ItemDTO } from '@dmtool/application'
 import { Item } from '@dmtool/domain'
 import ItemTable from 'components/ItemTable/ItemTable'
 import LoadingIndicator from 'components/LoadingIndicator'
@@ -21,7 +22,7 @@ const imageRepository = new ImageRepository()
 const ItemsPage: React.FC = () => {
   const { classes } = useStyles()
 
-  const [itemList, setItemList] = useState<Item[]>([])
+  const [itemList, setItemList] = useState<ItemDTO[]>([])
   const [loadingItemList, setLoadingItemList] = useState(false)
   const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
 
@@ -32,7 +33,7 @@ const ItemsPage: React.FC = () => {
         const items = await itemRepository.getAll().finally(() => {
           setLoadingItemList(false)
         })
-        setItemList(items)
+        setItemList(items.map((item) => new ItemDTO(item)))
       } catch (error: any) {
         setError(error)
       }

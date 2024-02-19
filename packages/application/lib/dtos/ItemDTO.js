@@ -30,6 +30,9 @@ class ItemDTO extends DTO_1.default {
     get shortDescription() {
         return this._properties.shortDescription;
     }
+    get shortDescription_label() {
+        return `${this._properties.shortDescription}${this._properties.rarity ? ', ' + this._properties.rarity.replace('_', ' ') : ''}`;
+    }
     set shortDescription(value) {
         this._properties.shortDescription = value;
     }
@@ -40,19 +43,19 @@ class ItemDTO extends DTO_1.default {
         this._properties.mainDescription = value;
     }
     get price() {
-        return this._properties.price;
+        return this._properties.price || '';
     }
     set price(value) {
         this._properties.price = value;
     }
     get rarity() {
-        return this._properties.rarity;
+        return this._properties.rarity || '';
     }
     set rarity(value) {
         this._properties.rarity = value;
     }
     get weight() {
-        return this._properties.weight;
+        return this._properties.weight || '';
     }
     set weight(value) {
         this._properties.weight = value;

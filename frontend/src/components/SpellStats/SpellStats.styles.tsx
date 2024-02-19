@@ -17,7 +17,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   largeContainer: {
     '&&': {
-      width: '40%'
+      width: '65%'
     }
   },
   imageContainer: {

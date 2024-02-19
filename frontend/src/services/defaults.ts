@@ -1,4 +1,4 @@
-import { ITEM_DEFAULTS } from '@dmtool/application'
+import { ITEM_DEFAULTS, ItemDTO } from '@dmtool/application'
 import { uuid } from '@dmtool/common'
 import { Item, Source, Visibility } from '@dmtool/domain'
 import balorImage from 'assets/balorImage'
@@ -33,6 +33,27 @@ export const defaultItem: Item = {
   createdBy: '1',
   createdAt: unixtimeNow()
 }
+
+export const newItemDTO = new ItemDTO({
+  id: uuid(),
+  imageId: null,
+  name: 'New Item',
+  shortDescription: 'Short description',
+  mainDescription: 'Main Description',
+  features: [
+    {
+      featureName: 'Feature Name',
+      featureDescription: 'Feature Description'
+    }
+  ],
+  price: null,
+  rarity: null,
+  weight: null,
+  source: Source.HomeBrew,
+  visibility: Visibility.PRIVATE,
+  createdBy: '0',
+  createdAt: unixtimeNow()
+})
 
 export interface Spell {
   name: string

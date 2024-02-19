@@ -88,7 +88,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "id": {"dataType":"string","required":true},
             "visibility": {"ref":"Visibility","required":true},
-            "source": {"dataType":"enum","enums":["5th_e_SRD","Homebrew"],"required":true},
+            "source": {"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"],"required":true},
             "createdBy": {"dataType":"string","required":true},
             "createdAt": {"dataType":"double","required":true},
             "updatedAt": {"dataType":"double"},
@@ -98,7 +98,7 @@ const models: TsoaRoute.Models = {
             "mainDescription": {"dataType":"string","required":true},
             "price": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
-            "weight": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
+            "weight": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
         },
         "additionalProperties": false,
@@ -109,7 +109,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "id": {"dataType":"string","required":true},
             "visibility": {"ref":"Visibility","required":true},
-            "source": {"dataType":"enum","enums":["5th_e_SRD","Homebrew"],"required":true},
+            "source": {"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"],"required":true},
             "createdBy": {"dataType":"string","required":true},
             "createdAt": {"dataType":"double","required":true},
             "updatedAt": {"dataType":"double"},
@@ -502,6 +502,7 @@ export function RegisterRoutes(app: Router) {
 
             function ItemController_getAll(request: any, response: any, next: any) {
             const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

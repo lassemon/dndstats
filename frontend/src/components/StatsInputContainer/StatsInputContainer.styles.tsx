@@ -8,7 +8,6 @@ export const useStyles = makeStyles()((theme) => ({
     position: 'relative',
     padding: '1em 1em 10em 1em',
     backgroundSize: 'cover',
-    boxShadow: '0.1rem 0 0.2rem #afaba5, 0.2rem 0 0.2rem #afaba5',
     display: 'flex',
     flexDirection: 'column',
     gap: '3em',

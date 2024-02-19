@@ -30,6 +30,9 @@ export class ItemDTO extends DTO<ItemDTO, Item> {
   public get shortDescription() {
     return this._properties.shortDescription
   }
+  public get shortDescription_label() {
+    return `${this._properties.shortDescription}${this._properties.rarity ? ', ' + this._properties.rarity.replace('_', ' ') : ''}`
+  }
   public set shortDescription(value) {
     this._properties.shortDescription = value
   }
@@ -42,21 +45,21 @@ export class ItemDTO extends DTO<ItemDTO, Item> {
   }
 
   public get price() {
-    return this._properties.price
+    return this._properties.price || ''
   }
   public set price(value) {
     this._properties.price = value
   }
 
   public get rarity() {
-    return this._properties.rarity
+    return this._properties.rarity || ''
   }
   public set rarity(value) {
     this._properties.rarity = value
   }
 
   public get weight() {
-    return this._properties.weight
+    return this._properties.weight || ''
   }
   public set weight(value) {
     this._properties.weight = value

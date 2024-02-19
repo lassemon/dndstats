@@ -1,4 +1,4 @@
-import { Button, Typography } from '@mui/material'
+import { Button, ListItemIcon, Typography } from '@mui/material'
 import EditableText from 'components/CombatTracker/EditableText'
 import DeleteButton from 'components/DeleteButton'
 import _ from 'lodash'
@@ -7,6 +7,9 @@ import { CharacterCardContext } from 'services/context'
 import { makeStyles } from 'tss-react/mui'
 import { replaceItemAtIndex } from 'utils/utils'
 import CardTitle from './CardTitle'
+import DragHandleIcon from '@mui/icons-material/DragHandle'
+import { arrayMoveImmutable } from 'array-move'
+import { Container, Draggable } from 'react-smooth-dnd'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -66,6 +69,20 @@ export const useStyles = makeStyles()((theme) => ({
   buttonsContainer: {
     display: 'flex',
     gap: '0.6em'
+  },
+  draggableContainer: {
+    position: 'relative'
+  },
+  dragIconContainer: {
+    position: 'absolute',
+    right: '1em',
+    zIndex: '100',
+    cursor: 'pointer',
+    minWidth: 'auto',
+    justifyContent: 'end',
+    '& > svg': {
+      fontSize: '1.5em'
+    }
   }
 }))
 
@@ -88,6 +105,14 @@ const EditableSpecialAbilities: React.FC<EditableSpecialAbilitiesProps> = (props
   useEffect(() => {
     setIsText(!editMode)
   }, [editMode])
+
+  const onDrop = ({ removedIndex, addedIndex }: { removedIndex: any; addedIndex: any }) => {
+    setInternalSpecialAbilities((special_abilities) => {
+      const specialAbilitiesCopy = arrayMoveImmutable(special_abilities, removedIndex, addedIndex)
+      setCharacter(character.clone({ special_abilities: specialAbilitiesCopy }))
+      return specialAbilitiesCopy
+    })
+  }
 
   const onDoubleClick = () => {
     if (isText) {
@@ -165,35 +190,42 @@ const EditableSpecialAbilities: React.FC<EditableSpecialAbilitiesProps> = (props
       ) : (
         <>
           <CardTitle>Special Abilities</CardTitle>
-          {internalSpecialAbilities.map((specialAbility, index) => {
-            return (
-              <div key={index} className={classes.row}>
-                <div style={{ display: 'flex', alignItems: 'center', flex: '1' }}>
-                  <DeleteButton size="small" onClick={onDelete(index)} sx={{ padding: 0 }} />
-                  <EditableText
-                    id={'special-ability-name-' + index}
-                    textFieldClass={`${classes.actionNameInput}`}
-                    value={specialAbility.name}
-                    label="Special Ability Name"
-                    onChange={onChangeName(index)}
-                    editMode={!isText}
-                    presentationMode={false}
-                  />
-                </div>
-                <EditableText
-                  id={'special-ability-description-' + index}
-                  className={classes.actionDescriptionBase}
-                  textFieldClass={classes.actionDescriptionInput}
-                  value={specialAbility.desc}
-                  label="Special Ability Description"
-                  onChange={onChangeDescription(index)}
-                  editMode={!isText}
-                  presentationMode={false}
-                  multiline={true}
-                />
-              </div>
-            )
-          })}
+          <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
+            {internalSpecialAbilities.map((specialAbility, index) => {
+              return (
+                <Draggable key={index} className={`${classes.draggableContainer}`}>
+                  <div key={index} className={classes.row}>
+                    <ListItemIcon className={`drag-handle ${classes.dragIconContainer}`}>
+                      <DragHandleIcon fontSize="large" />
+                    </ListItemIcon>
+                    <div style={{ display: 'flex', alignItems: 'center', flex: '1' }}>
+                      <DeleteButton size="small" onClick={onDelete(index)} sx={{ padding: 0 }} />
+                      <EditableText
+                        id={'special-ability-name-' + index}
+                        textFieldClass={`${classes.actionNameInput}`}
+                        value={specialAbility.name}
+                        label="Special Ability Name"
+                        onChange={onChangeName(index)}
+                        editMode={!isText}
+                        presentationMode={false}
+                      />
+                    </div>
+                    <EditableText
+                      id={'special-ability-description-' + index}
+                      className={classes.actionDescriptionBase}
+                      textFieldClass={classes.actionDescriptionInput}
+                      value={specialAbility.desc}
+                      label="Special Ability Description"
+                      onChange={onChangeDescription(index)}
+                      editMode={!isText}
+                      presentationMode={false}
+                      multiline={true}
+                    />
+                  </div>
+                </Draggable>
+              )
+            })}
+          </Container>
         </>
       )}
       {!isText && (

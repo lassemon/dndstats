@@ -107,12 +107,25 @@ export const CombatTracker: React.FC = () => {
   const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
   const [settingsAnchors, setSettingsAnchors] = useState<Array<HTMLButtonElement | null>>(currentCharacters?.map(() => null))
   const [incomingDamages, setIncomingDamages] = useState<string[]>(currentCharacters?.map(() => ''))
-  const [incomingTempHPs, setIncomingTempHPs] = useState<string[]>(currentCharacters.map((character) => String(character.temporary_hit_points || '') || ''))
-  const [incomingRegenerations, setIncomingRegenerations] = useState<string[]>(currentCharacters.map((character) => String(character.regeneration || '') || ''))
+  const [incomingTempHPs, setIncomingTempHPs] = useState<string[]>(
+    currentCharacters.map((character) => String(character.temporary_hit_points || '') || '')
+  )
+  const [incomingRegenerations, setIncomingRegenerations] = useState<string[]>(
+    currentCharacters.map((character) => String(character.regeneration || '') || '')
+  )
   const [regenDialogsOpen, setRegenDialogsOpen] = useState<boolean[]>(currentCharacters.map(() => false))
-  const [concentrationDialogsOpen, setConcentrationDialogsOpen] = useState<Array<number | undefined>>(currentCharacters.map(() => undefined))
+  const [concentrationDialogsOpen, setConcentrationDialogsOpen] = useState<Array<number | undefined>>(
+    currentCharacters.map(() => undefined)
+  )
   const [imageDialogsOpen, setImageDialogsOpen] = useState<boolean[]>(currentCharacters.map(() => false))
   const [characterCardTooltipsOpen, setCharacterCardTooltipsOpen] = useState<boolean[]>(currentCharacters.map(() => false))
+
+  useEffect(() => {
+    document.body.style.overflowY = 'scroll'
+    return () => {
+      document.body.style.overflowY = ''
+    }
+  }, [])
 
   const handleCharacterCardTooltipClickAway = (index: number) => () => {
     setCharacterCardTooltipsOpen((cardTooltipsOpen) => {
@@ -540,7 +553,10 @@ export const CombatTracker: React.FC = () => {
   }
 
   const onChangeRegeneration = (index: number) => (event: React.KeyboardEvent<HTMLDivElement> | {}, reason?: string) => {
-    if ((event as React.KeyboardEvent<HTMLDivElement>).keyCode === 13 || (reason === 'backdropClick' && incomingRegenerations[index] !== '')) {
+    if (
+      (event as React.KeyboardEvent<HTMLDivElement>).keyCode === 13 ||
+      (reason === 'backdropClick' && incomingRegenerations[index] !== '')
+    ) {
       setCurrentCombat((combat) => {
         const character = combat.characters[index].clone()
         character.regeneration = parseInt(incomingRegenerations[index]) || 0
@@ -835,7 +851,9 @@ export const CombatTracker: React.FC = () => {
                       )}
                     </div>
                     <Dialog open={regenDialogOpen} onClose={() => closeRegenDialog(index)}>
-                      <DialogTitle id={`regen-dialog-title-${index}`}>{`Regen ${character.name} for ${character.regeneration} HP this turn?`}</DialogTitle>
+                      <DialogTitle
+                        id={`regen-dialog-title-${index}`}
+                      >{`Regen ${character.name} for ${character.regeneration} HP this turn?`}</DialogTitle>
                       <DialogContent>
                         <Typography variant="body2" paragraph={false}>
                           Conditions for {character.name}:
@@ -887,7 +905,8 @@ export const CombatTracker: React.FC = () => {
                             margin: '0 0 1em 0'
                           }}
                         >
-                          The DC of a concentration check is either 10 or half of the total damage the character takes — whichever value is greater.
+                          The DC of a concentration check is either 10 or half of the total damage the character takes — whichever value is
+                          greater.
                         </Typography>
                         <Typography variant="body2" paragraph={false}>
                           The damage just taken was {damageForConcentrationCheck}.
@@ -901,7 +920,11 @@ export const CombatTracker: React.FC = () => {
                     </Dialog>
                     {currentCombat.ongoing && (
                       <ListItemIcon className={`${character.isUnconscious() ? '' : 'drag-handle'} ${classes.dragIconContainer}`}>
-                        {currentCombat.turn === index ? <CurrentTurnIcon fontSize="large" /> : <span style={{ width: '1.5em' }}>&nbsp;</span>}
+                        {currentCombat.turn === index ? (
+                          <CurrentTurnIcon fontSize="large" />
+                        ) : (
+                          <span style={{ width: '1.5em' }}>&nbsp;</span>
+                        )}
                       </ListItemIcon>
                     )}
                     {!currentCombat.ongoing && (
@@ -943,7 +966,12 @@ export const CombatTracker: React.FC = () => {
                       tooltip={
                         <ClickAwayListener mouseEvent="onMouseUp" onClickAway={handleCharacterCardTooltipClickAway(index)}>
                           <div>
-                            <CharacterCard character={character} resizeable={false} onChange={onChangeCharacterCard(index)} presentationMode={true} />
+                            <CharacterCard
+                              character={character}
+                              resizeable={false}
+                              onChange={onChangeCharacterCard(index)}
+                              presentationMode={true}
+                            />
                           </div>
                         </ClickAwayListener>
                       }
@@ -1005,9 +1033,9 @@ export const CombatTracker: React.FC = () => {
                     <EditableText
                       id={`character-hp-${index}`}
                       type="number"
-                      tooltip={`HP ${character.current_hit_points}${character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''} / ${
-                        character.hit_points_cap
-                      }`}
+                      tooltip={`HP ${character.current_hit_points}${
+                        character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''
+                      } / ${character.hit_points_cap}`}
                       className={cx({
                         [classes.editableTextField]: true,
                         [classes.HPText]: true
@@ -1021,9 +1049,9 @@ export const CombatTracker: React.FC = () => {
                       onChange={onChangeCharacterHP(index)}
                     />
                     <Tooltip
-                      title={`HP ${character.current_hit_points}${character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''} / ${
-                        character.hit_points_cap
-                      }`}
+                      title={`HP ${character.current_hit_points}${
+                        character.temporary_hit_points ? `+${character.temporary_hit_points}` : ''
+                      } / ${character.hit_points_cap}`}
                       placement="top-start"
                     >
                       <div className={classes.hpBarContainer}>
@@ -1144,7 +1172,9 @@ export const CombatTracker: React.FC = () => {
                       disableCloseOnSelect
                       value={_.without(character.conditions, Condition.Dead, Condition.Unconscious, Condition.Bloodied)}
                       className={`${classes.autocomplete}`}
-                      options={_.without(Object.values(Condition), Condition.Dead, Condition.Unconscious, Condition.Bloodied) as Condition[]}
+                      options={
+                        _.without(Object.values(Condition), Condition.Dead, Condition.Unconscious, Condition.Bloodied) as Condition[]
+                      }
                       onChange={onChangeCondition(index)}
                       getOptionLabel={(option) => option.replaceAll('_', ' ')}
                       style={{ width: '14em', minWidth: '10em' }}

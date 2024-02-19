@@ -4,6 +4,8 @@ import Authentication from 'security/Authentication'
 import passport from 'passport'
 import cookieParser from 'cookie-parser'
 import { Logger } from '@dmtool/common'
+import ApiError from './domain/errors/ApiError'
+import IllegalArgument from './domain/errors/IllegalArgument'
 
 const log = new Logger('App')
 const app = express()
@@ -21,13 +23,22 @@ RegisterRoutes(app)
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   log.error(err)
   const status = err.status || err.statusCode || 500
-  const body: any = {
-    fields: err.fields || undefined,
-    message: err.message || 'An error occurred during the request',
-    name: err.name,
-    status
+  if (err instanceof ApiError || err instanceof IllegalArgument) {
+    const body: any = {
+      message: err.message || 'An error occurred during the request',
+      name: err.name,
+      status
+    }
+    res.status(status).json(body)
+  } else {
+    const body: any = {
+      fields: err.fields || undefined,
+      message: 'An error occurred during the request',
+      name: err.name,
+      status
+    }
+    res.status(status).json(body)
   }
-  res.status(status).json(body)
 })
 
 export default app

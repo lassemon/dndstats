@@ -10,7 +10,7 @@ interface EditableShortDescriptionProps {
   presentationMode?: boolean
 }
 
-export const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles()(() => ({
   root: {
     cursor: 'pointer'
   },
@@ -181,7 +181,13 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
               <InputLabel shrink id="subtype">
                 Subtype
               </InputLabel>
-              <Select labelId={'subtype'} id="subtype-select" value={shortDescription.subtype.toLowerCase()} label="Subtype" onChange={onChangeSubtype}>
+              <Select
+                labelId={'subtype'}
+                id="subtype-select"
+                value={shortDescription.subtype.toLowerCase()}
+                label="Subtype"
+                onChange={onChangeSubtype}
+              >
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
@@ -200,7 +206,13 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
               <InputLabel shrink id="alignment">
                 Alignment
               </InputLabel>
-              <Select labelId={'alignment'} id="alignment-select" value={shortDescription.alignment} label="Armor Class" onChange={onChangeAlignment}>
+              <Select
+                labelId={'alignment'}
+                id="alignment-select"
+                value={shortDescription.alignment}
+                label="Armor Class"
+                onChange={onChangeAlignment}
+              >
                 {Object.values(Alignment).map((value, index) => {
                   return (
                     <MenuItem key={index} value={value}>

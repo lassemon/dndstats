@@ -7,7 +7,6 @@ import { useOrientation } from 'utils/hooks'
 import { Link } from 'react-router-dom'
 import { clearAll } from 'infrastructure/localStorage/LocalStorage'
 import AccountCircle from '@mui/icons-material/AccountCircle'
-import MenuIcon from '@mui/icons-material/Menu'
 import Login from 'components/Login'
 import { logout } from 'api/auth'
 import { useAtom } from 'jotai'
@@ -87,17 +86,6 @@ const NavBar: React.FC = () => {
   const userMenuOpen = Boolean(userMenuAnchorElement)
   const [tab, setTab] = useState<string | boolean>(Object.keys(TABS).includes(window.location.pathname) ? window.location.pathname : false)
 
-  const [burgerMenuAnchorElement, setBurgerMenuAnchorElement] = React.useState<null | HTMLElement>(null)
-  const burgerMenuOpen = Boolean(burgerMenuAnchorElement)
-
-  const onClickBurgerMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setBurgerMenuAnchorElement(event.currentTarget)
-  }
-
-  const handleBurgerMenuClose = () => {
-    setBurgerMenuAnchorElement(null)
-  }
-
   const handleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setUserMenuAnchorElement(event.currentTarget)
   }
@@ -137,12 +125,9 @@ const NavBar: React.FC = () => {
 
   return (
     <Box display="block" displayPrint="none">
-      <AppBar position="static" className={classes.appBar}>
+      <AppBar position="static" className={classes.appBar} elevation={0}>
         <Toolbar disableGutters className={isPortrait ? classes.toolbarPortrait : classes.toolbarLandscape}>
           <div style={{ display: 'flex' }}>
-            <IconButton size="large" onClick={onClickBurgerMenu}>
-              <MenuIcon />
-            </IconButton>
             {authState?.loggedIn && (
               <div>
                 <IconButton
@@ -217,35 +202,6 @@ const NavBar: React.FC = () => {
               </div>
             )}
           </div>
-          <Menu
-            id="menu-burger"
-            elevation={0}
-            anchorEl={burgerMenuAnchorElement}
-            keepMounted
-            anchorOrigin={{
-              vertical: isPortrait ? 'bottom' : 'top',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'left'
-            }}
-            open={burgerMenuOpen}
-            onClose={handleBurgerMenuClose}
-            slotProps={{
-              paper: {
-                sx: {
-                  background: (theme) => theme.status.light
-                }
-              }
-            }}
-          >
-            <MenuItem key="print" onClick={handleBurgerMenuClose}>
-              <span onClick={onPrint} style={{ whiteSpace: 'nowrap', display: 'flex', gap: '0.5em' }}>
-                Print page <PrintIcon />
-              </span>
-            </MenuItem>
-          </Menu>
 
           <Tabs
             textColor="secondary"
@@ -301,6 +257,12 @@ const NavBar: React.FC = () => {
               <Login />
             </MenuItem>
           </React.Suspense>
+          <Button
+            onClick={onPrint}
+            style={{ whiteSpace: 'nowrap', display: 'flex', gap: '0.5em', position: isPortrait ? 'static' : 'fixed', bottom: '1em' }}
+          >
+            Print page <PrintIcon />
+          </Button>
         </Toolbar>
       </AppBar>
     </Box>

@@ -9,8 +9,7 @@
     "clean:build": "npm run clean:lib && npm run clean:buildinfo",
     "clean:node_modules": "rimraf -g \"packages/**/node_modules\" && rimraf backend/node_modules && rimraf frontend/node_modules",
     "clean": "npm run clean:lib && npm run clean:buildinfo && npm run clean:node_modules",
-    "build": "tsc -b tsconfig.build.json",
-    "prepare": "npm run build"
+    "build": "tsc -b tsconfig.build.json"
   },
   "workspaces": [
     "backend",
@@ -18,7 +17,9 @@
     "packages/*"
   ],
   "devDependencies": {
-    "rimraf": "^5.0.5",
+    "rimraf": "^5.0.5"
+  },
+  "dependencies": {
     "typescript": "^5.3.3"
   }
 }

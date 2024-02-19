@@ -3,7 +3,7 @@ import passport from 'passport'
 import Authentication from '/security/Authentication'
 import express from 'express'
 import ApiError from '/domain/errors/ApiError'
-import { Item, User } from '@dmtool/domain'
+import { Item, Source, User } from '@dmtool/domain'
 import ItemRepository from '/infrastructure/repositories/ItemRepository'
 import { AuthenticatedRequest } from '/infrastructure/entities/AuthenticatedRequest'
 import { ITEM_DEFAULTS, ImageService, ItemUpdateRequest, ItemUpdateResponse } from '@dmtool/application'
@@ -30,8 +30,12 @@ const saveItemUseCase = new SaveItemUseCase(itemRepository, saveImageUseCase, re
 export class ItemController extends Controller {
   @Tags('Item')
   @Get('items/')
-  public async getAll(): Promise<Item[]> {
-    return await itemRepository.getAll()
+  public async getAll(@Request() request: express.Request): Promise<Item[]> {
+    if (request?.isAuthenticated()) {
+      return await itemRepository.getAllVisibleForLoggedInUser()
+    } else {
+      return await itemRepository.getAll()
+    }
   }
 
   @Tags('Item')
@@ -40,7 +44,12 @@ export class ItemController extends Controller {
     if (!request.user) {
       throw new ApiError(401, 'Unauthorized', 'Must be logged in to do that')
     }
-    return await itemRepository.getAllForUser((request.user as User).id)
+    return (await itemRepository.getAllForUser((request.user as User).id)).map((item) => {
+      return {
+        ...item,
+        source: item.source === Source.HomeBrew ? Source.MyItem : item.source
+      }
+    })
   }
 
   @Tags('Item')

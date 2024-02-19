@@ -63,8 +63,7 @@ export const useStyles = makeStyles()((theme) => ({
     },
 
     minWidth: '150px',
-    minHeight: '150px',
-    margin: '0 auto'
+    minHeight: '150px'
   },
   monsterActionsContainer: {
     display: 'flex',
@@ -75,6 +74,11 @@ export const useStyles = makeStyles()((theme) => ({
     display: 'none'
   },
   mainDescription: {
+    '&:hover, &active': {
+      resize: 'both',
+      overflow: 'hidden'
+    },
+
     background: '#e0e4c3',
     padding: '0',
     borderTop: '3px solid #1b1b1b',

@@ -1,4 +1,4 @@
-import { Box, Grid, Toolbar } from '@mui/material'
+import { Box, Grid, Toolbar, useMediaQuery, useTheme } from '@mui/material'
 import React from 'react'
 import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'
@@ -14,6 +14,9 @@ interface StatsLayoutProps {
 
 const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
   const { statsComponent, inputComponent, sx } = props
+
+  const theme = useTheme()
+  const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
 
   const onToggleBg = () => {
     const statsContainers = document.getElementsByClassName('stats-background')
@@ -50,21 +53,27 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
       container={true}
       columnSpacing={0}
       rowSpacing={2}
-      style={{
-        margin: 0,
-        height: '100%'
-      }}
-      sx={sx ? sx : {}}
+      sx={
+        sx
+          ? sx
+          : {
+              margin: 0,
+              height: '100%',
+              flexDirection: isLarge ? 'row-reverse' : 'row'
+            }
+      }
     >
       {statsComponent && (
         <Grid
           item={true}
           xs={12}
           md={12}
+          xl={6}
           sx={{
             '&&': {
-              margin: `0 1em`,
-              paddingTop: 0
+              padding: `1em`,
+              paddingTop: '0.5em',
+              boxShadow: 'rgb(0, 0, 0) 2px 0px 7px -5px inset'
             }
           }}
         >
@@ -90,7 +99,17 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
           {statsComponent}
         </Grid>
       )}
-      <Grid item={true} xs={12}>
+      <Grid
+        item={true}
+        xs={12}
+        xl={6}
+        sx={{
+          '&&&': {
+            padding: 0,
+            paddingTop: 0
+          }
+        }}
+      >
         {inputComponent}
       </Grid>
     </Grid>

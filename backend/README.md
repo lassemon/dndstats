@@ -16,6 +16,14 @@ Installation to cPanel:
   app needs to run at port 80
   app cannot be started manually from terminal, but only through the web application UI
 
+Steps how I got it to work
+
+- FTP copy backend AND packages/\* AND tsconfig.build.json AND tsconfig.package.json under /nodevenv/dmtools/18/lib
+- run `npm i `from project root at /home/viitevhg/dmtools
+- run `run npm build` in project root
+- set access rights to all node modules `chmod -R 777 /home/viitevhg/dmtools/node_modules`
+- run `npm run build` under dmtools/backend
+
 Settings:
 
 - Node.js version 18

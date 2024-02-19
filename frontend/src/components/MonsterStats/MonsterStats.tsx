@@ -131,7 +131,9 @@ export const MonsterStats: React.FC = () => {
       if (tryingToOverwriteNonHomebrewCharacter) {
         setCurrentMonster((currentMonster) => {
           if (currentMonster) {
-            const monsterWithNameCount = (customCharacterList || []).filter((customCharacter) => customCharacter.id.includes(currentMonster.id)).length
+            const monsterWithNameCount = (customCharacterList || []).filter((customCharacter) =>
+              customCharacter.id.includes(currentMonster.id)
+            ).length
             const newName = `${currentMonster.name} #${monsterWithNameCount + 1}`
             characterToBeSaved = characterToBeSaved?.clone({ name: newName })
             return characterToBeSaved
@@ -314,6 +316,7 @@ export const MonsterStats: React.FC = () => {
               )}
             </div>
           </Box>
+
           {currentMonster.imageElement && (
             <div className={`${classes.imageContainer}`}>
               <img alt={currentMonster.imageElement?.props.alt} src={`${currentMonster.imageElement?.props.src}`} />
