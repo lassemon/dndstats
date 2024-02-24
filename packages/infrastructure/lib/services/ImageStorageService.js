@@ -18,7 +18,7 @@ const common_1 = require("@dmtool/common");
 const log = new common_1.Logger('ImageStorageService');
 const imagesBasePath = process.env.IMAGES_BASE_PATH || './images';
 class ImageStorageService {
-    removeImageFromFileSystem(fileName) {
+    deleteImageFromFileSystem(fileName) {
         return __awaiter(this, void 0, void 0, function* () {
             const unlinkPath = `${imagesBasePath}/${fileName}`;
             fs_1.default.unlink(unlinkPath, (err) => {

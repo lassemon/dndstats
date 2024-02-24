@@ -5,7 +5,7 @@ import {
   UseCaseInterface,
   UseCaseOptionsInterface
 } from '@dmtool/application'
-import { Item, User } from '@dmtool/domain'
+import { Item } from '@dmtool/domain'
 import { ImageStorageServiceInterface } from '@dmtool/infrastructure'
 import ApiError from '/domain/errors/ApiError'
 import { Logger } from '@dmtool/common'
@@ -13,11 +13,11 @@ import { Logger } from '@dmtool/common'
 const logger = new Logger('RemoveImageFromItemUseCase')
 
 export interface RemoveImageFromItemUseCaseOptions extends UseCaseOptionsInterface {
-  item: Item
-  user: User
+  itemId: string
+  userId: string
 }
 
-export type RemoveImageFromItemUseCaseInterface = UseCaseInterface<RemoveImageFromItemUseCaseOptions, Item>
+export type RemoveImageFromItemUseCaseInterface = UseCaseInterface<RemoveImageFromItemUseCaseOptions, Item | null>
 
 export class RemoveImageFromItemUseCase implements RemoveImageFromItemUseCaseInterface {
   constructor(
@@ -26,26 +26,32 @@ export class RemoveImageFromItemUseCase implements RemoveImageFromItemUseCaseInt
     private readonly imageRepository: DatabaseImageRepositoryInterface
   ) {}
 
-  async execute({ item, user }: RemoveImageFromItemUseCaseOptions) {
+  async execute({ itemId, userId }: RemoveImageFromItemUseCaseOptions) {
     try {
-      const savedItem = await this.itemRepository.getById(item.id)
+      const savedItem = await this.itemRepository.getById(itemId).catch(() => {
+        //fail silently if item is not found
+        return null
+      })
+      if (savedItem === null) {
+        return null
+      }
 
-      if (savedItem.imageId === ITEM_DEFAULTS.DEFAULT_ITEM_IMAGE_ID) {
+      if (savedItem?.imageId === ITEM_DEFAULTS.DEFAULT_ITEM_IMAGE_ID) {
         return savedItem
       }
-      if (savedItem.imageId) {
+      if (savedItem?.imageId) {
         const savedImage = await this.imageRepository.getById(savedItem.imageId)
-        await this.imageStorageService.removeImageFromFileSystem(savedImage.metadata.fileName)
+        await this.imageStorageService.deleteImageFromFileSystem(savedImage.metadata.fileName)
+        // Image can be deleted because currently using 1to1 relatioship between
+        // an image and an item. No image can belong to multiple items
         await this.imageRepository.delete(savedImage.metadata.id)
       }
-      return await this.itemRepository.save({ ...savedItem, imageId: null }, user.id)
+      return await this.itemRepository.save({ ...savedItem, imageId: null }, userId)
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
-        logger.debug('Attempted to remove image from non existing item', item.id)
-      } else {
-        throw error
+        logger.debug('Attempted to remove item or image that does not exist.', itemId)
       }
-      return item
+      throw error
     }
   }
 }

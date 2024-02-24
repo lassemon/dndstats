@@ -1,4 +1,4 @@
-import { Button, Divider, TextField, Typography } from '@mui/material'
+import { Button, Divider, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
 import useDefaultPage from 'hooks/useDefaultPage'
 import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
 import UserRepository from 'infrastructure/repositories/UserRepository'
@@ -9,6 +9,7 @@ import { dateStringFromUnixTime, unixtimeNow } from 'utils/utils'
 import _ from 'lodash'
 import { LoadingButton } from '@mui/lab'
 import SendIcon from '@mui/icons-material/Send'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
 
 const useStyles = makeStyles()(() => ({
   root: {
@@ -39,7 +40,13 @@ const AccountPage: React.FC = () => {
   const [authState, setAuthState] = useAtom(authAtom)
   const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
   const [user, setUser] = useState(authState.user)
-  const [changePassword, setChangePassword] = useState({ oldPassword: '', newPassword: '', newPasswordConfirmation: '', error: false, oldPasswordError: false })
+  const [changePassword, setChangePassword] = useState({
+    oldPassword: '',
+    newPassword: '',
+    newPasswordConfirmation: '',
+    error: false,
+    oldPasswordError: false
+  })
   const { classes } = useStyles()
   useDefaultPage(!authState.loggedIn)
 
@@ -51,6 +58,17 @@ const AccountPage: React.FC = () => {
   const [loadingUserUpdate, setLoadingUserUpdate] = useState(false)
   const [passwordChangeSuccess, setPasswordChangeSuccess] = useState(false)
   const [loadingPasswordChange, setLoadingPasswordChange] = useState(false)
+
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false)
+
+  const toggleShowNewPassword = () => {
+    setShowNewPassword((_showPassword) => !_showPassword)
+  }
+
+  const toggleShowPasswordConfirmation = () => {
+    setShowPasswordConfirmation((_showPassword) => !_showPassword)
+  }
 
   const resetUiIndicators = () => {
     setSaveFailed(false)
@@ -307,12 +325,14 @@ const AccountPage: React.FC = () => {
           shrink: true
         }}
         error={changePassword.oldPasswordError}
+        helperText={changePassword.oldPasswordError ? 'Required field.' : ''}
         sx={{
           margin: '0 0 .5em .5em'
         }}
       />
       <TextField
         id={'new-password'}
+        type={showNewPassword ? 'text' : 'password'}
         value={changePassword.newPassword}
         label={'New password'}
         onChange={onChangeNewPasswordField}
@@ -321,6 +341,15 @@ const AccountPage: React.FC = () => {
         InputLabelProps={{
           shrink: true
         }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton aria-label="Toggle password visibility" onClick={toggleShowNewPassword}>
+                {showNewPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
         error={changePassword.error}
         sx={{
           margin: '0 0 0 1em'
@@ -328,6 +357,7 @@ const AccountPage: React.FC = () => {
       />
       <TextField
         id={'new-password-confirmation'}
+        type={showPasswordConfirmation ? 'text' : 'password'}
         value={changePassword.newPasswordConfirmation}
         label={'Confirm password'}
         onChange={onChangeNewPasswordConfirmationField}
@@ -336,7 +366,17 @@ const AccountPage: React.FC = () => {
         InputLabelProps={{
           shrink: true
         }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton aria-label="Toggle password visibility" onClick={toggleShowPasswordConfirmation}>
+                {showPasswordConfirmation ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          )
+        }}
         error={changePassword.error}
+        helperText={changePassword.error ? 'Passwords do not match.' : ''}
         sx={{
           margin: '0 0 0 1em'
         }}

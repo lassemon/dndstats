@@ -1,16 +1,18 @@
 import { FetchOptions, HttpItemRepositoryInterface, ItemDTO } from '@dmtool/application'
 import { Image, Item } from '@dmtool/domain'
 import { HttpItemRepository } from 'infrastructure/api/HttpItemRepository'
-import { LocalStorageItemRepository } from 'infrastructure/localStorage/LocalStorageItemRepository'
+import { LocalStorageItemRepository } from 'infrastructure/repositories/LocalStorageItemRepository'
 import { defaultItem } from 'services/defaults'
+import { LocalStorageRepository } from './LocalStorageRepository'
 
 export interface FrontendItemRepositoryInterface extends HttpItemRepositoryInterface {
   saveToLocalStorage(item: Item): Promise<Item>
 }
 
+const localStorageRepository = new LocalStorageRepository<Item>()
 class ItemRepository implements FrontendItemRepositoryInterface {
   private backendRepository = new HttpItemRepository()
-  private localStorageRepository = new LocalStorageItemRepository()
+  private localStorageRepository = new LocalStorageItemRepository(localStorageRepository)
 
   async getAll(options: FetchOptions = {}): Promise<Item[]> {
     return await this.backendRepository.getAll(options)
@@ -68,6 +70,7 @@ class ItemRepository implements FrontendItemRepositoryInterface {
   }
 
   async delete(itemId: string) {
+    await this.localStorageRepository.delete(itemId)
     return await this.backendRepository.delete(itemId)
   }
 }

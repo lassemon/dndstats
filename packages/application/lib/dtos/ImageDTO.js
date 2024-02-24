@@ -128,7 +128,7 @@ class ImageDTO extends DTO_1.default {
                 ownerId: this.ownerId,
                 ownerType: domain_1.EntityType.ITEM
             },
-            base64: imageBase64
+            base64: imageBase64 || this.base64
         };
     }
     toJSON() {

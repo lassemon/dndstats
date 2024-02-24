@@ -126,7 +126,7 @@ export class ImageDTO extends DTO<ImageDTO, ImageDTOProperties> {
     return this._properties.id === ITEM_DEFAULTS.DEFAULT_ITEM_IMAGE_ID
   }
 
-  parseForSaving(imageBase64: string): Image {
+  parseForSaving(imageBase64?: string): Image {
     let newImageId = this._properties.id
     if (this.isSavingDefaultImage()) {
       newImageId = uuid()
@@ -147,7 +147,7 @@ export class ImageDTO extends DTO<ImageDTO, ImageDTOProperties> {
         ownerId: this.ownerId,
         ownerType: EntityType.ITEM
       },
-      base64: imageBase64
+      base64: imageBase64 || this.base64
     }
   }
 

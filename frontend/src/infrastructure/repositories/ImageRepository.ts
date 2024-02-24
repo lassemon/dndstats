@@ -12,7 +12,8 @@ class ImageRepository implements HttpImageRepositoryInterface {
   async save(image: Image, options?: FetchOptions) {
     return await postJson<Image>({ ...{ endpoint: '/image', payload: image }, ...options })
   }
-  async delete(imageId: string, options?: FetchOptions) {
+
+  async delete(imageId: string, options?: FetchOptions): Promise<Image> {
     throw new ApiError(501, 'NotImplemented')
   }
 }

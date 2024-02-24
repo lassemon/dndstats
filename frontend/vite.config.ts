@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import * as packageJson from './package.json'
 
 export default defineConfig({
   // depending on your application, base can also be "/"
@@ -10,6 +9,9 @@ export default defineConfig({
     outDir: './build'
   },
   plugins: [react(), viteTsconfigPaths()],
+  optimizeDeps: {
+    include: ['@mui/material/Tooltip']
+  },
   server: {
     // this ensures that the browser opens upon server start
     open: true,

@@ -7,7 +7,7 @@ const log = new Logger('ImageStorageService')
 const imagesBasePath = process.env.IMAGES_BASE_PATH || './images'
 
 export class ImageStorageService implements ImageStorageServiceInterface {
-  async removeImageFromFileSystem(fileName: string) {
+  async deleteImageFromFileSystem(fileName: string) {
     const unlinkPath = `${imagesBasePath}/${fileName}`
     fs.unlink(unlinkPath, (err) => {
       if (err) {

@@ -11,4 +11,5 @@ export interface Item extends Entity {
         featureName: string;
         featureDescription: string;
     }>;
+    localItem?: boolean;
 }

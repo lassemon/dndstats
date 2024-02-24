@@ -1,25 +1,26 @@
-import { IJwtPayload /*IUser*/ } from 'interfaces/user'
+import { IJwtPayload } from 'interfaces/user'
 import { isEmpty } from 'lodash'
 import { PassportStatic } from 'passport'
-import Encryption from 'security/Encryption'
 import { Strategy as JwtStrategy, ExtractJwt, VerifiedCallback, StrategyOptions } from 'passport-jwt'
-//import UserService from 'services/UserService'
 import express from 'express'
 import ApiError from '/domain/errors/ApiError'
 import { User } from '@dmtool/domain'
+import { DatabaseUserRepositoryInterface } from '@dmtool/application'
+import UserRepository from '/infrastructure/repositories/UserRepository'
 
 export default class Authentication {
   private passport: PassportStatic
   private static instance: Authentication
+  private userRepository: DatabaseUserRepositoryInterface
 
   constructor(passport: PassportStatic) {
     this.passport = passport
+    this.userRepository = new UserRepository()
     this.init()
   }
 
   private init = () => {
     if (!Authentication.instance) {
-      //const userService = new UserService()
       const options: StrategyOptions = {
         jwtFromRequest: ExtractJwt.fromExtractors([
           (request: express.Request) => {
@@ -36,15 +37,7 @@ export default class Authentication {
       this.passport.use(
         new JwtStrategy(options, async (jwtPayload: IJwtPayload, done: VerifiedCallback) => {
           try {
-            const result = {
-              id: '1',
-              name: 'admin',
-              password: await Encryption.encrypt('test'),
-              email: '',
-              active: true,
-              createdAt: 1707508500,
-              updatedAt: 1707511589
-            } // await userService.findById(jwtPayload.user)
+            const result = await this.userRepository.getById(jwtPayload.user)
 
             if (isEmpty(result)) {
               return done(result, false)

@@ -1,6 +1,6 @@
 import Character from 'domain/entities/Character'
 import { defaultCustomCharacters, defaultCombat, defaultItem, defaultMonster, defaultSpell, defaultWeapon } from 'services/defaults'
-import { load, store } from 'infrastructure/localStorage/LocalStorage'
+import { LocalStorageRepository } from 'infrastructure/repositories/LocalStorageRepository'
 
 import { atom } from 'jotai'
 import { StorageParseError, StorageSyncError } from 'domain/errors/StorageError'
@@ -31,10 +31,11 @@ type AsyncStorageParsers<T> = {
 }
 
 const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, parsers?: AsyncStorageParsers<T>) => {
+  const localStorageRepository = new LocalStorageRepository<T>()
   const loadParser = parsers?.loadParser ? parsers.loadParser : (value: T) => value
   const saveParser = parsers?.saveParser ? parsers.saveParser : (value: T) => value
   const baseAtom = atom<DataOrPromise<T>>(
-    load<T>(key).then((result) => {
+    localStorageRepository.getById(key).then((result) => {
       return result ? loadParser(result) : initialValue
     })
   )
@@ -47,7 +48,8 @@ const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, p
       }
       const insertToStore = (nextValue: T) => {
         try {
-          store(key, saveParser(nextValue))
+          localStorageRepository
+            .save(saveParser(nextValue) as T, key)
             .then(() => {
               set(baseAtom, nextValue)
             })
@@ -78,7 +80,7 @@ const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, p
 
 export const authAtom = atomWithAsyncStorage<AuthState>('authState', { loggedIn: false })
 
-export const itemAtom = atomWithAsyncStorage<typeof defaultItem | null>('itemState', defaultItem)
+export const BLAAAitemAtom = atomWithAsyncStorage<typeof defaultItem | null>('itemState', defaultItem)
 
 export const spellAtom = atomWithAsyncStorage<typeof defaultSpell | null>('spellState', defaultSpell)
 

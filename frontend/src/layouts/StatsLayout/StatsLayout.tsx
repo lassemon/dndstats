@@ -68,7 +68,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
           item={true}
           xs={12}
           md={12}
-          xl={6}
+          xl={7}
           sx={{
             '&&': {
               padding: `1em`,
@@ -102,7 +102,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
       <Grid
         item={true}
         xs={12}
-        xl={6}
+        xl={5}
         sx={{
           '&&&': {
             padding: 0,

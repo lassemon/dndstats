@@ -9,4 +9,5 @@ export interface Item extends Entity {
   rarity: string | null //TODO replace with enum
   weight: string | null
   features: Array<{ featureName: string; featureDescription: string }>
+  localItem?: boolean
 }

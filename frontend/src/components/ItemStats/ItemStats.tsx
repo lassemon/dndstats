@@ -21,20 +21,21 @@ import {
 import { useAtom } from 'jotai'
 import { UpdateParam } from 'state/itemAtom'
 import { uuid } from '@dmtool/common'
-import { ItemListOption, emptyItem } from 'domain/entities/Item'
+import { ItemListOption, emptyItem, loggedInEmptyItem } from 'domain/entities/Item'
 import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
 import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
 import { ITEM_DEFAULTS, ImageDTO, ItemDTO } from '@dmtool/application'
 import { useNavigate } from 'react-router-dom'
 import ItemCard from 'components/ItemCard'
 import { newItemDTO } from 'services/defaults'
+import { Item, Source } from '@dmtool/domain'
 
 interface ItemStatsProps {
   item: ItemDTO | null
   persistedItem: ItemDTO | null
   setPersistedItem: React.Dispatch<React.SetStateAction<ItemDTO | null>>
   setItem: (update: UpdateParam<ItemDTO | null>) => void
-  setItemId: React.Dispatch<React.SetStateAction<string>>
+  setItemId: React.Dispatch<React.SetStateAction<string | undefined>>
   setImage: (update: UpdateParam<ImageDTO | null | undefined>) => void
   itemRepository: FrontendItemRepositoryInterface
   image?: ImageDTO | null
@@ -55,17 +56,19 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
   loadingImage
 }) => {
   const controllersRef = useRef<AbortController[]>([])
-
+  const [authState] = useAtom(authAtom)
+  const emptyListItem = authState.loggedIn ? loggedInEmptyItem : emptyItem
   const { classes } = useStyles()
   const [inlineFeatures, setInlineFeatures] = useState(false)
-  const [itemList, setItemList] = useState<ItemListOption[]>([emptyItem] as ItemListOption[])
-  const [selectedItem, setSelectedItem] = useState(emptyItem)
+  const [itemList, setItemList] = useState<ItemListOption[]>([...(item ? [] : [emptyListItem])] as ItemListOption[])
+  const [selectedItem, setSelectedItem] = useState(item ? item : emptyListItem)
   const [loadingItemList, setLoadingItemList] = useState(false)
   const [errorState, setError] = useAtom(React.useMemo(() => errorAtom, []))
-  const [authState] = useAtom(authAtom)
+
   const navigate = useNavigate()
 
   const [unsavedChangesDialogOpen, setUnsavedChangesDialogOpen] = useState<boolean>(false)
+  const [areYouSureToDeleteDialogOpen, setAreYouSureToDeleteDialogOpen] = useState<boolean>(false)
 
   const fetchItemList = () => {
     const fetchData = async () => {
@@ -80,7 +83,7 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
             source: item.source
           }
         })
-        const newItemList = [emptyItem, ...items]
+        const newItemList = [...(item ? [] : [emptyListItem]), ...items]
         setItemList(newItemList)
         setLoadingItemList(false)
       }
@@ -117,12 +120,20 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
 
   const newItem = () => {
     const newItemId = uuid()
-    setItem(newItemDTO.clone({ createdBy: authState.user?.id }))
+    const newItem = newItemDTO.clone({ createdBy: authState.user?.id, source: authState.loggedIn ? Source.MyItem : Source.HomeBrew })
+    setItemList((_itemList) => {
+      return [..._itemList, newItem]
+    })
+    setItem(newItem)
     setImage(null)
     navigate(`/stats/item/${newItemId}`)
   }
 
   const onDelete = () => {
+    setAreYouSureToDeleteDialogOpen(true)
+  }
+
+  const deleteItem = () => {
     if (authState.loggedIn && authState.user && item) {
       itemRepository
         .delete(item.id)
@@ -151,7 +162,7 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
   const onSave = (callback?: () => void) => {
     if (item) {
       const newItem = item.clone()
-      const itemsWithSameNameCount = itemList.filter((_item) => _item?.name === newItem.name && _item.id !== newItem.id).length
+      const itemsWithSameNameCount = itemList.filter((_item) => _item?.name.startsWith(newItem.name)).length
       if (itemsWithSameNameCount > 0) {
         newItem.name = `${newItem.name} #${itemsWithSameNameCount + 1}`
       }
@@ -192,6 +203,17 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
     setUnsavedChangesDialogOpen(false)
   }
 
+  const closeAreYouSureToDeleteDialog = (confirmDeleteItem?: boolean) => {
+    if (confirmDeleteItem) {
+      deleteItem()
+    }
+    setAreYouSureToDeleteDialogOpen(false)
+  }
+
+  if (!item) {
+    return null
+  }
+
   return (
     <>
       <Box style={{ display: 'flex', gap: '1em' }}>
@@ -199,7 +221,7 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
         {authState.loggedIn && (
           <div
             style={{
-              flex: '1 0 20%'
+              flex: '1 0 30%'
             }}
           >
             <Autocomplete
@@ -207,11 +229,10 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
               blurOnSelect
               clearOnBlur
               fullWidth
-              disableClearable
               filterSelectedOptions
               groupBy={(option) => option.source}
               className={`${classes.autocomplete}`}
-              value={selectedItem}
+              value={{ id: item.id, name: item.name, source: item.source } || null}
               isOptionEqualToValue={(option, value) => option.id.toLowerCase() === value.id.toLowerCase()}
               loading={loadingItemList}
               options={itemList.sort((a, b) => b.source.localeCompare(a.source))}
@@ -251,7 +272,7 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
               <Button
                 variant="contained"
                 color="error"
-                onClick={onDelete}
+                onClick={() => onDelete()}
                 disabled={item?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || persistedItem?.name === 'New Item'}
               >
                 Delete Item
@@ -293,6 +314,30 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
               </Button>
               <Button variant="outlined" color="success" onClick={() => closeUnsavedChangesDialog(true, true)}>
                 Save changes and create
+              </Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={areYouSureToDeleteDialogOpen}
+          onClose={() => closeAreYouSureToDeleteDialog()}
+          PaperProps={{ sx: { padding: '0.5em' } }}
+        >
+          <DialogTitle id={`are-you-sure-to-delete`} sx={{ fontWeight: 'bold' }}>{`Are you sure`}</DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" paragraph={false}>
+              Are you sure you want to delete <strong>{item?.name}</strong>
+            </Typography>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'space-between', alignItems: 'stretch' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginRight: '6em' }}>
+              <Button variant="outlined" color="secondary" onClick={() => closeAreYouSureToDeleteDialog()}>
+                Cancel
+              </Button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: '0.5em' }}>
+              <Button variant="outlined" color="error" onClick={() => closeAreYouSureToDeleteDialog(true)}>
+                Yes, delete
               </Button>
             </div>
           </DialogActions>

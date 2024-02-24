@@ -64,17 +64,7 @@ export const useStyles = makeStyles()((theme) => {
       padding: '0 4px 0 0',
       margin: 0
     },
-    autocomplete: {
-      '& .MuiAutocomplete-tag': {
-        display: 'none'
-      },
-      '& .MuiInputLabel-animated': {
-        transform: 'translate(0, -20px) scale(0.75)'
-      },
-      '& legend': {
-        maxWidth: '100%'
-      }
-    }
+    autocomplete: {}
   }
 })
 

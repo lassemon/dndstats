@@ -71,7 +71,7 @@ class UserRepository implements DatabaseUserRepositoryInterface {
       updatedAt: updatedAt
     }
     try {
-      await connection<any, User>('users').update(userToInsert) // mariadb does not return inserted object
+      await connection<any, User>('users').where('id', userToInsert.id).update(userToInsert) // mariadb does not return inserted object
     } catch (error) {
       logger.error((error as any)?.message)
       throw new UnknownError(500, 'UnknownError')

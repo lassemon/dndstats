@@ -14,7 +14,8 @@ export class UserService implements UserServiceInterface {
     console.log('comparing')
     console.log('oldPassword', oldPassword)
     console.log('dbUser.password', dbUser.password)
-    if (await Encryption.compare(oldPassword, dbUser.password)) {
+    if (!(await Encryption.compare(oldPassword, dbUser.password))) {
+      console.log('OLD PASSWORD WAS NOT THE SAME AS IN DB')
       throw new ApiError(401, 'Unauthorized')
     }
 

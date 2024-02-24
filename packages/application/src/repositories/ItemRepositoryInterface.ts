@@ -2,6 +2,7 @@ import { Image } from '@dmtool/domain/src/entities/Image'
 import { Item } from '@dmtool/domain/src/entities/Item'
 import { ItemUpdateResponse } from '../interfaces/http/Item'
 import { FetchOptions } from '../interfaces/http/Fetch'
+import { LocalStorageRepositoryInterface } from './LocalStorageRepositoryInterface'
 
 export interface DatabaseItemRepositoryInterface {
   getAll(): Promise<Item[]>
@@ -20,3 +21,5 @@ export interface HttpItemRepositoryInterface {
   save(item: Item, image?: Image | null, options?: FetchOptions): Promise<ItemUpdateResponse>
   delete(itemId: string, options?: FetchOptions): Promise<Item>
 }
+
+export interface LocalStorageItemRepositoryInterface extends LocalStorageRepositoryInterface<Item> {}

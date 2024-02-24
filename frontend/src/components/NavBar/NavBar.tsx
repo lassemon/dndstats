@@ -5,7 +5,6 @@ import LoadingIndicator from 'components/LoadingIndicator'
 import { makeStyles } from 'tss-react/mui'
 import { useOrientation } from 'utils/hooks'
 import { Link } from 'react-router-dom'
-import { clearAll } from 'infrastructure/localStorage/LocalStorage'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import Login from 'components/Login'
 import { logout } from 'api/auth'
@@ -14,6 +13,9 @@ import { authAtom } from 'infrastructure/dataAccess/atoms'
 import { AccountBox, Logout, Person } from '@mui/icons-material'
 import useDefaultPage from 'hooks/useDefaultPage'
 import StatsPageMenu from './StatsPageMenu'
+import { LocalStorageRepository } from 'infrastructure/repositories/LocalStorageRepository'
+
+const localStorageRepository = new LocalStorageRepository<any>()
 
 const TABS = {
   '/items': 'Items',
@@ -130,19 +132,29 @@ const NavBar: React.FC = () => {
           <div style={{ display: 'flex' }}>
             {authState?.loggedIn && (
               <div>
-                <IconButton
+                <Button
                   size="large"
                   onClick={handleUserMenu}
                   color="inherit"
                   sx={{
                     color: (theme) => theme.palette.secondary.light
                   }}
+                  startIcon={<AccountCircle />}
                 >
-                  <AccountCircle />
-                </IconButton>
+                  <Typography
+                    component={'span'}
+                    variant="body1"
+                    sx={{
+                      textTransform: 'none'
+                    }}
+                  >
+                    {authState.user?.name}
+                  </Typography>
+                </Button>
+
                 <Menu
                   id="menu-appbar"
-                  elevation={0}
+                  elevation={1}
                   anchorEl={userMenuAnchorElement}
                   keepMounted
                   anchorOrigin={{
@@ -215,7 +227,6 @@ const NavBar: React.FC = () => {
             allowScrollButtonsMobile
             orientation={isPortrait ? 'horizontal' : 'vertical'}
           >
-            <StatsPageMenu onMenuItemClick={clearTab} />
             {Object.keys(TABS).map((tab) => {
               return (
                 <Tab
@@ -231,6 +242,7 @@ const NavBar: React.FC = () => {
                 />
               )
             })}
+            <StatsPageMenu onMenuItemClick={clearTab} />
           </Tabs>
           <Tooltip
             title={
@@ -244,7 +256,7 @@ const NavBar: React.FC = () => {
             <Button
               variant="contained"
               onClick={async () => {
-                await clearAll()
+                await localStorageRepository.clearAll()
                 window.location.reload()
               }}
               style={{ whiteSpace: 'nowrap' }}

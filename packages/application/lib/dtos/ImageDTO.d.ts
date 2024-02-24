@@ -34,7 +34,7 @@ export declare class ImageDTO extends DTO<ImageDTO, ImageDTOProperties> {
     clone(attributes?: Partial<Image>): ImageDTO;
     isEqual(otherImage: ImageDTO | object | null): boolean;
     private isSavingDefaultImage;
-    parseForSaving(imageBase64: string): Image;
+    parseForSaving(imageBase64?: string): Image;
     toJSON(): Image;
     toString(): string;
 }

@@ -11,13 +11,16 @@ import { useAtom } from 'jotai'
 import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
 import { unixtimeNow } from 'utils/utils'
 import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
-import { ImageDTO, ItemDTO } from '@dmtool/application'
+import { ITEM_DEFAULTS, ImageDTO, ItemDTO, LocalStorageImageRepositoryInterface } from '@dmtool/application'
 import { ItemRarity } from 'domain/services/FifthESRDService'
 import { capitalize } from 'lodash'
 import { Container, Draggable } from 'react-smooth-dnd'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import { makeStyles } from 'tss-react/mui'
 import { arrayMoveImmutable } from 'array-move'
+import ImageRepository from 'infrastructure/repositories/ImageRepository'
+import { LocalStorageImageRepository } from 'infrastructure/repositories/LocalStorageImageRepository'
+import { useNavigate } from 'react-router-dom'
 
 const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
@@ -45,14 +48,28 @@ interface ItemStatsInputProps {
   setItem: (update: UpdateParam<ItemDTO | null>) => void
   setImage: (update: UpdateParam<ImageDTO | null | undefined>) => void
   itemRepository: FrontendItemRepositoryInterface
+  imageRepository: LocalStorageImageRepositoryInterface
 }
 
-export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, itemRepository, setImage }) => {
+export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, itemRepository, setImage, imageRepository }) => {
   const controllersRef = useRef<AbortController[]>([])
   const { classes } = useStyles()
 
+  const navigate = useNavigate()
+
   const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
   const [authState] = useAtom(authAtom)
+
+  const internalSetItem = (update: UpdateParam<ItemDTO | null>) => {
+    let parsedValue = update instanceof Function ? update(item) : update
+    if (parsedValue?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || (parsedValue && !authState.loggedIn)) {
+      parsedValue = parsedValue.clone({ id: uuid(), localItem: true })
+      setItem(parsedValue)
+      navigate(`/stats/item/`)
+    } else {
+      setItem(parsedValue || null)
+    }
+  }
 
   useEffect(() => {
     return () => {
@@ -61,7 +78,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
   }, [])
 
   const onDrop = ({ removedIndex, addedIndex }: { removedIndex: any; addedIndex: any }) => {
-    setItem((_item) => {
+    internalSetItem((_item) => {
       if (_item) {
         return _item?.clone({
           features: arrayMoveImmutable(_item.features, removedIndex, addedIndex)
@@ -72,7 +89,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
 
   const onChange = (name: string) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement> | SelectChangeEvent) => {
     const { value } = event.target
-    setItem((_item) => {
+    internalSetItem((_item) => {
       if (_item) {
         return _item.clone({ [name]: value })
       }
@@ -80,7 +97,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
   }
 
   const onAddFeature = () => {
-    setItem((_item) => {
+    internalSetItem((_item) => {
       if (_item) {
         return _item?.clone({
           features: [
@@ -97,7 +114,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
 
   const onChangeFeatureName = (index: number) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { value } = event.target
-    setItem((_item) => {
+    internalSetItem((_item) => {
       if (_item) {
         const featuresCopy = replaceItemAtIndex(_item.features, index, {
           featureName: value,
@@ -110,7 +127,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
 
   const onChangeFeatureDescription = (index: number) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { value } = event.target
-    setItem((_item) => {
+    internalSetItem((_item) => {
       if (_item) {
         const featuresCopy = replaceItemAtIndex(_item.features, index, {
           featureName: _item.features[index].featureName,
@@ -122,7 +139,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
   }
 
   const onDeleteFeature = (index: number) => () => {
-    setItem((_item) => {
+    internalSetItem((_item) => {
       if (_item) {
         const featuresCopy = [..._item.features]
         featuresCopy.splice(index, 1)
@@ -132,16 +149,20 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
   }
 
   const onDeleteImage = () => {
-    setItem((_item) => {
+    internalSetItem((_item) => {
       return _item?.clone({ imageId: null })
     })
     setImage(null)
+    if (!authState.loggedIn) {
+      navigate(`/stats/item/`)
+    }
   }
 
   const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const imageFile = (event.target.files || [])[0]
 
     if (item && imageFile) {
+      const itemToSave = item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? item.clone({ id: uuid() }) : item.clone()
       var reader = new FileReader()
 
       reader.onload = (event) => {
@@ -150,40 +171,42 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
 
           setImage((_image) => {
             const now = unixtimeNow()
-            const newImage = _image
-              ? _image.parseForSaving(imageBase64)
-              : new ImageDTO({
-                  metadata: {
-                    id: uuid(),
-                    createdAt: now,
-                    visibility: Visibility.PUBLIC,
-                    fileName: imageFile.name,
-                    size: imageFile.size,
-                    mimeType: imageFile.type,
-                    createdBy: authState.user?.id || '0',
-                    updatedAt: now,
-                    source: Source.HomeBrew,
-                    ownerId: item.id,
-                    ownerType: EntityType.ITEM
-                  },
-                  base64: imageBase64
-                }).parseForSaving(imageBase64)
+            const newImage = new ImageDTO({
+              metadata: {
+                id: uuid(),
+                createdAt: now,
+                visibility: Visibility.PUBLIC,
+                fileName: imageFile.name,
+                size: imageFile.size,
+                mimeType: imageFile.type,
+                createdBy: authState.user?.id || '0',
+                updatedAt: now,
+                source: Source.HomeBrew,
+                ownerId: itemToSave.id,
+                ownerType: EntityType.ITEM
+              },
+              base64: imageBase64
+            }).parseForSaving(imageBase64)
             // upload new image with associated item also to the backend, if successful, set the persisted image to the frontend atom
             if (authState.loggedIn) {
               const controller = new AbortController()
               controllersRef.current.push(controller)
               itemRepository
-                .save(item, newImage, { signal: controller.signal })
+                .save(itemToSave, newImage, { signal: controller.signal })
                 .then((itemSaveResponse) => {
-                  setItem(new ItemDTO(itemSaveResponse.item))
+                  internalSetItem(new ItemDTO(itemSaveResponse.item))
                   setImage(itemSaveResponse.image ? new ImageDTO(itemSaveResponse.image) : null)
                 })
                 .catch((error) => {
                   setImage(newImage ? new ImageDTO(newImage) : null)
                   setError(error)
                 })
+            } else {
+              const newImageDTO = new ImageDTO(newImage)
+              setItem(itemToSave.clone({ id: uuid(), imageId: newImageDTO.id }))
+              navigate(`/stats/item/`)
+              return newImageDTO
             }
-            return _image
           })
         }
       }
@@ -199,6 +222,32 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
   return (
     <StatsInputContainer>
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
+      {authState.loggedIn && (
+        <FormControl sx={{ width: '14em', m: 0, flex: '0 0 auto' }} size="small">
+          <InputLabel shrink id="visibility">
+            Visibility
+          </InputLabel>
+          <Select
+            labelId={'visibility'}
+            id="visibility-select"
+            value={item.visibility || ''}
+            label="Visibility"
+            onChange={onChange('visibility')}
+          >
+            {Object.values(Visibility).map((value, index) => {
+              return (
+                <MenuItem key={index} value={value}>
+                  {value
+                    .replaceAll('_', ' ')
+                    .split(' ')
+                    .map((part) => capitalize(part))
+                    .join(' ')}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
+      )}
       <div style={{ display: 'flex', gap: '2em' }}>
         <TextField
           id="item-price"
@@ -240,32 +289,6 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({ item, setItem, i
             })}
           </Select>
         </FormControl>
-        {authState.loggedIn && (
-          <FormControl sx={{ m: 0, flex: '0 0 14em' }} size="small">
-            <InputLabel shrink id="visibility">
-              Visibility
-            </InputLabel>
-            <Select
-              labelId={'visibility'}
-              id="visibility-select"
-              value={item.visibility || ''}
-              label="Visibility"
-              onChange={onChange('visibility')}
-            >
-              {Object.values(Visibility).map((value, index) => {
-                return (
-                  <MenuItem key={index} value={value}>
-                    {value
-                      .replaceAll('_', ' ')
-                      .split(' ')
-                      .map((part) => capitalize(part))
-                      .join(' ')}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
-        )}
       </div>
       <TextField
         id="item-name"

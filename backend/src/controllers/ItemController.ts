@@ -13,6 +13,7 @@ import { SaveImageUseCase } from '/useCases/SaveImageUseCase'
 import { SaveItemUseCase } from '/useCases/SaveItemUseCase'
 import { throwIllegalArgument, throwUnknownError } from '/utils/errorUtil'
 import { RemoveImageFromItemUseCase } from '/useCases/RemoveImageFromItemUseCase'
+import { DeleteItemUseCase } from '/useCases/DeleteItemUseCase'
 const authentication = new Authentication(passport)
 
 const imageService = new ImageService()
@@ -24,6 +25,8 @@ const itemRepository = new ItemRepository()
 
 const removeImageFromItemUseCase = new RemoveImageFromItemUseCase(itemRepository, imageStorageService, imageRepository)
 const saveItemUseCase = new SaveItemUseCase(itemRepository, saveImageUseCase, removeImageFromItemUseCase)
+
+const deleteItemUseCase = new DeleteItemUseCase(itemRepository, removeImageFromItemUseCase)
 
 @Route('/')
 @Middlewares(authentication.passThroughAuthenticationMiddleware())
@@ -55,15 +58,12 @@ export class ItemController extends Controller {
   @Tags('Item')
   @Get('item/')
   public async get(@Request() request: express.Request): Promise<Item> {
-    console.log('getting item isAuthenticated', request?.isAuthenticated())
     return await itemRepository.getById(ITEM_DEFAULTS.DEFAULT_ITEM_ID)
   }
 
   @Tags('Item')
   @Get('item/{itemId}')
   public async getItem(@Request() request: express.Request, @Path() itemId: string): Promise<Item> {
-    console.log('getting item isAuthenticated', request?.isAuthenticated())
-
     return await itemRepository.getById(itemId)
   }
 
@@ -75,13 +75,16 @@ export class ItemController extends Controller {
     if (!request.user) {
       throw new ApiError(401, 'Unauthorized')
     }
-    console.log('creating item isAuthenticated', request?.isAuthenticated())
-    console.log('creating item user', request?.user)
     if (!request?.isAuthenticated()) {
       throw new ApiError(401, 'Unauthorized', 'Must be logged in to do that')
     }
+
+    if (requestBody.item.id === 'defaultItem') {
+      throw new ApiError(403, 'Unauthorized', 'Cannot modify the default item.')
+    }
+
     return await saveItemUseCase.execute({
-      user: request.user as User,
+      userId: (request.user as User).id,
       item: requestBody.item,
       image: requestBody.image,
       unknownError: throwUnknownError,
@@ -93,7 +96,6 @@ export class ItemController extends Controller {
   @SuccessResponse('200', 'OK')
   @Delete('item/{itemId}')
   public async deleteIem(@Request() request: express.Request, @Path() itemId: string): Promise<Item> {
-    console.log('getting item isAuthenticated', request?.isAuthenticated())
     if (!request?.isAuthenticated() || !request.user) {
       throw new ApiError(401, 'Unauthorized', 'Must be logged in to do that')
     }
@@ -105,8 +107,12 @@ export class ItemController extends Controller {
     }
 
     if (itemToDelete) {
-      await itemRepository.delete(itemToDelete.id)
-      return itemToDelete
+      return await deleteItemUseCase.execute({
+        itemId: itemToDelete.id,
+        userId: (request.user as User).id,
+        unknownError: throwUnknownError,
+        invalidArgument: throwIllegalArgument
+      })
     } else {
       throw new ApiError(404, 'NotFound')
     }

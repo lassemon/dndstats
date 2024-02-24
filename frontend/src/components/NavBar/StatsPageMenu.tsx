@@ -52,7 +52,7 @@ interface StatsPageMenuProps {
 }
 
 const isUrlAStatPage = (): boolean => {
-  return Object.keys(STAT_PAGES).includes(`/${getPageName()}`)
+  return getPageName() === 'stats'
 }
 
 const StatsPageMenu: React.FC<StatsPageMenuProps> = ({ onMenuItemClick }) => {
@@ -79,6 +79,7 @@ const StatsPageMenu: React.FC<StatsPageMenuProps> = ({ onMenuItemClick }) => {
         setStatsMenuAnchorElement(null)
         setStatPageSelected(false)
       } else {
+        onMenuItemClick(0)
         setStatPageSelected(true)
       }
     }
@@ -131,7 +132,7 @@ const StatsPageMenu: React.FC<StatsPageMenuProps> = ({ onMenuItemClick }) => {
       </List>
       <Menu
         id="stats-menu"
-        elevation={0}
+        elevation={2}
         anchorEl={statsMenuAnchorElement}
         anchorOrigin={{
           vertical: isPortrait ? 'bottom' : 'top',
@@ -147,7 +148,7 @@ const StatsPageMenu: React.FC<StatsPageMenuProps> = ({ onMenuItemClick }) => {
           'aria-labelledby': 'lock-button',
           role: 'listbox',
           sx: {
-            background: (theme) => theme.palette.primary.main,
+            background: (theme) => theme.palette.primary.light,
             '& .Mui-selected': {
               background: (theme) => theme.palette.secondary.main,
               color: (theme) => theme.palette.primary.contrastText,

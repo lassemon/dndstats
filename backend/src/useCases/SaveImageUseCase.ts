@@ -23,7 +23,8 @@ export class SaveImageUseCase implements SaveImageUseCaseInterface {
     const fileNameToSave = this.imageService.parseImageFilename(image.metadata)
     try {
       const previousImage = await this.imageRepository.getById(image.metadata.id)
-      await this.imageStorageService.removeImageFromFileSystem(previousImage.metadata.fileName)
+      await this.imageStorageService.deleteImageFromFileSystem(previousImage.metadata.fileName)
+      await this.imageRepository.delete(image.metadata.id)
     } catch (error) {
       // fail silently if previous image not found
     }

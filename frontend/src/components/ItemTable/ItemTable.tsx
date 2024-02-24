@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Collapse,
@@ -13,6 +14,7 @@ import {
   TablePagination,
   TableRow,
   Theme,
+  Tooltip,
   useMediaQuery,
   useTheme
 } from '@mui/material'
@@ -21,13 +23,13 @@ import React, { useEffect, useState } from 'react'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import ItemCard from 'components/ItemCard'
-import useImage from 'hooks/useImage'
 import { useOrientation } from 'utils/hooks'
 import { useNavigate } from 'react-router-dom'
 import { HttpImageRepositoryInterface, ItemDTO } from '@dmtool/application'
 import { useAtom } from 'jotai'
 import { AuthState, authAtom } from 'infrastructure/dataAccess/atoms'
 import { capitalize } from 'lodash'
+import useImage from 'hooks/useImage'
 
 const useStyles = makeStyles()(() => ({
   itemCard: {
@@ -213,9 +215,26 @@ const TableItemRow: React.FC<TableItemRowProps> = ({ item, imageRepository, auth
           </TableCell>
         )}
         <TableCell>
-          <Button variant="contained" onClick={redirectToItemStats}>
-            Go to editor
-          </Button>
+          <Tooltip
+            PopperProps={{
+              sx: {
+                '.MuiTooltip-tooltip': {
+                  padding: 0,
+                  boxShadow: (theme) => theme.shadows[5]
+                }
+              }
+            }}
+            title={
+              <Alert severity="error">
+                WARNING! Overwrites the current item in stats editor. {authState.loggedIn ? 'Remember to save it first.' : ''}
+              </Alert>
+            }
+            placement="top-end"
+          >
+            <Button variant="contained" onClick={redirectToItemStats}>
+              Open In Editor
+            </Button>
+          </Tooltip>
         </TableCell>
       </TableRow>
       <TableRow className="collapsible">

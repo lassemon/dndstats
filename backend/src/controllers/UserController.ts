@@ -82,7 +82,6 @@ export class UserController extends Controller {
   @Response(404, 'Not Found')
   @SuccessResponse(200, 'Ok')
   public async put(@Request() request: AuthenticatedRequest, @Body() requestBody: UserUpdateRequest): Promise<UserResponse> {
-    // TODO validate that logged in user is the same as the one being updated
     if (!request.user) {
       throw new ApiError(401, 'Unauthorized')
     }
@@ -91,7 +90,10 @@ export class UserController extends Controller {
       throw new ApiError(404, 'NotFound')
     }
 
-    log.debug('updating user with: ' + request)
+    if (JSON.stringify(dbUser) !== JSON.stringify(request.user)) {
+      throw new ApiError(401, 'Unauthorized', 'Cannot update somebody elses account.')
+    }
+
     return await updateUserUseCase.execute({
       userUpdateRequest: requestBody,
       loggedInUser: request.user,
