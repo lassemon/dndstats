@@ -1,8 +1,13 @@
-import { DatabaseUserRepositoryInterface, UseCaseInterface, UseCaseOptionsInterface } from '@dmtool/application'
-import { User, UserResponse, UserUpdateRequest } from '@dmtool/domain'
-import ApiError from '/domain/errors/ApiError'
+import {
+  DatabaseUserRepositoryInterface,
+  UseCaseInterface,
+  UseCaseOptionsInterface,
+  UserResponse,
+  UserServiceInterface,
+  UserUpdateRequest
+} from '@dmtool/application'
+import { ApiError, User } from '@dmtool/domain'
 import UserMapper from '/mappers/UserMapper'
-import { UserServiceInterface } from '/controllers/application/services/UserServiceInterface'
 
 export interface UpdateUserUseCaseOptions extends UseCaseOptionsInterface {
   userUpdateRequest: UserUpdateRequest

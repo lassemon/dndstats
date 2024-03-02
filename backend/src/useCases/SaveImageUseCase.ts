@@ -20,6 +20,10 @@ export class SaveImageUseCase implements SaveImageUseCaseInterface {
   async execute({ image, previousFileName }: SaveImageUseCaseOptions): Promise<Image> {
     const imageBuffer = this.imageService.convertBase64ImageToBuffer(image.base64)
     const resizedBuffer = await this.imageProcessingService.resizeImage(imageBuffer, { width: 320 })
+    const mimeType = await this.imageProcessingService.getBufferMimeType(resizedBuffer)
+    if (mimeType) {
+      image.metadata.mimeType = mimeType
+    }
     const fileNameToSave = this.imageService.parseImageFilename(image.metadata)
     try {
       const previousImage = await this.imageRepository.getById(image.metadata.id)

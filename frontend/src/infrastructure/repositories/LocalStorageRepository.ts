@@ -1,6 +1,6 @@
 import { LocalStorageRepositoryInterface } from '@dmtool/application'
+import { unixtimeNow } from '@dmtool/common'
 import _ from 'lodash'
-import { unixtimeNow } from 'utils/utils'
 
 export class LocalStorageRepository<T> implements LocalStorageRepositoryInterface<T> {
   async getById(key: string): Promise<T> {

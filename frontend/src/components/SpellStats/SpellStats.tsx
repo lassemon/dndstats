@@ -2,13 +2,10 @@ import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { CSSProperties, Fragment, useMemo, useState } from 'react'
 import { spellAtom } from 'infrastructure/dataAccess/atoms'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import classNames from 'classnames/bind'
 
 import useStyles from './SpellStats.styles'
 import _ from 'lodash'
-import { Box, Checkbox, FormControlLabel, FormGroup, useTheme } from '@mui/material'
-import { useOrientation } from 'utils/hooks'
+import { Box, Checkbox, FormControlLabel, FormGroup } from '@mui/material'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
 
@@ -34,14 +31,13 @@ const MainDescription: React.FC = (props) => {
   return <div className={classes.mainDescription}>{children}</div>
 }
 
-export const SpellStats: React.FC = () => {
+interface SpellStatsProps {
+  screenshotMode?: boolean
+}
+
+export const SpellStats: React.FC<SpellStatsProps> = ({ screenshotMode }) => {
   const { classes } = useStyles()
-  const cx = classNames.bind(classes)
   const [currentSpell] = useAtom(useMemo(() => spellAtom, []))
-  const orientation = useOrientation()
-  const isPortrait = orientation === 'portrait'
-  const theme = useTheme()
-  const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
   const [inlineFeatures, setInlineFeatures] = useState(true)
 
   const onChangeInlineFeatures = () => {
@@ -53,14 +49,8 @@ export const SpellStats: React.FC = () => {
   }
 
   return (
-    <>
-      <StatsContainer
-        className={cx({
-          [classes.container]: true,
-          [classes.smallContainer]: isPortrait,
-          [classes.largeContainer]: isLarge
-        })}
-      >
+    <Box style={{ display: 'flex', flexDirection: 'column', gap: '1em', width: 'fit-content', margin: '0 auto' }}>
+      <StatsContainer>
         <div className={classes.topContainer}>
           <div className={classes.headerContainer}>
             <h1 className={classes.name}>{currentSpell.name}</h1>
@@ -140,12 +130,13 @@ export const SpellStats: React.FC = () => {
           </>
         )}
       </StatsContainer>
-      <Box displayPrint="none">
-        <FormGroup>
-          <FormControlLabel control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />} label="Inline features" />
-        </FormGroup>
-      </Box>
-    </>
+      <FormGroup sx={{ alignItems: 'flex-end', visibility: screenshotMode ? 'hidden' : 'visible' }}>
+        <FormControlLabel
+          control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />}
+          label="Inline features"
+        />
+      </FormGroup>
+    </Box>
   )
 }
 

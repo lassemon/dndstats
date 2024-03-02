@@ -162,7 +162,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
   const theme = useTheme()
-  const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
+  const isMedium = useMediaQuery(theme.breakpoints.up('md'))
 
   const itemImage = image
     ? React.createElement('img', {
@@ -177,13 +177,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   }
 
   return (
-    <StatsContainer
-      className={cx(className, {
-        [classes.container]: true,
-        [classes.smallContainer]: isPortrait,
-        [classes.mediumContainer]: !isPortrait && !isLarge
-      })}
-    >
+    <StatsContainer>
       {!loadingItem ? (
         <>
           <div className={classes.root}>

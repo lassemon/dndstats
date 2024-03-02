@@ -1,6 +1,4 @@
 import express from 'express'
-import ApiError from '/domain/errors/ApiError'
-import Encryption from 'security/Encryption'
 import { Body, Controller, Get, Middlewares, Post, Request, Response, Route, Tags } from 'tsoa'
 import { ILoginRequest } from '../interfaces/requests'
 import Authorization from '/security/Authorization'
@@ -9,9 +7,9 @@ import { DateTime } from 'luxon'
 import UserMapper from '/mappers/UserMapper'
 import Authentication from '/security/Authentication'
 import passport from 'passport'
-import { User, UserResponse } from '@dmtool/domain'
+import { ApiError, User } from '@dmtool/domain'
 import UserRepository from '/infrastructure/repositories/UserRepository'
-import { DatabaseUserRepositoryInterface } from '@dmtool/application'
+import { DatabaseUserRepositoryInterface, Encryption, UserResponse } from '@dmtool/application'
 
 const log = new Logger('AuthController')
 const refreshTokenList = {} as { [key: string]: User }
@@ -100,7 +98,15 @@ export class AuthController extends Controller {
       }
 
       //const user: User = await this.userService.findById(refreshToken.user)
-      const user = { id: '1', name: 'admin', email: 'testemail', password: await Encryption.encrypt('test'), active: true, createdAt: 123, roles: [] } //await this.userService.findByName(username)
+      const user = {
+        id: '1',
+        name: 'admin',
+        email: 'testemail',
+        password: await Encryption.encrypt('test'),
+        active: true,
+        createdAt: 123,
+        roles: []
+      } //await this.userService.findByName(username)
       if (!user.active) {
         throw new ApiError(404, 'NotFound')
       }

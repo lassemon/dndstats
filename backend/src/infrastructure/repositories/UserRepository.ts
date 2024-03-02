@@ -1,10 +1,8 @@
-import { User, UserInsertQuery, UserUpdateQuery } from '@dmtool/domain'
+import { ApiError, UnknownError, User } from '@dmtool/domain'
 import connection from '../database/connection'
-import ApiError from '/domain/errors/ApiError'
 import { Logger } from '@dmtool/common'
-import UnknownError from '/domain/errors/UnknownError'
 import { DateTime } from 'luxon'
-import { DatabaseUserRepositoryInterface } from '@dmtool/application'
+import { DatabaseUserRepositoryInterface, UserInsertQuery, UserUpdateQuery } from '@dmtool/application'
 
 const logger = new Logger('UserRepository')
 

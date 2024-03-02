@@ -1,5 +1,5 @@
-import { ITEM_DEFAULTS, ItemDTO } from '@dmtool/application'
-import { uuid } from '@dmtool/common'
+import { ITEM_DEFAULTS, ItemDTO, ItemResponse } from '@dmtool/application'
+import { unixtimeNow } from '@dmtool/common'
 import { Item, Source, Visibility } from '@dmtool/domain'
 import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
@@ -7,9 +7,8 @@ import Character from 'domain/entities/Character'
 import { AbilityScores } from 'domain/services/FifthESRDService'
 import { PlayerType, Condition, DamageType, Skill, Senses, Speed } from 'interfaces'
 import React from 'react'
-import { unixtimeNow } from 'utils/utils'
 
-export const defaultItem: Item = {
+export const defaultItem: ItemResponse = {
   id: ITEM_DEFAULTS.DEFAULT_ITEM_ID,
   imageId: null,
   name: 'Greatshield of Artorias',
@@ -31,11 +30,12 @@ export const defaultItem: Item = {
   source: Source.HomeBrew,
   visibility: Visibility.PUBLIC,
   createdBy: '1',
+  createdByUserName: 'dmtool',
   createdAt: unixtimeNow()
 }
 
 export const newItemDTO = new ItemDTO({
-  id: uuid(),
+  id: 'newItem',
   imageId: null,
   name: 'New Item',
   shortDescription: 'Short description',
@@ -52,6 +52,7 @@ export const newItemDTO = new ItemDTO({
   source: Source.HomeBrew,
   visibility: Visibility.PRIVATE,
   createdBy: '0',
+  createdByUserName: '',
   createdAt: unixtimeNow()
 })
 

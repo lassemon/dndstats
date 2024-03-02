@@ -3,12 +3,13 @@ import { makeStyles } from 'tss-react/mui'
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
   root: {
-    minWidth: '36em',
+    minWidth: '25em',
     overflow: 'hidden',
     margin: '0 auto',
     '&::-webkit-resizer': {
       backgroundColor: 'transparent'
-    }
+    },
+    fontSize: '20px'
   },
   resizeable: {
     resize: 'both'

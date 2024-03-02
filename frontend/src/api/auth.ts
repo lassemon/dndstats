@@ -1,4 +1,4 @@
-import { UserResponse } from '@dmtool/domain'
+import { UserResponse } from '@dmtool/application'
 import { getJson, postJson } from 'infrastructure/dataAccess/http/fetch'
 
 export const login = async (loginPayload: { username: string; password: string }) => {

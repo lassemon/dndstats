@@ -4,8 +4,7 @@ import Authentication from 'security/Authentication'
 import passport from 'passport'
 import cookieParser from 'cookie-parser'
 import { Logger } from '@dmtool/common'
-import ApiError from './domain/errors/ApiError'
-import IllegalArgument from './domain/errors/IllegalArgument'
+import { ApiError, IllegalArgument } from '@dmtool/domain'
 
 const log = new Logger('App')
 const app = express()

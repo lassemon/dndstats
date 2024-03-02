@@ -1,13 +1,30 @@
 Installation to cPanel:
 
 - upload latest code to server /dmtools/ (do not copy node_modules or build folder)
+
+  - remove:
+    -/dmtools/backend/src
+    /nodevenv/dmtools/18/lib/packages
+  - upload:
+    - backend/src
+    - backend/tools
+    - backend/\*<files> <-- except README.MD
+      -> to /dmtools/backend
+    - packages/\*
+    - run `npm run clean:build` on root before you upload to remove lib folders
+      -> to /dmtools/packages
+      -> to /nodevenv/dmtools/18/lib
+
 - open cPanel and go to Setup Node.js App
 - edit the application
 - copy the "source ..." command from the view
 - open a new terminal and open source
-- run rm -rf node_modules
-- run `tail -f logs/dmtools.log`
-- on the application edit view
+  //- run rm -rf node_modules
+  //- run `tail -f logs/dmtools.log`
+  //- on the application edit view
+- in the terminal goto /nodevenv/dmtools/18/lib and run `npm run build`
+- then goto /home/viitevhg/dmtool and run `npm run build`
+- finally goto
 
   - press the "Run NPM Install" -button
   - press the "Run Script" -button and run the build script

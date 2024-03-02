@@ -57,6 +57,12 @@ class ImageProcessingService {
             }
         });
     }
+    getBufferMimeType(buffer) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const extractedFileType = yield file_type_1.default.fromBuffer(buffer);
+            return extractedFileType === null || extractedFileType === void 0 ? void 0 : extractedFileType.mime;
+        });
+    }
 }
 exports.ImageProcessingService = ImageProcessingService;
 //# sourceMappingURL=ImageProcessingService.js.map

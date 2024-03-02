@@ -3,6 +3,10 @@ import {
   Box,
   Button,
   Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Paper,
   SxProps,
@@ -15,6 +19,7 @@ import {
   TableRow,
   Theme,
   Tooltip,
+  Typography,
   useMediaQuery,
   useTheme
 } from '@mui/material'
@@ -25,11 +30,14 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import ItemCard from 'components/ItemCard'
 import { useOrientation } from 'utils/hooks'
 import { useNavigate } from 'react-router-dom'
-import { HttpImageRepositoryInterface, ItemDTO } from '@dmtool/application'
+import { HttpImageRepositoryInterface, ITEM_DEFAULTS, ItemDTO } from '@dmtool/application'
 import { useAtom } from 'jotai'
-import { AuthState, authAtom } from 'infrastructure/dataAccess/atoms'
-import { capitalize } from 'lodash'
+import { AuthState, authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
+import _, { capitalize } from 'lodash'
 import useImage from 'hooks/useImage'
+import DeleteButton from 'components/DeleteButton'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
+import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
 
 const useStyles = makeStyles()(() => ({
   itemCard: {
@@ -44,10 +52,14 @@ const useStyles = makeStyles()(() => ({
 
 interface ItemTableProps {
   items: ItemDTO[]
+  itemRepository: FrontendItemRepositoryInterface
   imageRepository: HttpImageRepositoryInterface
+  setItemList: (value: React.SetStateAction<ItemDTO[]>) => void
 }
 
-export const ItemTable: React.FC<ItemTableProps> = ({ items = [], imageRepository }) => {
+const tableColumnHide = { xs: 'none', sm: 'none', md: 'none', lg: 'table-cell' }
+
+export const ItemTable: React.FC<ItemTableProps> = ({ items = [], itemRepository, imageRepository, setItemList }) => {
   const [page, setPage] = React.useState(0)
   const [rowsPerPage, setRowsPerPage] = React.useState(10)
   const [authState] = useAtom(authAtom)
@@ -102,12 +114,13 @@ export const ItemTable: React.FC<ItemTableProps> = ({ items = [], imageRepositor
               <TableCell />
               <TableCell>name</TableCell>
               <TableCell>short description</TableCell>
-              <TableCell>rarity</TableCell>
-              <TableCell>price</TableCell>
-              <TableCell>weight</TableCell>
+              <TableCell sx={{ display: tableColumnHide }}>rarity</TableCell>
+              <TableCell sx={{ display: tableColumnHide }}>price</TableCell>
+              <TableCell sx={{ display: tableColumnHide }}>weight</TableCell>
               <TableCell>created by</TableCell>
-              {authState.loggedIn && <TableCell>visibility</TableCell>}
+              {authState.loggedIn && <TableCell sx={{ display: tableColumnHide }}>visibility</TableCell>}
               <TableCell />
+              {authState.loggedIn && <TableCell />}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -115,7 +128,9 @@ export const ItemTable: React.FC<ItemTableProps> = ({ items = [], imageRepositor
               <TableItemRow
                 key={index}
                 item={item}
+                itemRepository={itemRepository}
                 imageRepository={imageRepository}
+                setItemList={setItemList}
                 authState={authState}
                 sx={
                   index % 2 == 0
@@ -148,16 +163,20 @@ export const ItemTable: React.FC<ItemTableProps> = ({ items = [], imageRepositor
 interface TableItemRowProps {
   item: ItemDTO
   sx?: SxProps<Theme>
+  itemRepository: FrontendItemRepositoryInterface
   imageRepository: HttpImageRepositoryInterface
   authState: AuthState
+  setItemList: (value: React.SetStateAction<ItemDTO[]>) => void
 }
 
-const TableItemRow: React.FC<TableItemRowProps> = ({ item, imageRepository, authState, sx = {} }) => {
+const TableItemRow: React.FC<TableItemRowProps> = ({ item, itemRepository, imageRepository, authState, setItemList, sx = {} }) => {
   const [open, setOpen] = useState(false)
   const [imageId, setImageId] = useState<string | null>(null)
   const [{ image, loading: loadingImage }] = useImage(imageRepository, imageId)
+  const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
   const navigate = useNavigate()
   const { classes } = useStyles()
+  const [areYouSureToDeleteDialogOpen, setAreYouSureToDeleteDialogOpen] = useState<boolean>(false)
 
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
@@ -176,6 +195,32 @@ const TableItemRow: React.FC<TableItemRowProps> = ({ item, imageRepository, auth
     navigate(`/stats/item/${item.id}`)
   }
 
+  const onDelete = () => {
+    setAreYouSureToDeleteDialogOpen(true)
+  }
+
+  const closeAreYouSureToDeleteDialog = (confirmDeleteItem?: boolean) => {
+    if (confirmDeleteItem) {
+      deleteItem()
+    }
+    setAreYouSureToDeleteDialogOpen(false)
+  }
+
+  const deleteItem = () => {
+    if (authState.loggedIn && authState.user && item) {
+      itemRepository
+        .delete(item.id)
+        .then((deletedItem) => {
+          setItemList((_itemList) => {
+            return _.filter(_itemList, (item) => item.id !== deletedItem.id)
+          })
+        })
+        .catch((error) => {
+          setError(error)
+        })
+    }
+  }
+
   return (
     <React.Fragment>
       <TableRow
@@ -190,23 +235,30 @@ const TableItemRow: React.FC<TableItemRowProps> = ({ item, imageRepository, auth
             }
           }
         }}
-        onClick={() => setOpen(!open)}
       >
         <TableCell>
           <IconButton size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowRightIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row" sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell component="th" scope="row" sx={{ whiteSpace: 'nowrap' }} onClick={() => setOpen(!open)}>
           {item.name}
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{item.shortDescription}</TableCell>
-        <TableCell>{item.rarity}</TableCell>
-        <TableCell>{item.price}</TableCell>
-        <TableCell>{item.weight}</TableCell>
-        <TableCell>{item.createdBy}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} onClick={() => setOpen(!open)}>
+          {item.shortDescription}
+        </TableCell>
+        <TableCell onClick={() => setOpen(!open)} sx={{ display: tableColumnHide }}>
+          {item.rarity}
+        </TableCell>
+        <TableCell onClick={() => setOpen(!open)} sx={{ display: tableColumnHide }}>
+          {item.price}
+        </TableCell>
+        <TableCell onClick={() => setOpen(!open)} sx={{ display: tableColumnHide }}>
+          {item.weight}
+        </TableCell>
+        <TableCell onClick={() => setOpen(!open)}>{item.createdByUserName}</TableCell>
         {authState.loggedIn && (
-          <TableCell>
+          <TableCell onClick={() => setOpen(!open)} sx={{ display: tableColumnHide }}>
             {item.visibility
               .replaceAll('_', ' ')
               .split(' ')
@@ -236,16 +288,63 @@ const TableItemRow: React.FC<TableItemRowProps> = ({ item, imageRepository, auth
             </Button>
           </Tooltip>
         </TableCell>
+        {authState.loggedIn && (
+          <TableCell>
+            <Tooltip
+              title={
+                item?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || item?.id === 'newItem' || item.createdBy !== authState.user?.id
+                  ? ''
+                  : 'Delete item'
+              }
+              placement="top-end"
+            >
+              <div>
+                <DeleteButton
+                  onClick={onDelete}
+                  Icon={DeleteForeverIcon}
+                  disabled={item?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || item?.id === 'newItem' || item.createdBy !== authState.user?.id}
+                />
+              </div>
+            </Tooltip>
+            <Dialog
+              open={areYouSureToDeleteDialogOpen}
+              onClose={() => closeAreYouSureToDeleteDialog()}
+              PaperProps={{ sx: { padding: '0.5em' } }}
+            >
+              <DialogTitle id={`are-you-sure-to-delete`} sx={{ fontWeight: 'bold' }}>{`Are you sure`}</DialogTitle>
+              <DialogContent>
+                <Typography variant="body2" paragraph={false}>
+                  Are you sure you want to delete <strong>{item?.name}</strong>
+                </Typography>
+              </DialogContent>
+              <DialogActions sx={{ justifyContent: 'space-between', alignItems: 'stretch' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', marginRight: '6em' }}>
+                  <Button variant="outlined" color="secondary" onClick={() => closeAreYouSureToDeleteDialog()}>
+                    Cancel
+                  </Button>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: '0.5em' }}>
+                  <Button variant="outlined" color="error" onClick={() => closeAreYouSureToDeleteDialog(true)}>
+                    Yes, delete
+                  </Button>
+                </div>
+              </DialogActions>
+            </Dialog>
+          </TableCell>
+        )}
       </TableRow>
       <TableRow className="collapsible">
-        <TableCell style={{ padding: 0 }} colSpan={authState.loggedIn ? 9 : 8}>
+        <TableCell style={{ padding: 0 }} colSpan={authState.loggedIn ? 10 : 9}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: isPortrait ? 'center' : '',
                 margin: 3,
-                paddingRight: isPortrait ? '' : itemCardPadding
+                maxWidth: '90%',
+                paddingRight: isPortrait ? '' : itemCardPadding,
+                '& .stats-container': {
+                  margin: 0
+                }
               }}
             >
               <ItemCard item={item} image={image} loadingImage={loadingImage} className={classes.itemCard} />

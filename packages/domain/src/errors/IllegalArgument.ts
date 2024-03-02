@@ -1,4 +1,4 @@
-export default class IllegalArgument extends Error {
+export class IllegalArgument extends Error {
   public status: number
   public statusText: string
 

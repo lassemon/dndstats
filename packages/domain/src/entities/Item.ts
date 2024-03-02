@@ -8,6 +8,6 @@ export interface Item extends Entity {
   price: string | null
   rarity: string | null //TODO replace with enum
   weight: string | null
-  features: Array<{ featureName: string; featureDescription: string }>
   localItem?: boolean
+  features: Array<{ featureName: string; featureDescription: string }>
 }

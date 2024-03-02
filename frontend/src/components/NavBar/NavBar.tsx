@@ -1,6 +1,7 @@
-import { AppBar, Box, Button, Divider, IconButton, Menu, MenuItem, Tab, Tabs, Toolbar, Tooltip, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { AppBar, Box, Button, Divider, Menu, MenuItem, Tab, Tabs, Toolbar, Tooltip, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import PrintIcon from '@mui/icons-material/Print'
+import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import LoadingIndicator from 'components/LoadingIndicator'
 import { makeStyles } from 'tss-react/mui'
 import { useOrientation } from 'utils/hooks'
@@ -14,6 +15,7 @@ import { AccountBox, Logout, Person } from '@mui/icons-material'
 import useDefaultPage from 'hooks/useDefaultPage'
 import StatsPageMenu from './StatsPageMenu'
 import { LocalStorageRepository } from 'infrastructure/repositories/LocalStorageRepository'
+import logo from 'assets/logo_small.png'
 
 const localStorageRepository = new LocalStorageRepository<any>()
 
@@ -43,8 +45,7 @@ const useStyles = makeStyles()(() => ({
     overflowAnchor: 'none'
   },
   appBar: {
-    margin: '0',
-    minHeight: '100%'
+    margin: '0'
   },
   tabs: {
     '& .MuiTabs-flexContainer': {
@@ -71,7 +72,7 @@ const useStyles = makeStyles()(() => ({
   },
   toolbarLandscape: {
     flexDirection: 'column',
-    margin: '2em 0.5em 0 0.5em',
+    margin: '0.5em 0.5em 0 0.5em',
     gap: '1em'
   }
 }))
@@ -87,6 +88,10 @@ const NavBar: React.FC = () => {
   const [userMenuAnchorElement, setUserMenuAnchorElement] = React.useState<null | HTMLElement>(null)
   const userMenuOpen = Boolean(userMenuAnchorElement)
   const [tab, setTab] = useState<string | boolean>(Object.keys(TABS).includes(window.location.pathname) ? window.location.pathname : false)
+
+  useEffect(() => {
+    setTab(Object.keys(TABS).includes(window.location.pathname) ? window.location.pathname : false)
+  }, [window.location.pathname])
 
   const handleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setUserMenuAnchorElement(event.currentTarget)
@@ -126,25 +131,50 @@ const NavBar: React.FC = () => {
   }
 
   return (
-    <Box display="block" displayPrint="none">
+    <Box
+      display="block"
+      displayPrint="none"
+      sx={{ background: (theme) => theme.palette.primary.main, boxShadow: 'rgb(0, 0, 0) 2px 0px 7px -5px' }}
+    >
+      <Link
+        to="/"
+        onClick={() => {
+          clearTab()
+          handleUserMenuClose()
+        }}
+        style={{ color: 'inherit', textDecoration: 'inherit' }}
+      >
+        <span
+          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1em 0 0 0', fontSize: '1.3em', gap: '0.6em' }}
+        >
+          <img alt="logo" height="50px" src={logo} />
+          <Typography variant="body1" sx={{ fontWeight: '600' }}>
+            DM's Tool
+          </Typography>
+        </span>
+      </Link>
       <AppBar position="static" className={classes.appBar} elevation={0}>
         <Toolbar disableGutters className={isPortrait ? classes.toolbarPortrait : classes.toolbarLandscape}>
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
             {authState?.loggedIn && (
-              <div>
+              <>
                 <Button
                   size="large"
                   onClick={handleUserMenu}
                   color="inherit"
                   sx={{
+                    padding: '0.9em 0',
                     color: (theme) => theme.palette.secondary.light
                   }}
+                  fullWidth
                   startIcon={<AccountCircle />}
                 >
                   <Typography
                     component={'span'}
                     variant="body1"
                     sx={{
+                      fontSize: '1.4rem',
+                      lineHeight: '1.4rem',
                       textTransform: 'none'
                     }}
                   >
@@ -170,7 +200,10 @@ const NavBar: React.FC = () => {
                   slotProps={{
                     paper: {
                       sx: {
-                        background: (theme) => theme.status.light
+                        background: (theme) => theme.status.light,
+                        '& .MuiList-root': {
+                          padding: 0
+                        }
                       }
                     }
                   }}
@@ -183,7 +216,7 @@ const NavBar: React.FC = () => {
                     }}
                     style={{ color: 'inherit', textDecoration: 'inherit' }}
                   >
-                    <MenuItem sx={{ gap: '1em' }}>
+                    <MenuItem sx={{ gap: '1em', padding: '0.7em 1em' }}>
                       <Person fontSize="small" color="secondary" /> Profile
                     </MenuItem>
                   </Link>
@@ -195,7 +228,7 @@ const NavBar: React.FC = () => {
                     }}
                     style={{ color: 'inherit', textDecoration: 'inherit' }}
                   >
-                    <MenuItem sx={{ gap: '1em' }}>
+                    <MenuItem sx={{ gap: '1em', padding: '0.7em 1em' }}>
                       <AccountBox fontSize="small" color="secondary" /> My account
                     </MenuItem>
                   </Link>
@@ -206,15 +239,14 @@ const NavBar: React.FC = () => {
                       handleUserMenuClose()
                       onLogout()
                     }}
-                    sx={{ gap: '1em' }}
+                    sx={{ gap: '1em', padding: '0.7em 1em' }}
                   >
                     <Logout fontSize="small" /> Logout {authState.user?.name}
                   </MenuItem>
                 </Menu>
-              </div>
+              </>
             )}
           </div>
-
           <Tabs
             textColor="secondary"
             indicatorColor="secondary"
@@ -237,7 +269,10 @@ const NavBar: React.FC = () => {
                   key={tab}
                   {...a11yProps(5)}
                   sx={{
-                    padding: '0.7em'
+                    padding: '0.7em',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                    }
                   }}
                 />
               )
@@ -254,14 +289,13 @@ const NavBar: React.FC = () => {
             placement="top-end"
           >
             <Button
-              variant="contained"
               onClick={async () => {
                 await localStorageRepository.clearAll()
                 window.location.reload()
               }}
-              style={{ whiteSpace: 'nowrap' }}
+              style={{ whiteSpace: 'nowrap', display: 'flex', gap: '0.5em', position: isPortrait ? 'static' : 'fixed', bottom: '5em' }}
             >
-              Reset All
+              Reset All <RestartAltIcon />
             </Button>
           </Tooltip>
           <React.Suspense fallback={<LoadingIndicator />}>

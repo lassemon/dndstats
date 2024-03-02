@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 
 const saltRounds = 10
 
-export default class Ecryption {
+export class Encryption {
   public static encrypt(clearText: string): Promise<string> {
     return new Promise((resolve, reject) => {
       bcrypt.hash(clearText, saltRounds, (err, hash) => {

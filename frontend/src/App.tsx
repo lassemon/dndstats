@@ -21,6 +21,7 @@ import NavBar from 'components/NavBar'
 import AccountPage from 'layouts/AccountPage'
 import ProfilePage from 'layouts/PorfilePage'
 import ItemsPage from 'layouts/ItemsPage'
+import FrontPage from 'layouts/FrontPage'
 
 const Preloader = lazy(() => import('infrastructure/dataAccess/Preloader'))
 
@@ -53,9 +54,10 @@ const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Main />}>
-        <Route index element={<ItemStatsLayout />} />
+        <Route index element={<FrontPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="stats/item" element={<ItemStatsLayout />} />
         <Route path="stats/item/:itemId" element={<ItemStatsLayout />} />
         <Route path="stats/spell" element={<SpellStatsLayout />} />
         <Route path="stats/weapon" element={<WeaponStatsLayout />} />
@@ -67,7 +69,7 @@ const App: React.FC = () => {
         {/* Using path="*"" means "match anything", so this route
                     acts like a catch-all for URLs that we don't have explicit
                     routes for. */}
-        <Route path="*" element={<ItemStatsLayout />} />
+        <Route path="*" element={<FrontPage />} />
       </Route>
     </Routes>
   )

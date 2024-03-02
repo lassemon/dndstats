@@ -1,8 +1,6 @@
-import { User, UserResponse, UserRole, UserUpdateRequest } from '@dmtool/domain'
-import ApiError from '/domain/errors/ApiError'
-import Encryption from 'security/Encryption'
-import { UserInsertQuery, UserInsertRequest, UserUpdateQuery } from '@dmtool/domain/src/entities/User'
+import { ApiError, User, UserRole } from '@dmtool/domain'
 import { uuid } from '@dmtool/common'
+import { Encryption, UserInsertQuery, UserInsertRequest, UserResponse, UserUpdateQuery, UserUpdateRequest } from '@dmtool/application'
 
 export default class UserMapper {
   public mapToResponse(user: User): UserResponse {

@@ -1,5 +1,5 @@
 import { Logger } from '@dmtool/common'
-import UnknownError from '/domain/errors/UnknownError'
+import { UnknownError } from '@dmtool/domain'
 
 const log = new Logger('ErrorUtil')
 

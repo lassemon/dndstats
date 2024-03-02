@@ -1,4 +1,4 @@
-import { Button, Grid, ListItemIcon, TextField } from '@mui/material'
+import { Button, Grid, ListItemIcon, Switch, TextField, Tooltip } from '@mui/material'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
@@ -10,6 +10,7 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import { makeStyles } from 'tss-react/mui'
 import { arrayMoveImmutable } from 'array-move'
 import { Container, Draggable } from 'react-smooth-dnd'
+import ScreenshotButton from 'components/ScreenshotButton'
 
 export const useStyles = makeStyles()(() => ({
   draggableContainer: {
@@ -32,7 +33,12 @@ const replaceItemAtIndex = (arr: any[], index: number, newValue: any) => {
   return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
 }
 
-export const WeaponStatsInput: React.FC = () => {
+interface WeaponStatsInputProps {
+  screenshotMode?: boolean
+  setScreenshotMode?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const WeaponStatsInput: React.FC<WeaponStatsInputProps> = ({ screenshotMode, setScreenshotMode }) => {
   const [currentWeapon, setCurrentWeapon] = useAtom(useMemo(() => weaponAtom, []))
   const { classes } = useStyles()
 
@@ -166,12 +172,26 @@ export const WeaponStatsInput: React.FC = () => {
     }
   }
 
+  const onToggleScreenshotMode = () => {
+    if (setScreenshotMode) {
+      setScreenshotMode((_screenshotMode) => !_screenshotMode)
+    }
+  }
+
   if (!currentWeapon) {
     return null
   }
 
   return (
     <StatsInputContainer>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1em' }}>
+        <Tooltip title="Toggle screenshot mode" placement="top-end">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <ScreenshotButton onClick={onToggleScreenshotMode} color={screenshotMode ? 'secondary' : 'default'} sx={{ paddingBottom: 0 }} />
+            <Switch onClick={onToggleScreenshotMode} checked={screenshotMode} sx={{ marginTop: '-10px' }} color="secondary" />
+          </div>
+        </Tooltip>
+      </div>
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
       <TextField id="weapon-name" label="Name" value={currentWeapon.name} onChange={onChange('name')} />
       <TextField
@@ -214,9 +234,11 @@ export const WeaponStatsInput: React.FC = () => {
           )
         })}
       </Container>
-      <Button variant="contained" color="primary" onClick={onAddFeature}>
-        Add feature
-      </Button>
+      <div style={{ textAlign: 'end' }}>
+        <Button variant="contained" color="primary" onClick={onAddFeature}>
+          Add feature
+        </Button>
+      </div>
       <Grid container={true} spacing={2}>
         <Grid item={true} xs={8}>
           <TextField id="weapon-damage" label="Damage" value={currentWeapon.damage} onChange={onChange('damage')} />

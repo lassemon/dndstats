@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemDTO = void 0;
 const DTO_1 = __importDefault(require("./DTO"));
+const lodash_1 = __importDefault(require("lodash"));
 class ItemDTO extends DTO_1.default {
     constructor(item) {
         super(item);
@@ -84,6 +85,9 @@ class ItemDTO extends DTO_1.default {
     set createdBy(value) {
         this._properties.createdBy = value;
     }
+    get createdByUserName() {
+        return this._properties.createdByUserName;
+    }
     get createdAt() {
         return this._properties.createdAt;
     }
@@ -113,6 +117,9 @@ class ItemDTO extends DTO_1.default {
     }
     toJSON() {
         return this._properties;
+    }
+    toUpdateRequestItemJSON() {
+        return lodash_1.default.omit(this._properties, 'createdByUserName');
     }
     toString() {
         return JSON.stringify(this.toJSON());

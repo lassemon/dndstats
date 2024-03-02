@@ -1,25 +1,19 @@
 import connection from '../database/connection'
-import { DateTime } from 'luxon'
-import ApiError from '/domain/errors/ApiError'
-import { Item, Source } from '@dmtool/domain'
-import { uuid } from '@dmtool/common'
-import UnknownError from '/domain/errors/UnknownError'
+import { ApiError, Source, UnknownError } from '@dmtool/domain'
+import { unixtimeNow, uuid } from '@dmtool/common'
 import { Logger } from '@dmtool/common'
-import { DatabaseItemRepositoryInterface, ITEM_DEFAULTS } from '@dmtool/application'
+import { DBItem, DatabaseItemRepositoryInterface, ITEM_DEFAULTS, ItemDBResponse, ItemInsertQuery, ItemResponse } from '@dmtool/application'
+import { omit } from 'lodash'
 
 const logger = new Logger('ItemRepository')
 
-interface DBItem extends Omit<Item, 'features'> {
-  features: string
-}
-
 class ItemRepository implements DatabaseItemRepositoryInterface {
-  async getAll(): Promise<Item[]> {
+  async getAll(): Promise<ItemResponse[]> {
     return (
       await connection
         .join('users', 'items.createdBy', '=', 'users.id')
-        .select('items.*', 'users.name as createdBy')
-        .from<any, DBItem[]>('items')
+        .select('items.*', 'users.name as createdByUserName')
+        .from<any, ItemDBResponse[]>('items')
         .whereIn('visibility', ['public'])
         .orderBy('items.name')
     ).map((item) => {
@@ -27,21 +21,65 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     })
   }
 
-  async getAllVisibleForLoggedInUser(): Promise<Item[]> {
+  async countAll(): Promise<number> {
+    const result = await connection('items')
+      .count<{ count: number }>('id as count') // Count the number of item ids
+      .first() // Use .first() to get the first row of the result
+    return result ? result.count : 0
+  }
+
+  async getSystemItemsByName(itemName: string): Promise<ItemResponse[]> {
     return (
       await connection
         .join('users', 'items.createdBy', '=', 'users.id')
-        .select('items.*', 'users.name as createdBy')
-        .from<any, DBItem[]>('items')
-        .whereIn('visibility', ['public', 'logged_in'])
+        .select('items.*', 'users.name as createdByUserName')
+        .from<any, ItemDBResponse[]>('items')
+        .where({ source: Source.System })
+        .whereLike('items.name', `${itemName}%`)
         .orderBy('items.name')
     ).map((item) => {
       return { ...item, features: JSON.parse(item.features) }
     })
   }
 
-  async getAllForUser(userId: string): Promise<Item[]> {
-    return (await connection.select('*').from<any, DBItem[]>('items').where('createdBy', userId).orderBy('name')).map((item) => {
+  async getAllVisibleForLoggedInUser(userId: string): Promise<ItemResponse[]> {
+    return (
+      await connection
+        .join('users', 'items.createdBy', '=', 'users.id')
+        .select('items.*', 'users.name as createdByUserName')
+        .from<any, ItemDBResponse[]>('items')
+        .whereIn('visibility', ['public', 'logged_in'])
+        .orWhere('items.createdBy', userId)
+        .orderBy('items.name')
+    ).map((item) => {
+      return { ...item, features: JSON.parse(item.features) }
+    })
+  }
+
+  async getAllForUser(userId: string): Promise<ItemResponse[]> {
+    return (
+      await connection
+        .join('users', 'items.createdBy', '=', 'users.id')
+        .select('items.*', 'users.name as createdByUserName')
+        .from<any, ItemDBResponse[]>('items')
+        .where('items.createdBy', userId)
+        .orderBy('items.name')
+    ).map((item) => {
+      return { ...item, features: JSON.parse(item.features) }
+    })
+  }
+
+  async getUserItemsByName(itemName: string, userId: string): Promise<ItemResponse[]> {
+    return (
+      await connection
+        .join('users', 'items.createdBy', '=', 'users.id')
+        .select('items.*', 'users.name as createdByUserName')
+        .from<any, ItemDBResponse[]>('items')
+        .where({ createdBy: userId })
+        .whereNot({ source: Source.System })
+        .whereLike('items.name', `${itemName}%`)
+        .orderBy('items.name')
+    ).map((item) => {
       return { ...item, features: JSON.parse(item.features) }
     })
   }
@@ -54,8 +92,13 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     return result ? result.count : 0
   }
 
-  async getById(itemId: string): Promise<Item> {
-    const item = await connection.select('*').from<any, DBItem>('items').where('id', itemId).first()
+  async getById(itemId: string): Promise<ItemResponse> {
+    const item = await connection
+      .join('users', 'items.createdBy', '=', 'users.id')
+      .select('items.*', 'users.name as createdByUserName')
+      .from<any, ItemDBResponse>('items')
+      .where('items.id', itemId)
+      .first()
     if (!item) {
       throw new ApiError(404, 'NotFound', `Item was not found. ( ${itemId} )`)
     }
@@ -66,10 +109,34 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     }
   }
 
-  async save(item: Item, userId: string) {
-    const updatedAt = DateTime.now().toUnixInteger()
+  async create(item: ItemInsertQuery, userId: string) {
+    const updatedAt = unixtimeNow()
     const itemToInsert: DBItem = {
-      ...item,
+      ...omit(item, 'createdByUserName'),
+      id: item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? uuid() : item.id, // don't allow overwriting of the default item
+      ...(item.features ? { features: JSON.stringify(item.features) } : { features: '[]' }),
+      source: Source.HomeBrew,
+      createdBy: userId,
+      createdAt: updatedAt,
+      updatedAt: updatedAt
+    }
+    try {
+      await connection<any, DBItem>('items').insert(itemToInsert) // mariadb does not return inserted object
+    } catch (error) {
+      logger.error((error as any)?.message)
+      throw new UnknownError(500, 'UnknownError')
+    }
+
+    return {
+      ...itemToInsert,
+      features: JSON.parse(itemToInsert.features)
+    }
+  }
+
+  async update(item: ItemInsertQuery, userId: string) {
+    const updatedAt = unixtimeNow()
+    const itemToInsert: DBItem = {
+      ...omit(item, 'createdByUserName'),
       id: item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? uuid() : item.id, // don't allow overwriting of the default item
       ...(item.features ? { features: JSON.stringify(item.features) } : { features: '[]' }),
       source: Source.HomeBrew,

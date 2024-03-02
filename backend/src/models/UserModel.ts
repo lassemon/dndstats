@@ -1,4 +1,5 @@
-import { User, UserInsertQuery } from '@dmtool/domain/src/entities/User'
+import { UserInsertQuery } from '@dmtool/application'
+import { User } from '@dmtool/domain/src/entities/User'
 import Model from '@ruanmartinelli/knex-model'
 
 export default class UserModel extends Model {

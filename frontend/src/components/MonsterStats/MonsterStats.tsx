@@ -2,27 +2,19 @@ import React, { HTMLAttributes, useEffect, useMemo, useState } from 'react'
 import { CombatAtom, combatTrackerAtom, customCharactersAtom, monsterAtom } from 'infrastructure/dataAccess/atoms'
 
 import useStyles from './MonsterStats.styles'
-import { Autocomplete, Box, Button, ButtonGroup, CircularProgress, TextField, Tooltip } from '@mui/material'
+import { Box } from '@mui/material'
 import { MonsterListOption, emptyMonster } from 'domain/entities/Monster'
-import { getMonster, getMonsterList } from 'api/monsters'
-import { FifthESRDMonster } from 'domain/services/FifthESRDService'
-import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
+import { getMonsterList } from 'api/monsters'
 import Character from 'domain/entities/Character'
-import { PlayerType } from 'interfaces'
 import CharacterCard from 'components/Character/CharacterCard'
-import { upsertToArray } from 'utils/utils'
-import DeleteButton from 'components/DeleteButton'
-import ScreenshotButton from 'components/ScreenshotButton'
 import _ from 'lodash'
 import { useOrientation } from 'utils/hooks'
-import EditButton from 'components/EditButton'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
 import classNames from 'classnames'
 import Showdown from 'showdown'
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from 'components/ErrorFallback'
-import { Source } from '@dmtool/domain'
 
 const DescriptionBlock: React.FC<HTMLAttributes<HTMLParagraphElement>> = (props) => {
   const { children } = props
@@ -35,7 +27,13 @@ const DescriptionBlock: React.FC<HTMLAttributes<HTMLParagraphElement>> = (props)
   return <p className={classes.blockDescription}>{children}</p>
 }
 
-export const MonsterStats: React.FC = () => {
+interface MonsterStatsProps {
+  screenshotMode?: boolean
+  editMode: boolean
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const MonsterStats: React.FC<MonsterStatsProps> = ({ editMode, setEditMode }) => {
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
   const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterAtom, []))
@@ -48,10 +46,7 @@ export const MonsterStats: React.FC = () => {
   const isPortrait = orientation === 'portrait'
 
   const [monsterList, setMonsterList] = useState<MonsterListOption[]>([emptyMonster] as MonsterListOption[])
-  const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
-  const [monsterActionsVisible, setMonsterActionsVisible] = useState(true)
   const [loadingMonsterList, setLoadingMonsterList] = useState(false)
-  const [editMode, setEditMode] = useState(false)
 
   const existingCustomCharacter = customCharacterList.find((customCharacter) => customCharacter.id === currentMonster?.id)
   const monsterSavedInHomebrew = currentMonster?.isEqual(existingCustomCharacter)
@@ -121,82 +116,6 @@ export const MonsterStats: React.FC = () => {
     })
   }
 
-  const onSaveCustomCharacter = () => {
-    if (currentMonster) {
-      let characterToBeSaved = currentMonster.clone({ source: Source.HomeBrew })
-      const existingCharacter = monsterList.concat(customCharacterList).find((monster) => monster.id === currentMonster.id)
-      const characterExists = !!existingCharacter
-      const tryingToOverwriteNonHomebrewCharacter = characterExists && existingCharacter?.source !== Source.HomeBrew
-
-      if (tryingToOverwriteNonHomebrewCharacter) {
-        setCurrentMonster((currentMonster) => {
-          if (currentMonster) {
-            const monsterWithNameCount = (customCharacterList || []).filter((customCharacter) =>
-              customCharacter.id.includes(currentMonster.id)
-            ).length
-            const newName = `${currentMonster.name} #${monsterWithNameCount + 1}`
-            characterToBeSaved = characterToBeSaved?.clone({ name: newName })
-            return characterToBeSaved
-          }
-        })
-      }
-      setCustomCharacters((customCharacters) => {
-        return {
-          ...customCharacters,
-          characters: upsertToArray(customCharacterList, characterToBeSaved, 'id')
-        }
-      })
-    }
-  }
-
-  const onSelectMonster = async (event: React.SyntheticEvent, selected: MonsterListOption | null | string) => {
-    if (selected && typeof selected !== 'string' && selected.url) {
-      const monster: FifthESRDMonster = await getMonster(selected.url)
-      if (monster) {
-        setCurrentMonster(
-          new Character({
-            ...monster,
-            init: 0,
-            armor_classes: monster.armor_class,
-            player_type: PlayerType.Enemy,
-            source: Source.FifthESRD
-          })
-        )
-      }
-    } else if (selected && typeof selected !== 'string') {
-      const monster = customCharacterList.find((customCharacter) => customCharacter.id === selected.id)
-      if (monster) {
-        setCurrentMonster(monster)
-      }
-    }
-    setSelectedMonster(emptyMonster)
-  }
-
-  const onSelectCustomCharacter = (index: number) => (event: React.MouseEvent) => {
-    if (customCharacterList[index]) {
-      setCurrentMonster(customCharacterList[index])
-    }
-  }
-
-  const onDeleteCustomCharacter = (index: number) => () => {
-    setCustomCharacters((customCharacters) => {
-      const charactersCopy = [...customCharacters.characters]
-      charactersCopy.splice(index, 1)
-      return {
-        ...customCharacters,
-        characters: charactersCopy
-      }
-    })
-  }
-
-  const onToggletMonsterActionsVisible = () => {
-    setMonsterActionsVisible((monsterActionsVisible) => !monsterActionsVisible)
-  }
-
-  const onToggletEditMode = () => {
-    setEditMode((editMode) => !editMode)
-  }
-
   const onCloseEditMode = () => {
     setEditMode(false)
   }
@@ -207,13 +126,7 @@ export const MonsterStats: React.FC = () => {
 
   return (
     <>
-      <div
-        className={cx({
-          [classes.root]: true,
-          [classes.rootPortrait]: isPortrait,
-          [classes.rootLandscape]: !isPortrait
-        })}
-      >
+      <div>
         <ErrorBoundary FallbackComponent={(props) => <ErrorFallback {...props} className={classes.errorFallback} />}>
           <div
             className={cx({
@@ -231,92 +144,6 @@ export const MonsterStats: React.FC = () => {
           </div>
         </ErrorBoundary>
         <div className={classes.rightContainer}>
-          <Box displayPrint="none">
-            <div className={`${classes.monsterActionsContainer} ${monsterActionsVisible ? '' : classes.hidden}`}>
-              <Autocomplete
-                id={`add-monster-dropdown`}
-                blurOnSelect
-                clearOnBlur
-                fullWidth
-                disableClearable
-                filterSelectedOptions
-                groupBy={(option) => option.source}
-                className={`${classes.autocomplete}`}
-                value={selectedMonster}
-                loading={loadingMonsterList}
-                options={monsterList.sort((a, b) => b.source.localeCompare(a.source))}
-                onChange={onSelectMonster}
-                getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
-                PaperComponent={AutoCompleteItem}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Monster"
-                    variant="filled"
-                    size="small"
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <React.Fragment>
-                          {loadingMonsterList ? <CircularProgress color="inherit" size={20} /> : null}
-                          {params.InputProps.endAdornment}
-                        </React.Fragment>
-                      )
-                    }}
-                  />
-                )}
-                sx={{
-                  '&&': {
-                    margin: '1.5em 0 0 0'
-                  }
-                }}
-              />
-              <ButtonGroup
-                orientation="vertical"
-                size="small"
-                variant="text"
-                color="secondary"
-                sx={{
-                  overflowY: 'auto',
-                  maxHeight: '20em',
-                  margin: '1em 0'
-                }}
-              >
-                {customCharacterList.map((customCharacter, index) => {
-                  return (
-                    <ButtonGroup key={index} size="small" variant="text" color="secondary">
-                      <Button
-                        onClick={onSelectCustomCharacter(index)}
-                        fullWidth
-                        sx={{
-                          '&&': {
-                            borderRight: 0
-                          }
-                        }}
-                      >
-                        {customCharacter.name}
-                      </Button>
-                      <DeleteButton size="small" onClick={onDeleteCustomCharacter(index)} />
-                    </ButtonGroup>
-                  )
-                })}
-              </ButtonGroup>
-              {monsterSavedInHomebrew ? (
-                <Tooltip title="No changes to be saved" placement="top-start">
-                  <div>
-                    <Button variant="contained" onClick={onSaveCustomCharacter} disabled fullWidth>
-                      Save as homebrew character
-                    </Button>
-                  </div>
-                </Tooltip>
-              ) : (
-                <Button variant="contained" onClick={onSaveCustomCharacter}>
-                  Save as homebrew character
-                </Button>
-              )}
-            </div>
-          </Box>
-
           {currentMonster.imageElement && (
             <div className={`${classes.imageContainer}`}>
               <img alt={currentMonster.imageElement?.props.alt} src={`${currentMonster.imageElement?.props.src}`} />
@@ -329,16 +156,7 @@ export const MonsterStats: React.FC = () => {
           )}
         </div>
       </div>
-      <Box displayPrint="none">
-        <Tooltip title="Toggle screenshot mode" placement="top-start">
-          <div style={{ display: 'inline-block' }}>
-            <ScreenshotButton onClick={onToggletMonsterActionsVisible} color={monsterActionsVisible ? 'default' : 'info'} />
-          </div>
-        </Tooltip>
-        <div style={{ display: 'inline-block' }}>
-          <EditButton onClick={onToggletEditMode} color={monsterActionsVisible ? 'default' : 'info'} />
-        </div>
-      </Box>
+      <Box displayPrint="none"></Box>
     </>
   )
 }

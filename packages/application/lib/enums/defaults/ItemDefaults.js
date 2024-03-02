@@ -4,6 +4,7 @@ exports.ITEM_DEFAULTS = void 0;
 var ITEM_DEFAULTS;
 (function (ITEM_DEFAULTS) {
     ITEM_DEFAULTS["DEFAULT_ITEM_ID"] = "defaultItem";
+    ITEM_DEFAULTS["NEW_ITEM_ID"] = "newItem";
     ITEM_DEFAULTS["DEFAULT_ITEM_IMAGE_ID"] = "defaultItemImage";
 })(ITEM_DEFAULTS || (exports.ITEM_DEFAULTS = ITEM_DEFAULTS = {}));
 //# sourceMappingURL=ItemDefaults.js.map

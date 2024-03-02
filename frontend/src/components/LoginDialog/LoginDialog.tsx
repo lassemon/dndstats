@@ -1,9 +1,19 @@
 import React, { useState } from 'react'
-import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, TextField, Typography } from '@mui/material'
+import {
+  Button,
+  CircularProgress,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography
+} from '@mui/material'
 import Dialog from 'components/Dialog'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 import { login } from 'api/auth'
-import { UserResponse } from '@dmtool/domain'
+import { UserResponse } from '@dmtool/application'
 
 interface LoginDialogProps {
   open: boolean

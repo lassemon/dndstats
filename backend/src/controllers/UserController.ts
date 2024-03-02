@@ -1,16 +1,14 @@
 import UserMapper from 'mappers/UserMapper'
 import { Body, Controller, Delete, Get, Middlewares, Post, Put, Request, Response, Route, SuccessResponse, Tags } from 'tsoa'
 import { Logger } from '@dmtool/common'
-import { UserResponse, UserUpdateRequest } from '@dmtool/domain'
 import UserRepository from '/infrastructure/repositories/UserRepository'
-import { UserInsertRequest } from '@dmtool/domain'
 import Authentication from '/security/Authentication'
 import passport from 'passport'
-import ApiError from '/domain/errors/ApiError'
 import { AuthenticatedRequest } from '/infrastructure/entities/AuthenticatedRequest'
 import { UpdateUserUseCase } from '/useCases/UpdateUserUseCase'
-import { UserService } from './application/services/UserService'
 import { throwIllegalArgument, throwUnknownError } from '/utils/errorUtil'
+import { UserInsertRequest, UserResponse, UserService, UserUpdateRequest } from '@dmtool/application'
+import { ApiError } from '@dmtool/domain'
 
 const log = new Logger('UserController')
 const authentication = new Authentication(passport)

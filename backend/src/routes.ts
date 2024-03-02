@@ -15,6 +15,8 @@ import { PingController2 } from './controllers/PingController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PingController3 } from './controllers/PingController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { PageStatsController } from './controllers/PageStatsController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MonsterController } from './controllers/MonsterController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ItemController } from './controllers/ItemController';
@@ -78,12 +80,23 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PageStatsResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "itemsCreated": {"dataType":"double","required":true},
+            "spellsCreated": {"dataType":"double","required":true},
+            "weaponsCreated": {"dataType":"double","required":true},
+            "monstersCreated": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Visibility": {
         "dataType": "refEnum",
         "enums": ["public","logged_in","private"],
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Item": {
+    "ItemResponse": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"string","required":true},
@@ -99,7 +112,9 @@ const models: TsoaRoute.Models = {
             "price": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "weight": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "localItem": {"dataType":"boolean"},
             "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
+            "createdByUserName": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -135,8 +150,30 @@ const models: TsoaRoute.Models = {
     "ItemUpdateResponse": {
         "dataType": "refObject",
         "properties": {
-            "item": {"ref":"Item","required":true},
+            "item": {"ref":"ItemResponse","required":true},
             "image": {"dataType":"union","subSchemas":[{"ref":"Image"},{"dataType":"enum","enums":[null]}]},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Item": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "visibility": {"ref":"Visibility","required":true},
+            "source": {"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"],"required":true},
+            "createdBy": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"double","required":true},
+            "updatedAt": {"dataType":"double"},
+            "imageId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "name": {"dataType":"string","required":true},
+            "shortDescription": {"dataType":"string","required":true},
+            "mainDescription": {"dataType":"string","required":true},
+            "price": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "weight": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "localItem": {"dataType":"boolean"},
+            "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
         },
         "additionalProperties": false,
     },
@@ -433,6 +470,32 @@ export function RegisterRoutes(app: Router) {
 
 
               const promise = controller.ping.apply(controller, validatedArgs as any);
+              // CHANGED
+              promiseHandler(controller, promise, undefined, request, response, next);
+              // END OF CHANGED
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/v1/pagestats',
+            ...(fetchMiddlewares<RequestHandler>(PageStatsController)),
+            ...(fetchMiddlewares<RequestHandler>(PageStatsController.prototype.get)),
+
+            function PageStatsController_get(request: any, response: any, next: any) {
+            const args = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new PageStatsController();
+
+
+              const promise = controller.get.apply(controller, validatedArgs as any);
               // CHANGED
               promiseHandler(controller, promise, undefined, request, response, next);
               // END OF CHANGED

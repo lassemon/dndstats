@@ -40,14 +40,6 @@ export const objectWithoutEmptyOrUndefined = <T extends { [key: string]: any }>(
     .valueOf()
 }
 
-export const unixtimeNow = (): number => {
-  return DateTime.now().toUnixInteger()
-}
-
-export const dateStringFromUnixTime = (unixtime: number): string => {
-  return DateTime.fromSeconds(unixtime).setZone('Europe/Helsinki').toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS)
-}
-
 export const getlowestfraction = (x0: number) => {
   var eps = 1.0e-15
   var h, h1, h2, k, k1, k2, a, x

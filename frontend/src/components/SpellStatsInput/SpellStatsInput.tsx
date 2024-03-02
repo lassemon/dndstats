@@ -1,4 +1,4 @@
-import { Button, Grid, ListItemIcon, TextField } from '@mui/material'
+import { Box, Button, Grid, ListItemIcon, Switch, TextField, Tooltip } from '@mui/material'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import StatsInputContainer from 'components/StatsInputContainer'
 import { useAtom } from 'jotai'
@@ -10,6 +10,7 @@ import { makeStyles } from 'tss-react/mui'
 import { arrayMoveImmutable } from 'array-move'
 import { Container, Draggable } from 'react-smooth-dnd'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
+import ScreenshotButton from 'components/ScreenshotButton'
 
 export const useStyles = makeStyles()(() => ({
   draggableContainer: {
@@ -28,7 +29,12 @@ export const useStyles = makeStyles()(() => ({
   }
 }))
 
-export const SpellStatsInput: React.FC = () => {
+interface SpellStatsInputProps {
+  screenshotMode?: boolean
+  setScreenshotMode?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const SpellStatsInput: React.FC<SpellStatsInputProps> = ({ screenshotMode, setScreenshotMode }) => {
   const [currentSpell, setCurrentSpell] = useAtom(useMemo(() => spellAtom, []))
   const { classes } = useStyles()
 
@@ -114,90 +120,93 @@ export const SpellStatsInput: React.FC = () => {
     })
   }
 
+  const onToggleScreenshotMode = () => {
+    if (setScreenshotMode) {
+      setScreenshotMode((_screenshotMode) => !_screenshotMode)
+    }
+  }
+
   if (!currentSpell) {
     return null
   }
 
   return (
     <StatsInputContainer>
-      <Grid container={true} spacing={2}>
-        <Grid item={true} xs={12}>
-          <TextField id="spell-name" label="Name" value={currentSpell.name} onChange={onChange('name')} />
-        </Grid>
-        <Grid item={true} xs={4}>
-          <TextField
-            id="spell-short-description"
-            label="Short Description"
-            value={currentSpell.shortDescription}
-            onChange={onChange('shortDescription')}
-          />
-        </Grid>
-        <Grid item={true} xs={4}>
-          <TextField id="spell-casting-time" label="Casting Time" value={currentSpell.castingtime} onChange={onChange('castingtime')} />
-        </Grid>
-        <Grid item={true} xs={4}>
-          <TextField id="spell-range" label="Range" value={currentSpell.range} onChange={onChange('range')} />
-        </Grid>
-        <Grid item={true} xs={4}>
-          <TextField id="spell-components" label="Components" value={currentSpell.components} onChange={onChange('components')} />
-        </Grid>
-        <Grid item={true} xs={4}>
-          <TextField id="spell-duration" label="Duration" value={currentSpell.duration} onChange={onChange('duration')} />
-        </Grid>
-        <Grid item={true} xs={4}>
-          <TextField id="spell-classes" label="Classes" value={currentSpell.classes} onChange={onChange('classes')} />
-        </Grid>
-        <Grid item={true} xs={12}>
-          <TextField
-            id="spell-main-description"
-            label="Main Description"
-            value={currentSpell.mainDescription}
-            multiline={true}
-            onChange={onChange('mainDescription')}
-          />
-        </Grid>
-        <Grid item={true} xs={12}>
-          <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
-            {!_.isEmpty(currentSpell.features) &&
-              currentSpell.features.map((feature, index) => {
-                return (
-                  <Draggable key={index} className={`${classes.draggableContainer}`}>
-                    <FeatureInputContainer onDelete={onDeleteFeature(index)}>
-                      <ListItemIcon className={`drag-handle ${classes.dragIconContainer}`}>
-                        <DragHandleIcon fontSize="large" />
-                      </ListItemIcon>
-                      <TextField
-                        id={`item-${index}-feature-name`}
-                        label="Feature Name"
-                        value={feature.featureName}
-                        onChange={onChangeFeatureName(index)}
-                      />
-                      <TextField
-                        id={`item-${index}-feature-description`}
-                        label="Feature Description"
-                        value={feature.featureDescription}
-                        multiline={true}
-                        onChange={onChangeFeatureDescription(index)}
-                      />
-                    </FeatureInputContainer>
-                  </Draggable>
-                )
-              })}
-          </Container>
-          <Button variant="contained" color="primary" onClick={onAddFeature}>
-            Add feature
-          </Button>
-        </Grid>
-        <Grid item={true} xs={12}>
-          <TextField
-            id="spell-at-higher-levels"
-            label="At higher levels"
-            value={currentSpell.athigherlevels}
-            multiline={true}
-            onChange={onChange('athigherlevels')}
-          />
-        </Grid>
-      </Grid>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1em' }}>
+        <Tooltip title="Toggle screenshot mode" placement="top-end">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <ScreenshotButton onClick={onToggleScreenshotMode} color={screenshotMode ? 'secondary' : 'default'} sx={{ paddingBottom: 0 }} />
+            <Switch onClick={onToggleScreenshotMode} checked={screenshotMode} sx={{ marginTop: '-10px' }} color="secondary" />
+          </div>
+        </Tooltip>
+      </div>
+      <TextField id="spell-name" label="Name" value={currentSpell.name} onChange={onChange('name')} />
+      <div style={{ display: 'flex', gap: '2em' }}>
+        <TextField
+          id="spell-short-description"
+          label="Short Description"
+          value={currentSpell.shortDescription}
+          onChange={onChange('shortDescription')}
+        />
+        <TextField id="spell-casting-time" label="Casting Time" value={currentSpell.castingtime} onChange={onChange('castingtime')} />
+        <TextField id="spell-range" label="Range" value={currentSpell.range} onChange={onChange('range')} />
+      </div>
+      <div style={{ display: 'flex', gap: '2em' }}>
+        <TextField id="spell-components" label="Components" value={currentSpell.components} onChange={onChange('components')} />
+        <TextField id="spell-duration" label="Duration" value={currentSpell.duration} onChange={onChange('duration')} />
+        <TextField id="spell-classes" label="Classes" value={currentSpell.classes} onChange={onChange('classes')} />
+      </div>
+      <TextField
+        id="spell-main-description"
+        label="Main Description"
+        value={currentSpell.mainDescription}
+        multiline={true}
+        onChange={onChange('mainDescription')}
+      />
+      <Container
+        dragHandleSelector=".drag-handle"
+        lockAxis="y"
+        onDrop={onDrop}
+        style={{ display: _.isEmpty(currentSpell.features) ? 'none' : 'block' }}
+      >
+        {!_.isEmpty(currentSpell.features) &&
+          currentSpell.features.map((feature, index) => {
+            return (
+              <Draggable key={index} className={`${classes.draggableContainer}`}>
+                <FeatureInputContainer onDelete={onDeleteFeature(index)}>
+                  <ListItemIcon className={`drag-handle ${classes.dragIconContainer}`}>
+                    <DragHandleIcon fontSize="large" />
+                  </ListItemIcon>
+                  <TextField
+                    id={`item-${index}-feature-name`}
+                    label="Feature Name"
+                    value={feature.featureName}
+                    onChange={onChangeFeatureName(index)}
+                  />
+                  <TextField
+                    id={`item-${index}-feature-description`}
+                    label="Feature Description"
+                    value={feature.featureDescription}
+                    multiline={true}
+                    onChange={onChangeFeatureDescription(index)}
+                  />
+                </FeatureInputContainer>
+              </Draggable>
+            )
+          })}
+      </Container>
+      <div style={{ textAlign: 'right' }}>
+        <Button variant="contained" color="primary" onClick={onAddFeature}>
+          Add feature
+        </Button>
+      </div>
+      <TextField
+        id="spell-at-higher-levels"
+        label="At higher levels"
+        value={currentSpell.athigherlevels}
+        multiline={true}
+        onChange={onChange('athigherlevels')}
+      />
     </StatsInputContainer>
   )
 }

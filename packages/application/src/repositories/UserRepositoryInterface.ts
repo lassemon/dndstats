@@ -1,5 +1,6 @@
-import { User, UserInsertQuery, UserInsertRequest, UserResponse, UserUpdateQuery, UserUpdateRequest } from '@dmtool/domain'
+import { User } from '@dmtool/domain'
 import { FetchOptions } from '../interfaces/http/Fetch'
+import { UserInsertQuery, UserInsertRequest, UserResponse, UserUpdateQuery, UserUpdateRequest } from '../interfaces/http/User'
 
 export interface DatabaseUserRepositoryInterface {
   getAll(): Promise<User[]>

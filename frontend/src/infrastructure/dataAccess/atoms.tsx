@@ -5,7 +5,8 @@ import { LocalStorageRepository } from 'infrastructure/repositories/LocalStorage
 import { atom } from 'jotai'
 import { StorageParseError, StorageSyncError } from 'domain/errors/StorageError'
 import { isPromise } from 'utils/utils'
-import { Item, UserResponse } from '@dmtool/domain'
+import { Item } from '@dmtool/domain'
+import { UserResponse } from '@dmtool/application'
 
 type UpdateFunction<T> = (oldValue: T) => T | undefined
 type UpdateParam<T> = UpdateFunction<T> | T

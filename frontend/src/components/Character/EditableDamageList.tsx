@@ -2,7 +2,7 @@ import { Autocomplete, Button, TextField, TextFieldProps } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { DamageType } from 'interfaces'
-import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
+import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {

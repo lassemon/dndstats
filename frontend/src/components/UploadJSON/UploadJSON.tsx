@@ -46,7 +46,7 @@ const UploadButton: React.FC<{ onUpload: (file?: { [key: string]: any }) => void
   }
 
   return (
-    <Button component="label" variant="contained" startIcon={<FileUploadIcon />}>
+    <Button component="label" variant="contained" startIcon={<FileUploadIcon />} sx={{ whiteSpace: 'nowrap' }}>
       {children}
       <VisuallyHiddenInput type="file" onChange={readFile} onClick={reset} accept="application/JSON" />
     </Button>

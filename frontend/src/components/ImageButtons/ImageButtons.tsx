@@ -22,7 +22,7 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
 
   return (
     <div className={classes.bottomButtons}>
-      <Button component="label">
+      <Button component="label" sx={{ paddingLeft: 0 }}>
         Upload image
         <input
           type="file"
@@ -36,7 +36,7 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
         />
         <PublishIcon fontSize="large" />
       </Button>
-      <Button onClick={onDeleteImage} className={classes.deleteButton}>
+      <Button onClick={onDeleteImage} className={classes.deleteButton} sx={{ paddingRight: 0 }}>
         Clear image
         <DeleteIcon fontSize="large" />
       </Button>

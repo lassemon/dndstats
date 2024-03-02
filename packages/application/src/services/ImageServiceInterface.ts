@@ -1,4 +1,4 @@
-import { Image, ImageMetadata } from '@dmtool/domain'
+import { ImageMetadata } from '@dmtool/domain'
 
 export interface ImageServiceInterface {
   convertBase64ImageToBuffer: (base64ImageData: string) => Buffer

@@ -125,6 +125,34 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PageStatsResponse": {
+				"properties": {
+					"itemsCreated": {
+						"type": "number",
+						"format": "double"
+					},
+					"spellsCreated": {
+						"type": "number",
+						"format": "double"
+					},
+					"weaponsCreated": {
+						"type": "number",
+						"format": "double"
+					},
+					"monstersCreated": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"itemsCreated",
+					"spellsCreated",
+					"weaponsCreated",
+					"monstersCreated"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Visibility": {
 				"enum": [
 					"public",
@@ -133,7 +161,7 @@
 				],
 				"type": "string"
 			},
-			"Item": {
+			"ItemResponse": {
 				"properties": {
 					"id": {
 						"type": "string"
@@ -187,6 +215,9 @@
 						"type": "string",
 						"nullable": true
 					},
+					"localItem": {
+						"type": "boolean"
+					},
 					"features": {
 						"items": {
 							"properties": {
@@ -204,6 +235,9 @@
 							"type": "object"
 						},
 						"type": "array"
+					},
+					"createdByUserName": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -219,7 +253,8 @@
 					"price",
 					"rarity",
 					"weight",
-					"features"
+					"features",
+					"createdByUserName"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -311,7 +346,7 @@
 			"ItemUpdateResponse": {
 				"properties": {
 					"item": {
-						"$ref": "#/components/schemas/Item"
+						"$ref": "#/components/schemas/ItemResponse"
 					},
 					"image": {
 						"allOf": [
@@ -324,6 +359,100 @@
 				},
 				"required": [
 					"item"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Item": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"visibility": {
+						"$ref": "#/components/schemas/Visibility"
+					},
+					"source": {
+						"type": "string",
+						"enum": [
+							"5th_e_SRD",
+							"Homebrew",
+							"My_Items",
+							"System"
+						],
+						"nullable": false
+					},
+					"createdBy": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"imageId": {
+						"type": "string",
+						"nullable": true
+					},
+					"name": {
+						"type": "string"
+					},
+					"shortDescription": {
+						"type": "string"
+					},
+					"mainDescription": {
+						"type": "string"
+					},
+					"price": {
+						"type": "string",
+						"nullable": true
+					},
+					"rarity": {
+						"type": "string",
+						"nullable": true
+					},
+					"weight": {
+						"type": "string",
+						"nullable": true
+					},
+					"localItem": {
+						"type": "boolean"
+					},
+					"features": {
+						"items": {
+							"properties": {
+								"featureDescription": {
+									"type": "string"
+								},
+								"featureName": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"featureDescription",
+								"featureName"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"visibility",
+					"source",
+					"createdBy",
+					"createdAt",
+					"imageId",
+					"name",
+					"shortDescription",
+					"mainDescription",
+					"price",
+					"rarity",
+					"weight",
+					"features"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -650,6 +779,28 @@
 				"parameters": []
 			}
 		},
+		"/pagestats": {
+			"get": {
+				"operationId": "Get",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PageStatsResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"page"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/monsters": {
 			"get": {
 				"operationId": "Search",
@@ -709,7 +860,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/Item"
+										"$ref": "#/components/schemas/ItemResponse"
 									},
 									"type": "array"
 								}
@@ -734,7 +885,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/Item"
+										"$ref": "#/components/schemas/ItemResponse"
 									},
 									"type": "array"
 								}
@@ -767,7 +918,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Item"
+									"$ref": "#/components/schemas/ItemResponse"
 								}
 							}
 						}
@@ -819,7 +970,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Item"
+									"$ref": "#/components/schemas/ItemResponse"
 								}
 							}
 						}
@@ -848,7 +999,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Item"
+									"$ref": "#/components/schemas/ItemResponse"
 								}
 							}
 						}

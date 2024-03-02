@@ -144,6 +144,15 @@ const StatsPageMenu: React.FC<StatsPageMenuProps> = ({ onMenuItemClick }) => {
         }}
         open={stasMenuOpen}
         onClose={handleStatsMenuClose}
+        slotProps={{
+          paper: {
+            sx: {
+              '& .MuiList-root': {
+                padding: 0
+              }
+            }
+          }
+        }}
         MenuListProps={{
           'aria-labelledby': 'lock-button',
           role: 'listbox',
@@ -164,7 +173,7 @@ const StatsPageMenu: React.FC<StatsPageMenuProps> = ({ onMenuItemClick }) => {
             selected={index === selectedStatsPageIndex}
             onClick={(event) => handleStatsMenuItemClick(event, index)}
             sx={{
-              padding: '0.7em'
+              padding: '0.7em 1em'
             }}
           >
             {option}

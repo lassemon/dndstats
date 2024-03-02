@@ -1,8 +1,9 @@
-import { Item } from '@dmtool/domain'
 import DTO from './DTO'
+import { ItemResponse } from '../interfaces/http/Item'
+import _ from 'lodash'
 
-export class ItemDTO extends DTO<ItemDTO, Item> {
-  constructor(item: Item) {
+export class ItemDTO extends DTO<ItemDTO, ItemResponse> {
+  constructor(item: ItemResponse) {
     super(item)
   }
 
@@ -93,6 +94,10 @@ export class ItemDTO extends DTO<ItemDTO, Item> {
     this._properties.createdBy = value
   }
 
+  public get createdByUserName() {
+    return this._properties.createdByUserName
+  }
+
   get createdAt() {
     return this._properties.createdAt
   }
@@ -107,7 +112,7 @@ export class ItemDTO extends DTO<ItemDTO, Item> {
     this._properties.updatedAt = value
   }
 
-  public clone(attributes?: Partial<Item>) {
+  public clone(attributes?: Partial<ItemResponse>) {
     if (attributes) {
       const cloneAttrs = {
         ...this.toJSON(),
@@ -126,8 +131,12 @@ export class ItemDTO extends DTO<ItemDTO, Item> {
     return JSON.stringify(this) === JSON.stringify(otherItem)
   }
 
-  toJSON(): Item {
+  toJSON(): ItemResponse {
     return this._properties
+  }
+
+  toUpdateRequestItemJSON() {
+    return _.omit(this._properties, 'createdByUserName')
   }
 
   toString(): string {

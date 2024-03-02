@@ -1,7 +1,7 @@
 import { Autocomplete, Button, TextField, TextFieldProps } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
-import { AutoCompleteItem } from 'components/AutocompleteItem/AutocompleteItem'
+import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
 import { APIReference } from 'domain/services/FifthESRDService'
 import { conditionToApiReference, getConditionImmunitiesList } from 'components/CombatTracker/Conditions'
 

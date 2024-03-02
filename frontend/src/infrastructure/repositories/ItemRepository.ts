@@ -1,4 +1,4 @@
-import { FetchOptions, HttpItemRepositoryInterface, ItemDTO } from '@dmtool/application'
+import { FetchOptions, HttpItemRepositoryInterface, ItemDTO, ItemResponse, ItemUpdateRequest } from '@dmtool/application'
 import { Image, Item } from '@dmtool/domain'
 import { HttpItemRepository } from 'infrastructure/api/HttpItemRepository'
 import { LocalStorageItemRepository } from 'infrastructure/repositories/LocalStorageItemRepository'
@@ -6,23 +6,23 @@ import { defaultItem } from 'services/defaults'
 import { LocalStorageRepository } from './LocalStorageRepository'
 
 export interface FrontendItemRepositoryInterface extends HttpItemRepositoryInterface {
-  saveToLocalStorage(item: Item): Promise<Item>
+  saveToLocalStorage(item: ItemResponse): Promise<ItemResponse>
 }
 
-const localStorageRepository = new LocalStorageRepository<Item>()
+const localStorageRepository = new LocalStorageRepository<ItemResponse>()
 class ItemRepository implements FrontendItemRepositoryInterface {
   private backendRepository = new HttpItemRepository()
   private localStorageRepository = new LocalStorageItemRepository(localStorageRepository)
 
-  async getAll(options: FetchOptions = {}): Promise<Item[]> {
+  async getAll(options: FetchOptions = {}): Promise<ItemResponse[]> {
     return await this.backendRepository.getAll(options)
   }
 
-  async getAllForUser(userId: string): Promise<Item[]> {
+  async getAllForUser(userId: string): Promise<ItemResponse[]> {
     return await this.backendRepository.getAllForUser(userId)
   }
 
-  async getById(id: string): Promise<Item> {
+  async getById(id: string): Promise<ItemResponse> {
     try {
       // Attempt to fetch from the backend first
       const itemDTO = new ItemDTO(await this.backendRepository.getById(id))
@@ -64,7 +64,7 @@ class ItemRepository implements FrontendItemRepositoryInterface {
     return persistedItem
   }
 
-  async saveToLocalStorage(item: Item) {
+  async saveToLocalStorage(item: ItemResponse) {
     await this.localStorageRepository.save(item)
     return item
   }

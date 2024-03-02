@@ -1,11 +1,10 @@
 import { BaseImage, ImageMetadata } from '@dmtool/domain/src/entities/Image'
 import connection from '../database/connection'
 import { DateTime } from 'luxon'
-import ApiError from '/domain/errors/ApiError'
 import { uuid } from '@dmtool/common'
-import UnknownError from '/domain/errors/UnknownError'
 import { Logger } from '@dmtool/common'
 import { DatabaseImageRepositoryInterface, ITEM_DEFAULTS } from '@dmtool/application'
+import { ApiError, UnknownError } from '@dmtool/domain'
 
 const logger = new Logger('ImageRepository')
 

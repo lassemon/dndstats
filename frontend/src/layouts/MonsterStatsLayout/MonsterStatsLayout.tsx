@@ -1,24 +1,23 @@
 import MonsterStats from 'components/MonsterStats'
 import MonsterStatsInput from 'components/MonsterStatsInput'
 import StatsLayout from 'layouts/StatsLayout'
-import React from 'react'
+import React, { useState } from 'react'
 
 const MonsterStatsLayout: React.FC = () => {
+  const [screenshotMode, setScreenshotMode] = useState(false)
+  const [editMode, setEditMode] = useState(false)
   return (
     <StatsLayout
-      statsComponent={<MonsterStats />}
-      inputComponent={<MonsterStatsInput />}
-      sx={{
-        '&': {
-          flexDirection: 'column',
-          flexWrap: 'nowrap',
-          height: '100%'
-        },
-        '& > div': {
-          flexBasis: '100%',
-          maxWidth: '100%'
-        }
-      }}
+      screenshotMode={screenshotMode}
+      statsComponent={<MonsterStats screenshotMode={screenshotMode} editMode={editMode} setEditMode={setEditMode} />}
+      inputComponent={
+        <MonsterStatsInput
+          screenshotMode={screenshotMode}
+          setScreenshotMode={setScreenshotMode}
+          editMode={editMode}
+          setEditMode={setEditMode}
+        />
+      }
     />
   )
 }

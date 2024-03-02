@@ -8,13 +8,15 @@ import { logout, status } from 'api/auth'
 import { scheduleAsyncFunction } from 'utils/utils'
 import _ from 'lodash'
 import { uuid } from '@dmtool/common'
-import { UserResponse } from '@dmtool/domain'
+import { UserResponse } from '@dmtool/application'
+import useDefaultPage from 'hooks/useDefaultPage'
 
 const Login: React.FC = () => {
   const [authState, setAuthState] = useAtom(authAtom)
   const [isLoginDialogOpen, setLoginDialogOpen] = useState(false)
   const [isLoggedOutDialogOpen, setLoggedOutDialogOpen] = useState(false)
   const [startPollingTrigger, setStartPollingTrigger] = useState<string>('')
+  const goToDefaultPage = useDefaultPage()
 
   useEffect(() => {
     let isMounted = true
@@ -80,6 +82,7 @@ const Login: React.FC = () => {
           user: undefined
         }
       })
+      goToDefaultPage()
     })
   }
 

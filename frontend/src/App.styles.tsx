@@ -11,7 +11,8 @@ export const useStyles = makeStyles()(() => ({
     margin: 0,
     padding: 0,
     width: '100%',
-    overflowAnchor: 'none'
+    overflowAnchor: 'none',
+    boxShadow: 'rgb(0, 0, 0) 2px 0px 7px -5px inset'
   },
   appBar: {
     margin: '0',

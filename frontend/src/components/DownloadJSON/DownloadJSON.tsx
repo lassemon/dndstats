@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from '@mui/material'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
-import { unixtimeNow } from 'utils/utils'
+import { unixtimeNow } from '@dmtool/common'
 
 interface DownloadJSONProps {
   data: { [key: string]: any }
@@ -31,7 +31,7 @@ const DownloadJSON: React.FC<DownloadJSONProps> = (props) => {
   }
 
   return (
-    <Button variant="contained" onClick={downloadFile} startIcon={<FileDownloadIcon />}>
+    <Button variant="contained" onClick={downloadFile} startIcon={<FileDownloadIcon />} sx={{ whiteSpace: 'nowrap' }}>
       {children}
     </Button>
   )

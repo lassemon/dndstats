@@ -6,10 +6,8 @@ import {
   LocalStorageImageRepositoryInterface
 } from '@dmtool/application'
 import { unixtimeNow } from '@dmtool/common'
-import { Item } from '@dmtool/domain'
 import { StorageSyncError } from 'domain/errors/StorageError'
-import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
-import { ITEM_STATE_NAME } from 'infrastructure/repositories/LocalStorageItemRepository'
+import { errorAtom } from 'infrastructure/dataAccess/atoms'
 import { useAtom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import React, { useEffect, useRef, useState } from 'react'

@@ -85,7 +85,8 @@ export enum ItemRarity {
   UNCOMMON = 'uncommon',
   RARE = 'rare',
   VERY_RARE = 'very_rare',
-  LEGENDARY = 'legendary'
+  LEGENDARY = 'legendary',
+  ARTIFACT = 'artifact'
 }
 
 export enum ArmorClassType {

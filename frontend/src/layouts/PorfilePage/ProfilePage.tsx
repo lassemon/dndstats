@@ -5,12 +5,12 @@ import UserRepository from 'infrastructure/repositories/UserRepository'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
-import { dateStringFromUnixTime } from 'utils/utils'
 import _ from 'lodash'
 import ProfileStat from 'components/ProfileStat'
 import ProfileRepository from 'infrastructure/repositories/ProfileRepository'
 import { ProfileResponse } from '@dmtool/application'
 import PageHeader from 'components/PageHeader'
+import { dateStringFromUnixTime } from '@dmtool/common'
 
 const useStyles = makeStyles()(() => ({
   root: {
@@ -71,10 +71,10 @@ const ProfilePage: React.FC = () => {
       if (authState.user) {
         try {
           setLoadingProfile(true)
-          const profile = await profileRepository.getProfile().finally(() => {
+          const profileResponse = await profileRepository.getProfile().finally(() => {
             setLoadingProfile(false)
           })
-          setProfile(profile)
+          setProfile(profileResponse)
         } catch (error) {
           console.error('Failed to fetch profile', error)
         }

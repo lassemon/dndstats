@@ -9,7 +9,7 @@ const imagesBasePath = process.env.IMAGES_BASE_PATH || './images'
 webp.grant_permission()
 
 export class ImageProcessingService implements ImageProcessingServiceInterface {
-  async resizeImage(buffer: Buffer, resizeOptions: { width: number }): Promise<Buffer> {
+  async resizeImage(buffer: Buffer, resizeOptions: { width: number }) {
     try {
       // Detect the MIME type of the image
       const type = await fileType.fromBuffer(buffer)
@@ -48,5 +48,10 @@ export class ImageProcessingService implements ImageProcessingServiceInterface {
       console.error('Error processing image:', error)
       throw new Error('Failed to process image')
     }
+  }
+
+  async getBufferMimeType(buffer: Buffer) {
+    const extractedFileType = await fileType.fromBuffer(buffer)
+    return extractedFileType?.mime
   }
 }

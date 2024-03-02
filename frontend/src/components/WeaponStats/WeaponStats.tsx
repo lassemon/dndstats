@@ -2,10 +2,8 @@ import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { Fragment, useMemo } from 'react'
 import { weaponAtom } from 'infrastructure/dataAccess/atoms'
-import classNames from 'classnames/bind'
 
 import useStyles from './WeaponStats.styles'
-import { useOrientation } from 'utils/hooks'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
 
@@ -15,25 +13,20 @@ const DescriptionBlock: React.FC = (props) => {
   return <p className={classes.description}>{children}</p>
 }
 
-export const WeaponStats: React.FC = () => {
+interface WeaponStatsProps {
+  screenshotMode?: boolean
+}
+
+export const WeaponStats: React.FC<WeaponStatsProps> = ({}) => {
   const { classes } = useStyles()
-  const cx = classNames.bind(classes)
   const [currentWeapon] = useAtom(useMemo(() => weaponAtom, []))
-  const orientation = useOrientation()
-  const isPortrait = orientation === 'portrait'
 
   if (!currentWeapon) {
     return <LoadingIndicator />
   }
 
   return (
-    <StatsContainer
-      className={cx({
-        [classes.container]: true,
-        [classes.smallContainer]: isPortrait,
-        [classes.mediumContainer]: !isPortrait
-      })}
-    >
+    <StatsContainer>
       <div className={classes.topContainer}>
         <div className={classes.headerContainer}>
           <h1 className={classes.name}>{currentWeapon.name}</h1>
