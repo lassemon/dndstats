@@ -1,7 +1,12 @@
-import { CircularProgress, Paper, PaperProps } from '@mui/material'
+import { CircularProgress, CircularProgressProps, Paper, PaperProps } from '@mui/material'
 import React from 'react'
 
-const LoadingIndicator: React.FC<PaperProps> = ({ ...paperProps }) => {
+interface LoadingIndicatorProps extends PaperProps {
+  size?: CircularProgressProps['size']
+  progressProps?: CircularProgressProps
+}
+
+const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({ size, progressProps, ...paperProps }) => {
   return (
     <Paper
       elevation={0}
@@ -17,7 +22,7 @@ const LoadingIndicator: React.FC<PaperProps> = ({ ...paperProps }) => {
         ...paperProps.sx
       }}
     >
-      <CircularProgress color="secondary" />
+      <CircularProgress size={size} color="secondary" {...progressProps} />
     </Paper>
   )
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Middlewares, Path, Put, Request, Route, SuccessResponse, Tags } from 'tsoa'
+import { Body, Controller, Delete, Get, Middlewares, Path, Put, Queries, Request, Route, SuccessResponse, Tags } from 'tsoa'
 import passport from 'passport'
 import Authentication from '/security/Authentication'
 import express from 'express'
@@ -9,6 +9,8 @@ import {
   ITEM_DEFAULTS,
   ImageService,
   ItemResponse,
+  ItemSearchRequest,
+  ItemSearchResponse,
   ItemService,
   ItemUpdateRequest,
   ItemUpdateResponse,
@@ -22,6 +24,7 @@ import { throwIllegalArgument, throwUnknownError } from '/utils/errorUtil'
 import { RemoveImageFromItemUseCase } from '/useCases/RemoveImageFromItemUseCase'
 import { DeleteItemUseCase } from '/useCases/DeleteItemUseCase'
 import UserRepository from '/infrastructure/repositories/UserRepository'
+import { SearchItemsUseCase } from '/useCases/SearchItemsUseCase'
 const authentication = new Authentication(passport)
 
 const imageService = new ImageService()
@@ -37,17 +40,27 @@ const removeImageFromItemUseCase = new RemoveImageFromItemUseCase(itemRepository
 const saveItemUseCase = new SaveItemUseCase(itemService, itemRepository, saveImageUseCase, removeImageFromItemUseCase)
 
 const deleteItemUseCase = new DeleteItemUseCase(itemRepository, removeImageFromItemUseCase)
+const searchItemsUseCase = new SearchItemsUseCase(itemRepository)
 
 @Route('/')
 @Middlewares(authentication.passThroughAuthenticationMiddleware())
 export class ItemController extends Controller {
   @Tags('Item')
   @Get('items/')
-  public async getAll(@Request() request: express.Request): Promise<ItemResponse[]> {
+  public async search(@Request() request: express.Request, @Queries() queryParams: ItemSearchRequest): Promise<ItemSearchResponse> {
     if (request?.isAuthenticated()) {
-      return await itemRepository.getAllVisibleForLoggedInUser((request.user as User).id)
+      return await searchItemsUseCase.execute({
+        userId: (request.user as User).id,
+        ...queryParams,
+        unknownError: throwUnknownError,
+        invalidArgument: throwIllegalArgument
+      })
     } else {
-      return await itemRepository.getAll()
+      return await searchItemsUseCase.execute({
+        ...queryParams,
+        unknownError: throwUnknownError,
+        invalidArgument: throwIllegalArgument
+      })
     }
   }
 

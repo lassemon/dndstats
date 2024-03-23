@@ -7,6 +7,7 @@ import { CharacterCardContext } from 'services/context'
 import { defaultSavingThrows } from 'services/defaults'
 import { objectWithoutEmptyOrUndefined } from 'utils/utils'
 import CardTitle from './CardTitle'
+import Stat from 'components/Stat'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -116,7 +117,9 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
     const newSavingThrows = FifthESRDService.convertSavingThrowsToProficiencies(objectWithoutEmptyOrUndefined(savingThrows))
     const hasChanged = !_.isEqual(character.saving_throws, newSavingThrows)
     if (hasChanged) {
-      setCharacter(character.clone({ saving_throws: FifthESRDService.convertSavingThrowsToProficiencies(objectWithoutEmptyOrUndefined(savingThrows)) }))
+      setCharacter(
+        character.clone({ saving_throws: FifthESRDService.convertSavingThrowsToProficiencies(objectWithoutEmptyOrUndefined(savingThrows)) })
+      )
     }
     if (!editMode) {
       setIsText(true)
@@ -126,10 +129,7 @@ const EditableSavingThrows: React.FC<EditableSavingThrowsProps> = (props) => {
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
-        <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={`${classes.statHeader}`}>Saving Throws</span>
-          <span className={classes.statValue}>{character.saving_throws_label}</span>
-        </div>
+        <Stat header="Saving Throws" value={character.saving_throws_label} onDoubleClick={onDoubleClick} />
       ) : (
         <>
           <CardTitle>Saving Throws</CardTitle>

@@ -77,8 +77,13 @@ const LoginDialog: React.FC<LoginDialogProps> = (props) => {
 
   return (
     <Dialog
+      onKeyUp={(e) => {
+        const ENTER = 13
+        if (e.keyCode === ENTER) {
+          handleLogin()
+        }
+      }}
       open={open}
-      onClose={closeLoginDialog}
       PaperProps={{
         sx: (theme) => ({
           background: theme.palette.primary.main

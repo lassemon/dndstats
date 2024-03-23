@@ -29,7 +29,6 @@ export class UpdateUserUseCase implements UpdateUserUseCaseInterface {
     }
     const userUpdateQuery = await this.userMapper.mapUpdateToQuery(userUpdateRequest, loggedInUser)
 
-    console.log('userUpdateQuery', userUpdateQuery)
     const user = await this.userRepository.update(userUpdateQuery)
     if (!user.active) {
       throw new ApiError(404, 'NotFound')

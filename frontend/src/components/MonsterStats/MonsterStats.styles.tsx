@@ -3,21 +3,14 @@ import { makeStyles } from 'tss-react/mui'
 // TODO jss-to-tss-react codemod: usages of this hook outside of this file will not be converted.
 export const useStyles = makeStyles()((theme) => ({
   root: {
+    display: 'flex',
+    gap: '1em',
     '@media print': {
       '&&&': {
         width: '100%',
-        display: 'flex',
         flexDirection: 'column-reverse'
       }
     }
-  },
-  rootPortrait: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1em'
-  },
-  rootLandscape: {
-    display: 'flex'
   },
   unsaved: {
     position: 'relative',
@@ -54,6 +47,11 @@ export const useStyles = makeStyles()((theme) => ({
     margin: '0 0 0 8px',
     '& > img': {
       width: '100%'
+    },
+    '@media print': {
+      '&&&': {
+        margin: 0
+      }
     }
   },
   imageContainer: {
@@ -74,11 +72,12 @@ export const useStyles = makeStyles()((theme) => ({
     display: 'none'
   },
   mainDescription: {
+    margin: '0 auto',
+    width: '100%',
     '&:hover, &active': {
       resize: 'both',
       overflow: 'hidden'
     },
-
     background: '#e0e4c3',
     padding: '0',
     borderTop: '3px solid #1b1b1b',

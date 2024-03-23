@@ -24,9 +24,12 @@ export const defaultItem: ItemResponse = {
       featureDescription: `You are resistant to fire, force and necrotic damage while wielding this shield.`
     }
   ],
-  price: null,
+  price: {
+    quantity: 3000,
+    unit: 'gp'
+  },
   rarity: null,
-  weight: null,
+  weight: 25,
   source: Source.HomeBrew,
   visibility: Visibility.PUBLIC,
   createdBy: '1',
@@ -46,9 +49,12 @@ export const newItemDTO = new ItemDTO({
       featureDescription: 'Feature Description'
     }
   ],
-  price: null,
+  price: {
+    quantity: 10,
+    unit: 'gp'
+  },
   rarity: null,
-  weight: null,
+  weight: 1,
   source: Source.HomeBrew,
   visibility: Visibility.PRIVATE,
   createdBy: '0',

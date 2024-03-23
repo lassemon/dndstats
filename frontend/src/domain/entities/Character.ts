@@ -3,7 +3,15 @@ import ValueObject from './ValueObject'
 import _, { capitalize } from 'lodash'
 import { ConditionEffects, getConditionEffects, getPrintableConditions } from 'components/CombatTracker/Conditions'
 import { getNumberWithSign, getlowestfraction, upsertToArray } from 'utils/utils'
-import { Action, ArmorClass, ArmorClassType, FifthESRDMonster, FifthESRDService, Proficiency, SpecialAbility } from 'domain/services/FifthESRDService'
+import {
+  Action,
+  ArmorClass,
+  ArmorClassType,
+  FifthESRDMonster,
+  FifthESRDService,
+  Proficiency,
+  SpecialAbility
+} from 'domain/services/FifthESRDService'
 import { ReactElement } from 'react'
 import { uuid } from '@dmtool/common'
 import { Source } from '@dmtool/domain'
@@ -187,7 +195,11 @@ class Character extends ValueObject {
       const conditionEffect = ConditionEffects[condition]
       if (conditionEffect && conditionEffect.AC) {
         // todo, currently ConditionEffects are all spells, add ability to change AC with an actual condition
-        acsFromConditions.push({ type: 'spell', value: conditionEffect.AC, spell: { index: condition.replace(' ', '-').toLowerCase(), name: condition } })
+        acsFromConditions.push({
+          type: 'spell',
+          value: conditionEffect.AC,
+          spell: { index: condition.replace(' ', '-').toLowerCase(), name: condition }
+        })
       }
       return acsFromConditions
     }, [] as ICharacter['armor_classes'])
@@ -250,7 +262,9 @@ class Character extends ValueObject {
     const armorClassesWithoutBase = _.without(this.armor_class_with_conditions, baseArmorClass)
 
     return `${this.parseArmorClassLabel(baseArmorClass)} ${
-      armorClassesWithoutBase.length > 0 ? armorClassesWithoutBase.reduce((sum, current) => (sum += ' ' + this.parseArmorClassLabelWithSign(current)), '') : ''
+      armorClassesWithoutBase.length > 0
+        ? armorClassesWithoutBase.reduce((sum, current) => (sum += ' ' + this.parseArmorClassLabelWithSign(current)), '')
+        : ''
     }`
   }
 
@@ -320,7 +334,11 @@ class Character extends ValueObject {
         case 'condition':
         case 'dex':
         case 'natural':
-          this._armor_classes = upsertToArray<ArmorClass>(this._armor_classes, newArmorClass as ArmorClass, newArmorClass.type as keyof ArmorClass)
+          this._armor_classes = upsertToArray<ArmorClass>(
+            this._armor_classes,
+            newArmorClass as ArmorClass,
+            newArmorClass.type as keyof ArmorClass
+          )
           break
         default:
           this._armor_classes = upsertToArray<ArmorClass>(
@@ -402,7 +420,14 @@ class Character extends ValueObject {
       : (this._conditions = _.uniq(_.without(this._conditions, Condition.Bloodied)))
     this.isUnconscious()
       ? (this._conditions = _.uniq([
-          ..._.without(this._conditions, Condition.Bloodied, Condition.Concentration, Condition.Blur, Condition.Holding_Action, Condition.Raging),
+          ..._.without(
+            this._conditions,
+            Condition.Bloodied,
+            Condition.Concentration,
+            Condition.Blur,
+            Condition.Holding_Action,
+            Condition.Raging
+          ),
           Condition.Unconscious
         ]))
       : this.awakeFromUnconciousness()
@@ -429,7 +454,9 @@ class Character extends ValueObject {
   }
 
   public removeConditions(conditionsToRemove: Condition[]) {
-    this._conditions = _.uniq(_.without(this._conditions, ..._.without(conditionsToRemove, ...[Condition.Bloodied, Condition.Dead, Condition.Unconscious])))
+    this._conditions = _.uniq(
+      _.without(this._conditions, ..._.without(conditionsToRemove, ...[Condition.Bloodied, Condition.Dead, Condition.Unconscious]))
+    )
   }
 
   public get temporary_hit_points() {
@@ -504,7 +531,9 @@ class Character extends ValueObject {
       parsedTypes.push(damageTypeString)
     }
     if (
-      damageTypeString.toLowerCase().includes('bludgeoning, piercing, and slashing from nonmagical attacks not made with silvered weapons') ||
+      damageTypeString
+        .toLowerCase()
+        .includes('bludgeoning, piercing, and slashing from nonmagical attacks not made with silvered weapons') ||
       damageTypeString.toLowerCase().includes("bludgeoning, piercing, and slashing from nonmagical weapons that aren't silvered") ||
       damageTypeString.toLowerCase().includes('bludgeoning, piercing, and slashing from nonmagical/nonsilver weapons')
     ) {
@@ -672,7 +701,7 @@ class Character extends ValueObject {
     return this._skills
   }
   public get skills_label() {
-    return FifthESRDService.parseProficiencyLabel(this.skills)
+    return FifthESRDService.parseProficiencyLabel(this.skills) || ''
   }
   public set skills(value) {
     this._skills = value
@@ -683,7 +712,7 @@ class Character extends ValueObject {
     return this._saving_throws
   }
   public get saving_throws_label() {
-    return FifthESRDService.parseProficiencyLabel(this.saving_throws)
+    return FifthESRDService.parseProficiencyLabel(this.saving_throws) || ''
   }
   public set saving_throws(value) {
     this._saving_throws = value

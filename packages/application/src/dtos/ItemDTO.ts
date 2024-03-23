@@ -1,6 +1,6 @@
 import DTO from './DTO'
 import { ItemResponse } from '../interfaces/http/Item'
-import _ from 'lodash'
+import _, { capitalize } from 'lodash'
 
 export class ItemDTO extends DTO<ItemDTO, ItemResponse> {
   constructor(item: ItemResponse) {
@@ -46,7 +46,10 @@ export class ItemDTO extends DTO<ItemDTO, ItemResponse> {
   }
 
   public get price() {
-    return this._properties.price || ''
+    return this._properties.price || {}
+  }
+  public get price_label() {
+    return this._properties.price.quantity ? `${this._properties.price.quantity} ${this._properties.price.unit}` : ''
   }
   public set price(value) {
     this._properties.price = value
@@ -60,10 +63,13 @@ export class ItemDTO extends DTO<ItemDTO, ItemResponse> {
   }
 
   public get weight() {
-    return this._properties.weight || ''
+    return this._properties.weight || null
   }
-  public set weight(value) {
-    this._properties.weight = value
+  public get weight_label() {
+    return this._properties.weight ? `${this._properties.weight} lb.` : ''
+  }
+  public set weight(value: string | number | null) {
+    this._properties.weight = typeof value === 'string' ? parseInt(value) : value
   }
 
   public get features() {
@@ -76,6 +82,14 @@ export class ItemDTO extends DTO<ItemDTO, ItemResponse> {
   public get visibility() {
     return this._properties.visibility
   }
+  public get visibility_label() {
+    return this._properties.visibility
+      .replaceAll('_', ' ')
+      .split(' ')
+      .map((part) => capitalize(part))
+      .join(' ')
+  }
+
   public set visibility(value) {
     this._properties.visibility = value
   }

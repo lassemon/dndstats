@@ -8,7 +8,7 @@ import { AuthenticatedRequest } from '/infrastructure/entities/AuthenticatedRequ
 import { UpdateUserUseCase } from '/useCases/UpdateUserUseCase'
 import { throwIllegalArgument, throwUnknownError } from '/utils/errorUtil'
 import { UserInsertRequest, UserResponse, UserService, UserUpdateRequest } from '@dmtool/application'
-import { ApiError } from '@dmtool/domain'
+import { ApiError, User } from '@dmtool/domain'
 
 const log = new Logger('UserController')
 const authentication = new Authentication(passport)
@@ -44,8 +44,8 @@ export class UserController extends Controller {
     if (!request.user) {
       throw new ApiError(401, 'Unauthorized')
     }
-    log.debug('getting user with id: ' + id)
-    const user = await userRepository.getById(id)
+    log.debug('getting user with id: ' + (request.user as User).id)
+    const user = await userRepository.getById((request.user as User).id)
     if (!user.active) {
       throw new ApiError(404, 'NotFound')
     }

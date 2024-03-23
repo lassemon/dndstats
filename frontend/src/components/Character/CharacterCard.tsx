@@ -27,6 +27,8 @@ import EditableActions from './EditableActions'
 import EditableSpecialAbilities from './EditableSpecialAbilities'
 import EditableDescription from './EditableDescription'
 import { uuid } from '@dmtool/common'
+import { flushSync } from 'react-dom'
+import Stat from 'components/Stat'
 
 interface CharacterCardProps {
   character: Character
@@ -39,7 +41,15 @@ interface CharacterCardProps {
 }
 
 const CharacterCard: React.FC<CharacterCardProps> = (props) => {
-  const { character, editMode = false, presentationMode = false, resizeable = true, className = '', onChange = () => {}, onCloseEditMode = () => {} } = props
+  const {
+    character,
+    editMode = false,
+    presentationMode = false,
+    resizeable = true,
+    className = '',
+    onChange = () => {},
+    onCloseEditMode = () => {}
+  } = props
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
   const onChangeSaveDelay = 1000
@@ -58,7 +68,11 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
   const hasMoreThanOneAction = character.actions.length > 1
   const hasMoreThanTwoActions = internalCharacter.actions.length > 2
   const splitToColumns =
-    (hasMoreThanOneSpecialAbility && hasActions) || hasMoreThanTwoActions || hasMoreThanTwoSpecialAbilities || hasMoreThanOneAction || editMode
+    (hasMoreThanOneSpecialAbility && hasActions) ||
+    hasMoreThanTwoActions ||
+    hasMoreThanTwoSpecialAbilities ||
+    hasMoreThanOneAction ||
+    editMode
 
   useEffect(() => {
     setInternalCharacter(character.clone())
@@ -181,14 +195,18 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
   // use CharacterCardContext instead to share state
   // ========================
   const setCharacter = (_character: Character) => {
-    setInternalCharacter((_currentCharacter) => {
-      const hasChanged = !_.isEqual(_currentCharacter.toJSON(), _character.toJSON())
-      if (hasChanged) {
-        return _currentCharacter.clone(_character.toJSON())
-      }
-      return _currentCharacter
-    })
-    setOnChangeTrigger(uuid())
+    setTimeout(() => {
+      flushSync(() => {
+        setInternalCharacter((_currentCharacter) => {
+          const hasChanged = !_.isEqual(_currentCharacter.toJSON(), _character.toJSON())
+          if (hasChanged) {
+            return _character
+          }
+          return _currentCharacter
+        })
+      })
+      setOnChangeTrigger(uuid())
+    }, 0)
   }
 
   const saveConditionally = useRef(
@@ -261,7 +279,9 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 editWidth={6}
                 editMode={editMode}
               />
-              {(!_.isEmpty(internalCharacter.speed) || editMode) && <EditableSpeed editMode={editMode} presentationMode={presentationMode} />}
+              {(!_.isEmpty(internalCharacter.speed) || editMode) && (
+                <EditableSpeed editMode={editMode} presentationMode={presentationMode} />
+              )}
             </div>
             {(internalCharacter.hasAbilityScores() || editMode) && (
               <>
@@ -273,14 +293,13 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
               </>
             )}
 
-            {(!_.isEmpty(internalCharacter.saving_throws) || editMode) && <EditableSavingThrows editMode={editMode} presentationMode={presentationMode} />}
-            {(!_.isEmpty(internalCharacter.skills) || editMode) && <EditableSkills editMode={editMode} presentationMode={presentationMode} />}
-            {!_.isEmpty(internalCharacter.conditions) && (
-              <div>
-                <span className={`${classes.statHeader}`}>Conditions</span>
-                <span className={classes.statValue}>{internalCharacter.conditions_label}</span>
-              </div>
+            {(!_.isEmpty(internalCharacter.saving_throws) || editMode) && (
+              <EditableSavingThrows editMode={editMode} presentationMode={presentationMode} />
             )}
+            {(!_.isEmpty(internalCharacter.skills) || editMode) && (
+              <EditableSkills editMode={editMode} presentationMode={presentationMode} />
+            )}
+            {!_.isEmpty(internalCharacter.conditions) && <Stat header="Conditions" value={internalCharacter.conditions_label} />}
             {(!_.isEmpty(internalCharacter.condition_immunities) || editMode) && (
               <EditableConditionList
                 header="Condition Immunities"
@@ -317,9 +336,16 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
                 presentationMode={presentationMode}
               />
             )}
-            {(!_.isEmpty(internalCharacter.senses) || editMode) && <EditableSenses editMode={editMode} presentationMode={presentationMode} />}
+            {(!_.isEmpty(internalCharacter.senses) || editMode) && (
+              <EditableSenses editMode={editMode} presentationMode={presentationMode} />
+            )}
             {(!_.isEmpty(internalCharacter.languages) || editMode) && (
-              <EditableLanguages language={internalCharacter.languages} onChange={onChangeLanguages} editMode={editMode} presentationMode={presentationMode} />
+              <EditableLanguages
+                language={internalCharacter.languages}
+                onChange={onChangeLanguages}
+                editMode={editMode}
+                presentationMode={presentationMode}
+              />
             )}
             <div style={{ display: 'flex', gap: '0.5em' }}>
               {(typeof internalCharacter.challenge_rating !== 'undefined' || editMode) && (
@@ -343,8 +369,12 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
           {(!_.isEmpty(internalCharacter.special_abilities) || editMode) && (
             <EditableSpecialAbilities editMode={editMode} presentationMode={presentationMode} />
           )}
-          {(!_.isEmpty(internalCharacter.actions) || editMode) && <EditableActions editMode={editMode} presentationMode={presentationMode} />}
-          {(!_.isEmpty(internalCharacter.description) || editMode) && <EditableDescription editMode={editMode} presentationMode={presentationMode} />}
+          {(!_.isEmpty(internalCharacter.actions) || editMode) && (
+            <EditableActions editMode={editMode} presentationMode={presentationMode} />
+          )}
+          {(!_.isEmpty(internalCharacter.description) || editMode) && (
+            <EditableDescription editMode={editMode} presentationMode={presentationMode} />
+          )}
           {editMode && (
             <div className={classes.saveButtonContainer}>
               <Button variant="contained" size="large" onClick={onSave}>

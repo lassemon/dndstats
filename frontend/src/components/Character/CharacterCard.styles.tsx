@@ -11,9 +11,6 @@ export const useStyles = makeStyles()((theme) => ({
       margin: '0 0 1.5em 0',
       breakInside: 'avoid',
       cursor: 'default',
-      '& .MuiFormControl-root': {
-        margin: '0.5em 0 0 0'
-      },
       '& .editing': {
         padding: 0,
         margin: 0,
@@ -22,8 +19,7 @@ export const useStyles = makeStyles()((theme) => ({
     },
     '@media print': {
       '&&': {
-        width: '100%',
-        marginTop: '3em'
+        width: '100%'
       }
     }
   },
@@ -31,7 +27,7 @@ export const useStyles = makeStyles()((theme) => ({
     width: '40vw'
   },
   staticWidthLarge: {
-    width: '60vw'
+    width: '100%'
   },
   fullWidth: {
     width: '94vw'
@@ -95,7 +91,8 @@ export const useStyles = makeStyles()((theme) => ({
     breakInside: 'avoid'
   },
   actionContainer: {
-    margin: '0 0 0.5em 0'
+    margin: '0 0 0.5em 0',
+    fontSize: '1em'
   },
   actionName: {
     fontSize: '1em',

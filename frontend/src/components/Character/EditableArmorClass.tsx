@@ -9,6 +9,7 @@ import { replaceItemAtIndex } from 'utils/utils'
 import DeleteButton from 'components/DeleteButton'
 import { CharacterCardContext } from 'services/context'
 import CardTitle from './CardTitle'
+import Stat from 'components/Stat'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -156,18 +157,18 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
-        <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={classes.statHeader}>Armor Class</span>
-          <span className={classes.statValue}>{character.armor_class_label}</span>
-        </div>
+        <Stat header="Armor Class" value={character.armor_class_label} onDoubleClick={onDoubleClick} />
       ) : (
         <div className={classes.editor}>
-          <CardTitle>Armor Classes</CardTitle>
+          <CardTitle>Armor Class</CardTitle>
           {_armorClasses.map((armorClass, index) => {
             return (
               <div key={index} className={classes.row}>
                 <DeleteButton size="small" onClick={onDelete(index)} sx={{ padding: 0 }} />
-                <Tooltip title="Whatever is the highest armor class value in the list, is considered the AC of the character" placement="top-start">
+                <Tooltip
+                  title="Whatever is the highest armor class value in the list, is considered the AC of the character"
+                  placement="top-start"
+                >
                   <FormControl sx={{ m: 0, flex: '0 0 9em' }} size="small">
                     <InputLabel id="armor-class-type">Armor Class</InputLabel>
                     <Select

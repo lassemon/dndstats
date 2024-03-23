@@ -10,6 +10,7 @@ import _ from 'lodash'
 import { uuid } from '@dmtool/common'
 import { UserResponse } from '@dmtool/application'
 import useDefaultPage from 'hooks/useDefaultPage'
+import { useOrientation } from 'utils/hooks'
 
 const Login: React.FC = () => {
   const [authState, setAuthState] = useAtom(authAtom)
@@ -17,6 +18,9 @@ const Login: React.FC = () => {
   const [isLoggedOutDialogOpen, setLoggedOutDialogOpen] = useState(false)
   const [startPollingTrigger, setStartPollingTrigger] = useState<string>('')
   const goToDefaultPage = useDefaultPage()
+
+  const orientation = useOrientation()
+  const isPortrait = orientation === 'portrait'
 
   useEffect(() => {
     let isMounted = true
@@ -94,12 +98,12 @@ const Login: React.FC = () => {
   return (
     <>
       {!authState?.loggedIn && (
-        <Button variant="contained" onClick={openLoginDialog}>
+        <Button variant="contained" onClick={openLoginDialog} fullWidth={isPortrait ? false : true}>
           Login
         </Button>
       )}
       <LoginDialog open={isLoginDialogOpen} onClose={closeLoginDialog} onLoginSuccess={handleLoginSuccess} />
-      <Dialog open={isLoggedOutDialogOpen} onClose={closeLoggedOutDialog}>
+      <Dialog open={isLoggedOutDialogOpen}>
         <DialogTitle
           sx={{
             paddingBottom: '0.5em'

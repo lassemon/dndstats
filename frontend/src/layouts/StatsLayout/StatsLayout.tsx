@@ -1,5 +1,5 @@
 import { Box, Toolbar, useMediaQuery, useTheme } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import statblockparch from 'assets/statblockparch.jpg'
 import statblockparchwhite from 'assets/statblockparch_white.jpg'
 import ToggleButton from 'components/ToggleButton'
@@ -8,6 +8,7 @@ import PlusButton from 'components/PlusButton'
 import { makeStyles } from 'tss-react/mui'
 import classNames from 'classnames/bind'
 import { useOrientation } from 'utils/hooks'
+import { mutationObserver, resizeObserver } from 'utils/rootResize'
 
 interface StatsLayoutProps {
   statsComponent?: React.ReactNode
@@ -25,10 +26,11 @@ interface StatsLayoutProps {
 export const useStyles = makeStyles()((theme) => ({
   container: {
     width: '60%',
+    height: 'min-content',
     margin: '0 auto',
     '@media print': {
       '&&': {
-        width: '90%'
+        width: '98%'
       }
     }
   },
@@ -36,7 +38,7 @@ export const useStyles = makeStyles()((theme) => ({
     width: '95%'
   },
   mediumContainer: {
-    width: '80%'
+    width: '90%'
   },
   largeContainer: {
     width: '70%'
@@ -61,9 +63,16 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
   const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
+  const resizeTriggerElementRef = useRef(null)
 
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
+
+  useEffect(() => {
+    if (resizeTriggerElementRef.current) {
+      resizeObserver.observe(resizeTriggerElementRef.current)
+    }
+  }, [])
 
   const onToggleBg = () => {
     const statsContainers = document.getElementsByClassName('stats-background')
@@ -105,6 +114,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
 
   return (
     <Box
+      className="stats-layout"
       sx={{
         ...sx,
         ...{
@@ -117,6 +127,7 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
     >
       {statsComponent && (
         <Box
+          ref={resizeTriggerElementRef}
           className={cx({
             [classes.container]: true,
             [classes.smallContainer]: isPortrait,
@@ -162,7 +173,8 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
           '&&&': {
             padding: 0,
             paddingTop: 0,
-            maxWidth: isLarge && !alwaysPortrait ? '45%' : '100%'
+            maxWidth: isLarge && !alwaysPortrait ? '45%' : '100%',
+            height: '100%'
           }
         }}
       >

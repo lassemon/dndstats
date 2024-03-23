@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { DamageType } from 'interfaces'
 import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
+import Stat from 'components/Stat'
 
-export const useStyles = makeStyles()((theme) => ({
+export const useStyles = makeStyles()(() => ({
   root: {
     cursor: 'pointer'
   },
@@ -19,26 +20,6 @@ export const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     gap: '0.4em',
     alignItems: 'center'
-  },
-  baseStat: {
-    textTransform: 'capitalize'
-  },
-  statHeader: {
-    color: theme.status.blood,
-    fontSize: '1.1em',
-    lineHeight: '1.2em',
-    fontWeight: 'bold',
-    flexBasis: '16.6%',
-    textAlign: 'center'
-  },
-  statValue: {
-    color: theme.status.blood,
-    fontSize: '1em',
-    fontFamily: '"Helvetica", "Arial", sans-serif',
-    flexBasis: '16.6%',
-    textTransform: 'capitalize',
-    display: 'inline-block',
-    marginInlineStart: '0.5em'
   },
   buttonsContainer: {
     display: 'flex',
@@ -116,10 +97,7 @@ const EditableDamageList: React.FC<EditableDamageListProps> = (props) => {
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
-        <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={classes.statHeader}>{header}</span>
-          <span className={classes.statValue}>{damageList.join(', ')}</span>
-        </div>
+        <Stat header={header} value={damageList.join(', ')} onDoubleClick={onDoubleClick} />
       ) : (
         <div className={classes.editor}>
           <Autocomplete

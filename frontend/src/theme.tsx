@@ -69,7 +69,21 @@ const theme = createTheme({
         }
       },
       defaultProps: {
-        selectOnFocus: false
+        selectOnFocus: false,
+        ChipProps: {
+          sx: {
+            borderRadius: 0
+          }
+        },
+        componentsProps: {
+          popper: {
+            sx: {
+              '&[data-popper-placement="bottom"]': {
+                padding: '0 0 3em 0'
+              }
+            }
+          }
+        }
       }
     },
     MuiTextField: {

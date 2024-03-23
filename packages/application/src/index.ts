@@ -26,7 +26,19 @@ export type { UserServiceInterface } from './services/UserServiceInterface'
 export type { UseCaseInterface, UseCaseOptionsInterface } from './useCases/UseCaseInterface'
 
 export type { UserResponse, UserInsertRequest, UserInsertQuery, UserUpdateRequest, UserUpdateQuery } from './interfaces/http/User'
-export type { DBItem, ItemDBResponse, ItemResponse, ItemInsertQuery, ItemUpdateRequest, ItemUpdateResponse } from './interfaces/http/Item'
+export type {
+  DBItem,
+  ItemDBResponse,
+  ItemResponse,
+  ItemInsertQuery,
+  ItemUpdateRequest,
+  ItemUpdateResponse,
+  ItemSearchQuery,
+  PriceSearchQuery,
+  WeightSearchQuery,
+  ItemSearchRequest,
+  ItemSearchResponse
+} from './interfaces/http/Item'
 
 export type { FetchOptions } from './interfaces/http/Fetch'
 

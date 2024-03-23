@@ -24,6 +24,11 @@ export const ErrorDisplay: React.FC = () => {
     return null
   }
 
+  const isRequestAbortError = error instanceof DOMException && error.message === 'The user aborted a request.'
+  if (isRequestAbortError) {
+    return null
+  }
+
   let errorHeader = `Error: `
 
   switch (error.constructor) {

@@ -3,10 +3,11 @@ import { Box, Paper, PaperProps, Typography } from '@mui/material'
 import { PageStatsService } from 'application/services/PageStatsService'
 import LoadingIndicator from 'components/LoadingIndicator'
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import logo from 'assets/logo_grey.png'
 
 const gap = '4em'
+const spinDuration = '10s'
 
 interface StatCardProp extends PaperProps {
   title: string
@@ -23,11 +24,15 @@ const StatCard: React.FC<StatCardProp> = ({ title, amount, loading, disabled, on
       onClick={onClick}
       sx={{
         display: 'flex',
+        position: 'relative',
+        containerType: 'size',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '20em',
-        height: '20em',
+        width: '26cqw',
+        maxWidth: '20em',
+        height: '26cqw',
+        maxHeight: '20em',
         border: (theme) => `8px solid ${theme.palette.primary.dark}`,
         borderRadius: '20em',
         cursor: disabled ? 'default' : 'pointer',
@@ -42,13 +47,24 @@ const StatCard: React.FC<StatCardProp> = ({ title, amount, loading, disabled, on
       }}
       {...passProps}
     >
-      <Typography variant="h5" sx={{ textTransform: 'uppercase' }}>
+      <Typography variant="h5" sx={{ fontSize: '15cqw', textTransform: 'uppercase' }}>
         {title}
       </Typography>
       {loading ? (
-        <LoadingIndicator sx={{ height: '4.8em', '& .MuiCircularProgress-root': { margin: '1em 0 0 0' } }} />
+        <LoadingIndicator
+          progressProps={{
+            thickness: 1,
+            size: '105cqw',
+            sx: {
+              position: 'absolute',
+              animationDuration: spinDuration,
+              '& .MuiCircularProgress-circle': { animationDuration: spinDuration }
+            }
+          }}
+          sx={{ position: 'absolute', alignItems: 'center', height: 'clamp(1em, 3vw, 4.8em)' }}
+        />
       ) : (
-        <Typography sx={{ fontSize: '4.8em', lineHeight: '1em' }}>{amount}</Typography>
+        <Typography sx={{ fontSize: '15cqw', lineHeight: '1em' }}>{amount}</Typography>
       )}
     </Paper>
   )
@@ -82,6 +98,8 @@ const FrontPage: React.FC = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        flex: '1 1 100%',
+        minHeight: '100%',
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
@@ -89,7 +107,8 @@ const FrontPage: React.FC = () => {
         backgroundImage: `url(${logo})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
-        backgroundSize: '70%'
+        backgroundSize: '70%',
+        overflow: 'hidden'
       }}
     >
       <Box sx={{ display: 'flex', gap: gap }}>

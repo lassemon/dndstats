@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import _ from 'lodash'
 import { CharacterCardContext } from 'services/context'
+import Stat from 'components/Stat'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -25,7 +26,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statHeader: {
     color: theme.status.blood,
-    fontSize: '1.1em',
+    fontSize: '1.02em',
     lineHeight: '1.2em',
     fontWeight: 'bold',
     flexBasis: '16.6%',
@@ -33,7 +34,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statValue: {
     color: theme.status.blood,
-    fontSize: '1em',
+    fontSize: '1.02em',
     fontFamily: '"Helvetica", "Arial", sans-serif',
     flexBasis: '16.6%',
     textTransform: 'capitalize',
@@ -116,10 +117,7 @@ const EditableChallengeRating: React.FC<EditableChallengeRatingProps> = (props) 
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
-        <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={classes.statHeader}>Challenge Rating</span>
-          <span className={classes.statValue}>{character.challenge_rating_label}</span>
-        </div>
+        <Stat header="Challenge Rating" value={character.challenge_rating_label} onDoubleClick={onDoubleClick} />
       ) : (
         <>
           <div className={classes.editor}>
