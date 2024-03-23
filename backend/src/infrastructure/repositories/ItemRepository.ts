@@ -141,8 +141,10 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     })
   }
 
-  async countAll(): Promise<number> {
+  async countAll(userId?: string): Promise<number> {
+    console.log('userId', userId)
     const result = await connection('items')
+      .whereNotIn('visibility', userId ? ['private'] : ['private', 'logged_in'])
       .count<{ count: number }>('id as count') // Count the number of item ids
       .first() // Use .first() to get the first row of the result
     return result ? result.count : 0

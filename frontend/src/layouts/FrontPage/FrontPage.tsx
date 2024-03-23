@@ -5,6 +5,8 @@ import LoadingIndicator from 'components/LoadingIndicator'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logo from 'assets/logo_grey.png'
+import { authAtom } from 'infrastructure/dataAccess/atoms'
+import { useAtom } from 'jotai'
 
 const gap = '4em'
 const spinDuration = '10s'
@@ -76,6 +78,7 @@ const FrontPage: React.FC = () => {
   const [loadingPageStats, setLoadingPageStats] = useState(false)
   const [pageStats, setPageStats] = useState<PageStatsResponse | null>(null)
   const navigate = useNavigate()
+  const [authState] = useAtom(authAtom)
 
   useEffect(() => {
     const fetchAndSetPageStats = async () => {
@@ -91,7 +94,7 @@ const FrontPage: React.FC = () => {
     }
 
     fetchAndSetPageStats()
-  }, [])
+  }, [authState.loggedIn])
 
   return (
     <Box
