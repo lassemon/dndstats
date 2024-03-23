@@ -13,7 +13,7 @@ import { useAtom } from 'jotai'
 import { authAtom } from 'infrastructure/dataAccess/atoms'
 import { AccountBox, Logout, Person } from '@mui/icons-material'
 import useDefaultPage from 'hooks/useDefaultPage'
-import StatsPageMenu from './StatsPageMenu'
+import CardMenu from './CardMenu'
 import { LocalStorageRepository } from 'infrastructure/repositories/LocalStorageRepository'
 import logo from 'assets/logo_small.png'
 
@@ -35,7 +35,7 @@ function a11yProps(index: number) {
 const useStyles = makeStyles()(() => ({
   root: {
     display: 'flex',
-    minHeight: '100%',
+    height: '100%',
     width: '100%'
   },
   main: {
@@ -55,18 +55,16 @@ const useStyles = makeStyles()(() => ({
   tabsPortrait: {
     flexGrow: 1,
     minWidth: '170px',
-    '& .MuiTabs-flexContainer': {
-      flexDirection: 'row-reverse'
-    }
+    '& .MuiTabs-flexContainer': {}
   },
   tabsLandscape: {
     flexGrow: 1,
     minWidth: '170px'
   },
   toolbarPortrait: {
-    flexDirection: 'row-reverse',
+    position: 'static',
     justifyContent: 'center',
-    margin: '0 2em',
+    margin: '0',
     gap: '1em',
     padding: '0.5em 0'
   },
@@ -155,7 +153,7 @@ const NavBar: React.FC = () => {
       </Link>
       <AppBar position="static" className={classes.appBar} elevation={0}>
         <Toolbar disableGutters className={isPortrait ? classes.toolbarPortrait : classes.toolbarLandscape}>
-          <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', width: isPortrait ? '' : '100%', justifyContent: 'center' }}>
             {authState?.loggedIn && (
               <>
                 <Button
@@ -163,10 +161,10 @@ const NavBar: React.FC = () => {
                   onClick={handleUserMenu}
                   color="inherit"
                   sx={{
-                    padding: '0.9em 0',
+                    padding: '0.9em 0.5em',
                     color: (theme) => theme.palette.secondary.light
                   }}
-                  fullWidth
+                  fullWidth={isPortrait ? false : true}
                   startIcon={<AccountCircle />}
                 >
                   <Typography
@@ -253,10 +251,9 @@ const NavBar: React.FC = () => {
             className={`${classes.tabs} ${isPortrait ? classes.tabsPortrait : classes.tabsLandscape}`}
             value={tab}
             onChange={handleTabChange}
-            aria-label="dnd stats tabs"
             variant="scrollable"
             scrollButtons={isPortrait}
-            allowScrollButtonsMobile
+            allowScrollButtonsMobile={isPortrait}
             orientation={isPortrait ? 'horizontal' : 'vertical'}
           >
             {Object.keys(TABS).map((tab) => {
@@ -277,38 +274,62 @@ const NavBar: React.FC = () => {
                 />
               )
             })}
-            <StatsPageMenu onMenuItemClick={clearTab} />
+            <CardMenu onMenuItemClick={clearTab} />
           </Tabs>
-          <Tooltip
-            title={
-              <>
-                <Typography variant="h6">WARNING!</Typography>
-                <Typography variant="body1">Resets everything in ALL VIEWS to default values</Typography>
-              </>
-            }
-            placement="top-end"
+
+          {!authState.loggedIn && (
+            <React.Suspense fallback={<LoadingIndicator />}>
+              <MenuItem
+                key="login"
+                sx={{
+                  width: isPortrait ? '' : '100%',
+                  justifyContent: 'center',
+                  position: isPortrait ? 'absolute' : 'static',
+                  right: '2em',
+                  top: '1em'
+                }}
+              >
+                <Login />
+              </MenuItem>
+            </React.Suspense>
+          )}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: isPortrait ? 'column' : 'row',
+              position: isPortrait ? 'absolute' : 'static',
+              left: '0.5em',
+              top: '0.5em'
+            }}
           >
-            <Button
-              onClick={async () => {
-                await localStorageRepository.clearAll()
-                window.location.reload()
-              }}
-              style={{ whiteSpace: 'nowrap', display: 'flex', gap: '0.5em', position: isPortrait ? 'static' : 'fixed', bottom: '5em' }}
+            <Tooltip
+              disableInteractive
+              title={
+                <>
+                  <Typography variant="h6">WARNING!</Typography>
+                  <Typography variant="body1">Resets everything in ALL VIEWS to default values</Typography>
+                </>
+              }
+              placement="top-end"
             >
-              Reset All <RestartAltIcon />
+              <Button
+                onClick={async () => {
+                  await localStorageRepository.clearAll()
+                  window.location.reload()
+                }}
+                style={{ whiteSpace: 'nowrap', display: 'flex', gap: '0.5em', position: isPortrait ? 'static' : 'fixed', bottom: '5em' }}
+              >
+                Reset All <RestartAltIcon />
+              </Button>
+            </Tooltip>
+            <Button
+              onClick={onPrint}
+              style={{ whiteSpace: 'nowrap', display: 'flex', gap: '0.5em', position: isPortrait ? 'static' : 'fixed', bottom: '1em' }}
+            >
+              Print page <PrintIcon />
             </Button>
-          </Tooltip>
-          <React.Suspense fallback={<LoadingIndicator />}>
-            <MenuItem key="login">
-              <Login />
-            </MenuItem>
-          </React.Suspense>
-          <Button
-            onClick={onPrint}
-            style={{ whiteSpace: 'nowrap', display: 'flex', gap: '0.5em', position: isPortrait ? 'static' : 'fixed', bottom: '1em' }}
-          >
-            Print page <PrintIcon />
-          </Button>
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>

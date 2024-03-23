@@ -228,8 +228,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         </div>
       )}
       <div style={{ display: 'flex', margin: '1em 0 -5px 0' }}>
-        <TinyStat title="weight" value={item.weight} />
-        <TinyStat title="price" value={item.price} />
+        <TinyStat title="weight" value={item.weight_label} />
+        <TinyStat title="price" value={item.price_label} />
       </div>
     </StatsContainer>
   )

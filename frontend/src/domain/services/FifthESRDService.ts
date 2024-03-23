@@ -80,15 +80,6 @@ type ArmorClassCondition = {
   desc?: string
 }
 
-export enum ItemRarity {
-  COMMON = 'common',
-  UNCOMMON = 'uncommon',
-  RARE = 'rare',
-  VERY_RARE = 'very_rare',
-  LEGENDARY = 'legendary',
-  ARTIFACT = 'artifact'
-}
-
 export enum ArmorClassType {
   DEX = 'dex',
   NATURAL = 'natural',

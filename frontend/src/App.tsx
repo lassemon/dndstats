@@ -37,7 +37,10 @@ const App: React.FC = () => {
           <React.Suspense fallback={<LoadingIndicator />}>
             <NavBar />
           </React.Suspense>
-          <main className={classes.main}>
+          <main
+            className={classes.main}
+            style={{ flex: isPortrait ? '1 1 auto' : '', display: isPortrait ? 'flex' : '', flexDirection: 'column' }}
+          >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
               <React.Suspense fallback={<LoadingIndicator />}>
                 <Preloader />
@@ -57,11 +60,11 @@ const App: React.FC = () => {
         <Route index element={<FrontPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="profile" element={<ProfilePage />} />
-        <Route path="stats/item" element={<ItemStatsLayout />} />
-        <Route path="stats/item/:itemId" element={<ItemStatsLayout />} />
-        <Route path="stats/spell" element={<SpellStatsLayout />} />
-        <Route path="stats/weapon" element={<WeaponStatsLayout />} />
-        <Route path="stats/monster" element={<MonsterStatsLayout />} />
+        <Route path="card/item" element={<ItemStatsLayout />} />
+        <Route path="card/item/:itemId" element={<ItemStatsLayout />} />
+        <Route path="card/spell" element={<SpellStatsLayout />} />
+        <Route path="card/weapon" element={<WeaponStatsLayout />} />
+        <Route path="card/monster" element={<MonsterStatsLayout />} />
         <Route path="items" element={<ItemsPage />} />
         <Route path="combattracker" element={<CombatTrackerLayout />} />
         <Route path="about" element={<AboutLayout />} />

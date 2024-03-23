@@ -7,6 +7,7 @@ import { CharacterCardContext } from 'services/context'
 import { defaultSkills } from 'services/defaults'
 import { objectWithoutEmptyOrUndefined } from 'utils/utils'
 import CardTitle from './CardTitle'
+import Stat from 'components/Stat'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -124,10 +125,7 @@ const EditableSkills: React.FC<EditableSkillsProps> = (props) => {
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
-        <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={`${classes.statHeader}`}>Skills</span>
-          <span className={classes.statValue}>{character.skills_label}</span>
-        </div>
+        <Stat header="Skills" value={character.skills_label} onDoubleClick={onDoubleClick} />
       ) : (
         <>
           <CardTitle>Skills</CardTitle>

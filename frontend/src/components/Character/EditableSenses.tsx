@@ -7,6 +7,7 @@ import { CharacterCardContext } from 'services/context'
 import { defaultSenses } from 'services/defaults'
 import { objectWithoutEmptyOrUndefined } from 'utils/utils'
 import CardTitle from './CardTitle'
+import Stat from 'components/Stat'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -30,7 +31,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statHeader: {
     color: theme.status.blood,
-    fontSize: '1.1em',
+    fontSize: '1.02em',
     lineHeight: '1.2em',
     fontWeight: 'bold',
     flexBasis: '16.6%',
@@ -38,7 +39,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statValue: {
     color: theme.status.blood,
-    fontSize: '1em',
+    fontSize: '1.02em',
     fontFamily: '"Helvetica", "Arial", sans-serif',
     flexBasis: '16.6%',
     textTransform: 'capitalize',
@@ -126,10 +127,7 @@ const EditableSenses: React.FC<EditableSensesProps> = (props) => {
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
-        <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={classes.statHeader}>Senses</span>
-          <span className={classes.statValue}>{character.senses_label}</span>
-        </div>
+        <Stat header="Senses" value={character.senses_label} onDoubleClick={onDoubleClick} />
       ) : (
         <>
           <CardTitle>Senses</CardTitle>

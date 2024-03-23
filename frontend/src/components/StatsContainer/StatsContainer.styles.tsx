@@ -9,7 +9,7 @@ export const useStyles = makeStyles()((theme) => ({
     '&::-webkit-resizer': {
       backgroundColor: 'transparent'
     },
-    fontSize: '20px'
+    fontSize: '16px'
   },
   resizeable: {
     resize: 'both'

@@ -7,6 +7,7 @@ import { CharacterCardContext } from 'services/context'
 import { defaultSpeed } from 'services/defaults'
 import { Speed } from 'interfaces'
 import CardTitle from './CardTitle'
+import Stat from 'components/Stat'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -111,10 +112,7 @@ const EditableSpeed: React.FC<EditableSpeedProps> = (props) => {
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
-        <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={classes.statHeader}>Speed</span>
-          <span className={classes.statValue}>{character.speed_label}</span>
-        </div>
+        <Stat header="Speed" value={character.speed_label} onDoubleClick={onDoubleClick} />
       ) : (
         <>
           <CardTitle>Speed</CardTitle>

@@ -36,7 +36,7 @@ export default class Authentication {
       this.passport.use(
         new JwtStrategy(options, async (jwtPayload: IJwtPayload, done: VerifiedCallback) => {
           try {
-            const result = await this.userRepository.getById(jwtPayload.user)
+            const result = await this.userRepository.getById(jwtPayload.userId)
 
             if (isEmpty(result)) {
               return done(result, false)

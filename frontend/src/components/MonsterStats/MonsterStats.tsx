@@ -117,6 +117,7 @@ export const MonsterStats: React.FC<MonsterStatsProps> = ({ editMode, setEditMod
   }
 
   const onCloseEditMode = () => {
+    window.scrollTo(0, 0)
     setEditMode(false)
   }
 
@@ -125,28 +126,32 @@ export const MonsterStats: React.FC<MonsterStatsProps> = ({ editMode, setEditMod
   }
 
   return (
-    <>
-      <div>
-        <ErrorBoundary FallbackComponent={(props) => <ErrorFallback {...props} className={classes.errorFallback} />}>
-          <div
-            className={cx({
-              [classes.unsaved]: !monsterSavedInHomebrew && existingCustomCharacter
-            })}
-          >
-            <CharacterCard
-              character={currentMonster}
-              className={isPortrait ? classes.characterCardContainerPortrait : classes.characterCardContainerLandscape}
-              onChange={onChangeMonster}
-              onCloseEditMode={onCloseEditMode}
-              editMode={editMode}
-              presentationMode={!editMode}
-            />
-          </div>
-        </ErrorBoundary>
+    <div className={classes.root}>
+      <ErrorBoundary FallbackComponent={(props) => <ErrorFallback {...props} className={classes.errorFallback} />}>
+        <div
+          className={cx({
+            [classes.unsaved]: !monsterSavedInHomebrew && existingCustomCharacter
+          })}
+        >
+          <CharacterCard
+            character={currentMonster}
+            className={isPortrait ? classes.characterCardContainerPortrait : classes.characterCardContainerLandscape}
+            onChange={onChangeMonster}
+            onCloseEditMode={onCloseEditMode}
+            editMode={editMode}
+            presentationMode={!editMode}
+          />
+        </div>
+      </ErrorBoundary>
+      {(!!currentMonster.imageElement?.props.src || !!currentMonster.description) && (
         <div className={classes.rightContainer}>
           {currentMonster.imageElement && (
             <div className={`${classes.imageContainer}`}>
-              <img alt={currentMonster.imageElement?.props.alt} src={`${currentMonster.imageElement?.props.src}`} />
+              <img
+                style={{ width: '100%' }}
+                alt={currentMonster.imageElement?.props.alt}
+                src={`${currentMonster.imageElement?.props.src}`}
+              />
             </div>
           )}
           {currentMonster.description && (
@@ -155,9 +160,8 @@ export const MonsterStats: React.FC<MonsterStatsProps> = ({ editMode, setEditMod
             </div>
           )}
         </div>
-      </div>
-      <Box displayPrint="none"></Box>
-    </>
+      )}
+    </div>
   )
 }
 

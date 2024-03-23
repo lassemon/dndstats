@@ -6,6 +6,7 @@ import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
 import _, { capitalize } from 'lodash'
 import EditableText from 'components/CombatTracker/EditableText'
 import CardTitle from './CardTitle'
+import Stat from 'components/Stat'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -29,7 +30,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statHeader: {
     color: theme.status.blood,
-    fontSize: '1.1em',
+    fontSize: '1.02em',
     lineHeight: '1.2em',
     fontWeight: 'bold',
     flexBasis: '16.6%',
@@ -37,7 +38,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statValue: {
     color: theme.status.blood,
-    fontSize: '1em',
+    fontSize: '1.02em',
     fontFamily: '"Helvetica", "Arial", sans-serif',
     flexBasis: '16.6%',
     textTransform: 'capitalize',
@@ -138,10 +139,7 @@ const EditableLanguages: React.FC<EditableLanguagesProps> = (props) => {
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
-        <div className={classes.baseStat} onDoubleClick={onDoubleClick}>
-          <span className={classes.statHeader}>Languages</span>
-          <span className={classes.statValue}>{language}</span>
-        </div>
+        <Stat header="Languages" value={language} onDoubleClick={onDoubleClick} />
       ) : (
         <>
           <CardTitle>Languages</CardTitle>

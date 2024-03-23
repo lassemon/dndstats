@@ -1,9 +1,17 @@
 import React from 'react'
-import { Typography } from '@mui/material'
+import { Typography, TypographyProps } from '@mui/material'
 
-const PageHeader: React.FC = ({ children }) => {
+const PageHeader: React.FC<TypographyProps> = ({ children, sx, ...passProps }) => {
   return (
-    <Typography variant="h4" sx={{ textTransform: 'uppercase', letterSpacing: '0.3em', fontWeight: 'bold' }} color="secondary">
+    <Typography
+      variant="h4"
+      sx={{
+        ...{ textTransform: 'uppercase', letterSpacing: '0.3em', fontWeight: 'bold' },
+        ...sx
+      }}
+      color="secondary"
+      {...passProps}
+    >
       {children}
     </Typography>
   )

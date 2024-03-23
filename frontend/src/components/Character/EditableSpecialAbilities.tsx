@@ -10,6 +10,7 @@ import CardTitle from './CardTitle'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import { arrayMoveImmutable } from 'array-move'
 import { Container, Draggable } from 'react-smooth-dnd'
+import { flushSync } from 'react-dom'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -30,10 +31,11 @@ export const useStyles = makeStyles()((theme) => ({
     borderBottom: `1px solid ${theme.status.blood}`
   },
   actionContainer: {
-    margin: '0 0 0.5em 0'
+    margin: '0 0 0.5em 0',
+    fontSize: '1em'
   },
   actionName: {
-    fontSize: '1em',
+    fontSize: '1.05em',
     fontStyle: 'italic',
     fontWeight: 'bold',
     fontVariant: 'small-caps',
@@ -44,7 +46,7 @@ export const useStyles = makeStyles()((theme) => ({
   actionNameInput: {},
   actionDescription: {
     fontWeight: '400',
-    fontSize: '1rem',
+    fontSize: '1.05em',
     lineHeight: '1.43',
     letterSpacing: '0.01071em',
     fontFamily: "'Noto Sans','Myriad Pro',Calibri,Helvetica,Arial,sans-serif",
@@ -62,9 +64,9 @@ export const useStyles = makeStyles()((theme) => ({
   row: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '0.4em',
+    gap: '0.8em',
     alignItems: 'flex-start',
-    margin: '0 0 2em 0'
+    margin: '0.4em 0 1.2em 0'
   },
   buttonsContainer: {
     display: 'flex',
@@ -106,11 +108,14 @@ const EditableSpecialAbilities: React.FC<EditableSpecialAbilitiesProps> = (props
     setIsText(!editMode)
   }, [editMode])
 
-  const onDrop = ({ removedIndex, addedIndex }: { removedIndex: any; addedIndex: any }) => {
+  const onDrop = (dropResult: { removedIndex: any; addedIndex: any }) => {
+    const { removedIndex, addedIndex } = dropResult
+
     setInternalSpecialAbilities((special_abilities) => {
-      const specialAbilitiesCopy = arrayMoveImmutable(special_abilities, removedIndex, addedIndex)
-      setCharacter(character.clone({ special_abilities: specialAbilitiesCopy }))
-      return specialAbilitiesCopy
+      const specialAbilitiesAfterDrop = arrayMoveImmutable([...special_abilities], removedIndex, addedIndex)
+      const charClone = character.clone({ special_abilities: specialAbilitiesAfterDrop })
+      setCharacter(charClone)
+      return specialAbilitiesAfterDrop
     })
   }
 

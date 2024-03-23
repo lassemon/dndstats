@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  InputAdornment,
   InputLabel,
   ListItemIcon,
   MenuItem,
@@ -25,14 +26,13 @@ import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
 import TaperedRule from 'components/TaperedRule'
 import React, { useEffect, useRef, useState } from 'react'
-import { EntityType, Item, Source, Visibility } from '@dmtool/domain'
+import { EntityType, Item, ItemRarity, Source, Visibility } from '@dmtool/domain'
 import { UpdateParam } from 'state/itemAtom'
 import { unixtimeNow, uuid } from '@dmtool/common'
 import { useAtom } from 'jotai'
 import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
 import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
 import { ITEM_DEFAULTS, ImageDTO, ItemDTO } from '@dmtool/application'
-import { ItemRarity } from 'domain/services/FifthESRDService'
 import _, { capitalize } from 'lodash'
 import { Container, Draggable } from 'react-smooth-dnd'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
@@ -48,6 +48,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import SaveButton from 'components/SaveButton'
 import PlusButton from 'components/PlusButton'
 import ScreenshotButton from 'components/ScreenshotButton'
+import config from 'config'
 
 const itemToItemListOption = (item: Item | ItemDTO): ItemListOption => {
   return {
@@ -139,7 +140,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
 
   const selectItem = async (selected: ItemListOption | null | string) => {
     if (selected && typeof selected !== 'string' && selected.id) {
-      navigate(`/stats/item/${selected.id}`)
+      navigate(`${config.cardPageRoot}/item/${selected.id}`)
       setItemId(selected.id)
     }
 
@@ -151,7 +152,6 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
     if (parsedValue?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || (parsedValue && !authState.loggedIn)) {
       parsedValue = parsedValue.clone({ id: uuid() })
       setItem(parsedValue)
-      navigate(`/stats/item/`)
     } else {
       setItem(parsedValue || null)
     }
@@ -191,6 +191,15 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
     internalSetItem((_item) => {
       if (_item) {
         return _item.clone({ [name]: value })
+      }
+    })
+  }
+
+  const onChangePrice = (name: string) => (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement> | SelectChangeEvent) => {
+    const { value } = event.target
+    internalSetItem((_item) => {
+      if (_item) {
+        return _item.clone({ price: { ..._item.price, ...{ [name]: name === 'quantity' ? parseInt(value) : value } } })
       }
     })
   }
@@ -253,7 +262,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
     })
     setImage(null)
     if (!authState.loggedIn) {
-      navigate(`/stats/item/`)
+      navigate(`${config.cardPageRoot}/item/`)
     }
   }
 
@@ -306,7 +315,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             } else {
               const newImageDTO = new ImageDTO(newImage)
               setItem(itemToSave.clone({ id: uuid(), imageId: newImageDTO.id }))
-              navigate(`/stats/item/`)
+              navigate(`${config.cardPageRoot}/item/`)
               return newImageDTO
             }
           })
@@ -339,12 +348,14 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
     })
     setItem(newItem)
     setImage(null)
-    navigate(`/stats/item/${newItemId}`)
+    navigate(`${config.cardPageRoot}/item/${newItemId}`)
   }
 
   const onSave = (callback?: () => void) => {
     if (item) {
       const newItem = item.clone({ ...(item.id === ITEM_DEFAULTS.NEW_ITEM_ID ? { id: uuid() } : {}) })
+      console.log('new item weight', newItem.weight)
+      console.log('new item weight type', typeof newItem.weight)
 
       if (errorState) {
         setError(null)
@@ -395,7 +406,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
       itemRepository
         .delete(item.id)
         .then((deletedItem) => {
-          navigate(`/stats/item/`)
+          navigate(`${config.cardPageRoot}/item/`)
           setItemList((_itemList) => {
             return _.filter(_itemList, (item) => item.id !== deletedItem.id)
           })
@@ -605,19 +616,46 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
         <TextField
           id="item-price"
           label="Price"
-          value={item.price}
-          onChange={onChange('price')}
+          type="number"
+          value={item.price.quantity}
+          onChange={onChangePrice('quantity')}
           InputLabelProps={{
             shrink: true
           }}
         />
+        <Select
+          size="small"
+          value={item.price.unit || undefined}
+          onChange={onChangePrice('unit')}
+          sx={{ '&& .MuiSelect-select': { textTransform: 'lowercase' } }}
+        >
+          <MenuItem value="cp" sx={{ textTransform: 'lowercase' }}>
+            cp
+          </MenuItem>
+          <MenuItem value="sp" sx={{ textTransform: 'lowercase' }}>
+            sp
+          </MenuItem>
+          <MenuItem value="ep" sx={{ textTransform: 'lowercase' }}>
+            ep
+          </MenuItem>
+          <MenuItem value="gp" sx={{ textTransform: 'lowercase' }}>
+            gp
+          </MenuItem>
+          <MenuItem value="pp" sx={{ textTransform: 'lowercase' }}>
+            pp
+          </MenuItem>
+        </Select>
         <TextField
           id="item-weight"
           label="Weight"
+          type="number"
           value={item.weight}
           onChange={onChange('weight')}
           InputLabelProps={{
             shrink: true
+          }}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">lb.</InputAdornment>
           }}
         />
         <FormControl sx={{ m: 0, flex: '0 0 14em' }} size="small">

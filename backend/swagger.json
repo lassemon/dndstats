@@ -153,6 +153,25 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ItemPrice": {
+				"properties": {
+					"quantity": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"unit": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"required": [
+					"quantity",
+					"unit"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Visibility": {
 				"enum": [
 					"public",
@@ -204,15 +223,15 @@
 						"type": "string"
 					},
 					"price": {
-						"type": "string",
-						"nullable": true
+						"$ref": "#/components/schemas/ItemPrice"
 					},
 					"rarity": {
 						"type": "string",
 						"nullable": true
 					},
 					"weight": {
-						"type": "string",
+						"type": "number",
+						"format": "double",
 						"nullable": true
 					},
 					"localItem": {
@@ -256,6 +275,112 @@
 					"features",
 					"createdByUserName"
 				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ItemSearchResponse": {
+				"properties": {
+					"items": {
+						"items": {
+							"$ref": "#/components/schemas/ItemResponse"
+						},
+						"type": "array"
+					},
+					"totalCount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"items",
+					"totalCount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ItemSearchRequest": {
+				"properties": {
+					"itemsPerPage": {
+						"type": "number",
+						"format": "double"
+					},
+					"pageNumber": {
+						"type": "number",
+						"format": "double"
+					},
+					"onlyMyItems": {
+						"type": "boolean"
+					},
+					"source": {
+						"items": {
+							"type": "string",
+							"enum": [
+								"5th_e_SRD",
+								"Homebrew",
+								"My_Items",
+								"System"
+							],
+							"nullable": false
+						},
+						"type": "array"
+					},
+					"visibility": {
+						"items": {
+							"type": "string",
+							"enum": [
+								"public",
+								"logged_in",
+								"private"
+							],
+							"nullable": false
+						},
+						"type": "array"
+					},
+					"rarity": {
+						"items": {
+							"type": "string",
+							"enum": [
+								"common",
+								"uncommon",
+								"rare",
+								"very_rare",
+								"legendary",
+								"artifact"
+							],
+							"nullable": false
+						},
+						"type": "array"
+					},
+					"priceComparison": {
+						"type": "string",
+						"enum": [
+							"over",
+							"exactly",
+							"under"
+						],
+						"nullable": false
+					},
+					"priceQuantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"priceUnit": {
+						"type": "string"
+					},
+					"weightComparison": {
+						"type": "string",
+						"enum": [
+							"over",
+							"exactly",
+							"under"
+						],
+						"nullable": false
+					},
+					"weight": {
+						"type": "number",
+						"format": "double"
+					}
+				},
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -406,15 +531,15 @@
 						"type": "string"
 					},
 					"price": {
-						"type": "string",
-						"nullable": true
+						"$ref": "#/components/schemas/ItemPrice"
 					},
 					"rarity": {
 						"type": "string",
 						"nullable": true
 					},
 					"weight": {
-						"type": "string",
+						"type": "number",
+						"format": "double",
 						"nullable": true
 					},
 					"localItem": {
@@ -852,17 +977,14 @@
 		},
 		"/items": {
 			"get": {
-				"operationId": "GetAll",
+				"operationId": "Search",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/ItemResponse"
-									},
-									"type": "array"
+									"$ref": "#/components/schemas/ItemSearchResponse"
 								}
 							}
 						}
@@ -872,7 +994,141 @@
 					"Item"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "itemsPerPage",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "pageNumber",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "onlyMyItems",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"in": "query",
+						"name": "source",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"enum": [
+									"5th_e_SRD",
+									"Homebrew",
+									"My_Items",
+									"System"
+								],
+								"nullable": false
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "visibility",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"enum": [
+									"public",
+									"logged_in",
+									"private"
+								],
+								"nullable": false
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "rarity",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"enum": [
+									"common",
+									"uncommon",
+									"rare",
+									"very_rare",
+									"legendary",
+									"artifact"
+								],
+								"nullable": false
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "priceComparison",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"over",
+								"exactly",
+								"under"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "priceQuantity",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "priceUnit",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "weightComparison",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"over",
+								"exactly",
+								"under"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "weight",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			}
 		},
 		"/items/{userId}": {

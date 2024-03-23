@@ -16,6 +16,7 @@
     "@dmtool/common": "^1.0.0",
     "@dmtool/domain": "^1.0.0",
     "@types/mime-types": "^2.1.4",
+    "lodash": "^4.17.21",
     "mime-types": "^2.1.35"
   },
   "devDependencies": {

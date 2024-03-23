@@ -1,4 +1,11 @@
-import { FetchOptions, HttpItemRepositoryInterface, ItemDTO, ItemResponse, ItemUpdateRequest } from '@dmtool/application'
+import {
+  FetchOptions,
+  HttpItemRepositoryInterface,
+  ItemDTO,
+  ItemResponse,
+  ItemSearchRequest,
+  ItemSearchResponse
+} from '@dmtool/application'
 import { Image, Item } from '@dmtool/domain'
 import { HttpItemRepository } from 'infrastructure/api/HttpItemRepository'
 import { LocalStorageItemRepository } from 'infrastructure/repositories/LocalStorageItemRepository'
@@ -14,12 +21,16 @@ class ItemRepository implements FrontendItemRepositoryInterface {
   private backendRepository = new HttpItemRepository()
   private localStorageRepository = new LocalStorageItemRepository(localStorageRepository)
 
-  async getAll(options: FetchOptions = {}): Promise<ItemResponse[]> {
+  async getAll(options: FetchOptions = {}): Promise<ItemSearchResponse> {
     return await this.backendRepository.getAll(options)
   }
 
   async getAllForUser(userId: string): Promise<ItemResponse[]> {
     return await this.backendRepository.getAllForUser(userId)
+  }
+
+  async search(query: ItemSearchRequest, options: FetchOptions = {}) {
+    return await this.backendRepository.search(query, options)
   }
 
   async getById(id: string): Promise<ItemResponse> {

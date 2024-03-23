@@ -1,6 +1,7 @@
 import { FetchOptions } from '@dmtool/application'
 import ApiError from 'domain/errors/ApiError'
 import ApiValidateError from 'domain/errors/ApiValidateError'
+import _ from 'lodash'
 
 const API_ROOT = '/api/v1'
 
@@ -93,6 +94,28 @@ export const deleteJson = async <T>(options: RequestInit): Promise<T> => {
   } catch (error) {
     return await refreshTokenAndRetry<T>(error, deleteJson, options)
   }
+}
+
+export const jsonToQueryString = (url: string, json: { [key: string]: any }) => {
+  const queryString = Object.keys(json)
+    .map((key) => {
+      const value = json[key]
+      // Convert arrays and objects to JSON strings and encode URI components
+      let encodedValue = encodeURIComponent(value)
+      if (typeof value === 'object') {
+        if (_.isArray(value)) {
+          encodedValue = `${value.join(`&${key}=`)}`
+        } else {
+          encodedValue = JSON.stringify(value)
+        }
+      }
+      return `${encodeURIComponent(key)}=${encodedValue}`
+    })
+    .join('&')
+
+  // Check if URL already contains a query string
+  const separator = url.includes('?') ? '&' : '?'
+  return `${url}${queryString ? separator : ''}${queryString}`
 }
 
 const handleApiResponse = async (response: Response): Promise<any> => {

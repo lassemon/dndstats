@@ -130,12 +130,14 @@ export const SpellStats: React.FC<SpellStatsProps> = ({ screenshotMode }) => {
           </>
         )}
       </StatsContainer>
-      <FormGroup sx={{ alignItems: 'flex-end', visibility: screenshotMode ? 'hidden' : 'visible' }}>
-        <FormControlLabel
-          control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />}
-          label="Inline features"
-        />
-      </FormGroup>
+      <Box displayPrint="none">
+        <FormGroup sx={{ alignItems: 'flex-end', visibility: screenshotMode ? 'hidden' : 'visible' }}>
+          <FormControlLabel
+            control={<Checkbox color="secondary" checked={inlineFeatures} onChange={onChangeInlineFeatures} />}
+            label="Inline features"
+          />
+        </FormGroup>
+      </Box>
     </Box>
   )
 }

@@ -1,5 +1,5 @@
 import { Logger } from '@dmtool/common'
-import { UnknownError } from '@dmtool/domain'
+import { IllegalArgument, UnknownError } from '@dmtool/domain'
 
 const log = new Logger('ErrorUtil')
 
@@ -9,5 +9,7 @@ export const throwUnknownError = (e?: unknown) => {
 }
 
 export const throwIllegalArgument = (argumentName: string) => {
-  log.warn(`Failed to process request due to illegal argument ${argumentName}`)
+  const error = `Failed to process request due to illegal argument ${argumentName}`
+  log.warn(error)
+  throw new IllegalArgument(400, 'Illegal Argument', error)
 }

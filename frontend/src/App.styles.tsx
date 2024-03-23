@@ -4,15 +4,15 @@ import { makeStyles } from 'tss-react/mui'
 export const useStyles = makeStyles()(() => ({
   root: {
     display: 'flex',
-    minHeight: '100%',
-    width: '100%'
+    minHeight: '100dvh',
+    height: '100%'
   },
   main: {
-    margin: 0,
-    padding: 0,
-    width: '100%',
     overflowAnchor: 'none',
-    boxShadow: 'rgb(0, 0, 0) 2px 0px 7px -5px inset'
+    boxShadow: 'rgb(0, 0, 0) 2px 0px 7px -5px inset',
+    minHeight: '100%',
+    width: '100%',
+    flex: '1 1 100%'
   },
   appBar: {
     margin: '0',

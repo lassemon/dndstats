@@ -91,6 +91,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ItemPrice": {
+        "dataType": "refObject",
+        "properties": {
+            "quantity": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
+            "unit": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Visibility": {
         "dataType": "refEnum",
         "enums": ["public","logged_in","private"],
@@ -109,12 +118,39 @@ const models: TsoaRoute.Models = {
             "name": {"dataType":"string","required":true},
             "shortDescription": {"dataType":"string","required":true},
             "mainDescription": {"dataType":"string","required":true},
-            "price": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "price": {"ref":"ItemPrice","required":true},
             "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
-            "weight": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "weight": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
             "localItem": {"dataType":"boolean"},
             "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
             "createdByUserName": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ItemSearchResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"ItemResponse"},"required":true},
+            "totalCount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ItemSearchRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "itemsPerPage": {"dataType":"double"},
+            "pageNumber": {"dataType":"double"},
+            "onlyMyItems": {"dataType":"boolean"},
+            "source": {"dataType":"array","array":{"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"]}},
+            "visibility": {"dataType":"array","array":{"dataType":"enum","enums":["public","logged_in","private"]}},
+            "rarity": {"dataType":"array","array":{"dataType":"enum","enums":["common","uncommon","rare","very_rare","legendary","artifact"]}},
+            "priceComparison": {"dataType":"enum","enums":["over","exactly","under"]},
+            "priceQuantity": {"dataType":"double"},
+            "priceUnit": {"dataType":"string"},
+            "weightComparison": {"dataType":"enum","enums":["over","exactly","under"]},
+            "weight": {"dataType":"double"},
         },
         "additionalProperties": false,
     },
@@ -169,9 +205,9 @@ const models: TsoaRoute.Models = {
             "name": {"dataType":"string","required":true},
             "shortDescription": {"dataType":"string","required":true},
             "mainDescription": {"dataType":"string","required":true},
-            "price": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "price": {"ref":"ItemPrice","required":true},
             "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
-            "weight": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "weight": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
             "localItem": {"dataType":"boolean"},
             "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
         },
@@ -561,11 +597,12 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/v1/items',
             ...(fetchMiddlewares<RequestHandler>(ItemController)),
-            ...(fetchMiddlewares<RequestHandler>(ItemController.prototype.getAll)),
+            ...(fetchMiddlewares<RequestHandler>(ItemController.prototype.search)),
 
-            function ItemController_getAll(request: any, response: any, next: any) {
+            function ItemController_search(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    queryParams: {"in":"queries","name":"queryParams","required":true,"ref":"ItemSearchRequest"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -577,7 +614,7 @@ export function RegisterRoutes(app: Router) {
                 const controller = new ItemController();
 
 
-              const promise = controller.getAll.apply(controller, validatedArgs as any);
+              const promise = controller.search.apply(controller, validatedArgs as any);
               // CHANGED
               promiseHandler(controller, promise, undefined, request, response, next);
               // END OF CHANGED

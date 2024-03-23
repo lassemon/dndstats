@@ -22,6 +22,12 @@ import DeleteButton from 'components/DeleteButton'
 import EditButton from 'components/EditButton'
 
 const useStyles = makeStyles()(() => ({
+  buttons: {
+    display: 'flex',
+    gap: '1em',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between'
+  },
   uploadButtons: {
     display: 'flex',
     gap: '1em'
@@ -235,82 +241,95 @@ export const MonsterStatsInput: React.FC<MonsterStatsInputProps> = ({ screenshot
 
   return (
     <StatsInputContainer>
-      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1em' }}>
-        <Tooltip title="Toggle screenshot mode" placement="top-end">
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <ScreenshotButton onClick={onToggleScreenshotMode} color={screenshotMode ? 'secondary' : 'default'} sx={{ paddingBottom: 0 }} />
-            <Switch onClick={onToggleScreenshotMode} checked={screenshotMode} sx={{ marginTop: '-10px' }} color="secondary" />
-          </div>
-        </Tooltip>
-        <Tooltip title="Toggle edit mode" placement="top-end">
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <EditButton onClick={onToggletEditMode} color={editMode ? 'secondary' : 'default'} sx={{ paddingBottom: 0 }} />
-            <Switch onClick={onToggletEditMode} checked={editMode} sx={{ marginTop: '-10px' }} color="secondary" />
-          </div>
-        </Tooltip>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1em' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1em' }}>
+          <Tooltip title="Toggle screenshot mode" placement="top-end">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <ScreenshotButton
+                onClick={onToggleScreenshotMode}
+                color={screenshotMode ? 'secondary' : 'default'}
+                sx={{ paddingBottom: 0 }}
+              />
+              <Switch onClick={onToggleScreenshotMode} checked={screenshotMode} sx={{ marginTop: '-10px' }} color="secondary" />
+            </div>
+          </Tooltip>
+          <Tooltip title="Toggle edit mode" placement="top-end">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <EditButton onClick={onToggletEditMode} color={editMode ? 'secondary' : 'default'} sx={{ paddingBottom: 0 }} />
+              <Switch onClick={onToggletEditMode} checked={editMode} sx={{ marginTop: '-10px' }} color="secondary" />
+            </div>
+          </Tooltip>
+        </div>
+        <Autocomplete
+          id={`select-monster-dropdown`}
+          blurOnSelect
+          clearOnBlur
+          fullWidth
+          disableClearable
+          filterSelectedOptions
+          groupBy={(option) => option.source}
+          value={selectedMonster}
+          loading={loadingMonsterList}
+          options={[...monsterList, ...customCharacterList.map(mapCustomCharacterToMonsterListOption)].sort((a, b) =>
+            b.source.localeCompare(a.source)
+          )}
+          onChange={onSelectMonster}
+          getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
+          PaperComponent={AutoCompleteItem}
+          renderGroup={(params) => (
+            <li key={params.key}>
+              <AutocompleteGroupHeader>{params.group.replaceAll('_', ' ')}</AutocompleteGroupHeader>
+              <AutocompleteGroupItems>{params.children}</AutocompleteGroupItems>
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Select Monster"
+              variant="filled"
+              size="small"
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <React.Fragment>
+                    {loadingMonsterList ? <CircularProgress color="inherit" size={20} /> : null}
+                    {params.InputProps.endAdornment}
+                  </React.Fragment>
+                )
+              }}
+            />
+          )}
+          sx={{
+            width: '16em'
+          }}
+        />
       </div>
-      <Autocomplete
-        id={`select-monster-dropdown`}
-        blurOnSelect
-        clearOnBlur
-        fullWidth
-        disableClearable
-        filterSelectedOptions
-        groupBy={(option) => option.source}
-        value={selectedMonster}
-        loading={loadingMonsterList}
-        options={[...monsterList, ...customCharacterList.map(mapCustomCharacterToMonsterListOption)].sort((a, b) =>
-          b.source.localeCompare(a.source)
-        )}
-        onChange={onSelectMonster}
-        getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
-        PaperComponent={AutoCompleteItem}
-        renderGroup={(params) => (
-          <li key={params.key}>
-            <AutocompleteGroupHeader>{params.group.replaceAll('_', ' ')}</AutocompleteGroupHeader>
-            <AutocompleteGroupItems>{params.children}</AutocompleteGroupItems>
-          </li>
-        )}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Select Monster"
-            variant="filled"
-            size="small"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <React.Fragment>
-                  {loadingMonsterList ? <CircularProgress color="inherit" size={20} /> : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              )
-            }}
-          />
-        )}
-      />
+
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
-      <div className={classes.uploadButtons}>
-        <UploadJSON onUpload={onUploadMonster}>Import Monster</UploadJSON>
-        <DownloadJSON fileName={currentMonster.id} data={currentMonster}>
-          Export Monster
-        </DownloadJSON>
-      </div>
-      {monsterSavedInHomebrew ? (
-        <Tooltip title="No changes to be saved" placement="top-start">
+      <div className={classes.buttons}>
+        <div className={classes.uploadButtons}>
+          <UploadJSON onUpload={onUploadMonster}>Import Monster</UploadJSON>
+          <DownloadJSON fileName={currentMonster.id} data={currentMonster}>
+            Export Monster
+          </DownloadJSON>
+        </div>
+        {monsterSavedInHomebrew ? (
+          <Tooltip title="No changes to be saved" placement="top-start">
+            <div style={{ textAlign: 'end' }}>
+              <Button variant="contained" onClick={onSaveCustomCharacter} disabled>
+                Save as homebrew character
+              </Button>
+            </div>
+          </Tooltip>
+        ) : (
           <div style={{ textAlign: 'end' }}>
-            <Button variant="contained" onClick={onSaveCustomCharacter} disabled>
+            <Button variant="contained" onClick={onSaveCustomCharacter}>
               Save as homebrew character
             </Button>
           </div>
-        </Tooltip>
-      ) : (
-        <div style={{ textAlign: 'end' }}>
-          <Button variant="contained" onClick={onSaveCustomCharacter}>
-            Save as homebrew character
-          </Button>
-        </div>
-      )}
+        )}
+      </div>
+
       <ButtonGroup
         orientation="vertical"
         size="small"

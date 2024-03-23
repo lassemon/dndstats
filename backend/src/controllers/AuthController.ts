@@ -97,16 +97,7 @@ export class AuthController extends Controller {
         throw new ApiError(401, 'Unauthorized')
       }
 
-      //const user: User = await this.userService.findById(refreshToken.user)
-      const user = {
-        id: '1',
-        name: 'admin',
-        email: 'testemail',
-        password: await Encryption.encrypt('test'),
-        active: true,
-        createdAt: 123,
-        roles: []
-      } //await this.userService.findByName(username)
+      const user = await this.userRepository.getById(refreshToken.userId)
       if (!user.active) {
         throw new ApiError(404, 'NotFound')
       }

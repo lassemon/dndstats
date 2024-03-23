@@ -3,6 +3,7 @@ import React, { ReactNode, useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 import { makeStyles } from 'tss-react/mui'
+import Stat from 'components/Stat'
 
 export const useStyles = makeStyles()((theme) => ({
   root: {
@@ -13,7 +14,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statHeader: {
     color: theme.status.blood,
-    fontSize: '1.1em',
+    fontSize: '1.02em',
     lineHeight: '1.2em',
     fontWeight: 'bold',
     flexBasis: '16.6%',
@@ -21,7 +22,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   statValue: {
     color: theme.status.blood,
-    fontSize: '1em',
+    fontSize: '1.02em',
     fontFamily: '"Helvetica", "Arial", sans-serif',
     flexBasis: '16.6%',
     textTransform: 'capitalize',
@@ -139,10 +140,9 @@ const EditableKeyValue: React.FC<EditableKeyValueProps> = (props) => {
           disableInteractive={disableInteractiveTooltip}
           placement={tooltipPlacement}
         >
-          <div className={`baseStat ${classes.baseStat}`} onDoubleClick={onDoubleClick}>
-            <span className={classes.statHeader}>{label}</span>
-            <span className={classes.statValue}>{valueLabel ? valueLabel : _value}</span>
-          </div>
+          <>
+            <Stat header={label} value={valueLabel ? valueLabel : _value} onDoubleClick={onDoubleClick} />
+          </>
         </EditableKeyValueTooltip>
       ) : (
         <>
