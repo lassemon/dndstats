@@ -1,10 +1,16 @@
 import { PageStatsResponse } from '@dmtool/application'
-import { Controller, Get, Route, Tags } from 'tsoa'
+import { Controller, Get, Middlewares, Request, Route, Tags } from 'tsoa'
 import ItemRepository from '/infrastructure/repositories/ItemRepository'
+import express from 'express'
+import { User } from '@dmtool/domain'
+import Authentication from '/security/Authentication'
+import passport from 'passport'
+const authentication = new Authentication(passport)
 
 const itemRepository = new ItemRepository()
 
 @Route('/pagestats')
+@Middlewares(authentication.passThroughAuthenticationMiddleware())
 export class PageStatsController extends Controller {
   constructor() {
     super()
@@ -12,8 +18,9 @@ export class PageStatsController extends Controller {
 
   @Tags('page')
   @Get()
-  public async get(): Promise<PageStatsResponse> {
-    const itemsCreated = await itemRepository.countAll()
+  public async get(@Request() request: express.Request): Promise<PageStatsResponse> {
+    console.log('request?.isAuthenticated()', request?.isAuthenticated())
+    const itemsCreated = await itemRepository.countAll(request?.isAuthenticated() ? (request.user as User).id : undefined)
 
     return {
       itemsCreated,

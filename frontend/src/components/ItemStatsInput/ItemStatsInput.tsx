@@ -354,8 +354,6 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   const onSave = (callback?: () => void) => {
     if (item) {
       const newItem = item.clone({ ...(item.id === ITEM_DEFAULTS.NEW_ITEM_ID ? { id: uuid() } : {}) })
-      console.log('new item weight', newItem.weight)
-      console.log('new item weight type', typeof newItem.weight)
 
       if (errorState) {
         setError(null)
@@ -434,9 +432,6 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   const canDeleteItem = item?.id !== ITEM_DEFAULTS.DEFAULT_ITEM_ID && item?.id === 'newItem' && item.createdBy !== authState.user?.id
   const canSaveItem = !item?.isEqual(persistedItem) && item?.id !== ITEM_DEFAULTS.DEFAULT_ITEM_ID
 
-  //console.log('item', item.toJSON())
-  //console.log('persistedItem', persistedItem?.toJSON())
-
   return (
     <StatsInputContainer className={classes.statsInputContainer}>
       {authState.loggedIn ? (
@@ -489,7 +484,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                 />
               )}
               sx={{
-                minWidth: '16em'
+                width: '16em'
               }}
             />
           </div>

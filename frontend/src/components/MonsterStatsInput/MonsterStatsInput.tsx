@@ -242,24 +242,6 @@ export const MonsterStatsInput: React.FC<MonsterStatsInputProps> = ({ screenshot
   return (
     <StatsInputContainer>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1em' }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1em' }}>
-          <Tooltip title="Toggle screenshot mode" placement="top-end">
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <ScreenshotButton
-                onClick={onToggleScreenshotMode}
-                color={screenshotMode ? 'secondary' : 'default'}
-                sx={{ paddingBottom: 0 }}
-              />
-              <Switch onClick={onToggleScreenshotMode} checked={screenshotMode} sx={{ marginTop: '-10px' }} color="secondary" />
-            </div>
-          </Tooltip>
-          <Tooltip title="Toggle edit mode" placement="top-end">
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <EditButton onClick={onToggletEditMode} color={editMode ? 'secondary' : 'default'} sx={{ paddingBottom: 0 }} />
-              <Switch onClick={onToggletEditMode} checked={editMode} sx={{ marginTop: '-10px' }} color="secondary" />
-            </div>
-          </Tooltip>
-        </div>
         <Autocomplete
           id={`select-monster-dropdown`}
           blurOnSelect
@@ -303,6 +285,24 @@ export const MonsterStatsInput: React.FC<MonsterStatsInputProps> = ({ screenshot
             width: '16em'
           }}
         />
+        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1em' }}>
+          <Tooltip title="Toggle screenshot mode" placement="top-end">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <ScreenshotButton
+                onClick={onToggleScreenshotMode}
+                color={screenshotMode ? 'secondary' : 'default'}
+                sx={{ paddingBottom: 0 }}
+              />
+              <Switch onClick={onToggleScreenshotMode} checked={screenshotMode} sx={{ marginTop: '-10px' }} color="secondary" />
+            </div>
+          </Tooltip>
+          <Tooltip title="Toggle edit mode" placement="top-end">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <EditButton onClick={onToggletEditMode} color={editMode ? 'secondary' : 'default'} sx={{ paddingBottom: 0 }} />
+              <Switch onClick={onToggletEditMode} checked={editMode} sx={{ marginTop: '-10px' }} color="secondary" />
+            </div>
+          </Tooltip>
+        </div>
       </div>
 
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
