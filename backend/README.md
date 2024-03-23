@@ -3,28 +3,35 @@ Installation to cPanel:
 - upload latest code to server /dmtools/ (do not copy node_modules or build folder)
 
   - remove:
-    -/dmtools/backend/src
+    /dmtools/backend/src
+    /dmtools/backend/build
+    /dmtools/packages
     /nodevenv/dmtools/18/lib/packages
+    -- don't remove package-lock.json from /dmtools root folder (you can overwrite it yes)
   - upload:
-    - backend/src
-    - backend/tools
-    - backend/\*<files> <-- except README.MD
-      -> to /dmtools/backend
-    - packages/\*
-    - run `npm run clean:build` on root before you upload to remove lib folders
-      -> to /dmtools/packages
-      -> to /nodevenv/dmtools/18/lib
+    to /dmtools/backend
+    -- backend/src
+    -- backend/tools
+    -- backend/<files> <-- except README.MD and .env
+    to /dmtools/packages
+    -- packages/\*
+    -- run `npm run clean:build` LOCALLY on root before you upload to remove lib folders
+    to /nodevenv/dmtools/18/lib
+    -- packages/\*
+    -- tsconfig.package.json
+    -- tsconfig.build.json
+    -- package-lock.json
 
 - open cPanel and go to Setup Node.js App
 - edit the application
 - copy the "source ..." command from the view
 - open a new terminal and open source
+  -- BEOYND HERE, THERE BE DRAGONS --
   //- run rm -rf node_modules
   //- run `tail -f logs/dmtools.log`
-  //- on the application edit view
 - in the terminal goto /nodevenv/dmtools/18/lib and run `npm run build`
-- then goto /home/viitevhg/dmtool and run `npm run build`
-- finally goto
+- then goto /home/viitevhg/dmtools/backend and run `npm run build`
+- finally
 
   - press the "Run NPM Install" -button
   - press the "Run Script" -button and run the build script
