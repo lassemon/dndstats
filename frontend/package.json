@@ -39,7 +39,7 @@
     "tss-react": "^4.9.3",
     "typescript": "^5.3.3",
     "uuid": "9.0.1",
-    "vite": "^5.0.12",
+    "vite": "^5.0.13",
     "vite-tsconfig-paths": "^4.3.1"
   },
   "scripts": {
