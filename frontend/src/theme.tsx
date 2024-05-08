@@ -72,7 +72,8 @@ const theme = createTheme({
         selectOnFocus: false,
         ChipProps: {
           sx: {
-            borderRadius: 0
+            borderRadius: 0,
+            textTransform: 'capitalize'
           }
         },
         componentsProps: {
@@ -97,6 +98,9 @@ const theme = createTheme({
             fontWeight: 'bold',
             color: '#1b1b1b',
             whiteSpace: 'nowrap'
+          },
+          '& > label.MuiInputLabel-standard.Mui-disabled': {
+            color: 'rgba(0, 0, 0, 0.38)'
           },
           '& legend': {
             fontWeight: 'bold'
@@ -150,8 +154,10 @@ const theme = createTheme({
     },
     MuiSelect: {
       styleOverrides: {
-        select: {
-          textTransform: 'capitalize'
+        root: {
+          '&.Mui-disabled': {
+            opacity: '0.5'
+          }
         }
       }
     },

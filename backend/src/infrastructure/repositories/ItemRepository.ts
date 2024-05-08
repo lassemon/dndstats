@@ -1,6 +1,6 @@
 import connection from '../database/connection'
-import { ApiError, ItemRarity, Source, UnknownError, Visibility } from '@dmtool/domain'
-import { unixtimeNow, uuid } from '@dmtool/common'
+import { ApiError, ComparisonOption, ItemCategory, ItemRarity, Source, UnknownError, Visibility, WeaponProperty } from '@dmtool/domain'
+import { Order, unixtimeNow, uuid } from '@dmtool/common'
 import { Logger } from '@dmtool/common'
 import {
   DBItem,
@@ -8,42 +8,139 @@ import {
   ITEM_DEFAULTS,
   ItemDBResponse,
   ItemInsertQuery,
+  ItemUpdateQuery,
   ItemResponse,
-  ItemSearchQuery
+  ItemSearchQuery,
+  isArmor,
+  isWeapon
 } from '@dmtool/application'
 import { omit } from 'lodash'
 import { Knex } from 'knex'
 import { PriceSearchQuery, WeightSearchQuery } from '@dmtool/application/src/interfaces/http/Item'
+import { ItemSortableKeys } from '@dmtool/domain'
 
 const logger = new Logger('ItemRepository')
 
-const withAccess = (userId?: string, visibility?: `${Visibility}`[], onlyMyItems?: boolean) => (queryBuilder: Knex.QueryBuilder) => {
-  const visibilityFilterIsSet = visibility?.length && visibility?.length > 0
-  // double equals (==) to cover for both null and undefined
-  if (userId == null) {
-    queryBuilder.where({ 'items.visibility': 'public' }) // only public items
-  } else {
-    if (onlyMyItems === true) {
-      queryBuilder.where({ 'items.createdBy': userId }) // only items created by the user
-      if (visibilityFilterIsSet) {
-        queryBuilder.whereIn('items.visibility', visibility)
-      }
+const withAccess =
+  (userId?: string, visibility?: `${Visibility}`[], onlyMyItems: boolean = false) =>
+  (queryBuilder: Knex.QueryBuilder) => {
+    const visibilityFilterIsSet = visibility?.length && visibility?.length > 0
+    // double equals (==) to cover for both null and undefined
+    if (userId == null) {
+      queryBuilder.where({ 'items.visibility': 'public' }) // only public items
     } else {
-      if (visibilityFilterIsSet) {
-        queryBuilder.whereIn('items.visibility', visibility).andWhere((queryBuilder: Knex.QueryBuilder) => {
-          queryBuilder.where({ 'items.createdBy': userId }).orWhereNot({ 'items.visibility': 'private' })
-        })
+      if (onlyMyItems === true) {
+        queryBuilder.where({ 'items.createdBy': userId }) // only items created by the user
+        if (visibilityFilterIsSet) {
+          queryBuilder.whereIn('items.visibility', visibility)
+        }
       } else {
-        // all users own items and all other items except private items of other users
-        queryBuilder.where({ 'items.createdBy': userId }).orWhereNot({ 'items.visibility': 'private' })
+        if (visibilityFilterIsSet) {
+          queryBuilder.whereIn('items.visibility', visibility).andWhere((queryBuilder: Knex.QueryBuilder) => {
+            queryBuilder.where({ 'items.createdBy': userId }).orWhereNot({ 'items.visibility': 'private' })
+          })
+        } else {
+          // all users own items and all other items except private items of other users
+          queryBuilder.andWhere((_queryBuilder) => {
+            _queryBuilder.where({ 'items.createdBy': userId }).orWhereNot({ 'items.visibility': 'private' })
+          })
+        }
       }
     }
   }
-}
 
 const withRarity = (rarity?: `${ItemRarity}`[]) => (queryBuilder: Knex.QueryBuilder) => {
   if (rarity?.length && rarity?.length > 0) {
     queryBuilder.whereIn('items.rarity', rarity)
+  }
+}
+
+const withCategory = (categories?: `${ItemCategory}`[]) => (queryBuilder: Knex.QueryBuilder) => {
+  if (categories?.length && categories?.length > 0) {
+    queryBuilder.where(function () {
+      categories.forEach((category, index) => {
+        const jsonCategories = JSON.stringify([category])
+        if (index === 0) {
+          this.whereRaw('JSON_CONTAINS(categories, ?)', [jsonCategories])
+        } else {
+          this.orWhereRaw('JSON_CONTAINS(categories, ?)', [jsonCategories])
+        }
+      })
+    })
+  }
+}
+
+const withProperty = (properties?: `${WeaponProperty}`[]) => (queryBuilder: Knex.QueryBuilder) => {
+  if (properties?.length && properties?.length > 0) {
+    queryBuilder.where(function () {
+      properties.forEach((properties, index) => {
+        const jsonProperties = JSON.stringify([properties])
+        if (index === 0) {
+          this.whereRaw('JSON_CONTAINS(properties, ?)', [jsonProperties])
+        } else {
+          this.orWhereRaw('JSON_CONTAINS(properties, ?)', [jsonProperties])
+        }
+      })
+    })
+  }
+}
+
+const withOrderBy = (orderBy: (typeof ItemSortableKeys)[number], order: `${Order}`) => (queryBuilder: Knex.QueryBuilder) => {
+  console.log('order by', orderBy)
+  console.log('order', order)
+  if (orderBy) {
+    const _orderBy = ItemSortableKeys.includes(orderBy) ? orderBy : 'name'
+    const _order = order === Order.ASCENDING || order === Order.DESCENDING ? order : Order.ASCENDING
+    switch (orderBy) {
+      case 'price':
+        queryBuilder.orderByRaw(`
+        CAST(JSON_UNQUOTE(JSON_EXTRACT(price, "$.quantity")) AS UNSIGNED) ${_order.toUpperCase()},
+        CASE JSON_UNQUOTE(JSON_EXTRACT(price, "$.unit"))
+          WHEN 'pp' THEN 1
+          WHEN 'gp' THEN 2
+          WHEN 'ep' THEN 3
+          WHEN 'sp' THEN 4
+          WHEN 'cp' THEN 5
+          ELSE 6
+        END ASC`)
+        break
+      case 'rarity':
+        queryBuilder.orderByRaw(`
+        CASE
+        WHEN rarity IS NULL THEN
+            CASE WHEN '${_order}' = 'asc' THEN 0 ELSE 1 END
+        ELSE
+            CASE WHEN '${_order}' = 'asc' THEN 1 ELSE 0 END
+    		END,
+        CASE rarity
+          WHEN 'varies' THEN 1
+          WHEN 'common' THEN 2
+          WHEN 'uncommon' THEN 3
+          WHEN 'rare' THEN 4
+          WHEN 'very_rare' THEN 5
+          WHEN 'legendary' THEN 6
+          WHEN 'artifact' THEN 7
+          ELSE 8
+        END ${_order.toUpperCase()}
+        `)
+        break
+      case 'createdBy':
+        queryBuilder.orderBy(`createdByUserName`, _order)
+        break
+      //columns that value can NOT be null
+      case 'name':
+      case 'visibility':
+      case 'source':
+        queryBuilder.orderBy(`items.${_orderBy}`, _order)
+        break
+      //columns that value can be null, sort nulls first
+      case 'weight':
+        queryBuilder.orderBy(`items.${_orderBy}`, _order, 'first')
+        break
+      default:
+        queryBuilder.orderBy(`items.${_orderBy}`, _order)
+        break
+    }
   }
 }
 
@@ -55,11 +152,11 @@ const currencyToCpConversion = {
   pp: 1000
 } as { [key: string]: number }
 
-const convertToCp = (quantity: number, unit: string) => {
-  return quantity * currencyToCpConversion[unit]
+const convertToCp = (quantity: number | null, unit: string) => {
+  return (quantity || 0) * currencyToCpConversion[unit]
 }
 
-const constructQueryForPriceOver = (quantity: number, unit: string) => {
+const constructQueryForPriceOver = (quantity: number | null, unit: string) => {
   const quantityInCp = convertToCp(quantity, unit)
   const conditions = Object.entries(currencyToCpConversion).map(([unitKey, conversionRate]) => {
     return `(JSON_EXTRACT(price, '$.unit') = '${unitKey}' AND JSON_EXTRACT(price, '$.quantity') * ${conversionRate} >= ${quantityInCp})`
@@ -67,7 +164,7 @@ const constructQueryForPriceOver = (quantity: number, unit: string) => {
   return conditions.join(' OR ')
 }
 
-const constructQueryForPriceExactly = (quantity: number, unit: string) => {
+const constructQueryForPriceExactly = (quantity: number | null, unit: string) => {
   const quantityInCp = convertToCp(quantity, unit)
   const conditions = Object.entries(currencyToCpConversion).map(([unitKey, conversionRate]) => {
     return `(JSON_EXTRACT(price, '$.unit') = '${unitKey}' AND JSON_EXTRACT(price, '$.quantity') * ${conversionRate} = ${quantityInCp})`
@@ -75,7 +172,7 @@ const constructQueryForPriceExactly = (quantity: number, unit: string) => {
   return conditions.join(' OR ')
 }
 
-const constructQueryForPriceUnder = (quantity: number, unit: string) => {
+const constructQueryForPriceUnder = (quantity: number | null, unit: string) => {
   const quantityInCp = convertToCp(quantity, unit)
   const conditions = Object.entries(currencyToCpConversion).map(([unitKey, conversionRate]) => {
     return `(JSON_EXTRACT(price, '$.unit') = '${unitKey}' AND JSON_EXTRACT(price, '$.quantity') * ${conversionRate} <= ${quantityInCp})`
@@ -84,21 +181,21 @@ const constructQueryForPriceUnder = (quantity: number, unit: string) => {
 }
 
 const withPrice = (price?: PriceSearchQuery) => (queryBuilder: Knex.QueryBuilder) => {
-  if (price?.quantity && price?.comparison && price.unit) {
+  if (price && price.quantity && price.comparison && price.unit) {
     switch (price.comparison) {
-      case 'over':
+      case ComparisonOption.MINIMUM:
         queryBuilder.andWhere((_queryBuilder) => {
-          _queryBuilder.whereRaw(constructQueryForPriceOver(price.quantity as number, price.unit as string))
+          _queryBuilder.whereRaw(constructQueryForPriceOver(price.quantity, price.unit as string))
         })
         break
       case 'exactly':
         queryBuilder.andWhere((_queryBuilder) => {
-          _queryBuilder.whereRaw(constructQueryForPriceExactly(price.quantity as number, price.unit as string))
+          _queryBuilder.whereRaw(constructQueryForPriceExactly(price.quantity, price.unit as string))
         })
         break
-      case 'under':
+      case ComparisonOption.MAXIMUM:
         queryBuilder.andWhere((_queryBuilder) => {
-          _queryBuilder.whereRaw(constructQueryForPriceUnder(price.quantity as number, price.unit as string))
+          _queryBuilder.whereRaw(constructQueryForPriceUnder(price.quantity, price.unit as string))
         })
         break
     }
@@ -108,7 +205,7 @@ const withPrice = (price?: PriceSearchQuery) => (queryBuilder: Knex.QueryBuilder
 const withWeight = (weight?: WeightSearchQuery) => (queryBuilder: Knex.QueryBuilder) => {
   if (weight?.quantity && weight?.comparison) {
     switch (weight.comparison) {
-      case 'over':
+      case ComparisonOption.MINIMUM:
         queryBuilder.andWhere((_queryBuilder) => {
           _queryBuilder.where('weight', '>=', weight.quantity)
         })
@@ -118,7 +215,7 @@ const withWeight = (weight?: WeightSearchQuery) => (queryBuilder: Knex.QueryBuil
           _queryBuilder.where('weight', '=', weight.quantity)
         })
         break
-      case 'under':
+      case ComparisonOption.MAXIMUM:
         queryBuilder.andWhere((_queryBuilder) => {
           _queryBuilder.where('weight', '<=', weight.quantity)
         })
@@ -127,22 +224,47 @@ const withWeight = (weight?: WeightSearchQuery) => (queryBuilder: Knex.QueryBuil
   }
 }
 
+const withSource = (source?: `${Source}`[]) => (queryBuilder: Knex.QueryBuilder) => {
+  if (source?.length && source?.length > 0) {
+    queryBuilder.whereIn('items.source', source)
+  }
+}
+
+const withRequiresAttunement = (requiresAttunement?: boolean | null) => (queryBuilder: Knex.QueryBuilder) => {
+  if (requiresAttunement === true || requiresAttunement === false) {
+    queryBuilder.whereRaw(`JSON_EXTRACT(attunement, '$.required') = '${requiresAttunement}'`)
+  }
+}
+
+const withHasImage = (hasImage?: boolean | null) => (queryBuilder: Knex.QueryBuilder) => {
+  if (hasImage === true || hasImage === false) {
+    hasImage ? queryBuilder.whereNot('items.imageId', null) : queryBuilder.where('items.imageId', null)
+  }
+}
+
+const withWordSearch = (wordSearch?: string) => (queryBuilder: Knex.QueryBuilder) => {
+  if (wordSearch) {
+    queryBuilder.whereILike('items.name', `%${wordSearch}%`)
+    queryBuilder.orWhereILike('items.shortDescription', `%${wordSearch}%`)
+    queryBuilder.orWhereILike('items.mainDescription', `%${wordSearch}%`)
+  }
+}
+
 class ItemRepository implements DatabaseItemRepositoryInterface {
-  async getAllPublic(): Promise<ItemResponse[]> {
+  async getAllPublic(orderBy: string, order: `${Order}`): Promise<ItemResponse[]> {
     return (
       await connection
         .join('users', 'items.createdBy', '=', 'users.id')
         .select('items.*', 'users.name as createdByUserName')
         .from<any, ItemDBResponse[]>('items')
         .whereIn('visibility', ['public'])
-        .orderBy('items.name')
+        .modify<any, ItemDBResponse[]>(withOrderBy(orderBy, order))
     ).map((item) => {
       return this.parseDBItemJSON(item)
     })
   }
 
   async countAll(userId?: string): Promise<number> {
-    console.log('userId', userId)
     const result = await connection('items')
       .whereNotIn('visibility', userId ? ['private'] : ['private', 'logged_in'])
       .count<{ count: number }>('id as count') // Count the number of item ids
@@ -150,12 +272,18 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     return result ? result.count : 0
   }
 
-  async count(query: ItemSearchQuery): Promise<number> {
+  async count(query: Omit<ItemSearchQuery, 'order' | 'orderBy'>): Promise<number> {
     const result = await connection('items')
       .modify<any, ItemDBResponse[]>(withAccess(query.userId, query.visibility, query.onlyMyItems))
       .modify<any, ItemDBResponse[]>(withRarity(query.rarity))
+      .modify<any, ItemDBResponse[]>(withCategory(query.category))
+      .modify<any, ItemDBResponse[]>(withProperty(query.property))
       .modify<any, ItemDBResponse[]>(withPrice(query.price))
       .modify<any, ItemDBResponse[]>(withWeight(query.weight))
+      .modify<any, ItemDBResponse[]>(withSource(query.source))
+      .modify<any, ItemDBResponse[]>(withRequiresAttunement(query.requiresAttunement))
+      .modify<any, ItemDBResponse[]>(withHasImage(query.hasImage))
+      .modify<any, ItemDBResponse[]>(withWordSearch(query.search))
       .count<{ count: number }>('id as count')
       .first()
     return result ? result.count : 0
@@ -169,11 +297,27 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
         .from('items')
         .modify<any, ItemDBResponse[]>(withAccess(query.userId, query.visibility, query.onlyMyItems))
         .modify<any, ItemDBResponse[]>(withRarity(query.rarity))
+        .modify<any, ItemDBResponse[]>(withCategory(query.category))
+        .modify<any, ItemDBResponse[]>(withProperty(query.property))
         .modify<any, ItemDBResponse[]>(withPrice(query.price))
         .modify<any, ItemDBResponse[]>(withWeight(query.weight))
-        .limit(query.itemsPerPage || 0)
-        .offset(query.itemsPerPage && query.pageNumber ? query.pageNumber * query.itemsPerPage : 0)
-        .orderBy('items.name')
+        .modify<any, ItemDBResponse[]>(withSource(query.source))
+        .modify<any, ItemDBResponse[]>(withRequiresAttunement(query.requiresAttunement))
+        .modify<any, ItemDBResponse[]>(withHasImage(query.hasImage))
+        .modify<any, ItemDBResponse[]>(withWordSearch(query.search))
+        .modify<any, ItemDBResponse[]>(withOrderBy(query.orderBy, query.order))
+    ).map((item) => {
+      return this.parseDBItemJSON(item)
+    })
+  }
+
+  async getByImageId(imageId: string): Promise<ItemResponse[]> {
+    return (
+      await connection
+        .join('users', 'items.createdBy', '=', 'users.id')
+        .select('items.*', 'users.name as createdByUserName')
+        .from<any, ItemDBResponse[]>('items')
+        .where({ imageId })
     ).map((item) => {
       return this.parseDBItemJSON(item)
     })
@@ -187,13 +331,13 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
         .from<any, ItemDBResponse[]>('items')
         .where({ source: Source.System })
         .whereLike('items.name', `${itemName}%`)
-        .orderBy('items.name')
+        .modify<any, ItemDBResponse[]>(withOrderBy('name', 'asc'))
     ).map((item) => {
       return this.parseDBItemJSON(item)
     })
   }
 
-  async getAllVisibleForLoggedInUser(userId: string): Promise<ItemResponse[]> {
+  async getAllVisibleForLoggedInUser(userId: string, orderBy: string, order: `${Order}`): Promise<ItemResponse[]> {
     return (
       await connection
         .join('users', 'items.createdBy', '=', 'users.id')
@@ -201,7 +345,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
         .from<any, ItemDBResponse[]>('items')
         .whereIn('visibility', ['public', 'logged_in'])
         .orWhere('items.createdBy', userId)
-        .orderBy('items.name')
+        .modify<any, ItemDBResponse[]>(withOrderBy(orderBy, order))
     ).map((item) => {
       return this.parseDBItemJSON(item)
     })
@@ -214,7 +358,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
         .select('items.*', 'users.name as createdByUserName')
         .from<any, ItemDBResponse[]>('items')
         .where('items.createdBy', userId)
-        .orderBy('items.name')
+        .modify<any, ItemDBResponse[]>(withOrderBy('name', 'asc'))
     ).map((item) => {
       return this.parseDBItemJSON(item)
     })
@@ -229,7 +373,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
         .where({ createdBy: userId })
         .whereNot({ source: Source.System })
         .whereLike('items.name', `${itemName}%`)
-        .orderBy('items.name')
+        .modify<any, ItemDBResponse[]>(withOrderBy('name', 'asc'))
     ).map((item) => {
       return this.parseDBItemJSON(item)
     })
@@ -257,18 +401,23 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     return this.parseDBItemJSON(item)
   }
 
-  async create(item: ItemInsertQuery, userId: string) {
-    const updatedAt = unixtimeNow()
-    const itemToInsert: DBItem = {
-      ...omit(item, 'createdByUserName'),
-      id: item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? uuid() : item.id, // don't allow overwriting of the default item
-      ...(item.price ? { price: JSON.stringify(item.price) } : { price: '{}' }),
-      ...(item.features ? { features: JSON.stringify(item.features) } : { features: '[]' }),
-      source: Source.HomeBrew,
-      createdBy: userId,
-      createdAt: updatedAt,
-      updatedAt: updatedAt
+  async getByIdAndSource(itemId: string, source: `${Source}`): Promise<ItemResponse> {
+    const item = await connection
+      .join('users', 'items.createdBy', '=', 'users.id')
+      .select('items.*', 'users.name as createdByUserName')
+      .from<any, ItemDBResponse>('items')
+      .where('items.id', itemId)
+      .andWhere('items.source', source)
+      .first()
+    if (!item) {
+      throw new ApiError(404, 'NotFound', `Item was not found. ( ${itemId} )`)
     }
+
+    return this.parseDBItemJSON(item)
+  }
+
+  async create(item: ItemInsertQuery, userId: string) {
+    const itemToInsert: DBItem = this.constructItemToInsertFromQuery(item, userId)
     try {
       await connection<any, DBItem>('items').insert(itemToInsert) // mariadb does not return inserted object
     } catch (error) {
@@ -279,19 +428,12 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     return this.parseDBItemJSON(await this.getByIdRAW(itemToInsert.id))
   }
 
-  async update(item: ItemInsertQuery, userId: string) {
-    const updatedAt = unixtimeNow()
-    const itemToInsert: DBItem = {
-      ...omit(item, 'createdByUserName'),
-      id: item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? uuid() : item.id, // don't allow overwriting of the default item
-      ...(item.price ? { price: JSON.stringify(item.price) } : { price: '{}' }),
-      ...(item.features ? { features: JSON.stringify(item.features) } : { features: '[]' }),
-      source: Source.HomeBrew,
-      createdBy: userId,
-      updatedAt: updatedAt
-    }
+  async update(item: ItemInsertQuery) {
+    const itemToInsert: DBItem = this.constructItemToUpdateFromQuery(item)
     try {
-      await connection<any, DBItem>('items').insert(itemToInsert).onConflict('id').merge() // mariadb does not return inserted object
+      // TODO use update here instead of insert
+      // need to create separate POST and PUT into ItemController
+      await connection<any, DBItem>('items').where('id', item.id).update(itemToInsert) // mariadb does not return inserted object
     } catch (error) {
       logger.error((error as any)?.message)
       throw new UnknownError(500, 'UnknownError')
@@ -309,6 +451,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     }
   }
 
+  // RAW in this case means without converting the stringified json data into json
   private async getByIdRAW(itemId: string): Promise<ItemDBResponse> {
     const item = await connection
       .join('users', 'items.createdBy', '=', 'users.id')
@@ -327,7 +470,71 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     return {
       ...dbItem,
       price: JSON.parse(dbItem.price),
-      features: JSON.parse(dbItem.features)
+      features: JSON.parse(dbItem.features),
+      categories: JSON.parse(dbItem.categories),
+      attunement: JSON.parse(dbItem.attunement),
+      armorClass: dbItem.armorClass !== null ? JSON.parse(dbItem.armorClass) : null,
+      damage: dbItem.damage !== null ? JSON.parse(dbItem.damage) : null,
+      twoHandedDamage: dbItem.twoHandedDamage !== null ? JSON.parse(dbItem.twoHandedDamage) : null,
+      throwRange: dbItem.throwRange !== null ? JSON.parse(dbItem.throwRange) : null,
+      useRange: dbItem.useRange !== null ? JSON.parse(dbItem.useRange) : null,
+      stealthDisadvantage: dbItem.stealthDisadvantage === 1 ? true : false,
+      properties: dbItem.properties !== null ? JSON.parse(dbItem.properties) : null
+    }
+  }
+
+  private constructItemToInsertFromQuery = (insertQuery: ItemInsertQuery, userId: string): DBItem => {
+    const updatedAt = unixtimeNow()
+    return {
+      ...omit(insertQuery, 'createdByUserName'),
+      id: insertQuery.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? uuid() : insertQuery.id, // don't allow overwriting of the default item
+      imageId: insertQuery.imageId,
+      ...(insertQuery.price ? { price: JSON.stringify(insertQuery.price) } : { price: '{}' }),
+      ...(insertQuery.features ? { features: JSON.stringify(insertQuery.features) } : { features: '[]' }),
+      ...(insertQuery.categories ? { categories: JSON.stringify(insertQuery.categories) } : { categories: '[]' }),
+      source: insertQuery.source || Source.HomeBrew,
+      ...(insertQuery.attunement
+        ? { attunement: JSON.stringify(insertQuery.attunement) }
+        : { attunement: JSON.stringify({ required: false }) }),
+      ...(isArmor(insertQuery) && insertQuery.armorClass ? { armorClass: JSON.stringify(insertQuery.armorClass) } : { armorClass: null }),
+      strengthMinimum: (isArmor(insertQuery) && insertQuery.strengthMinimum) || '',
+      stealthDisadvantage: (isArmor(insertQuery) && insertQuery.stealthDisadvantage === true ? 1 : 0) || 0,
+      ...(isWeapon(insertQuery) && insertQuery.damage ? { damage: JSON.stringify(insertQuery.damage) } : { damage: null }),
+      ...(isWeapon(insertQuery) && insertQuery.twoHandedDamage
+        ? { twoHandedDamage: JSON.stringify(insertQuery.twoHandedDamage) }
+        : { twoHandedDamage: null }),
+      ...(isWeapon(insertQuery) && insertQuery.throwRange ? { throwRange: JSON.stringify(insertQuery.throwRange) } : { throwRange: null }),
+      ...(isWeapon(insertQuery) && insertQuery.useRange ? { useRange: JSON.stringify(insertQuery.useRange) } : { useRange: null }),
+      ...(isWeapon(insertQuery) || (isArmor(insertQuery) && insertQuery.properties)
+        ? { properties: JSON.stringify(insertQuery.properties) }
+        : { properties: '[]' }),
+      createdBy: userId,
+      createdAt: updatedAt,
+      updatedAt: updatedAt
+    }
+  }
+
+  private constructItemToUpdateFromQuery = (item: ItemUpdateQuery): DBItem => {
+    const updatedAt = unixtimeNow()
+    return {
+      ...omit(item, 'createdByUserName'),
+      id: item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? uuid() : item.id, // don't allow overwriting of the default item
+      imageId: item.imageId,
+      ...(item.price ? { price: JSON.stringify(item.price) } : { price: '{}' }),
+      ...(item.features ? { features: JSON.stringify(item.features) } : { features: '[]' }),
+      ...(item.categories ? { categories: JSON.stringify(item.categories) } : { categories: '[]' }),
+      source: item.source || Source.HomeBrew,
+      ...(item.attunement ? { attunement: JSON.stringify(item.attunement) } : { attunement: JSON.stringify({ required: false }) }),
+      ...(isArmor(item) && item.armorClass ? { armorClass: JSON.stringify(item.armorClass) } : { armorClass: null }),
+      strengthMinimum: (isArmor(item) && item.strengthMinimum) || '',
+      stealthDisadvantage: (isArmor(item) && item.stealthDisadvantage === true ? 1 : 0) || 0,
+      ...(isWeapon(item) && item.damage ? { damage: JSON.stringify(item.damage) } : { damage: null }),
+      ...(isWeapon(item) && item.twoHandedDamage ? { twoHandedDamage: JSON.stringify(item.twoHandedDamage) } : { twoHandedDamage: null }),
+      ...(isWeapon(item) && item.throwRange ? { throwRange: JSON.stringify(item.throwRange) } : { throwRange: null }),
+      ...(isWeapon(item) && item.useRange ? { useRange: JSON.stringify(item.useRange) } : { useRange: null }),
+      ...(isWeapon(item) || (isArmor(item) && item.properties) ? { properties: JSON.stringify(item.properties) } : { properties: '[]' }),
+      createdAt: updatedAt,
+      updatedAt: updatedAt
     }
   }
 }

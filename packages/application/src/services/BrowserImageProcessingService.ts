@@ -1,0 +1,29 @@
+import { BrowserImageProcessingOptions, BrowserImageProcessingServiceInterface } from './BrowserImageProcessingServiceInterface'
+
+const defaultOptions = {
+  maxWidth: 320,
+  maxHeight: 320
+}
+
+export class BrowserImageProcessingService implements BrowserImageProcessingServiceInterface {
+  resizeImage(base64Image: string, resizeOptions: BrowserImageProcessingOptions, callback: (base64Image: string) => void) {
+    const options = { ...defaultOptions, ...resizeOptions }
+
+    var img = document.createElement('img')
+    img.src = base64Image
+
+    // When the event "onload" is triggered we can resize the image.
+    img.onload = function () {
+      let canvas = document.createElement('canvas')
+      let ctx = canvas.getContext('2d')
+
+      let ratio = Math.min(options.maxWidth / img.width, options.maxHeight / img.height)
+      canvas.width = img.width * ratio
+      canvas.height = img.height * ratio
+
+      ctx?.drawImage(img, 0, 0, canvas.width, canvas.height)
+      const dataUrl = canvas.toDataURL()
+      callback(dataUrl)
+    }
+  }
+}

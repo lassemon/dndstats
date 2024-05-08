@@ -1,5 +1,5 @@
 import React from 'react'
-import { DamageType } from 'interfaces'
+import { DamageSource } from 'interfaces'
 import Slashing from 'assets/damagetypes/Slashing.png'
 import Piercing from 'assets/damagetypes/Piercing.png'
 import Bludgeoning from 'assets/damagetypes/Bludgeoning.png'
@@ -20,32 +20,32 @@ import Thunder from 'assets/damagetypes/Thunder.png'
 import Force from 'assets/damagetypes/Force.png'
 import Psychic from 'assets/damagetypes/Psychic.png'
 
-const Icons: { [key in DamageType]?: string } = {
-  [DamageType.Slashing]: Slashing,
-  [DamageType.Piercing]: Piercing,
-  [DamageType.Bludgeoning]: Bludgeoning,
-  [DamageType.Poison]: Poison,
-  [DamageType.Acid]: Acid,
-  [DamageType.Fire]: Fire,
-  [DamageType.Elemental]: Elemental,
-  [DamageType.Silver]: Silver,
-  [DamageType.Adamantine]: Adamantine,
-  [DamageType.All_Physical]: Physical,
-  [DamageType.All_Magical]: Magical,
-  [DamageType.Cold]: Cold,
-  [DamageType.Radiant]: Radiant,
-  [DamageType.Necrotic]: Necrotic,
-  [DamageType.Lightning]: Lightning,
-  [DamageType.Thunder]: Thunder,
-  [DamageType.Force]: Force,
-  [DamageType.Psychic]: Psychic,
-  [DamageType.From_Spells]: Magical,
-  [DamageType.Not_Silvered]: Bludgeoning_Piercing_Slashing,
-  [DamageType.Not_Adamantine]: Bludgeoning_Piercing_Slashing,
-  [DamageType.Not_Magical]: Bludgeoning_Piercing_Slashing
+const Icons: { [key in DamageSource]?: string } = {
+  [DamageSource.Slashing]: Slashing,
+  [DamageSource.Piercing]: Piercing,
+  [DamageSource.Bludgeoning]: Bludgeoning,
+  [DamageSource.Poison]: Poison,
+  [DamageSource.Acid]: Acid,
+  [DamageSource.Fire]: Fire,
+  [DamageSource.Elemental]: Elemental,
+  [DamageSource.Silver]: Silver,
+  [DamageSource.Adamantine]: Adamantine,
+  [DamageSource.All_Physical]: Physical,
+  [DamageSource.All_Magical]: Magical,
+  [DamageSource.Cold]: Cold,
+  [DamageSource.Radiant]: Radiant,
+  [DamageSource.Necrotic]: Necrotic,
+  [DamageSource.Lightning]: Lightning,
+  [DamageSource.Thunder]: Thunder,
+  [DamageSource.Force]: Force,
+  [DamageSource.Psychic]: Psychic,
+  [DamageSource.From_Spells]: Magical,
+  [DamageSource.Not_Silvered]: Bludgeoning_Piercing_Slashing,
+  [DamageSource.Not_Adamantine]: Bludgeoning_Piercing_Slashing,
+  [DamageSource.Not_Magical]: Bludgeoning_Piercing_Slashing
 }
 
-export const DamageTypeToIconMap = Object.values(DamageType).reduce((accumulator, key) => {
+export const DamageTypeToIconMap = Object.values(DamageSource).reduce((accumulator, key) => {
   accumulator[key] = (
     <span
       style={{
@@ -60,4 +60,4 @@ export const DamageTypeToIconMap = Object.values(DamageType).reduce((accumulator
     </span>
   )
   return accumulator
-}, {} as { [key in DamageType]: JSX.Element })
+}, {} as { [key in DamageSource]: JSX.Element })

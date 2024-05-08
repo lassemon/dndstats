@@ -84,3 +84,11 @@ export const scheduleAsyncFunction = async (
 export const isPromise = <T>(value: T | Promise<T>): value is Promise<T> => {
   return !!value && typeof (value as any).then === 'function'
 }
+
+export const boldTextPart = (text?: string, toBoldPart?: string) => {
+  if (text && toBoldPart) {
+    const regexp = new RegExp(toBoldPart, 'gi')
+    return text.replaceAll(regexp, '<strong>' + toBoldPart + '</strong>')
+  }
+  return text
+}

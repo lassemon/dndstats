@@ -1,4 +1,4 @@
-import { PlayerType, Condition, DamageType, CharacterSenses } from 'interfaces'
+import { PlayerType, Condition, DamageSource, CharacterSenses } from 'interfaces'
 import ValueObject from './ValueObject'
 import _, { capitalize } from 'lodash'
 import { ConditionEffects, getConditionEffects, getPrintableConditions } from 'components/CombatTracker/Conditions'
@@ -26,9 +26,9 @@ export interface ICharacter extends Partial<FifthESRDMonster> {
   damage?: number
   regeneration?: number
   conditions?: Condition[]
-  damage_immunities?: DamageType[]
-  damage_resistances?: DamageType[]
-  damage_vulnerabilities?: DamageType[]
+  damage_immunities?: DamageSource[]
+  damage_resistances?: DamageSource[]
+  damage_vulnerabilities?: DamageSource[]
   skills?: Proficiency[]
   special_abilities?: SpecialAbility[]
   senses?: CharacterSenses
@@ -514,20 +514,20 @@ class Character extends ValueObject {
     this._damage_vulnerabilities = Character.parseActualDamageTypes(newDamageVulnerabilities)
   }
 
-  public static parseActualDamageTypes(damageTypes: DamageType[]) {
+  public static parseActualDamageTypes(damageTypes: DamageSource[]) {
     if (_.isEmpty(damageTypes)) {
       return []
     }
     const test = damageTypes.reduce((allDamageTypes, damageType) => {
       const _damageTypes = Character.parseDamageTypeString(damageType)
       return allDamageTypes.concat(_damageTypes)
-    }, [] as DamageType[])
+    }, [] as DamageSource[])
     return test
   }
 
-  public static parseDamageTypeString(damageTypeString: DamageType): DamageType[] {
+  public static parseDamageTypeString(damageTypeString: DamageSource): DamageSource[] {
     const parsedTypes = []
-    if (Object.values(DamageType).includes(damageTypeString.toLowerCase() as DamageType)) {
+    if (Object.values(DamageSource).includes(damageTypeString.toLowerCase() as DamageSource)) {
       parsedTypes.push(damageTypeString)
     }
     if (
@@ -537,10 +537,10 @@ class Character extends ValueObject {
       damageTypeString.toLowerCase().includes("bludgeoning, piercing, and slashing from nonmagical weapons that aren't silvered") ||
       damageTypeString.toLowerCase().includes('bludgeoning, piercing, and slashing from nonmagical/nonsilver weapons')
     ) {
-      parsedTypes.push(DamageType.Not_Silvered)
+      parsedTypes.push(DamageSource.Not_Silvered)
     }
     if (damageTypeString.toLowerCase().includes('nonmagical bludgeoning, piercing, and slashing')) {
-      parsedTypes.push(DamageType.Not_Magical)
+      parsedTypes.push(DamageSource.Not_Magical)
     }
     return parsedTypes
   }

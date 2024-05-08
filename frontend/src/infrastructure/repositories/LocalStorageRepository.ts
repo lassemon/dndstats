@@ -1,5 +1,6 @@
 import { LocalStorageRepositoryInterface } from '@dmtool/application'
 import { unixtimeNow } from '@dmtool/common'
+import { Source } from '@dmtool/domain'
 import _ from 'lodash'
 
 export class LocalStorageRepository<T> implements LocalStorageRepositoryInterface<T> {
@@ -10,7 +11,7 @@ export class LocalStorageRepository<T> implements LocalStorageRepositoryInterfac
   }
 
   async save(data: T, key: string) {
-    localStorage.setItem(key, JSON.stringify({ ...data, updatedAt: unixtimeNow() }))
+    localStorage.setItem(key, JSON.stringify({ ...data, source: Source.HomeBrew, updatedAt: unixtimeNow() }))
     return await Promise.resolve(JSON.parse(localStorage.getItem(key) || '{}'))
     //return await new Promise<T>((resolve) => setTimeout(resolve, 1500, localStorage.setItem(key, JSON.stringify(data))))
     //await new Promise((resolve, reject) => setTimeout(reject, 1500, new StorageSyncError('VIRHEEE')))

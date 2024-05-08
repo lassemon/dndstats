@@ -10,9 +10,9 @@ import classNames from 'classnames'
 import EditableText from '../CombatTracker/EditableText'
 import EditableArmorClass from 'components/Character/EditableArmorClass'
 import EditableDamageList from './EditableDamageList'
-import { DamageType } from 'interfaces'
+import { DamageSource } from 'interfaces'
 import EditableConditionList from './EditableConditionList'
-import { APIReference } from 'domain/services/FifthESRDService'
+
 import EditableSpeed from './EditableSpeed'
 import EditableAbilityScores from './EditableAbilityScores'
 import EditableShortDescription from './EditableShortDescription'
@@ -29,6 +29,7 @@ import EditableDescription from './EditableDescription'
 import { uuid } from '@dmtool/common'
 import { flushSync } from 'react-dom'
 import Stat from 'components/Stat'
+import { FifthESRDAPIReference } from '@dmtool/domain'
 
 interface CharacterCardProps {
   character: Character
@@ -113,7 +114,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     })
   }
 
-  const onChangeDamageResistance = (resistances: DamageType[]) => {
+  const onChangeDamageResistance = (resistances: DamageSource[]) => {
     setInternalCharacter((character) => {
       const hasChanged = !_.isEqual(character.damage_resistances, resistances)
       if (hasChanged) {
@@ -126,7 +127,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     })
   }
 
-  const onChangeDamageVulnerabilities = (vulnerabilities: DamageType[]) => {
+  const onChangeDamageVulnerabilities = (vulnerabilities: DamageSource[]) => {
     setInternalCharacter((character) => {
       const hasChanged = !_.isEqual(character.damage_vulnerabilities, vulnerabilities)
       if (hasChanged) {
@@ -139,7 +140,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     })
   }
 
-  const onChangeDamageImmunities = (immunities: DamageType[]) => {
+  const onChangeDamageImmunities = (immunities: DamageSource[]) => {
     setInternalCharacter((character) => {
       const hasChanged = !_.isEqual(character.damage_immunities, immunities)
       if (hasChanged) {
@@ -152,7 +153,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
     })
   }
 
-  const onChangeConditionImmunities = (immunities: APIReference[]) => {
+  const onChangeConditionImmunities = (immunities: FifthESRDAPIReference[]) => {
     setInternalCharacter((character) => {
       const hasChanged = !_.isEqual(character.condition_immunities, immunities)
       if (hasChanged) {
@@ -234,6 +235,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
         [classes.root]: true,
         [classes.staticWidthMedium]: hasActions && !splitToColumns,
         [classes.staticWidthLarge]: splitToColumns,
+        'split-to-columns': splitToColumns,
         [classes.fullWidth]: isSmall
       })}
       resizeable={resizeable && !editMode}

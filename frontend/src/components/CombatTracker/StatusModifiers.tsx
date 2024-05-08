@@ -1,12 +1,12 @@
 import { Grid, Typography } from '@mui/material'
-import { DamageType } from 'interfaces'
+import { DamageSource } from 'interfaces'
 import _ from 'lodash'
 import React from 'react'
 
 interface StatusModifierProps {
-  resistances: DamageType[]
-  vulnerabilities: DamageType[]
-  immunities: DamageType[]
+  resistances: DamageSource[]
+  vulnerabilities: DamageSource[]
+  immunities: DamageSource[]
 }
 
 const StatusModifiers: React.FC<StatusModifierProps> = (props) => {

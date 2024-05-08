@@ -6,8 +6,9 @@ import {
   ItemSearchResponse,
   ItemUpdateResponse
 } from '@dmtool/application'
-import { Image, Item } from '@dmtool/domain'
-import { deleteJson, getJson, jsonToQueryString, putJson } from 'infrastructure/dataAccess/http/fetch'
+import { Image, Item, Source } from '@dmtool/domain'
+import { jsonToQueryString } from '@dmtool/infrastructure'
+import { deleteJson, getJson, putJson } from 'infrastructure/dataAccess/http/fetch'
 import _ from 'lodash'
 
 export class HttpItemRepository implements HttpItemRepositoryInterface {
@@ -20,22 +21,43 @@ export class HttpItemRepository implements HttpItemRepositoryInterface {
   }
 
   async search(query: ItemSearchRequest, options?: FetchOptions): Promise<ItemSearchResponse> {
-    const { visibility, rarity, priceComparison, priceQuantity, priceUnit, weightComparison, weight, ...mandatoryParams } = query
+    const {
+      search,
+      visibility,
+      source,
+      rarity,
+      category,
+      property,
+      priceComparison,
+      priceQuantity,
+      priceUnit,
+      weightComparison,
+      weight,
+      ...mandatoryParams
+    } = query
     const cleanedUpQuery = {
       ...mandatoryParams,
-      ...(!_.isEmpty(visibility) ? { visibility: visibility } : {}),
-      ...(!_.isEmpty(rarity) ? { rarity: rarity } : {}),
-      ...(priceQuantity ? { priceQuantity: priceQuantity } : {}),
-      ...(priceQuantity && priceComparison ? { priceComparison: priceComparison } : {}),
-      ...(priceQuantity && priceUnit ? { priceUnit: priceUnit } : {}),
-      ...(weight ? { weight: weight } : {}),
-      ...(weight && weightComparison ? { weightComparison: weightComparison } : {})
+      ...(!_.isEmpty(search) ? { search } : {}),
+      ...(!_.isEmpty(visibility) ? { visibility } : {}),
+      ...(!_.isEmpty(source) ? { source } : {}),
+      ...(!_.isEmpty(rarity) ? { rarity } : {}),
+      ...(!_.isEmpty(category) ? { category } : {}),
+      ...(!_.isEmpty(property) ? { property } : {}),
+      ...(priceQuantity ? { priceQuantity } : {}),
+      ...(priceQuantity && priceComparison ? { priceComparison } : {}),
+      ...(priceQuantity && priceUnit ? { priceUnit } : {}),
+      ...(weight ? { weight } : {}),
+      ...(weight && weightComparison ? { weightComparison } : {})
     }
     return await getJson<ItemSearchResponse>({ ...{ endpoint: jsonToQueryString('/items', cleanedUpQuery) }, ...options })
   }
 
   async getById(id: string, options: FetchOptions = {}): Promise<ItemResponse> {
     return await getJson<ItemResponse>({ ...{ endpoint: `/item/${id ? id : ''}` }, ...options })
+  }
+
+  async getByIdAndSource(id: string, source: `${Source}`, options: FetchOptions = {}): Promise<ItemResponse> {
+    return await getJson<ItemResponse>({ ...{ endpoint: jsonToQueryString(`/item`, { id, source }) }, ...options })
   }
 
   async save(item: Item, image?: Image | null, options: FetchOptions = {}) {

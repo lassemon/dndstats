@@ -10,7 +10,6 @@ export class ImageService implements ImageServiceInterface {
       throw new Error('Invalid base64 image data')
     }
 
-    //const contentType = matches[1];
     const base64Payload = matches[2]
     return Buffer.from(base64Payload, 'base64')
   }

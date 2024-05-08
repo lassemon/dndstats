@@ -1,8 +1,9 @@
 export enum ItemRarity {
-  COMMON = 'common',
   UNCOMMON = 'uncommon',
-  RARE = 'rare',
+  COMMON = 'common',
   VERY_RARE = 'very_rare',
+  RARE = 'rare',
   LEGENDARY = 'legendary',
-  ARTIFACT = 'artifact'
+  ARTIFACT = 'artifact',
+  VARIES = 'varies'
 }

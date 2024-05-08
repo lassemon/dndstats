@@ -4,7 +4,7 @@ import { StorageParseError, StorageSyncError } from 'domain/errors/StorageError'
 import { useAtom } from 'jotai'
 import React from 'react'
 import { errorAtom } from 'infrastructure/dataAccess/atoms'
-import ApiError from 'domain/errors/ApiError'
+import { ApiError } from '@dmtool/domain'
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
@@ -43,6 +43,7 @@ export const ErrorDisplay: React.FC = () => {
       break
     default:
       errorHeader += (error as any)?.statusText || 'Unknown error'
+      console.error(error)
   }
 
   return (

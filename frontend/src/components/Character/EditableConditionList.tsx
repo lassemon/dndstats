@@ -2,9 +2,9 @@ import { Autocomplete, Button, TextField, TextFieldProps } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
-import { APIReference } from 'domain/services/FifthESRDService'
 import { conditionToApiReference, getConditionImmunitiesList } from 'components/CombatTracker/Conditions'
 import Stat from 'components/Stat'
+import { FifthESRDAPIReference } from '@dmtool/domain'
 
 export const useStyles = makeStyles()(() => ({
   root: {
@@ -47,14 +47,14 @@ interface EditableConditionListProps {
   className?: string
   textClass?: string
   header: string
-  list: APIReference[]
+  list: FifthESRDAPIReference[]
   valueLabel?: string | number
   textWidth?: number
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
   presentationMode?: boolean
-  onChange: (list: APIReference[]) => void
+  onChange: (list: FifthESRDAPIReference[]) => void
 }
 
 const EditableConditionList: React.FC<EditableConditionListProps> = (props) => {
@@ -77,7 +77,7 @@ const EditableConditionList: React.FC<EditableConditionListProps> = (props) => {
     }
   }
 
-  const onChangeValue = (event: React.SyntheticEvent<Element, Event>, newConditionList: APIReference[]) => {
+  const onChangeValue = (event: React.SyntheticEvent<Element, Event>, newConditionList: FifthESRDAPIReference[]) => {
     setConditionList(newConditionList)
     // has changed is not needed here because Autocomplete does not trigger onChange event otherwise
     if (!presentationMode) {

@@ -140,6 +140,25 @@ export enum DamageType {
   Silver = 'silver',
   Thunder = 'thunder',
   Force = 'force',
+  Psychic = 'psychic'
+}
+
+export enum DamageSource {
+  Adamantine = 'adamantine',
+  Slashing = 'slashing',
+  Piercing = 'piercing',
+  Bludgeoning = 'bludgeoning',
+  Poison = 'poison',
+  Acid = 'acid',
+  Fire = 'fire',
+  Elemental = 'elemental',
+  Cold = 'cold',
+  Radiant = 'radiant',
+  Necrotic = 'necrotic',
+  Lightning = 'lightning',
+  Silver = 'silver',
+  Thunder = 'thunder',
+  Force = 'force',
   Psychic = 'psychic',
   All_Physical = 'all physical damage',
   All_Magical = 'all magical damage',

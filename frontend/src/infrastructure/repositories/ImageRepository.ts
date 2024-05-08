@@ -1,7 +1,6 @@
 import { FetchOptions, HttpImageRepositoryInterface } from '@dmtool/application'
-import { Image } from '@dmtool/domain'
-import ApiError from 'domain/errors/ApiError'
-import { getJson, postJson } from 'infrastructure/dataAccess/http/fetch'
+import { ApiError, Image } from '@dmtool/domain'
+import { deleteJson, getJson, postJson } from 'infrastructure/dataAccess/http/fetch'
 
 class ImageRepository implements HttpImageRepositoryInterface {
   async getById(imageId: string, options?: FetchOptions): Promise<Image> {
@@ -14,7 +13,7 @@ class ImageRepository implements HttpImageRepositoryInterface {
   }
 
   async delete(imageId: string, options?: FetchOptions): Promise<Image> {
-    throw new ApiError(501, 'NotImplemented')
+    return await deleteJson({ ...{ endpoint: `/image/${imageId ? imageId : ''}` }, ...options })
   }
 }
 

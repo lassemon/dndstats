@@ -6,14 +6,15 @@ import useStyles from './StatsContainer.styles'
 import classNames from 'classnames'
 
 interface StatsContainerProps {
-  className?: string
+  rootClassName?: string
+  containerClassName?: string
   size?: 'small' | 'normal'
   resizeable?: boolean
   children?: React.ReactNode
 }
 
 export const StatsContainer = React.forwardRef<HTMLDivElement, StatsContainerProps>((props, ref) => {
-  const { children, className = '', size = 'normal', resizeable = true } = props
+  const { children, rootClassName = '', containerClassName = '', size = 'normal', resizeable = true } = props
   const { classes } = useStyles()
   const cx = classNames.bind(classes)
 
@@ -25,14 +26,22 @@ export const StatsContainer = React.forwardRef<HTMLDivElement, StatsContainerPro
     <div
       className={cx('stats-container', {
         [classes.root]: true,
-        [className]: true,
+        [rootClassName]: rootClassName,
         [classes.resizeable]: resizeable
       })}
       ref={ref ? ref : null}
     >
       <OrangeBorder />
       <div className={`${classes.content} stats-background`} style={divStyle}>
-        <div className={size === 'normal' ? classes.margins : classes.marginsSmall}>{children}</div>
+        <div
+          className={cx('stats-container', {
+            [classes.margins]: size === 'normal',
+            [classes.marginsSmall]: size !== 'normal',
+            [containerClassName]: containerClassName
+          })}
+        >
+          {children}
+        </div>
       </div>
       <OrangeBorder />
     </div>

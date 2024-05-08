@@ -173,8 +173,8 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
           '&&&': {
             padding: 0,
             paddingTop: 0,
-            maxWidth: isLarge && !alwaysPortrait ? '45%' : '100%',
-            height: '100%'
+            maxWidth: isLarge && !alwaysPortrait ? '35%' : '100%',
+            minHeight: '100%'
           }
         }}
       >

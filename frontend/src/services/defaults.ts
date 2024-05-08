@@ -1,11 +1,11 @@
-import { ITEM_DEFAULTS, ItemDTO, ItemResponse } from '@dmtool/application'
+import { ITEM_DEFAULTS, ItemDTO, ItemResponse, WeaponItemResponse } from '@dmtool/application'
 import { unixtimeNow } from '@dmtool/common'
-import { Item, Source, Visibility } from '@dmtool/domain'
+import { ItemCategory, Source, Visibility, WeaponProperty } from '@dmtool/domain'
 import balorImage from 'assets/balorImage'
 import mjolnirImage from 'assets/mjolnirImage'
 import Character from 'domain/entities/Character'
 import { AbilityScores } from 'domain/services/FifthESRDService'
-import { PlayerType, Condition, DamageType, Skill, Senses, Speed } from 'interfaces'
+import { PlayerType, Condition, DamageSource, Skill, Senses, Speed } from 'interfaces'
 import React from 'react'
 
 export const defaultItem: ItemResponse = {
@@ -25,15 +25,23 @@ export const defaultItem: ItemResponse = {
     }
   ],
   price: {
-    quantity: 3000,
+    quantity: '3000',
     unit: 'gp'
   },
+  armorClass: {
+    base: '3',
+    dexterityBonus: false
+  },
+  attunement: {
+    required: false
+  },
+  categories: [ItemCategory.SHIELD],
   rarity: null,
-  weight: 25,
-  source: Source.HomeBrew,
+  weight: '25',
+  source: Source.System,
   visibility: Visibility.PUBLIC,
-  createdBy: '1',
-  createdByUserName: 'dmtool',
+  createdBy: '0',
+  createdByUserName: 'system',
   createdAt: unixtimeNow()
 }
 
@@ -50,11 +58,15 @@ export const newItemDTO = new ItemDTO({
     }
   ],
   price: {
-    quantity: 10,
+    quantity: '10',
     unit: 'gp'
   },
+  attunement: {
+    required: false
+  },
+  categories: [],
   rarity: null,
-  weight: 1,
+  weight: '1',
   source: Source.HomeBrew,
   visibility: Visibility.PRIVATE,
   createdBy: '0',
@@ -88,14 +100,16 @@ export const defaultSpell: Spell = {
   classes: 'Warlock'
 }
 
-export const defaultWeapon = {
-  image: React.createElement('img', {
+export const defaultWeapon: WeaponItemResponse = {
+  id: ITEM_DEFAULTS.DEFAULT_WEAPON_ID,
+  imageId: null,
+  /*image: React.createElement('img', {
     alt: 'mjolnir',
     src: mjolnirImage,
     hash: 0
-  }),
+  }),*/
   name: 'Mjölnir',
-  shortDescription: 'Whoever holds this hammer shall posess the power of Thor.',
+  shortDescription: 'Requires attunement',
   mainDescription: `This hammer has the finesse property.
 While attuned to this weapon the hammer deals additional 12 (4d6) thunder damage.`,
   features: [
@@ -106,9 +120,30 @@ At the end of each round throw a constitution save DC 14.
 On a failed save you become exhausted (level of 3) for the duration of the next round.`
     }
   ],
-  damage: '2d6 + DEX modifier Bludgeoning damage',
-  weight: '2 lb.',
-  properties: 'Light, finesse, +4d6 thunder damage'
+  damage: {
+    damageDice: '2d6',
+    damageType: DamageSource.Bludgeoning
+  },
+  twoHandedDamage: null,
+  useRange: {
+    normal: '5'
+  },
+  weight: '2',
+  properties: [WeaponProperty.LIGHT, WeaponProperty.FINESSE],
+  price: {
+    quantity: '3000',
+    unit: 'gp'
+  },
+  attunement: {
+    required: false
+  },
+  categories: [ItemCategory.WEAPON],
+  rarity: null,
+  source: Source.System,
+  visibility: Visibility.PUBLIC,
+  createdBy: '0',
+  createdByUserName: 'system',
+  createdAt: unixtimeNow()
 }
 export type Weapon = typeof defaultWeapon
 
@@ -155,13 +190,13 @@ export const defaultMonster = new Character({
     { proficiency: { index: 'saving-throw-charisma', name: 'Charisma' }, value: 12 }
   ],
   damage_resistances: [
-    DamageType.Cold,
-    DamageType.Lightning,
-    DamageType.Bludgeoning,
-    DamageType.Piercing,
-    'and Slashing from nonmagical Attacks' as DamageType
-  ] as DamageType[],
-  damage_immunities: [DamageType.Fire, DamageType.Poison],
+    DamageSource.Cold,
+    DamageSource.Lightning,
+    DamageSource.Bludgeoning,
+    DamageSource.Piercing,
+    'and Slashing from nonmagical Attacks' as DamageSource
+  ] as DamageSource[],
+  damage_immunities: [DamageSource.Fire, DamageSource.Poison],
   condition_immunities: [{ index: Condition.Poisoned, name: Condition.Poisoned }],
   senses: {
     truesight: '120 ft.',

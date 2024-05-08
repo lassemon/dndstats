@@ -124,7 +124,6 @@ const NavBar: React.FC = () => {
           user: undefined
         }
       })
-      goToDefaultPage()
     })
   }
 
@@ -277,7 +276,7 @@ const NavBar: React.FC = () => {
             <CardMenu onMenuItemClick={clearTab} />
           </Tabs>
 
-          {!authState.loggedIn && (
+          <div style={{ visibility: authState.loggedIn ? 'hidden' : 'visible' }}>
             <React.Suspense fallback={<LoadingIndicator />}>
               <MenuItem
                 key="login"
@@ -292,7 +291,7 @@ const NavBar: React.FC = () => {
                 <Login />
               </MenuItem>
             </React.Suspense>
-          )}
+          </div>
           <Box
             sx={{
               display: 'flex',

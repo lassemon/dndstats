@@ -24,10 +24,6 @@ export class ItemService implements ItemServiceInterface {
     const allItemsWithSameName = allItemsOfUser.filter((item) => item.name === itemName)
     const updatingExistingItem = !!find(allItemsWithSameName, { id: itemId })
     const itemWithSameNameExists = !isEmpty(allItemsWithSameName)
-    console.log('itemId', itemId)
-    console.log('itemName', itemName)
-    console.log('updatingExistingItem', updatingExistingItem)
-    console.log('isEmpty(allItemsWithSameName)', isEmpty(allItemsWithSameName))
     return !updatingExistingItem && itemWithSameNameExists
   }
 

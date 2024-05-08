@@ -34,7 +34,7 @@ import classNames from 'classnames/bind'
 import Autocomplete from '@mui/material/Autocomplete'
 import useStyles from './CombatTracker.styles'
 import AddCharacterInput, { CharacterInput } from './AddCharacterInput'
-import { PlayerType, Condition, DamageType } from 'interfaces'
+import { PlayerType, Condition, DamageSource } from 'interfaces'
 import EditableText from './EditableText'
 import { ConditionToIconMap } from './Conditions'
 import AddBox from '@mui/icons-material/AddBox'
@@ -656,7 +656,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeResistance = (index: number) => (event: React.SyntheticEvent<Element, Event>, resistances: DamageType[]) => {
+  const onChangeResistance = (index: number) => (event: React.SyntheticEvent<Element, Event>, resistances: DamageSource[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
       character.damage_resistances = [...resistances]
@@ -667,7 +667,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeVulnerability = (index: number) => (event: React.SyntheticEvent<Element, Event>, vulnerabilities: DamageType[]) => {
+  const onChangeVulnerability = (index: number) => (event: React.SyntheticEvent<Element, Event>, vulnerabilities: DamageSource[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
       character.damage_vulnerabilities = [...vulnerabilities]
@@ -678,7 +678,7 @@ export const CombatTracker: React.FC = () => {
     })
   }
 
-  const onChangeImmunity = (index: number) => (event: React.SyntheticEvent<Element, Event>, immunities: DamageType[]) => {
+  const onChangeImmunity = (index: number) => (event: React.SyntheticEvent<Element, Event>, immunities: DamageSource[]) => {
     setCurrentCombat((combat) => {
       const character = combat.characters[index].clone()
       character.damage_immunities = [...immunities]
@@ -966,6 +966,7 @@ export const CombatTracker: React.FC = () => {
                       tooltip={
                         <ClickAwayListener mouseEvent="onMouseUp" onClickAway={handleCharacterCardTooltipClickAway(index)}>
                           <div>
+                            {/*div deeded for the clickaway listener to work*/}
                             <CharacterCard
                               character={character}
                               resizeable={false}
@@ -975,7 +976,7 @@ export const CombatTracker: React.FC = () => {
                           </div>
                         </ClickAwayListener>
                       }
-                      tooltipPlacement="bottom-start"
+                      tooltipPlacement="bottom-end"
                       tooltipClass={`${classes.nameTextTooltip}`}
                       tooltipOpen={tooltipOpen}
                       className={cx({
@@ -1241,7 +1242,7 @@ export const CombatTracker: React.FC = () => {
                             disableCloseOnSelect
                             value={character.damage_resistances}
                             className={`${classes.autocomplete}`}
-                            options={Object.values(DamageType)}
+                            options={Object.values(DamageSource)}
                             onChange={onChangeResistance(index)}
                             getOptionLabel={(option) => option.replaceAll('_', ' ')}
                             style={{ width: '10em' }}
@@ -1258,7 +1259,7 @@ export const CombatTracker: React.FC = () => {
                             disableCloseOnSelect
                             value={character.damage_vulnerabilities}
                             className={`${classes.autocomplete}`}
-                            options={Object.values(DamageType)}
+                            options={Object.values(DamageSource)}
                             onChange={onChangeVulnerability(index)}
                             getOptionLabel={(option) => option.replaceAll('_', ' ')}
                             style={{ width: '10em' }}
@@ -1275,7 +1276,7 @@ export const CombatTracker: React.FC = () => {
                             disableCloseOnSelect
                             value={character.damage_immunities}
                             className={`${classes.autocomplete}`}
-                            options={Object.values(DamageType)}
+                            options={Object.values(DamageSource)}
                             onChange={onChangeImmunity(index)}
                             getOptionLabel={(option) => option.replaceAll('_', ' ')}
                             style={{ width: '10em' }}

@@ -134,7 +134,11 @@ export const useStyles = makeStyles()((theme) => ({
     '& .MuiTooltip-tooltip': {
       backgroundColor: 'transparent',
       color: 'rgb(0,0,0)',
-      fontSize: 'inherit'
+      fontSize: 'inherit',
+      width: 'min-content'
+    },
+    '& .split-to-columns': {
+      minWidth: '70vw'
     }
   },
   nameBloodied: {

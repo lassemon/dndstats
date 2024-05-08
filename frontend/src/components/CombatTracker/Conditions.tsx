@@ -45,9 +45,9 @@ import Unconscious from 'assets/Unconcious.png'
 
 import { Condition } from 'interfaces'
 import Character from 'domain/entities/Character'
-import { APIReference } from 'domain/services/FifthESRDService'
 import _ from 'lodash'
 import { formatKeyString } from 'utils/utils'
+import { FifthESRDAPIReference } from '@dmtool/domain'
 
 const Icons: { [key in Condition]?: string } = {
   [Condition.Baned]: Baned,
@@ -338,7 +338,7 @@ const parseEffectString = (calculation: string) => {
   }
 }
 
-export const conditionToApiReference = (condition: Condition): APIReference => {
+export const conditionToApiReference = (condition: Condition): FifthESRDAPIReference => {
   return {
     index: condition.toLowerCase(),
     name: condition

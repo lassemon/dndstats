@@ -1,31 +1,44 @@
 import ItemStats from 'components/ItemStats'
 import ItemStatsInput from 'components/ItemStatsInput'
 import useItemWithImage from 'hooks/useItemWithImage'
-import { authAtom } from 'infrastructure/dataAccess/atoms'
 import ImageRepository from 'infrastructure/repositories/ImageRepository'
 import ItemRepository from 'infrastructure/repositories/ItemRepository'
-import { useAtom } from 'jotai'
 import StatsLayout from 'layouts/StatsLayout'
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import config from 'config'
 
 const itemRepository = new ItemRepository()
 const imageRepository = new ImageRepository()
 
 const ItemStatsLayout: React.FC = () => {
   let { itemId: urlPartItemId } = useParams<{ itemId: string }>()
-  const [itemId, setItemId] = useState(urlPartItemId)
-  const [authState] = useAtom(authAtom)
+  const [urlItemId, setItemId] = useState(urlPartItemId)
+  const navigate = useNavigate()
   const [screenshotMode, setScreenshotMode] = useState(false)
+  const [showSecondaryCategories, setShowSecondaryCategories] = useState<boolean>(true)
 
   const [{ item, backendItem, setBackendItem, loadingItem, image, loadingImage }, setItem, setImage] = useItemWithImage(
     itemRepository,
     imageRepository,
-    itemId,
+    urlItemId,
     {
-      persist: !authState.loggedIn
+      persist: true
     }
   )
+
+  const itemId = item?.id
+
+  useEffect(() => {
+    // when not logged in user modifies item OR when authenticated user saves a new item,
+    // we always change the item id
+    // we also need to change that id into the url and urlItemId, so that
+    // useItemWithImage does not load the item from the backend
+    if (itemId) {
+      setItemId(itemId)
+      navigate(`${config.cardPageRoot}/item/${itemId}`)
+    }
+  }, [itemId])
 
   useEffect(() => {
     // for when fetched image from the backend and we got the backend image id
@@ -36,12 +49,13 @@ const ItemStatsLayout: React.FC = () => {
 
   const itemProps = {
     item: item,
-    persistedItem: backendItem,
-    setPersistedItem: setBackendItem,
+    backendItem,
+    setBackendItem,
     setItem: setItem,
     setItemId: setItemId,
     loadingItem: loadingItem,
-    itemRepository: itemRepository
+    itemRepository,
+    imageRepository
   }
 
   const imageProps = {
@@ -54,10 +68,24 @@ const ItemStatsLayout: React.FC = () => {
     <StatsLayout
       screenshotMode={screenshotMode}
       statsComponent={
-        <ItemStats item={item} image={image} loadingImage={loadingImage} loadingItem={loadingItem} screenshotMode={screenshotMode} />
+        <ItemStats
+          item={item}
+          image={image}
+          loadingImage={loadingImage}
+          loadingItem={loadingItem}
+          showSecondaryCategories={showSecondaryCategories}
+          screenshotMode={screenshotMode}
+        />
       }
       inputComponent={
-        <ItemStatsInput {...itemProps} {...imageProps} screenshotMode={screenshotMode} setScreenshotMode={setScreenshotMode} />
+        <ItemStatsInput
+          {...itemProps}
+          {...imageProps}
+          showSecondaryCategories={showSecondaryCategories}
+          setShowSecondaryCategories={setShowSecondaryCategories}
+          screenshotMode={screenshotMode}
+          setScreenshotMode={setScreenshotMode}
+        />
       }
     />
   )

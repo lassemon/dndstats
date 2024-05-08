@@ -172,6 +172,67 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ItemCategory": {
+				"enum": [
+					"adventuring-gear",
+					"ammunition",
+					"arcane-foci",
+					"armor",
+					"artisans-tool",
+					"druidic-foci",
+					"equipment-pack",
+					"gaming-set",
+					"heavy-armor",
+					"holy-symbol",
+					"kit",
+					"land-vehicle",
+					"light-armor",
+					"martial-melee-weapon",
+					"martial-ranged-weapon",
+					"martial-weapon",
+					"magic-item",
+					"medium-armor",
+					"melee-weapon",
+					"mount-or-other-animal",
+					"mount-or-vehicle",
+					"musical-instrument",
+					"other-tool",
+					"potion",
+					"ranged-weapon",
+					"ring",
+					"rod",
+					"scroll",
+					"shield",
+					"simple-melee-weapon",
+					"simple-ranged-weapon",
+					"simple-weapon",
+					"staff",
+					"standard-gear",
+					"tack-harness-or-drawn-vehicle",
+					"tool",
+					"vehicle",
+					"wand",
+					"waterborne-vehicle",
+					"weapon",
+					"wondrous-item"
+				],
+				"type": "string"
+			},
+			"ItemRange": {
+				"properties": {
+					"normal": {
+						"type": "string"
+					},
+					"long": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"normal"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Visibility": {
 				"enum": [
 					"public",
@@ -180,7 +241,7 @@
 				],
 				"type": "string"
 			},
-			"ItemResponse": {
+			"BaseItem": {
 				"properties": {
 					"id": {
 						"type": "string"
@@ -234,8 +295,147 @@
 						"format": "double",
 						"nullable": true
 					},
-					"localItem": {
-						"type": "boolean"
+					"features": {
+						"items": {
+							"properties": {
+								"featureDescription": {
+									"type": "string"
+								},
+								"featureName": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"featureDescription",
+								"featureName"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"categories": {
+						"items": {
+							"$ref": "#/components/schemas/ItemCategory"
+						},
+						"type": "array"
+					},
+					"attunement": {
+						"properties": {
+							"qualifier": {
+								"type": "string"
+							},
+							"required": {
+								"type": "boolean"
+							}
+						},
+						"required": [
+							"required"
+						],
+						"type": "object"
+					},
+					"throwRange": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/ItemRange"
+							}
+						],
+						"nullable": true
+					}
+				},
+				"required": [
+					"id",
+					"visibility",
+					"source",
+					"createdBy",
+					"createdAt",
+					"imageId",
+					"name",
+					"shortDescription",
+					"mainDescription",
+					"price",
+					"rarity",
+					"weight",
+					"features",
+					"categories",
+					"attunement"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"BaseItemResponse": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/BaseItem"
+					},
+					{
+						"properties": {
+							"url": {
+								"type": "string"
+							},
+							"createdByUserName": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"createdByUserName"
+						],
+						"type": "object"
+					}
+				]
+			},
+			"ArmorItem": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"visibility": {
+						"$ref": "#/components/schemas/Visibility"
+					},
+					"source": {
+						"type": "string",
+						"enum": [
+							"5th_e_SRD",
+							"Homebrew",
+							"My_Items",
+							"System"
+						],
+						"nullable": false
+					},
+					"createdBy": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"imageId": {
+						"type": "string",
+						"nullable": true
+					},
+					"name": {
+						"type": "string"
+					},
+					"shortDescription": {
+						"type": "string"
+					},
+					"mainDescription": {
+						"type": "string"
+					},
+					"price": {
+						"$ref": "#/components/schemas/ItemPrice"
+					},
+					"rarity": {
+						"type": "string",
+						"nullable": true
+					},
+					"weight": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
 					},
 					"features": {
 						"items": {
@@ -255,8 +455,64 @@
 						},
 						"type": "array"
 					},
-					"createdByUserName": {
-						"type": "string"
+					"categories": {
+						"items": {
+							"$ref": "#/components/schemas/ItemCategory"
+						},
+						"type": "array"
+					},
+					"attunement": {
+						"properties": {
+							"qualifier": {
+								"type": "string"
+							},
+							"required": {
+								"type": "boolean"
+							}
+						},
+						"required": [
+							"required"
+						],
+						"type": "object"
+					},
+					"throwRange": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/ItemRange"
+							}
+						],
+						"nullable": true
+					},
+					"armorClass": {
+						"properties": {
+							"maximumBonus": {
+								"type": "string"
+							},
+							"dexterityBonus": {
+								"type": "boolean"
+							},
+							"base": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"dexterityBonus",
+							"base"
+						],
+						"type": "object"
+					},
+					"strengthMinimum": {
+						"type": "string",
+						"nullable": true
+					},
+					"stealthDisadvantage": {
+						"type": "boolean"
+					},
+					"properties": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -273,10 +529,217 @@
 					"rarity",
 					"weight",
 					"features",
-					"createdByUserName"
+					"categories",
+					"attunement",
+					"armorClass",
+					"strengthMinimum",
+					"stealthDisadvantage",
+					"properties"
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"ArmorItemResponse": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/BaseItemResponse"
+					},
+					{
+						"$ref": "#/components/schemas/ArmorItem"
+					}
+				]
+			},
+			"WeaponDamage": {
+				"properties": {
+					"damageDice": {
+						"type": "string"
+					},
+					"damageType": {
+						"type": "string"
+					},
+					"qualifier": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"damageDice",
+					"damageType"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WeaponItem": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"visibility": {
+						"$ref": "#/components/schemas/Visibility"
+					},
+					"source": {
+						"type": "string",
+						"enum": [
+							"5th_e_SRD",
+							"Homebrew",
+							"My_Items",
+							"System"
+						],
+						"nullable": false
+					},
+					"createdBy": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"updatedAt": {
+						"type": "number",
+						"format": "double"
+					},
+					"imageId": {
+						"type": "string",
+						"nullable": true
+					},
+					"name": {
+						"type": "string"
+					},
+					"shortDescription": {
+						"type": "string"
+					},
+					"mainDescription": {
+						"type": "string"
+					},
+					"price": {
+						"$ref": "#/components/schemas/ItemPrice"
+					},
+					"rarity": {
+						"type": "string",
+						"nullable": true
+					},
+					"weight": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"features": {
+						"items": {
+							"properties": {
+								"featureDescription": {
+									"type": "string"
+								},
+								"featureName": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"featureDescription",
+								"featureName"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"categories": {
+						"items": {
+							"$ref": "#/components/schemas/ItemCategory"
+						},
+						"type": "array"
+					},
+					"attunement": {
+						"properties": {
+							"qualifier": {
+								"type": "string"
+							},
+							"required": {
+								"type": "boolean"
+							}
+						},
+						"required": [
+							"required"
+						],
+						"type": "object"
+					},
+					"throwRange": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/ItemRange"
+							}
+						],
+						"nullable": true
+					},
+					"damage": {
+						"$ref": "#/components/schemas/WeaponDamage"
+					},
+					"twoHandedDamage": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/WeaponDamage"
+							}
+						],
+						"nullable": true
+					},
+					"useRange": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/ItemRange"
+							}
+						],
+						"nullable": true
+					},
+					"properties": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"visibility",
+					"source",
+					"createdBy",
+					"createdAt",
+					"imageId",
+					"name",
+					"shortDescription",
+					"mainDescription",
+					"price",
+					"rarity",
+					"weight",
+					"features",
+					"categories",
+					"attunement",
+					"damage",
+					"twoHandedDamage",
+					"useRange",
+					"properties"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WeaponItemResponse": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/BaseItemResponse"
+					},
+					{
+						"$ref": "#/components/schemas/WeaponItem"
+					}
+				]
+			},
+			"ItemResponse": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/BaseItemResponse"
+					},
+					{
+						"$ref": "#/components/schemas/ArmorItemResponse"
+					},
+					{
+						"$ref": "#/components/schemas/WeaponItemResponse"
+					}
+				]
 			},
 			"ItemSearchResponse": {
 				"properties": {
@@ -311,6 +774,20 @@
 					"onlyMyItems": {
 						"type": "boolean"
 					},
+					"order": {
+						"type": "string",
+						"enum": [
+							"asc",
+							"desc"
+						],
+						"nullable": false
+					},
+					"orderBy": {
+						"type": "string"
+					},
+					"search": {
+						"type": "string"
+					},
 					"source": {
 						"items": {
 							"type": "string",
@@ -340,12 +817,83 @@
 						"items": {
 							"type": "string",
 							"enum": [
-								"common",
 								"uncommon",
-								"rare",
+								"common",
 								"very_rare",
+								"rare",
 								"legendary",
-								"artifact"
+								"artifact",
+								"varies"
+							],
+							"nullable": false
+						},
+						"type": "array"
+					},
+					"category": {
+						"items": {
+							"type": "string",
+							"enum": [
+								"adventuring-gear",
+								"ammunition",
+								"arcane-foci",
+								"armor",
+								"artisans-tool",
+								"druidic-foci",
+								"equipment-pack",
+								"gaming-set",
+								"heavy-armor",
+								"holy-symbol",
+								"kit",
+								"land-vehicle",
+								"light-armor",
+								"martial-melee-weapon",
+								"martial-ranged-weapon",
+								"martial-weapon",
+								"magic-item",
+								"medium-armor",
+								"melee-weapon",
+								"mount-or-other-animal",
+								"mount-or-vehicle",
+								"musical-instrument",
+								"other-tool",
+								"potion",
+								"ranged-weapon",
+								"ring",
+								"rod",
+								"scroll",
+								"shield",
+								"simple-melee-weapon",
+								"simple-ranged-weapon",
+								"simple-weapon",
+								"staff",
+								"standard-gear",
+								"tack-harness-or-drawn-vehicle",
+								"tool",
+								"vehicle",
+								"wand",
+								"waterborne-vehicle",
+								"weapon",
+								"wondrous-item"
+							],
+							"nullable": false
+						},
+						"type": "array"
+					},
+					"property": {
+						"items": {
+							"type": "string",
+							"enum": [
+								"ammunition",
+								"finesse",
+								"heavy",
+								"light",
+								"loading",
+								"monk",
+								"reach",
+								"special",
+								"thrown",
+								"two-handed",
+								"versatile"
 							],
 							"nullable": false
 						},
@@ -354,15 +902,14 @@
 					"priceComparison": {
 						"type": "string",
 						"enum": [
-							"over",
+							"max",
 							"exactly",
-							"under"
+							"min"
 						],
 						"nullable": false
 					},
 					"priceQuantity": {
-						"type": "number",
-						"format": "double"
+						"type": "string"
 					},
 					"priceUnit": {
 						"type": "string"
@@ -370,17 +917,28 @@
 					"weightComparison": {
 						"type": "string",
 						"enum": [
-							"over",
+							"max",
 							"exactly",
-							"under"
+							"min"
 						],
 						"nullable": false
 					},
 					"weight": {
-						"type": "number",
-						"format": "double"
+						"type": "string"
+					},
+					"requiresAttunement": {
+						"type": "boolean",
+						"nullable": true
+					},
+					"hasImage": {
+						"type": "boolean",
+						"nullable": true
 					}
 				},
+				"required": [
+					"order",
+					"orderBy"
+				],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -432,8 +990,8 @@
 					"ownerType": {
 						"type": "string",
 						"enum": [
-							"item",
 							"weapon",
+							"item",
 							"monster"
 						],
 						"nullable": false
@@ -488,104 +1046,20 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Item": {
-				"properties": {
-					"id": {
-						"type": "string"
-					},
-					"visibility": {
-						"$ref": "#/components/schemas/Visibility"
-					},
-					"source": {
-						"type": "string",
-						"enum": [
-							"5th_e_SRD",
-							"Homebrew",
-							"My_Items",
-							"System"
-						],
-						"nullable": false
-					},
-					"createdBy": {
-						"type": "string"
-					},
-					"createdAt": {
-						"type": "number",
-						"format": "double"
-					},
-					"updatedAt": {
-						"type": "number",
-						"format": "double"
-					},
-					"imageId": {
-						"type": "string",
-						"nullable": true
-					},
-					"name": {
-						"type": "string"
-					},
-					"shortDescription": {
-						"type": "string"
-					},
-					"mainDescription": {
-						"type": "string"
-					},
-					"price": {
-						"$ref": "#/components/schemas/ItemPrice"
-					},
-					"rarity": {
-						"type": "string",
-						"nullable": true
-					},
-					"weight": {
-						"type": "number",
-						"format": "double",
-						"nullable": true
-					},
-					"localItem": {
-						"type": "boolean"
-					},
-					"features": {
-						"items": {
-							"properties": {
-								"featureDescription": {
-									"type": "string"
-								},
-								"featureName": {
-									"type": "string"
-								}
-							},
-							"required": [
-								"featureDescription",
-								"featureName"
-							],
-							"type": "object"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"id",
-					"visibility",
-					"source",
-					"createdBy",
-					"createdAt",
-					"imageId",
-					"name",
-					"shortDescription",
-					"mainDescription",
-					"price",
-					"rarity",
-					"weight",
-					"features"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"ItemUpdateRequest": {
 				"properties": {
 					"item": {
-						"$ref": "#/components/schemas/Item"
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/BaseItem"
+							},
+							{
+								"$ref": "#/components/schemas/ArmorItem"
+							},
+							{
+								"$ref": "#/components/schemas/WeaponItem"
+							}
+						]
 					},
 					"image": {
 						"allOf": [
@@ -1023,6 +1497,34 @@
 					},
 					{
 						"in": "query",
+						"name": "order",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"asc",
+								"desc"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "orderBy",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
 						"name": "source",
 						"required": false,
 						"schema": {
@@ -1065,12 +1567,93 @@
 							"items": {
 								"type": "string",
 								"enum": [
-									"common",
 									"uncommon",
-									"rare",
+									"common",
 									"very_rare",
+									"rare",
 									"legendary",
-									"artifact"
+									"artifact",
+									"varies"
+								],
+								"nullable": false
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "category",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"enum": [
+									"adventuring-gear",
+									"ammunition",
+									"arcane-foci",
+									"armor",
+									"artisans-tool",
+									"druidic-foci",
+									"equipment-pack",
+									"gaming-set",
+									"heavy-armor",
+									"holy-symbol",
+									"kit",
+									"land-vehicle",
+									"light-armor",
+									"martial-melee-weapon",
+									"martial-ranged-weapon",
+									"martial-weapon",
+									"magic-item",
+									"medium-armor",
+									"melee-weapon",
+									"mount-or-other-animal",
+									"mount-or-vehicle",
+									"musical-instrument",
+									"other-tool",
+									"potion",
+									"ranged-weapon",
+									"ring",
+									"rod",
+									"scroll",
+									"shield",
+									"simple-melee-weapon",
+									"simple-ranged-weapon",
+									"simple-weapon",
+									"staff",
+									"standard-gear",
+									"tack-harness-or-drawn-vehicle",
+									"tool",
+									"vehicle",
+									"wand",
+									"waterborne-vehicle",
+									"weapon",
+									"wondrous-item"
+								],
+								"nullable": false
+							}
+						}
+					},
+					{
+						"in": "query",
+						"name": "property",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"enum": [
+									"ammunition",
+									"finesse",
+									"heavy",
+									"light",
+									"loading",
+									"monk",
+									"reach",
+									"special",
+									"thrown",
+									"two-handed",
+									"versatile"
 								],
 								"nullable": false
 							}
@@ -1083,9 +1666,9 @@
 						"schema": {
 							"type": "string",
 							"enum": [
-								"over",
+								"max",
 								"exactly",
-								"under"
+								"min"
 							]
 						}
 					},
@@ -1094,8 +1677,7 @@
 						"name": "priceQuantity",
 						"required": false,
 						"schema": {
-							"format": "double",
-							"type": "number"
+							"type": "string"
 						}
 					},
 					{
@@ -1113,9 +1695,9 @@
 						"schema": {
 							"type": "string",
 							"enum": [
-								"over",
+								"max",
 								"exactly",
-								"under"
+								"min"
 							]
 						}
 					},
@@ -1124,8 +1706,23 @@
 						"name": "weight",
 						"required": false,
 						"schema": {
-							"format": "double",
-							"type": "number"
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "requiresAttunement",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"in": "query",
+						"name": "hasImage",
+						"required": false,
+						"schema": {
+							"type": "boolean"
 						}
 					}
 				]
@@ -1184,7 +1781,30 @@
 					"Item"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "source",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"5th_e_SRD",
+								"Homebrew",
+								"My_Items",
+								"System"
+							]
+						}
+					}
+				]
 			},
 			"put": {
 				"operationId": "Update",
@@ -1339,6 +1959,38 @@
 						}
 					}
 				}
+			}
+		},
+		"/image/{itemId}": {
+			"delete": {
+				"operationId": "Delete",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "Image not found"
+					}
+				},
+				"tags": [
+					"Image"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "itemId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/auth/login": {

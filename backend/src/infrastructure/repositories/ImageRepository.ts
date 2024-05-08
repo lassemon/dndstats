@@ -32,6 +32,7 @@ class ImageRepository implements DatabaseImageRepositoryInterface {
     }
     return { metadata: metadataToInsert }
   }
+
   async delete(id: string) {
     try {
       await connection<any, ImageMetadata>('images').where('id', id).delete()

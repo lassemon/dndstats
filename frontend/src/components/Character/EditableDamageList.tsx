@@ -1,7 +1,7 @@
 import { Autocomplete, Button, TextField, TextFieldProps } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
-import { DamageType } from 'interfaces'
+import { DamageSource } from 'interfaces'
 import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
 import Stat from 'components/Stat'
 
@@ -46,14 +46,14 @@ interface EditableDamageListProps {
   className?: string
   textClass?: string
   header: string
-  list: DamageType[]
+  list: DamageSource[]
   valueLabel?: string | number
   textWidth?: number
   editWidth?: number
   type?: TextFieldProps['type']
   editMode?: boolean
   presentationMode?: boolean
-  onChange: (list: DamageType[]) => void
+  onChange: (list: DamageSource[]) => void
 }
 
 const EditableDamageList: React.FC<EditableDamageListProps> = (props) => {
@@ -76,7 +76,7 @@ const EditableDamageList: React.FC<EditableDamageListProps> = (props) => {
     }
   }
 
-  const onChangeValue = (event: React.SyntheticEvent<Element, Event>, newDamageList: DamageType[]) => {
+  const onChangeValue = (event: React.SyntheticEvent<Element, Event>, newDamageList: DamageSource[]) => {
     setDamageList(newDamageList)
     if (!presentationMode) {
       onChange(newDamageList)
@@ -106,7 +106,7 @@ const EditableDamageList: React.FC<EditableDamageListProps> = (props) => {
             disableCloseOnSelect
             value={damageList}
             className={`${classes.autocomplete}`}
-            options={Object.values(DamageType)}
+            options={Object.values(DamageSource)}
             onChange={onChangeValue}
             getOptionLabel={(option) => option.replaceAll('_', ' ')}
             style={{ width: '100%' }}

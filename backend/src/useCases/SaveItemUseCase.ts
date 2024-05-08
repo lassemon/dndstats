@@ -5,10 +5,10 @@ import {
   UseCaseInterface,
   UseCaseOptionsInterface
 } from '@dmtool/application'
-import { ApiError, Image, Item } from '@dmtool/domain'
+import { ApiError, Image, Item, Source } from '@dmtool/domain'
 import { SaveImageUseCase } from './SaveImageUseCase'
-import { RemoveImageFromItemUseCase } from './RemoveImageFromItemUseCase'
-import { orderBy, head } from 'lodash'
+
+import _, { orderBy, head } from 'lodash'
 import { uuid } from '@dmtool/common'
 
 interface SaveItemUseCaseBody {
@@ -27,8 +27,7 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
   constructor(
     private readonly itemService: ItemServiceInterface,
     private readonly itemRepository: DatabaseItemRepositoryInterface,
-    private readonly saveImageUseCase: SaveImageUseCase,
-    private readonly removeImageFromItemUseCase: RemoveImageFromItemUseCase
+    private readonly saveImageUseCase: SaveImageUseCase
   ) {}
   async execute({ userId, item, image, unknownError, invalidArgument }: SaveItemUseCaseOptions): Promise<SaveItemUseCaseResponse> {
     // To keep things as simple as possible, saving image and item always togeher
@@ -37,13 +36,13 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
     const systemItemsWithSameNameCount = await this.itemService.systemItemsWithSameNameCount(item.name)
     const isUpdatingUsersExistingItem = await this.itemService.itemExists(item.id, userId)
     if (await this.itemService.itemWithNameExistsForUser(item.id, item.name, userId)) {
-      throw new ApiError(406, 'NotAcceptable', `Item with the name ${item.name} already exists.`)
+      throw new ApiError(406, 'NotAcceptable', `Item with the name ${item.name} already exists in your items.`)
     }
     let existingItem = null
     try {
       existingItem = await this.itemRepository.getById(item.id)
     } catch (error) {
-      // silently fail 404 errors for finding existing items
+      // silently fail for not finding existing items
     }
 
     if (systemItemsWithSameNameCount > 0) {
@@ -65,10 +64,15 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
     // clearing image in all item create/update cases and uploading a new image to replace one
     // if the request has one. This ensures images will be cleaned from the backend
     // if user removes them from the item in the UI
-    await this.removeImageFromItemUseCase.execute({ itemId: item.id, userId, unknownError, invalidArgument })
+    //await this.removeImageFromItemUseCase.execute({ itemId: item.id, userId, unknownError, invalidArgument })
     let savedImage = null
     if (image) {
       image.metadata.fileName = item.name.replaceAll(' ', '').toLowerCase()
+      if (creatingNewItem) {
+        image.metadata.id = uuid()
+        image.metadata.createdBy = userId
+        image.metadata.ownerId = item.id
+      }
       savedImage = await this.saveImageUseCase.execute({ image, unknownError, invalidArgument })
     }
 
@@ -77,24 +81,33 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
     if (creatingNewItem) {
       savedItem = await this.itemRepository.create(
         {
-          ...item,
+          ...this.convertItemToSave(item),
           ...(savedImage ? { imageId: savedImage.metadata.id } : {})
         },
         userId
       )
     } else {
-      savedItem = await this.itemRepository.update(
-        {
-          ...item,
-          ...(savedImage ? { imageId: savedImage.metadata.id } : {})
-        },
-        userId
-      )
+      savedItem = await this.itemRepository.update({
+        ...this.convertItemToSave(item),
+
+        ...(savedImage ? { imageId: savedImage.metadata.id } : {})
+      })
     }
 
     return {
       item: savedItem,
       image: savedImage
+    }
+  }
+
+  private convertItemToSave = (item: Item) => {
+    return {
+      ...item,
+      name: item.name
+        .split(' ')
+        .map((namepart) => _.capitalize(namepart))
+        .join(' '),
+      source: Source.HomeBrew
     }
   }
 }

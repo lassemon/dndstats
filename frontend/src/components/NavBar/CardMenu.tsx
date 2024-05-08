@@ -42,7 +42,6 @@ const useStyles = makeStyles()((theme) => ({
 const CARD_PAGES = {
   '/card/item': 'Item Card',
   '/card/spell': 'Spell Card',
-  '/card/weapon': 'Weapon Card',
   '/card/monster': 'Monster Card'
 }
 const pageTitles = Object.values(CARD_PAGES)

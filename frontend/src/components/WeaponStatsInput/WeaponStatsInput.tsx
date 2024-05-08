@@ -1,4 +1,4 @@
-import { Button, Grid, ListItemIcon, Switch, TextField, Tooltip } from '@mui/material'
+import { Autocomplete, Box, Button, ListItemIcon, Switch, TextField, Tooltip } from '@mui/material'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
 import StatsInputContainer from 'components/StatsInputContainer'
@@ -11,11 +11,11 @@ import { makeStyles } from 'tss-react/mui'
 import { arrayMoveImmutable } from 'array-move'
 import { Container, Draggable } from 'react-smooth-dnd'
 import ScreenshotButton from 'components/ScreenshotButton'
+import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
+import { WeaponProperty } from '@dmtool/domain'
 
 export const useStyles = makeStyles()(() => ({
-  draggableContainer: {
-    position: 'relative'
-  },
+  draggableContainer: {},
   dragIconContainer: {
     position: 'absolute',
     right: '1em',
@@ -126,6 +126,17 @@ export const WeaponStatsInput: React.FC<WeaponStatsInputProps> = ({ screenshotMo
     })
   }
 
+  const onChangeProperties = (event: React.SyntheticEvent<Element, Event>, newPropertyList: WeaponProperty[]) => {
+    setCurrentWeapon((weapon) => {
+      if (weapon) {
+        return {
+          ...weapon,
+          properties: newPropertyList
+        }
+      }
+    })
+  }
+
   const onDeleteImage = () => {
     setCurrentWeapon((weapon) => {
       if (weapon) {
@@ -210,7 +221,7 @@ export const WeaponStatsInput: React.FC<WeaponStatsInputProps> = ({ screenshotMo
       <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
         {currentWeapon.features.map((feature, index) => {
           return (
-            <Draggable key={index} className={`${classes.draggableContainer}`}>
+            <Draggable key={index} className={classes.draggableContainer}>
               <FeatureInputContainer onDelete={onDeleteFeature(index)}>
                 <ListItemIcon className={`drag-handle ${classes.dragIconContainer}`}>
                   <DragHandleIcon fontSize="large" />
@@ -239,17 +250,35 @@ export const WeaponStatsInput: React.FC<WeaponStatsInputProps> = ({ screenshotMo
           Add feature
         </Button>
       </div>
-      <Grid container={true} spacing={2}>
-        <Grid item={true} xs={8}>
-          <TextField id="weapon-damage" label="Damage" value={currentWeapon.damage} onChange={onChange('damage')} />
-        </Grid>
-        <Grid item={true} xs={4}>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <TextField id="weapon-damage" label="Damage" value={currentWeapon.damage.damageDice} onChange={onChange('damage')} />
           <TextField id="weapon-weight" label="Weight" value={currentWeapon.weight} onChange={onChange('weight')} />
-        </Grid>
-        <Grid item={true} xs={8}>
-          <TextField id="weapon-properties" label="Properties" value={currentWeapon.properties} onChange={onChange('properties')} />
-        </Grid>
-      </Grid>
+        </Box>
+        <Autocomplete
+          multiple
+          clearOnBlur
+          disableCloseOnSelect
+          value={currentWeapon.properties as WeaponProperty[]}
+          options={Object.values(WeaponProperty)}
+          onChange={onChangeProperties}
+          getOptionLabel={(option) => option.replaceAll('_', ' ')}
+          style={{ width: '100%' }}
+          PaperComponent={AutoCompleteItem}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Properties"
+              variant="outlined"
+              size="small"
+              InputLabelProps={{
+                shrink: true
+              }}
+            />
+          )}
+          sx={{ width: '100%' }}
+        />
+      </Box>
     </StatsInputContainer>
   )
 }

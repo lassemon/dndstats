@@ -1,18 +1,19 @@
-import { IconButton } from '@mui/material'
+import { IconButton, IconButtonProps } from '@mui/material'
 import ToggleOffIcon from '@mui/icons-material/ToggleOff'
 import ToggleOnIcon from '@mui/icons-material/ToggleOn'
 import React, { useState } from 'react'
 
 import useStyles from './ToggleButton.styles'
 
-interface ToggleButtonProps {
+interface ToggleButtonProps extends IconButtonProps {
+  selected?: boolean
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 const ToggleButton: React.FC<ToggleButtonProps> = (props) => {
-  const { onClick } = props
+  const { onClick, selected, ...passProps } = props
   const { classes } = useStyles()
-  const [value, setValue] = useState(true)
+  const [value, setValue] = useState<boolean>(typeof selected !== 'undefined' ? selected : true)
 
   const internalOnClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setValue(!value)
@@ -20,7 +21,7 @@ const ToggleButton: React.FC<ToggleButtonProps> = (props) => {
   }
 
   return (
-    <IconButton aria-label="minus" className={`${value ? classes.onButton : classes.offButton}`} onClick={internalOnClick}>
+    <IconButton {...passProps} aria-label="minus" className={`${value ? classes.onButton : classes.offButton}`} onClick={internalOnClick}>
       {value ? <ToggleOnIcon fontSize="large" /> : <ToggleOffIcon fontSize="large" />}
     </IconButton>
   )

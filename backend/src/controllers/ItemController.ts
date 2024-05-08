@@ -1,22 +1,22 @@
-import { Body, Controller, Delete, Get, Middlewares, Path, Put, Queries, Request, Route, SuccessResponse, Tags } from 'tsoa'
+import { Body, Controller, Delete, Get, Middlewares, Path, Put, Queries, Query, Request, Route, SuccessResponse, Tags } from 'tsoa'
 import passport from 'passport'
 import Authentication from '/security/Authentication'
 import express from 'express'
-import { ApiError, Source, User } from '@dmtool/domain'
+import { ApiError, Source, User, Visibility } from '@dmtool/domain'
 import ItemRepository from '/infrastructure/repositories/ItemRepository'
 import { AuthenticatedRequest } from '/infrastructure/entities/AuthenticatedRequest'
 import {
   ITEM_DEFAULTS,
-  ImageService,
   ItemResponse,
   ItemSearchRequest,
   ItemSearchResponse,
   ItemService,
   ItemUpdateRequest,
   ItemUpdateResponse,
-  UserService
+  UserService,
+  isArmor,
+  isWeapon
 } from '@dmtool/application'
-import { ImageProcessingService, ImageStorageService } from '@dmtool/infrastructure'
 import ImageRepository from '/infrastructure/repositories/ImageRepository'
 import { SaveImageUseCase } from '/useCases/SaveImageUseCase'
 import { SaveItemUseCase } from '/useCases/SaveItemUseCase'
@@ -25,6 +25,11 @@ import { RemoveImageFromItemUseCase } from '/useCases/RemoveImageFromItemUseCase
 import { DeleteItemUseCase } from '/useCases/DeleteItemUseCase'
 import UserRepository from '/infrastructure/repositories/UserRepository'
 import { SearchItemsUseCase } from '/useCases/SearchItemsUseCase'
+import { ImageProcessingService } from '/services/ImageProcessingService'
+import { ImageStorageService } from '/services/ImageStorageService'
+import { FifthApiService, ImageService } from '@dmtool/infrastructure'
+import { GetFifthSRDItemUseCase } from '/useCases/GetFifthSRDItemUseCase'
+import _ from 'lodash'
 const authentication = new Authentication(passport)
 
 const imageService = new ImageService()
@@ -37,10 +42,11 @@ const itemService = new ItemService(itemRepository)
 const userService = new UserService(new UserRepository())
 
 const removeImageFromItemUseCase = new RemoveImageFromItemUseCase(itemRepository, imageStorageService, imageRepository)
-const saveItemUseCase = new SaveItemUseCase(itemService, itemRepository, saveImageUseCase, removeImageFromItemUseCase)
+const saveItemUseCase = new SaveItemUseCase(itemService, itemRepository, saveImageUseCase)
 
 const deleteItemUseCase = new DeleteItemUseCase(itemRepository, removeImageFromItemUseCase)
 const searchItemsUseCase = new SearchItemsUseCase(itemRepository)
+const getFifthSRDItemUseCase = new GetFifthSRDItemUseCase(new FifthApiService(), itemRepository)
 
 @Route('/')
 @Middlewares(authentication.passThroughAuthenticationMiddleware())
@@ -71,23 +77,52 @@ export class ItemController extends Controller {
       throw new ApiError(401, 'Unauthorized', 'Must be logged in to do that')
     }
     return (await itemRepository.getAllForUser((request.user as User).id)).map((item) => {
-      return {
-        ...item,
-        source: item.source === Source.HomeBrew ? Source.MyItem : item.source
-      }
+      return item
     })
   }
 
   @Tags('Item')
   @Get('item/')
-  public async get(@Request() request: express.Request): Promise<ItemResponse> {
-    return await itemRepository.getById(ITEM_DEFAULTS.DEFAULT_ITEM_ID)
+  public async get(@Request() request: express.Request, @Query() id: string, @Query() source: `${Source}`): Promise<ItemResponse> {
+    if (id && source === Source.FifthESRD) {
+      return await getFifthSRDItemUseCase.execute({
+        unknownError: throwUnknownError,
+        invalidArgument: throwIllegalArgument,
+        itemName: id
+      })
+    } else if (id && source) {
+      const item = await itemRepository.getByIdAndSource(id, source)
+      if (item.visibility === Visibility.LOGGED_IN && !request.user) {
+        throw new ApiError(404, 'NotFound')
+      }
+      return item
+    } else if (id) {
+      const item = await itemRepository.getById(id)
+      if (item.visibility === Visibility.LOGGED_IN && !request.user) {
+        throw new ApiError(404, 'NotFound')
+      }
+      return item
+    } else {
+      return await itemRepository.getById(ITEM_DEFAULTS.DEFAULT_ITEM_ID)
+    }
   }
 
   @Tags('Item')
   @Get('item/{itemId}')
   public async getItem(@Request() request: express.Request, @Path() itemId: string): Promise<ItemResponse> {
-    return await itemRepository.getById(itemId)
+    try {
+      const item = await itemRepository.getById(itemId)
+      if (item.visibility === Visibility.LOGGED_IN && !request.user) {
+        throw new ApiError(404, 'NotFound')
+      }
+      return item
+    } catch (err) {
+      return await getFifthSRDItemUseCase.execute({
+        unknownError: throwUnknownError,
+        invalidArgument: throwIllegalArgument,
+        itemName: itemId
+      })
+    }
   }
 
   @Tags('Item')
@@ -106,9 +141,27 @@ export class ItemController extends Controller {
       throw new ApiError(403, 'Unauthorized', 'Cannot modify the default item.')
     }
 
+    let item = requestBody.item
+
+    if (!isArmor(item)) {
+      item = _.omit<typeof item>(item, 'armorClass') as ItemUpdateRequest['item']
+      item = _.omit<typeof item>(item, 'strengthMinimum') as ItemUpdateRequest['item']
+      item = _.omit<typeof item>(item, 'stealthDisadvantage') as ItemUpdateRequest['item']
+    }
+
+    if (!isWeapon(item)) {
+      item = _.omit<typeof item>(item, 'damage') as ItemUpdateRequest['item']
+      item = _.omit<typeof item>(item, 'twoHandedDamage') as ItemUpdateRequest['item']
+      item = _.omit<typeof item>(item, 'useRange') as ItemUpdateRequest['item']
+    }
+
+    if (!isArmor(item) && !isWeapon(item)) {
+      item = _.omit<typeof item>(item, 'properties') as ItemUpdateRequest['item']
+    }
+
     const savedItemResponse = await saveItemUseCase.execute({
       userId: (request.user as User).id,
-      item: requestBody.item,
+      item,
       image: requestBody.image,
       unknownError: throwUnknownError,
       invalidArgument: throwIllegalArgument
@@ -118,11 +171,7 @@ export class ItemController extends Controller {
       ...savedItemResponse,
       item: {
         ...savedItemResponse.item,
-        createdByUserName: await userService.getUserNameByUserId(savedItemResponse.item.createdBy),
-        source:
-          savedItemResponse.item.source === Source.HomeBrew && request.user.id === savedItemResponse.item.createdBy
-            ? Source.MyItem
-            : savedItemResponse.item.source
+        createdByUserName: await userService.getUserNameByUserId(savedItemResponse.item.createdBy)
       }
     }
   }

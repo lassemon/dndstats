@@ -1,5 +1,6 @@
-export { ImageStorageService } from './services/ImageStorageService'
-export type { ImageStorageServiceInterface } from './services/ImageStorageServiceInterface'
+export { jsonToQueryString } from './services/dataAccess/http/http'
+export { FifthApiService } from './services/FifthApiService'
+export type { FifthApiServiceInterface } from './services/FifthApiServiceInterface'
 
-export { ImageProcessingService } from './services/ImageProcessingService'
-export type { ImageProcessingServiceInterface } from './services/ImageProcessingServiceInterface'
+export { ImageService } from './services/ImageService'
+export type { ImageServiceInterface } from './services/ImageServiceInterface'

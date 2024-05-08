@@ -19,9 +19,7 @@ export class PageStatsController extends Controller {
   @Tags('page')
   @Get()
   public async get(@Request() request: express.Request): Promise<PageStatsResponse> {
-    console.log('request?.isAuthenticated()', request?.isAuthenticated())
     const itemsCreated = await itemRepository.countAll(request?.isAuthenticated() ? (request.user as User).id : undefined)
-
     return {
       itemsCreated,
       spellsCreated: 0,

@@ -16,11 +16,11 @@ interface EditableTextProps {
   value: string | number
   disabled?: boolean
   tooltip?: string | ReactNode
-  disableInteractiveTooltip?: boolean
   tooltipClass?: string
   tooltipPlacement?: TooltipProps['placement']
   tooltipMaxWidth?: string
   tooltipOpen?: boolean
+  disableInteractiveTooltip?: boolean
   textWidth?: number
   editWidth?: number
   type?: TextFieldProps['type']

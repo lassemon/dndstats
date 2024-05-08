@@ -100,12 +100,26 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ItemCategory": {
+        "dataType": "refEnum",
+        "enums": ["adventuring-gear","ammunition","arcane-foci","armor","artisans-tool","druidic-foci","equipment-pack","gaming-set","heavy-armor","holy-symbol","kit","land-vehicle","light-armor","martial-melee-weapon","martial-ranged-weapon","martial-weapon","magic-item","medium-armor","melee-weapon","mount-or-other-animal","mount-or-vehicle","musical-instrument","other-tool","potion","ranged-weapon","ring","rod","scroll","shield","simple-melee-weapon","simple-ranged-weapon","simple-weapon","staff","standard-gear","tack-harness-or-drawn-vehicle","tool","vehicle","wand","waterborne-vehicle","weapon","wondrous-item"],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ItemRange": {
+        "dataType": "refObject",
+        "properties": {
+            "normal": {"dataType":"string","required":true},
+            "long": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Visibility": {
         "dataType": "refEnum",
         "enums": ["public","logged_in","private"],
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ItemResponse": {
+    "BaseItem": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"string","required":true},
@@ -121,17 +135,104 @@ const models: TsoaRoute.Models = {
             "price": {"ref":"ItemPrice","required":true},
             "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "weight": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
-            "localItem": {"dataType":"boolean"},
             "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
-            "createdByUserName": {"dataType":"string","required":true},
+            "categories": {"dataType":"array","array":{"dataType":"refEnum","ref":"ItemCategory"},"required":true},
+            "attunement": {"dataType":"nestedObjectLiteral","nestedProperties":{"qualifier":{"dataType":"string"},"required":{"dataType":"boolean","required":true}},"required":true},
+            "throwRange": {"dataType":"union","subSchemas":[{"ref":"ItemRange"},{"dataType":"enum","enums":[null]}]},
         },
         "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "BaseItemResponse": {
+        "dataType": "refAlias",
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"BaseItem"},{"dataType":"nestedObjectLiteral","nestedProperties":{"url":{"dataType":"string"},"createdByUserName":{"dataType":"string","required":true}}}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ArmorItem": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "visibility": {"ref":"Visibility","required":true},
+            "source": {"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"],"required":true},
+            "createdBy": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"double","required":true},
+            "updatedAt": {"dataType":"double"},
+            "imageId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "name": {"dataType":"string","required":true},
+            "shortDescription": {"dataType":"string","required":true},
+            "mainDescription": {"dataType":"string","required":true},
+            "price": {"ref":"ItemPrice","required":true},
+            "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "weight": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
+            "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
+            "categories": {"dataType":"array","array":{"dataType":"refEnum","ref":"ItemCategory"},"required":true},
+            "attunement": {"dataType":"nestedObjectLiteral","nestedProperties":{"qualifier":{"dataType":"string"},"required":{"dataType":"boolean","required":true}},"required":true},
+            "throwRange": {"dataType":"union","subSchemas":[{"ref":"ItemRange"},{"dataType":"enum","enums":[null]}]},
+            "armorClass": {"dataType":"nestedObjectLiteral","nestedProperties":{"maximumBonus":{"dataType":"string"},"dexterityBonus":{"dataType":"boolean","required":true},"base":{"dataType":"string","required":true}},"required":true},
+            "strengthMinimum": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "stealthDisadvantage": {"dataType":"boolean","required":true},
+            "properties": {"dataType":"array","array":{"dataType":"string"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ArmorItemResponse": {
+        "dataType": "refAlias",
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"BaseItemResponse"},{"ref":"ArmorItem"}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "WeaponDamage": {
+        "dataType": "refObject",
+        "properties": {
+            "damageDice": {"dataType":"string","required":true},
+            "damageType": {"dataType":"string","required":true},
+            "qualifier": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "WeaponItem": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "visibility": {"ref":"Visibility","required":true},
+            "source": {"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"],"required":true},
+            "createdBy": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"double","required":true},
+            "updatedAt": {"dataType":"double"},
+            "imageId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "name": {"dataType":"string","required":true},
+            "shortDescription": {"dataType":"string","required":true},
+            "mainDescription": {"dataType":"string","required":true},
+            "price": {"ref":"ItemPrice","required":true},
+            "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "weight": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
+            "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
+            "categories": {"dataType":"array","array":{"dataType":"refEnum","ref":"ItemCategory"},"required":true},
+            "attunement": {"dataType":"nestedObjectLiteral","nestedProperties":{"qualifier":{"dataType":"string"},"required":{"dataType":"boolean","required":true}},"required":true},
+            "throwRange": {"dataType":"union","subSchemas":[{"ref":"ItemRange"},{"dataType":"enum","enums":[null]}]},
+            "damage": {"ref":"WeaponDamage","required":true},
+            "twoHandedDamage": {"dataType":"union","subSchemas":[{"ref":"WeaponDamage"},{"dataType":"enum","enums":[null]}],"required":true},
+            "useRange": {"dataType":"union","subSchemas":[{"ref":"ItemRange"},{"dataType":"enum","enums":[null]}],"required":true},
+            "properties": {"dataType":"array","array":{"dataType":"string"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "WeaponItemResponse": {
+        "dataType": "refAlias",
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"BaseItemResponse"},{"ref":"WeaponItem"}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ItemResponse": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"ref":"BaseItemResponse"},{"ref":"ArmorItemResponse"},{"ref":"WeaponItemResponse"}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ItemSearchResponse": {
         "dataType": "refObject",
         "properties": {
-            "items": {"dataType":"array","array":{"dataType":"refObject","ref":"ItemResponse"},"required":true},
+            "items": {"dataType":"array","array":{"dataType":"refAlias","ref":"ItemResponse"},"required":true},
             "totalCount": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
@@ -143,14 +244,21 @@ const models: TsoaRoute.Models = {
             "itemsPerPage": {"dataType":"double"},
             "pageNumber": {"dataType":"double"},
             "onlyMyItems": {"dataType":"boolean"},
+            "order": {"dataType":"enum","enums":["asc","desc"],"required":true},
+            "orderBy": {"dataType":"string","required":true},
+            "search": {"dataType":"string"},
             "source": {"dataType":"array","array":{"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"]}},
             "visibility": {"dataType":"array","array":{"dataType":"enum","enums":["public","logged_in","private"]}},
-            "rarity": {"dataType":"array","array":{"dataType":"enum","enums":["common","uncommon","rare","very_rare","legendary","artifact"]}},
-            "priceComparison": {"dataType":"enum","enums":["over","exactly","under"]},
-            "priceQuantity": {"dataType":"double"},
+            "rarity": {"dataType":"array","array":{"dataType":"enum","enums":["uncommon","common","very_rare","rare","legendary","artifact","varies"]}},
+            "category": {"dataType":"array","array":{"dataType":"enum","enums":["adventuring-gear","ammunition","arcane-foci","armor","artisans-tool","druidic-foci","equipment-pack","gaming-set","heavy-armor","holy-symbol","kit","land-vehicle","light-armor","martial-melee-weapon","martial-ranged-weapon","martial-weapon","magic-item","medium-armor","melee-weapon","mount-or-other-animal","mount-or-vehicle","musical-instrument","other-tool","potion","ranged-weapon","ring","rod","scroll","shield","simple-melee-weapon","simple-ranged-weapon","simple-weapon","staff","standard-gear","tack-harness-or-drawn-vehicle","tool","vehicle","wand","waterborne-vehicle","weapon","wondrous-item"]}},
+            "property": {"dataType":"array","array":{"dataType":"enum","enums":["ammunition","finesse","heavy","light","loading","monk","reach","special","thrown","two-handed","versatile"]}},
+            "priceComparison": {"dataType":"enum","enums":["max","exactly","min"]},
+            "priceQuantity": {"dataType":"string"},
             "priceUnit": {"dataType":"string"},
-            "weightComparison": {"dataType":"enum","enums":["over","exactly","under"]},
-            "weight": {"dataType":"double"},
+            "weightComparison": {"dataType":"enum","enums":["max","exactly","min"]},
+            "weight": {"dataType":"string"},
+            "requiresAttunement": {"dataType":"union","subSchemas":[{"dataType":"boolean"},{"dataType":"enum","enums":[null]}]},
+            "hasImage": {"dataType":"union","subSchemas":[{"dataType":"boolean"},{"dataType":"enum","enums":[null]}]},
         },
         "additionalProperties": false,
     },
@@ -169,7 +277,7 @@ const models: TsoaRoute.Models = {
             "size": {"dataType":"double","required":true},
             "description": {"dataType":"string"},
             "ownerId": {"dataType":"string"},
-            "ownerType": {"dataType":"enum","enums":["item","weapon","monster"]},
+            "ownerType": {"dataType":"enum","enums":["weapon","item","monster"]},
         },
         "additionalProperties": false,
     },
@@ -192,32 +300,10 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Item": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"string","required":true},
-            "visibility": {"ref":"Visibility","required":true},
-            "source": {"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"],"required":true},
-            "createdBy": {"dataType":"string","required":true},
-            "createdAt": {"dataType":"double","required":true},
-            "updatedAt": {"dataType":"double"},
-            "imageId": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
-            "name": {"dataType":"string","required":true},
-            "shortDescription": {"dataType":"string","required":true},
-            "mainDescription": {"dataType":"string","required":true},
-            "price": {"ref":"ItemPrice","required":true},
-            "rarity": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
-            "weight": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
-            "localItem": {"dataType":"boolean"},
-            "features": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"featureDescription":{"dataType":"string","required":true},"featureName":{"dataType":"string","required":true}}},"required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ItemUpdateRequest": {
         "dataType": "refObject",
         "properties": {
-            "item": {"ref":"Item","required":true},
+            "item": {"dataType":"intersection","subSchemas":[{"ref":"BaseItem"},{"ref":"ArmorItem"},{"ref":"WeaponItem"}],"required":true},
             "image": {"dataType":"union","subSchemas":[{"ref":"Image"},{"dataType":"enum","enums":[null]}]},
         },
         "additionalProperties": false,
@@ -659,6 +745,8 @@ export function RegisterRoutes(app: Router) {
             function ItemController_get(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    id: {"in":"query","name":"id","required":true,"dataType":"string"},
+                    source: {"in":"query","name":"source","required":true,"dataType":"enum","enums":["5th_e_SRD","Homebrew","My_Items","System"]},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -812,6 +900,34 @@ export function RegisterRoutes(app: Router) {
               const promise = controller.uploadImage.apply(controller, validatedArgs as any);
               // CHANGED
               promiseHandler(controller, promise, 201, request, response, next);
+              // END OF CHANGED
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/api/v1/image/:itemId',
+            ...(fetchMiddlewares<RequestHandler>(ImageController)),
+            ...(fetchMiddlewares<RequestHandler>(ImageController.prototype.delete)),
+
+            function ImageController_delete(request: any, response: any, next: any) {
+            const args = {
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                    itemId: {"in":"path","name":"itemId","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new ImageController();
+
+
+              const promise = controller.delete.apply(controller, validatedArgs as any);
+              // CHANGED
+              promiseHandler(controller, promise, undefined, request, response, next);
               // END OF CHANGED
             } catch (err) {
                 return next(err);

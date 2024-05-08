@@ -1,5 +1,6 @@
 const defaults = {
-  cardPageRoot: '/card'
+  cardPageRoot: '/card',
+  localStorageInvalidateTimeInMilliseconds: 15000
 }
 
 export default defaults

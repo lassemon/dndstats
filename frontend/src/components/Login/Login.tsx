@@ -9,7 +9,6 @@ import { scheduleAsyncFunction } from 'utils/utils'
 import _ from 'lodash'
 import { uuid } from '@dmtool/common'
 import { UserResponse } from '@dmtool/application'
-import useDefaultPage from 'hooks/useDefaultPage'
 import { useOrientation } from 'utils/hooks'
 
 const Login: React.FC = () => {
@@ -17,7 +16,6 @@ const Login: React.FC = () => {
   const [isLoginDialogOpen, setLoginDialogOpen] = useState(false)
   const [isLoggedOutDialogOpen, setLoggedOutDialogOpen] = useState(false)
   const [startPollingTrigger, setStartPollingTrigger] = useState<string>('')
-  const goToDefaultPage = useDefaultPage()
 
   const orientation = useOrientation()
   const isPortrait = orientation === 'portrait'
@@ -86,13 +84,13 @@ const Login: React.FC = () => {
           user: undefined
         }
       })
-      goToDefaultPage()
     })
   }
 
   const closeLoggedOutDialog = () => {
     setLoggedOutDialogOpen(false)
     onLogout()
+    window.location.reload()
   }
 
   return (

@@ -8,10 +8,11 @@ import useStyles from './ImageButtons.styles'
 interface ImageButtonsProps {
   onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void
   onDeleteImage: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  disabled?: boolean
 }
 
 export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
-  const { onUpload, onDeleteImage } = props
+  const { onUpload, onDeleteImage, disabled = false } = props
   const { classes } = useStyles()
 
   const internalOnUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +23,7 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
 
   return (
     <div className={classes.bottomButtons}>
-      <Button component="label" sx={{ paddingLeft: 0 }}>
+      <Button component="label" sx={{ paddingLeft: 0 }} disabled={disabled}>
         Upload image
         <input
           type="file"
@@ -36,7 +37,7 @@ export const ImageButtons: React.FC<ImageButtonsProps> = (props) => {
         />
         <PublishIcon fontSize="large" />
       </Button>
-      <Button onClick={onDeleteImage} className={classes.deleteButton} sx={{ paddingRight: 0 }}>
+      <Button onClick={onDeleteImage} className={classes.deleteButton} sx={{ paddingRight: 0 }} disabled={disabled}>
         Clear image
         <DeleteIcon fontSize="large" />
       </Button>

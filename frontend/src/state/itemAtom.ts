@@ -10,6 +10,6 @@ export const itemAtom = atom(
     const oldValue = get(baseItemAtom)
     const parsedValue = update instanceof Function ? update(oldValue) : update
     const newValue = typeof parsedValue !== 'undefined' ? parsedValue : oldValue
-    set(baseItemAtom, newValue)
+    set(baseItemAtom, newValue?.clone() || null)
   }
 )

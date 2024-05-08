@@ -1,5 +1,5 @@
 import { FetchOptions, HttpUserRepositoryInterface, UserInsertRequest, UserResponse, UserUpdateRequest } from '@dmtool/application'
-import ApiError from 'domain/errors/ApiError'
+import { ApiError } from '@dmtool/domain'
 import { getJson, postJson, putJson } from 'infrastructure/dataAccess/http/fetch'
 
 class UserRepository implements HttpUserRepositoryInterface {

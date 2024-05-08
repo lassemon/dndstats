@@ -1,12 +1,11 @@
 import { ItemResponse, LocalStorageItemRepositoryInterface, LocalStorageRepositoryInterface } from '@dmtool/application'
-import { Item } from '@dmtool/domain'
 
 export const ITEM_STATE_NAME = 'itemState'
 
 export class LocalStorageItemRepository implements LocalStorageItemRepositoryInterface {
   constructor(private readonly localStorageRepository: LocalStorageRepositoryInterface<ItemResponse>) {}
 
-  async getById(id: string): Promise<ItemResponse> {
+  async getById(key?: string): Promise<ItemResponse> {
     const itemJSON = await this.localStorageRepository.getById(ITEM_STATE_NAME)
     if (!itemJSON) {
       throw new Error(`${ITEM_STATE_NAME} localStorage is empty.`)

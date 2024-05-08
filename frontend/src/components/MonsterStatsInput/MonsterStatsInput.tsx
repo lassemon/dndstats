@@ -20,6 +20,9 @@ import { upsertToArray } from 'utils/utils'
 import ScreenshotButton from 'components/ScreenshotButton'
 import DeleteButton from 'components/DeleteButton'
 import EditButton from 'components/EditButton'
+import { BrowserImageProcessingService } from '@dmtool/application'
+
+const imageProcessingService = new BrowserImageProcessingService()
 
 const useStyles = makeStyles()(() => ({
   buttons: {
@@ -129,10 +132,15 @@ export const MonsterStatsInput: React.FC<MonsterStatsInputProps> = ({ screenshot
       const reader = new FileReader()
       reader.onload = (event) => {
         if (event && event.target) {
+          let base64String = (event.target.result || '') as string
+          imageProcessingService.resizeImage(base64String, { maxWidth: 320 }, (base64Image: string) => {
+            base64String = base64Image
+          })
+
           const imgtag = React.createElement('img', {
             width: 200,
             alt: imageFile.name,
-            src: (event.target.result || '') as string,
+            src: base64String,
             hash: Date.now()
           })
           setCurrentMonster((monster) => {

@@ -1,5 +1,5 @@
 export enum ComparisonOption {
-  OVER = 'over',
+  MAXIMUM = 'max',
   EXACTLY = 'exactly',
-  UNDER = 'under'
+  MINIMUM = 'min'
 }

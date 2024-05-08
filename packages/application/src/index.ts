@@ -14,14 +14,14 @@ export type {
 } from './repositories/ImageRepositoryInterface'
 export type { DatabaseUserRepositoryInterface, HttpUserRepositoryInterface } from './repositories/UserRepositoryInterface'
 
-export { ImageService } from './services/ImageService'
-export type { ImageServiceInterface } from './services/ImageServiceInterface'
-
 export { ItemService } from './services/ItemService'
 export type { ItemServiceInterface } from './services/ItemServiceInterface'
 
 export { UserService } from './services/UserService'
 export type { UserServiceInterface } from './services/UserServiceInterface'
+
+export { BrowserImageProcessingService } from './services/BrowserImageProcessingService'
+export type { BrowserImageProcessingServiceInterface } from './services/BrowserImageProcessingServiceInterface'
 
 export type { UseCaseInterface, UseCaseOptionsInterface } from './useCases/UseCaseInterface'
 
@@ -29,11 +29,16 @@ export type { UserResponse, UserInsertRequest, UserInsertQuery, UserUpdateReques
 export type {
   DBItem,
   ItemDBResponse,
+  BaseItemResponse,
+  ArmorItemResponse,
+  WeaponItemResponse,
   ItemResponse,
   ItemInsertQuery,
+  ItemUpdateQuery,
   ItemUpdateRequest,
   ItemUpdateResponse,
   ItemSearchQuery,
+  ItemCountQuery,
   PriceSearchQuery,
   WeightSearchQuery,
   ItemSearchRequest,
@@ -48,3 +53,4 @@ export type { PageStatsResponse } from './interfaces/http/PageStats'
 export { ITEM_DEFAULTS } from './enums/defaults/ItemDefaults'
 
 export { Encryption } from './security/Encryption'
+export { isWeapon, isArmor, isFifthESRDEquipment, isFifthESRDMagicItem } from './utils/typeutils'

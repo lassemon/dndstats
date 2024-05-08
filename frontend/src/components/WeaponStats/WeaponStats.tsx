@@ -6,6 +6,7 @@ import { weaponAtom } from 'infrastructure/dataAccess/atoms'
 import useStyles from './WeaponStats.styles'
 import { useAtom } from 'jotai'
 import LoadingIndicator from 'components/LoadingIndicator'
+import { ImageDTO } from '@dmtool/application'
 
 const DescriptionBlock: React.FC = (props) => {
   const { children } = props
@@ -15,11 +16,21 @@ const DescriptionBlock: React.FC = (props) => {
 
 interface WeaponStatsProps {
   screenshotMode?: boolean
+  image?: ImageDTO | null
+  loadingImage?: boolean
 }
 
-export const WeaponStats: React.FC<WeaponStatsProps> = ({}) => {
+export const WeaponStats: React.FC<WeaponStatsProps> = ({ image = null, loadingImage = false }) => {
   const { classes } = useStyles()
   const [currentWeapon] = useAtom(useMemo(() => weaponAtom, []))
+
+  const weaponImage = image
+    ? React.createElement('img', {
+        alt: image.fileName,
+        src: image.base64,
+        hash: image.createdAt || image.updatedAt
+      })
+    : null
 
   if (!currentWeapon) {
     return <LoadingIndicator />
@@ -47,9 +58,16 @@ export const WeaponStats: React.FC<WeaponStatsProps> = ({}) => {
             )
           })}
         </div>
-        <div className={classes.imageContainer}>
-          <img alt={currentWeapon.image.props.alt} src={`${currentWeapon.image.props.src}`} />
-        </div>
+        {weaponImage && !loadingImage && (
+          <div className={classes.imageContainer}>
+            <img alt={weaponImage.props.alt} src={`${weaponImage.props.src}`} />
+          </div>
+        )}
+        {loadingImage && (
+          <div className={classes.imageContainer}>
+            <LoadingIndicator />
+          </div>
+        )}
       </div>
       <div>
         <TaperedRule />
@@ -59,7 +77,7 @@ export const WeaponStats: React.FC<WeaponStatsProps> = ({}) => {
           <div className={classes.statHeader}>Properties</div>
           <div className={classes.rowBreak} />
           <div className={classes.statValue}>
-            <span>{currentWeapon.damage}</span>
+            <span>{currentWeapon.damage.damageDice}</span>
           </div>
           <div className={classes.statValue}>
             <span>{currentWeapon.weight}</span>

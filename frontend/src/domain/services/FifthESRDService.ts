@@ -1,28 +1,24 @@
-import { CharacterSenses, CharacterSpeed, DamageType } from 'interfaces'
+import { FifthESRDAPIReference } from '@dmtool/domain'
+import { CharacterSenses, CharacterSpeed, DamageSource } from 'interfaces'
 import _ from 'lodash'
 import { defaultSavingThrows, defaultSkills } from 'services/defaults'
 import { getNumberWithSign } from 'utils/utils'
 
 // D&D 5e SRD API interfaces
-export type APIReference = {
-  index: string
-  name: string
-  url?: string
-}
 
 type ActionDamage = {
-  damage_type: APIReference
+  damage_type: FifthESRDAPIReference
   damage_at_character_level: Record<string, string>
 }
 
 type DifficultyClass = {
-  dc_type: APIReference
+  dc_type: FifthESRDAPIReference
   dc_value?: number
   success_type: 'none' | 'half' | 'other'
 }
 
 export type Proficiency = {
-  proficiency: APIReference
+  proficiency: FifthESRDAPIReference
   value: number
 }
 
@@ -60,7 +56,7 @@ type ArmorClassArmor = {
   _id?: boolean
   type: 'armor'
   value: number
-  armor?: APIReference[] // Equipment
+  armor?: FifthESRDAPIReference[] // Equipment
   desc?: string
 }
 
@@ -68,7 +64,7 @@ type ArmorClassSpell = {
   _id?: boolean
   type: 'spell'
   value: number
-  spell: APIReference // Spell
+  spell: FifthESRDAPIReference // Spell
   desc?: string
 }
 
@@ -76,7 +72,7 @@ type ArmorClassCondition = {
   _id?: boolean
   type: 'condition'
   value: number
-  condition: APIReference // Condition
+  condition: FifthESRDAPIReference // Condition
   desc?: string
 }
 
@@ -98,7 +94,7 @@ export type Choice = {
 
 type Damage = {
   _id?: boolean
-  damage_type: APIReference
+  damage_type: FifthESRDAPIReference
   damage_dice: string
 }
 
@@ -163,7 +159,7 @@ type SpecialAbilitySpell = {
 type SpecialAbilitySpellcasting = {
   _id?: boolean
   level?: number
-  ability: APIReference
+  ability: FifthESRDAPIReference
   dc?: number
   modifier?: number
   components_required: string[]
@@ -199,10 +195,10 @@ export type FifthESRDMonster = {
   challenge_rating: number
   charisma: number
   constitution: number
-  condition_immunities: APIReference[]
-  damage_immunities: DamageType[]
-  damage_resistances: DamageType[]
-  damage_vulnerabilities: DamageType[]
+  condition_immunities: FifthESRDAPIReference[]
+  damage_immunities: DamageSource[]
+  damage_resistances: DamageSource[]
+  damage_vulnerabilities: DamageSource[]
   dexterity: number
   hit_dice: string
   hit_points: number
