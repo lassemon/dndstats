@@ -6,7 +6,8 @@ import { makeStyles } from 'tss-react/mui'
 export const useStyles = makeStyles()((theme) => ({
   root: {
     cursor: 'pointer',
-    breakInside: 'avoid'
+    breakInside: 'avoid',
+    marginTop: '0.4em'
   },
   actionDescriptionBase: {
     flex: '1 1 100%'

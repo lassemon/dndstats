@@ -198,7 +198,7 @@ const EditableActions: React.FC<EditableActionsProps> = (props) => {
                   <ListItemIcon className={`drag-handle ${classes.dragIconContainer}`}>
                     <DragHandleIcon fontSize="large" />
                   </ListItemIcon>
-                  <div style={{ display: 'flex', alignItems: 'center', flex: '1' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', flex: '1', margin: '' }}>
                     <DeleteButton size="small" onClick={onDelete(index)} sx={{ padding: 0 }} />
                     <EditableText
                       id={'action-name-' + index}

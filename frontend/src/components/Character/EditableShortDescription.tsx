@@ -145,7 +145,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
       ) : (
         <div className={classes.editor}>
           <div className={classes.row}>
-            <FormControl sx={{ m: 0, flex: `0 0 ${editWidth}` }} size="small">
+            <FormControl sx={{ flex: `0 0 ${editWidth}` }} size="small">
               <InputLabel shrink id="size">
                 Size
               </InputLabel>
@@ -161,7 +161,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
             </FormControl>
           </div>
           <div className={classes.row}>
-            <FormControl sx={{ m: 0, flex: `0 0 ${editWidth}` }} size="small">
+            <FormControl sx={{ flex: `0 0 ${editWidth}` }} size="small">
               <InputLabel shrink id="type">
                 Type
               </InputLabel>
@@ -177,7 +177,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
             </FormControl>
           </div>
           <div className={classes.row}>
-            <FormControl sx={{ m: 0, flex: `0 0 ${editWidth}` }} size="small">
+            <FormControl sx={{ flex: `0 0 ${editWidth}` }} size="small">
               <InputLabel shrink id="subtype">
                 Subtype
               </InputLabel>
@@ -202,7 +202,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
             </FormControl>
           </div>
           <div className={classes.row}>
-            <FormControl sx={{ m: 0, flex: `0 0 ${editWidth}` }} size="small">
+            <FormControl sx={{ flex: `0 0 ${editWidth}` }} size="small">
               <InputLabel shrink id="alignment">
                 Alignment
               </InputLabel>

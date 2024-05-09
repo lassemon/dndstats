@@ -935,10 +935,6 @@
 						"nullable": true
 					}
 				},
-				"required": [
-					"order",
-					"orderBy"
-				],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -1498,7 +1494,7 @@
 					{
 						"in": "query",
 						"name": "order",
-						"required": true,
+						"required": false,
 						"schema": {
 							"type": "string",
 							"enum": [
@@ -1510,7 +1506,7 @@
 					{
 						"in": "query",
 						"name": "orderBy",
-						"required": true,
+						"required": false,
 						"schema": {
 							"type": "string"
 						}

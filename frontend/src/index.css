@@ -6,6 +6,7 @@ html {
   margin: 0;
   padding: 0;
   position: relative;
+  touch-action: manipulation;
 }
 
 @media (max-width: 500px) {

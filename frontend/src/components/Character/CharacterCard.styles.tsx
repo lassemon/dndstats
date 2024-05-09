@@ -4,16 +4,19 @@ import { makeStyles } from 'tss-react/mui'
 export const useStyles = makeStyles()((theme) => ({
   root: {
     breakInside: 'avoid',
-    '& .editing': {
+    '& .editing:not(.editing > .editing)': {
       backgroundColor: 'rgba(235,145,20,0.2)',
       borderRadius: '0.5em',
-      padding: '0.5em',
+      padding: '0.8em 0.5em 0.5em 0.5em',
       margin: '0 0 1.5em 0',
       breakInside: 'avoid',
       cursor: 'default',
+      '& > h2': {
+        margin: '-6px 0 0.2em 0'
+      },
       '& .editing': {
         padding: 0,
-        margin: 0,
+        margin: '0.2em 0 0 0',
         backgroundColor: 'transparent'
       }
     },

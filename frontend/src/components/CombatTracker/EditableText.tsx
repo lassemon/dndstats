@@ -5,6 +5,7 @@ import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip'
 
 import useStyles from './EditableText.styles'
 import classNames from 'classnames'
+import { useClickPrevention } from 'utils/doubleClickUtil'
 
 interface EditableTextProps {
   id?: string
@@ -113,6 +114,8 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
     }
   }
 
+  const [handleClick, handleDoubleClick] = useClickPrevention({ onClick: onOpen, onDoubleClick })
+
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`}>
       {isText ? (
@@ -124,8 +127,8 @@ const EditableText: React.FC<EditableTextProps> = (props) => {
           open={tooltipOpen}
         >
           <Typography
-            onClick={onOpen}
-            onDoubleClick={onDoubleClick}
+            onClick={handleClick}
+            onDoubleClick={handleDoubleClick}
             className={cx({
               [classes.textMode]: !label,
               [classes.labelMode]: label,

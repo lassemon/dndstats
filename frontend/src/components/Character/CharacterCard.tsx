@@ -231,7 +231,7 @@ const CharacterCard: React.FC<CharacterCardProps> = (props) => {
 
   return (
     <StatsContainer
-      className={cx(className, {
+      rootClassName={cx(className, {
         [classes.root]: true,
         [classes.staticWidthMedium]: hasActions && !splitToColumns,
         [classes.staticWidthLarge]: splitToColumns,

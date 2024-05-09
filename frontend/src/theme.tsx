@@ -55,6 +55,7 @@ const theme = createTheme({
     MuiFormControl: {
       styleOverrides: {
         root: {
+          margin: '0.5em 0 0 0',
           width: '100%'
         }
       }
@@ -93,6 +94,7 @@ const theme = createTheme({
       },
       styleOverrides: {
         root: {
+          margin: '0.5em 0 0 0',
           '& > label.MuiInputLabel-standard': {
             fontSize: '1.3rem',
             fontWeight: 'bold',

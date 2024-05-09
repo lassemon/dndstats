@@ -5,7 +5,7 @@ import ItemStatsLayout from 'layouts/ItemStatsLayout'
 import MonsterStatsLayout from 'layouts/MonsterStatsLayout'
 import SpellStatsLayout from 'layouts/SpellStatsLayout'
 import WeaponStatsLayout from 'layouts/WeaponStatsLayout'
-import React, { lazy } from 'react'
+import React from 'react'
 import theme from 'theme'
 import { Routes, Route, Outlet } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -22,8 +22,6 @@ import AccountPage from 'layouts/AccountPage'
 import ProfilePage from 'layouts/PorfilePage'
 import ItemsPage from 'layouts/ItemsPage'
 import FrontPage from 'layouts/FrontPage'
-
-const Preloader = lazy(() => import('infrastructure/dataAccess/Preloader'))
 
 const App: React.FC = () => {
   const { classes } = useStyles()
@@ -43,7 +41,6 @@ const App: React.FC = () => {
           >
             <ErrorBoundary FallbackComponent={ErrorFallback}>
               <React.Suspense fallback={<LoadingIndicator />}>
-                <Preloader />
                 <Outlet />
                 <ErrorDisplay />
               </React.Suspense>

@@ -91,7 +91,7 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
     }
   }
 
-  private getAllItemsForLoggedInUser = async (userId: string, orderBy: string, order: `${Order}`) => {
+  private getAllItemsForLoggedInUser = async (userId: string, orderBy: string = 'name', order: `${Order}` = Order.ASCENDING) => {
     const items = await this.itemRepository.getAllVisibleForLoggedInUser(userId, orderBy, order)
     const itemCount = items.length
     return {
@@ -100,7 +100,7 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
     }
   }
 
-  private getAllPublicItems = async (orderBy: string, order: `${Order}`) => {
+  private getAllPublicItems = async (orderBy: string = 'name', order: `${Order}` = Order.ASCENDING) => {
     const items = await this.itemRepository.getAllPublic(orderBy, order)
     const itemCount = items.length
     return {
@@ -232,7 +232,7 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
     return Array.from(itemMap.values())
   }
 
-  private sortItems = (_items: ItemResponse[], orderBy: string, order: `${Order}`) => {
+  private sortItems = (_items: ItemResponse[], orderBy: string = 'name', order: `${Order}` = Order.ASCENDING) => {
     return _.orderBy(
       _items,
       [
