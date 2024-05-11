@@ -26,52 +26,55 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
 
   async execute(options: SearchItemsUseCaseOptions) {
     const { userId, unknownError, invalidArgument, ...itemSearchRequest } = options
-    const getAllFifthSRDItemsUseCase = new GetAllFifthSRDItemsUseCase(fifthApiService)
-    const isAnyFilterDefined = this.anyFilterDefined(itemSearchRequest)
+    try {
+      const getAllFifthSRDItemsUseCase = new GetAllFifthSRDItemsUseCase(fifthApiService)
+      const isAnyFilterDefined = this.anyFilterDefined(itemSearchRequest)
 
-    const shouldGetAllFifthApiItems = !isAnyFilterDefined
+      const shouldGetAllFifthApiItems = !isAnyFilterDefined
 
-    const fifthApiResponse = shouldGetAllFifthApiItems
-      ? await getAllFifthSRDItemsUseCase.execute({
-          order: itemSearchRequest.order,
-          orderBy: itemSearchRequest.orderBy,
-          unknownError,
-          invalidArgument
-        })
-      : { count: 0, fifthApiItems: [] }
+      const fifthApiResponse = shouldGetAllFifthApiItems
+        ? await getAllFifthSRDItemsUseCase.execute({
+            order: itemSearchRequest.order,
+            orderBy: itemSearchRequest.orderBy,
+            unknownError,
+            invalidArgument
+          })
+        : { count: 0, fifthApiItems: [] }
 
-    let itemList = []
-    let totalCount = itemList.length
+      let itemList = []
+      let totalCount = itemList.length
 
-    if (isAnyFilterDefined) {
-      if (!userId && options.visibility) {
-        invalidArgument('visibility')
+      if (isAnyFilterDefined) {
+        if (!userId && options.visibility) {
+          invalidArgument('visibility')
+        }
+        const { items, itemCount } = await this.searchItemsWithFilters(options)
+        itemList = items
+        totalCount = itemCount
+      } else if (userId) {
+        const { items, itemCount } = await this.getAllItemsForLoggedInUser(userId, options.orderBy, options.order)
+        itemList = items
+        totalCount = itemCount
+      } else {
+        const { items, itemCount } = await this.getAllPublicItems(options.orderBy, options.order)
+        itemList = items
+        totalCount = itemCount
       }
-      const { items, itemCount } = await this.searchItemsWithFilters(options)
-      console.log('searchItemsWithFilters items', items)
-      console.log('searchItemsWithFilters itemCount', itemCount)
-      itemList = items
-      totalCount = itemCount
-    } else if (userId) {
-      const { items, itemCount } = await this.getAllItemsForLoggedInUser(userId, options.orderBy, options.order)
-      itemList = items
-      totalCount = itemCount
-    } else {
-      const { items, itemCount } = await this.getAllPublicItems(options.orderBy, options.order)
-      itemList = items
-      totalCount = itemCount
-    }
 
-    const itemsJoinedWithFifthApiItems = this.combineItems(itemList as Array<ItemResponse>, fifthApiResponse.fifthApiItems)
-    const fifthApiItemsInDbCount = await this.itemRepository.count({ source: [Source.FifthESRD] })
+      const itemsJoinedWithFifthApiItems = this.combineItems(itemList as Array<ItemResponse>, fifthApiResponse.fifthApiItems)
+      const fifthApiItemsInDbCount = await this.itemRepository.count({ source: [Source.FifthESRD] })
 
-    const itemCountFromExternalResources = fifthApiResponse.count - fifthApiItemsInDbCount
+      const itemCountFromExternalResources = fifthApiResponse.count - fifthApiItemsInDbCount
 
-    const sortedItems = this.sortItems(itemsJoinedWithFifthApiItems, itemSearchRequest.orderBy, itemSearchRequest.order)
+      const sortedItems = this.sortItems(itemsJoinedWithFifthApiItems, itemSearchRequest.orderBy, itemSearchRequest.order)
 
-    return {
-      items: this.paginateItems(sortedItems, options.itemsPerPage, options.pageNumber),
-      totalCount: totalCount + (shouldGetAllFifthApiItems ? itemCountFromExternalResources : 0)
+      return {
+        items: this.paginateItems(sortedItems, options.itemsPerPage, options.pageNumber),
+        totalCount: totalCount + (shouldGetAllFifthApiItems ? itemCountFromExternalResources : 0)
+      }
+    } catch (error) {
+      unknownError(error)
+      throw error
     }
   }
 

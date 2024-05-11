@@ -10,7 +10,7 @@ import { throwIllegalArgument, throwUnknownError } from '/utils/errorUtil'
 import { UserInsertRequest, UserResponse, UserService, UserUpdateRequest } from '@dmtool/application'
 import { ApiError, User } from '@dmtool/domain'
 
-const log = new Logger('UserController')
+const logger = new Logger('UserController')
 const authentication = new Authentication(passport)
 
 const userMapper = new UserMapper()
@@ -31,7 +31,7 @@ export class UserController extends Controller {
     if (!request.user) {
       throw new ApiError(401, 'Unauthorized')
     }
-    log.debug('getting all users')
+    logger.debug('getting all users')
     return userMapper.mapAllToResponse(await userRepository.getAll())
   }
 
@@ -44,7 +44,7 @@ export class UserController extends Controller {
     if (!request.user) {
       throw new ApiError(401, 'Unauthorized')
     }
-    log.debug('getting user with id: ' + (request.user as User).id)
+    logger.debug('getting user with id: ' + (request.user as User).id)
     const user = await userRepository.getById((request.user as User).id)
     if (!user.active) {
       throw new ApiError(404, 'NotFound')
@@ -64,7 +64,7 @@ export class UserController extends Controller {
       throw new ApiError(401, 'Unauthorized')
     }
 
-    log.debug('inserting user: ' + JSON.stringify(request))
+    logger.debug('inserting user: ' + JSON.stringify(request))
     const userInsert = await userMapper.mapInsertToQuery(requestBody)
     const user = await userRepository.create(userInsert)
     if (!user.active) {
@@ -110,7 +110,7 @@ export class UserController extends Controller {
     if (!request.user) {
       throw new ApiError(401, 'Unauthorized')
     }
-    log.debug('deactivating user with id: ' + id)
+    logger.debug('deactivating user with id: ' + id)
     await userRepository.deactivate(id)
   }
 }

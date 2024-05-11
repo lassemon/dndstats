@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser'
 import { Logger } from '@dmtool/common'
 import { ApiError, IllegalArgument } from '@dmtool/domain'
 
-const log = new Logger('App')
+const logger = new Logger('App')
 const app = express()
 const authentication = new Authentication(passport)
 
@@ -20,7 +20,7 @@ app.use(authentication.initialize())
 RegisterRoutes(app)
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  log.error(err)
+  logger.error(err)
   const status = err.status || err.statusCode || 500
   if (err instanceof ApiError || err instanceof IllegalArgument) {
     const body: any = {

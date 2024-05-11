@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { DateTime, Duration } from 'luxon'
 import { Logger } from '@dmtool/common'
 
-const log = new Logger('Authorization')
+const logger = new Logger('Authorization')
 
 export default class Authorization {
   private identifier: string
@@ -31,8 +31,8 @@ export default class Authorization {
       }
     )
 
-    log.debug('CREATED AUTH TOKEN THAT IS ISSUED AT ' + DateTime.fromSeconds(this.decodeToken(authToken).iat).toFormat('dd HH:mm:ss'))
-    log.debug('CREATED AUTH TOKEN THAT EXPIRES IN ' + DateTime.fromSeconds(this.decodeToken(authToken).exp).toFormat('dd HH:mm:ss'))
+    logger.debug('CREATED AUTH TOKEN THAT IS ISSUED AT ' + DateTime.fromSeconds(this.decodeToken(authToken).iat).toFormat('dd HH:mm:ss'))
+    logger.debug('CREATED AUTH TOKEN THAT EXPIRES IN ' + DateTime.fromSeconds(this.decodeToken(authToken).exp).toFormat('dd HH:mm:ss'))
 
     return authToken
   }
@@ -55,8 +55,12 @@ export default class Authorization {
       }
     )
 
-    log.debug('CREATED REFRESH TOKEN THAT IS ISSUED AT ' + DateTime.fromSeconds(this.decodeToken(refreshToken).iat).toFormat('dd HH:mm:ss'))
-    log.debug('CREATED REFRESH TOKEN THAT EXPIRES IN ' + DateTime.fromSeconds(this.decodeToken(refreshToken).exp).toFormat('dd HH:mm:ss'))
+    logger.debug(
+      'CREATED REFRESH TOKEN THAT IS ISSUED AT ' + DateTime.fromSeconds(this.decodeToken(refreshToken).iat).toFormat('dd HH:mm:ss')
+    )
+    logger.debug(
+      'CREATED REFRESH TOKEN THAT EXPIRES IN ' + DateTime.fromSeconds(this.decodeToken(refreshToken).exp).toFormat('dd HH:mm:ss')
+    )
 
     return refreshToken
   }

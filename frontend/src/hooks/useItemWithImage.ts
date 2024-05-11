@@ -6,7 +6,7 @@ import {
   ItemDTO,
   LocalStorageImageRepositoryInterface
 } from '@dmtool/application'
-import { dateStringFromUnixTime, unixtimeNow } from '@dmtool/common'
+import { unixtimeNow } from '@dmtool/common'
 import { Source } from '@dmtool/domain'
 import { StorageSyncError } from 'domain/errors/StorageError'
 import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'

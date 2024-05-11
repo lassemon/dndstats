@@ -254,8 +254,8 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
         />
 
         <Box sx={{ width: 'auto' }}>
-          <FormLabel sx={{ fontSize: '1em' }}>Price</FormLabel>
-          <Box sx={{ display: 'flex', gap: '0.5em' }}>
+          <FormLabel sx={{ fontSize: '1em', display: 'block', margin: '0 0 -6px 0' }}>Price</FormLabel>
+          <Box sx={{ display: 'flex', gap: '0.5em', alignItems: 'end' }}>
             <div>
               <Select
                 size="small"
@@ -322,9 +322,9 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
             </FormControl>
           </Box>
         </Box>
-        <Box sx={{ width: 'auto' }}>
-          <FormLabel sx={{ fontSize: '1em' }}>Weight</FormLabel>
-          <Box sx={{ display: 'flex', gap: '0.5em' }}>
+        <Box>
+          <FormLabel sx={{ fontSize: '1em', display: 'block', margin: '0 0 -6px 0' }}>Weight</FormLabel>
+          <Box sx={{ display: 'flex', gap: '0.5em', alignItems: 'end' }}>
             <div>
               <Select
                 size="small"

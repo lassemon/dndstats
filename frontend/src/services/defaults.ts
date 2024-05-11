@@ -25,7 +25,7 @@ export const defaultItem: ItemResponse = {
     }
   ],
   price: {
-    quantity: '3000',
+    quantity: 3000,
     unit: 'gp'
   },
   armorClass: {
@@ -37,7 +37,7 @@ export const defaultItem: ItemResponse = {
   },
   categories: [ItemCategory.SHIELD],
   rarity: null,
-  weight: '25',
+  weight: 25,
   source: Source.System,
   visibility: Visibility.PUBLIC,
   createdBy: '0',
@@ -58,7 +58,7 @@ export const newItemDTO = new ItemDTO({
     }
   ],
   price: {
-    quantity: '10',
+    quantity: 10,
     unit: 'gp'
   },
   attunement: {
@@ -66,7 +66,7 @@ export const newItemDTO = new ItemDTO({
   },
   categories: [],
   rarity: null,
-  weight: '1',
+  weight: 1,
   source: Source.HomeBrew,
   visibility: Visibility.PRIVATE,
   createdBy: '0',
@@ -128,10 +128,10 @@ On a failed save you become exhausted (level of 3) for the duration of the next 
   useRange: {
     normal: '5'
   },
-  weight: '2',
+  weight: 2,
   properties: [WeaponProperty.LIGHT, WeaponProperty.FINESSE],
   price: {
-    quantity: '3000',
+    quantity: 3000,
     unit: 'gp'
   },
   attunement: {

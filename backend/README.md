@@ -12,10 +12,10 @@ Installation to cPanel:
     to /dmtools/backend
     -- backend/src
     -- backend/tools
-    -- backend/<files> <-- except README.MD and .env
+    -- backend/<files (not folders)> <-- except README.MD and .env
     to /dmtools/packages
-    -- packages/\*
     -- run `npm run clean:build` LOCALLY on root before you upload to remove lib folders
+    -- packages/\*
     to /nodevenv/dmtools/18/lib
     -- packages/\*
     -- tsconfig.package.json
@@ -24,21 +24,18 @@ Installation to cPanel:
 
 - open cPanel and go to Setup Node.js App
 - edit the application
+- check that cPanel Environment variables matches projects .env file defined variables
 - copy the "source ..." command from the view
 - open a new terminal and open source
   -- BEOYND HERE, THERE BE DRAGONS --
-  //- run rm -rf node_modules
-  //- run `tail -f logs/dmtools.log`
-- in the terminal goto /nodevenv/dmtools/18/lib and run `npm run build`
+  - run rm -rf node_modules in /home/viitevhg/dmtools/
+  - press the "Run NPM Install" -button
+    //- run `tail -f logs/dmtools.log`
+- in the terminal goto ../nodevenv/dmtools/18/lib and run `npm run build`
 - then goto /home/viitevhg/dmtools/backend and run `npm run build`
 - finally
-
-  - press the "Run NPM Install" -button
   - press the "Run Script" -button and run the build script
   - Restart the app
-
-  app needs to run at port 80
-  app cannot be started manually from terminal, but only through the web application UI
 
 Steps how I got it to work
 
@@ -66,3 +63,10 @@ curl --remote-name --time-cond cacert.pem https://curl.se/ca/cacert.pem
 then add environment variable from cpanel node app UI
 name: SSL_CERT_FILE
 value: ./cacert.pem
+
+TIPS
+
+- app needs to run at port 80
+- app cannot be started manually from terminal, but only through the web application UI
+- npm i does not work outside of /nodevenv/dmtools/18/lib, put e.g. backend there and run npm i and copy node_modules from there if needed
+- putting changes only to /home/viitevhg/dmtools/backend or /home/viitevhg/dmtools/packages does not change anything. must put them under /nodevenv/dmtools/18/lib and `npm run build`

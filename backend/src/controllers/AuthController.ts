@@ -11,7 +11,7 @@ import { ApiError, User } from '@dmtool/domain'
 import UserRepository from '/infrastructure/repositories/UserRepository'
 import { DatabaseUserRepositoryInterface, Encryption, UserResponse } from '@dmtool/application'
 
-const log = new Logger('AuthController')
+const logger = new Logger('AuthController')
 const refreshTokenList = {} as { [key: string]: User }
 const authentication = new Authentication(passport)
 
@@ -93,7 +93,7 @@ export class AuthController extends Controller {
       const refreshToken = this.authorization.decodeToken(request.cookies.refreshToken)
 
       if (!this.authorization.validateToken(refreshToken)) {
-        log.debug('REFRESH TOKEN EXPIRED ' + DateTime.fromSeconds(refreshToken.exp).toFormat('dd HH:mm:ss'))
+        logger.debug('REFRESH TOKEN EXPIRED ' + DateTime.fromSeconds(refreshToken.exp).toFormat('dd HH:mm:ss'))
         throw new ApiError(401, 'Unauthorized')
       }
 
@@ -112,7 +112,7 @@ export class AuthController extends Controller {
         }
       })
     } else {
-      log.debug('REFRESH TOKEN NOT IN LIST')
+      logger.debug('REFRESH TOKEN NOT IN LIST')
       throw new ApiError(401, 'Unauthorized')
     }
     return true
@@ -122,7 +122,7 @@ export class AuthController extends Controller {
   @Middlewares(authentication.authenticationMiddleware())
   @Get('status')
   public async status(@Request() request: express.Request): Promise<UserResponse> {
-    log.debug(`calling status to see if authenticated. isAuthenticated: ${request?.isAuthenticated()}.`)
+    logger.debug(`calling status to see if authenticated. isAuthenticated: ${request?.isAuthenticated()}.`)
     return this.userMapper.mapToResponse(request.user as User)
   }
 

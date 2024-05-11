@@ -2,7 +2,7 @@ import fs from 'fs'
 import { ImageStorageServiceInterface } from './ImageStorageServiceInterface'
 import { Logger } from '@dmtool/common'
 
-const log = new Logger('ImageStorageService')
+const logger = new Logger('ImageStorageService')
 
 const imagesBasePath = process.env.IMAGES_BASE_PATH || './images'
 
@@ -11,10 +11,10 @@ export class ImageStorageService implements ImageStorageServiceInterface {
     const unlinkPath = `${imagesBasePath}/${fileName}`
     fs.unlink(unlinkPath, (err) => {
       if (err) {
-        log.error('Error removing the file:', err)
+        logger.error('Error removing the file:', err)
         return
       }
-      log.debug('File removed successfully', fileName)
+      logger.debug('File removed successfully', fileName)
     })
   }
 

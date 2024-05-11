@@ -41,7 +41,6 @@ const useImage = (
           controllerRef.current = controller
 
           const fetchedImage = await Promise.resolve(imageRepository.getById(_imageId, { signal: controller.signal }))
-          console.log('fetched Image', fetchedImage)
           setIsLoading(false)
 
           setImage(new ImageDTO(fetchedImage))

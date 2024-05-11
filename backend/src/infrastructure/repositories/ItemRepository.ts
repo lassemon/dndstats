@@ -86,8 +86,6 @@ const withProperty = (properties?: `${WeaponProperty}`[]) => (queryBuilder: Knex
 }
 
 const withOrderBy = (orderBy: (typeof ItemSortableKeys)[number], order: `${Order}`) => (queryBuilder: Knex.QueryBuilder) => {
-  console.log('order by', orderBy)
-  console.log('order', order)
   if (orderBy) {
     const _orderBy = ItemSortableKeys.includes(orderBy) ? orderBy : 'name'
     const _order = order === Order.ASCENDING || order === Order.DESCENDING ? order : Order.ASCENDING
@@ -420,8 +418,8 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     const itemToInsert: DBItem = this.constructItemToInsertFromQuery(item, userId)
     try {
       await connection<any, DBItem>('items').insert(itemToInsert) // mariadb does not return inserted object
-    } catch (error) {
-      logger.error((error as any)?.message)
+    } catch (error: any) {
+      logger.error((error as any)?.message, error.stack ? error.stack : error)
       throw new UnknownError(500, 'UnknownError')
     }
 
@@ -434,8 +432,8 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
       // TODO use update here instead of insert
       // need to create separate POST and PUT into ItemController
       await connection<any, DBItem>('items').where('id', item.id).update(itemToInsert) // mariadb does not return inserted object
-    } catch (error) {
-      logger.error((error as any)?.message)
+    } catch (error: any) {
+      logger.error((error as any)?.message, error.stack ? error.stack : error)
       throw new UnknownError(500, 'UnknownError')
     }
 
@@ -445,8 +443,8 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
   async delete(itemId: string) {
     try {
       await connection<any, DBItem>('items').where('id', itemId).delete()
-    } catch (error) {
-      logger.error((error as any)?.message)
+    } catch (error: any) {
+      logger.error((error as any)?.message, error.stack ? error.stack : error)
       throw new UnknownError(500, 'UnknownError')
     }
   }

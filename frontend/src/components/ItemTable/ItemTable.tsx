@@ -418,7 +418,6 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
       setLoadingItem(true)
       try {
         const fifthEditionItem = await itemRepository.getByIdAndSource(_id, Source.FifthESRD)
-        console.log('got fifth edition item', fifthEditionItem)
         // this if is to prevent setting the default item as the item on the row
         if (fifthEditionItem.id === _id) {
           setLocalItem(new ItemDTO(fifthEditionItem))

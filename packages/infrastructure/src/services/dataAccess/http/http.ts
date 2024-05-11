@@ -1,3 +1,7 @@
+import { Logger } from '@dmtool/common'
+
+const logger = new Logger('http')
+
 export interface HttpOptions extends RequestInit {
   baseUrl?: string
   endpoint: string
@@ -11,7 +15,7 @@ export const get = async <T>(options: HttpOptions): Promise<T> => {
     const handledResponse = await handleResponse(response)
     return handledResponse.json()
   } catch (error) {
-    console.error(`HTTP GET Request Failed for url: ${url}`, error)
+    logger.debug(`HTTP GET Request Failed for url: ${url}`, error)
     throw error
   }
 }
@@ -31,7 +35,7 @@ export const post = async <T>(options: HttpOptions, body?: any): Promise<T> => {
     const handledResponse = await handleResponse(response)
     return handledResponse.json()
   } catch (error) {
-    console.error(`HTTP POST Request Failed  for url: ${url}`, error)
+    logger.debug(`HTTP POST Request Failed  for url: ${url}`, error)
     throw error
   }
 }
@@ -51,7 +55,7 @@ export const put = async <T>(options: HttpOptions, body?: any): Promise<T> => {
     const handledResponse = await handleResponse(response)
     return handledResponse.json()
   } catch (error) {
-    console.error(`HTTP PUT Request Failed for url: ${url}`, error)
+    logger.debug(`HTTP PUT Request Failed for url: ${url}`, error)
     throw error
   }
 }
@@ -63,7 +67,7 @@ export const del = async <T>(options: HttpOptions): Promise<T> => {
     const handledResponse = await handleResponse(response)
     return handledResponse.json()
   } catch (error) {
-    console.error(`HTTP DELETE Request Failed for url: ${url}`, error)
+    logger.debug(`HTTP DELETE Request Failed for url: ${url}`, error)
     throw error
   }
 }

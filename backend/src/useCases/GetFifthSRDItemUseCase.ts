@@ -29,35 +29,40 @@ export class GetFifthSRDItemUseCase implements GetMonsterUseCaseInterface {
     private readonly itemRepository: DatabaseItemRepositoryInterface
   ) {}
 
-  async execute({ itemName }: GetFifthSRDItemUseCaseOptions) {
-    const fifthApiItemResponse = await this.fifthApiService.get<FifthESRDEquipment>(`/equipment/${itemName}`).catch(async () => {
-      return await this.fifthApiService.get<FifthESRDMagicItem>(`/magic-items/${itemName}`)
-    })
-    console.log('fifthApiItemResponse', fifthApiItemResponse)
-    const parsedFithApiItem = await this.parseItemFromFifthApiItemResponse(fifthApiItemResponse)
+  async execute({ itemName, unknownError }: GetFifthSRDItemUseCaseOptions) {
+    try {
+      const fifthApiItemResponse = await this.fifthApiService.get<FifthESRDEquipment>(`/equipment/${itemName}`).catch(async () => {
+        return await this.fifthApiService.get<FifthESRDMagicItem>(`/magic-items/${itemName}`)
+      })
+      //console.log('fifthApiItemResponse', fifthApiItemResponse)
+      const parsedFithApiItem = await this.parseItemFromFifthApiItemResponse(fifthApiItemResponse)
 
-    let item = parsedFithApiItem
+      let item = parsedFithApiItem
 
-    if (item === null) {
-      throw new ApiError(404, 'NotFound')
-    }
+      if (item === null) {
+        throw new ApiError(404, 'NotFound')
+      }
 
-    if (parsedFithApiItem) {
-      console.log('fifth api item PARSED', parsedFithApiItem)
-      try {
-        item = await this.itemRepository.update(parsedFithApiItem)
-        console.log('fifth api item UPDATED', item)
-      } catch (error) {
-        if (error instanceof ApiError && error.status === 404) {
-          item = await this.itemRepository.create(parsedFithApiItem, parsedFithApiItem.createdBy)
-          console.log('fifth api item SAVED', item)
+      if (parsedFithApiItem) {
+        //console.log('fifth api item PARSED', parsedFithApiItem)
+        try {
+          item = await this.itemRepository.update(parsedFithApiItem)
+          //console.log('fifth api item UPDATED', item)
+        } catch (error) {
+          if (error instanceof ApiError && error.status === 404) {
+            item = await this.itemRepository.create(parsedFithApiItem, parsedFithApiItem.createdBy)
+            //console.log('fifth api item SAVED', item)
+          }
         }
       }
-    }
 
-    return {
-      createdByUserName: process.env.SYSTEM_USER_NAME || 'system',
-      ...item
+      return {
+        createdByUserName: process.env.SYSTEM_USER_NAME || 'system',
+        ...item
+      }
+    } catch (error) {
+      unknownError(error)
+      throw error
     }
   }
 

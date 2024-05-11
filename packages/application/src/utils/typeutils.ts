@@ -23,11 +23,11 @@ const ARMOR_CATEGORIES = [
 ]
 
 export const isArmor = (item: BaseItem | WeaponItem | ArmorItem | ItemDTO): item is ArmorItem => {
-  return ARMOR_CATEGORIES.some((category) => item.categories.includes(category))
+  return ARMOR_CATEGORIES.some((category) => item.categories?.includes(category))
 }
 
 export const isWeapon = (item: BaseItem | WeaponItem | ArmorItem | ItemDTO): item is WeaponItem => {
-  return WEAPON_CATEGORIES.some((category) => item.categories.includes(category))
+  return WEAPON_CATEGORIES.some((category) => item.categories?.includes(category))
 }
 
 export const isFifthESRDEquipment = (item: FifthESRDEquipment | FifthESRDMagicItem): item is FifthESRDEquipment => {

@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS items  (
   armorClass            longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(armorClass)),
   strengthMinimum       varchar(255),
   stealthDisadvantage   tinyint(1),
-  requiresAttunement    longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{"required": false, "qualifier": ""}' CHECK (json_valid(categories)),
+  attunement            longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{"required": false, "qualifier": ""}' CHECK (json_valid(categories)),
   damage                longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(damage)),
   twoHandedDamage       longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(twoHandedDamage)),
   throwRange            longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(throwRange)),

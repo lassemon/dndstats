@@ -15,8 +15,7 @@ export type GetAllPublicItemsUseCaseInterface = UseCaseInterface<GetAllPublicIte
 export class GetAllPublicItemsUseCase implements GetAllPublicItemsUseCaseInterface {
   constructor(private readonly itemRepository: DatabaseItemRepositoryInterface) {}
   async execute({ unknownError, invalidArgument, ...itemSearchRequest }: GetAllPublicItemsUseCaseOptions) {
-    //const { itemsPerPage, pageNumber, onlyMyItems, rarity } = itemSearchRequest
-    const items = await this.itemRepository.getAllPublic()
+    const items = await this.itemRepository.getAllPublic(itemSearchRequest.orderBy, itemSearchRequest.order)
     return {
       items,
       totalCount: items.length
