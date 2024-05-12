@@ -132,7 +132,6 @@ const ProfilePage: React.FC = () => {
       <div className={classes.statsContainer}>
         <ProfileStat title="Items created" loading={loadingProfile} amount={profile?.itemsCreated || 0} />
         <ProfileStat title="Spells created" loading={loadingProfile} amount={profile?.spellsCreated || 0} style={{ opacity: '0.4' }} />
-        <ProfileStat title="Weapons created" loading={loadingProfile} amount={profile?.weaponsCreated || 0} style={{ opacity: '0.4' }} />
         <ProfileStat title="Monsters created" loading={loadingProfile} amount={profile?.monstersCreated || 0} style={{ opacity: '0.4' }} />
       </div>
 

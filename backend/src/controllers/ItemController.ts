@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Middlewares, Path, Put, Queries, Query, 
 import passport from 'passport'
 import Authentication from '/security/Authentication'
 import express from 'express'
-import { ApiError, Source, User, Visibility } from '@dmtool/domain'
+import { ApiError, ItemSortableKeys, Source, User, Visibility } from '@dmtool/domain'
 import ItemRepository from '/infrastructure/repositories/ItemRepository'
 import { AuthenticatedRequest } from '/infrastructure/entities/AuthenticatedRequest'
 import {
@@ -30,6 +30,7 @@ import { ImageStorageService } from '/services/ImageStorageService'
 import { FifthApiService, ImageService } from '@dmtool/infrastructure'
 import { GetFifthSRDItemUseCase } from '/useCases/GetFifthSRDItemUseCase'
 import _ from 'lodash'
+import { Order } from '@dmtool/common'
 const authentication = new Authentication(passport)
 
 const imageService = new ImageService()
@@ -48,22 +49,35 @@ const deleteItemUseCase = new DeleteItemUseCase(itemRepository, removeImageFromI
 const searchItemsUseCase = new SearchItemsUseCase(itemRepository)
 const getFifthSRDItemUseCase = new GetFifthSRDItemUseCase(new FifthApiService(), itemRepository)
 
+interface SearchQueryParams extends Omit<ItemSearchRequest, 'order' | 'orderBy'> {
+  order?: `${Order}`
+  orderBy?: (typeof ItemSortableKeys)[number]
+}
+
 @Route('/')
 @Middlewares(authentication.passThroughAuthenticationMiddleware())
 export class ItemController extends Controller {
   @Tags('Item')
   @Get('items/')
-  public async search(@Request() request: express.Request, @Queries() queryParams: ItemSearchRequest): Promise<ItemSearchResponse> {
+  public async search(@Request() request: express.Request, @Queries() queryParams: SearchQueryParams): Promise<ItemSearchResponse> {
     if (request?.isAuthenticated()) {
       return await searchItemsUseCase.execute({
         userId: (request.user as User).id,
-        ...queryParams,
+        ...{
+          order: Order.ASCENDING,
+          orderBy: 'name',
+          ...queryParams
+        },
         unknownError: throwUnknownError,
         invalidArgument: throwIllegalArgument
       })
     } else {
       return await searchItemsUseCase.execute({
-        ...queryParams,
+        ...{
+          order: Order.ASCENDING,
+          orderBy: 'name',
+          ...queryParams
+        },
         unknownError: throwUnknownError,
         invalidArgument: throwIllegalArgument
       })

@@ -169,7 +169,7 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
                   title="Whatever is the highest armor class value in the list, is considered the AC of the character"
                   placement="top-start"
                 >
-                  <FormControl sx={{ m: 0, flex: '0 0 9em' }} size="small">
+                  <FormControl sx={{ flex: '0 0 9em' }} size="small">
                     <InputLabel id="armor-class-type">Armor Class</InputLabel>
                     <Select
                       labelId={'armor-class-type'}

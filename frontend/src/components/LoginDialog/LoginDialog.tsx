@@ -101,7 +101,10 @@ const LoginDialog: React.FC<LoginDialogProps> = (props) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '2.2em'
+          gap: '2.2em',
+          '&&': {
+            paddingTop: '20px'
+          }
         }}
       >
         {error && (

@@ -21,7 +21,8 @@ import {
   createFilterOptions,
   useMediaQuery,
   useTheme,
-  FormControlLabel
+  FormControlLabel,
+  FormLabel
 } from '@mui/material'
 import FeatureInputContainer from 'components/FeatureInputContainer'
 import ImageButtons from 'components/ImageButtons'
@@ -55,7 +56,6 @@ import { DamageType } from 'interfaces'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import LayersIcon from '@mui/icons-material/Layers'
 import LayersClearIcon from '@mui/icons-material/LayersClear'
-import ImageRepository from 'infrastructure/repositories/ImageRepository'
 
 interface CantDeleteReasonOptions {
   isDefaultItem: boolean
@@ -992,7 +992,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
 
       <div style={{ display: 'flex', gap: '1em', justifyContent: 'space-between', margin: '1em 0 0 0' }}>
         {authState.loggedIn && (
-          <FormControl sx={{ width: '9em', m: 0, flex: '0 0 auto' }} size="small">
+          <FormControl sx={{ width: '9em', flex: '0 0 auto' }} size="small">
             <InputLabel shrink id="visibility">
               Visibility
             </InputLabel>
@@ -1085,10 +1085,8 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             </MenuItem>
           </Select>
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '.3em' }}>
-          <Typography variant="caption" sx={{ flex: '1 1 100%', color: (theme) => theme.palette.grey[700] }}>
-            Use Range
-          </Typography>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'end' }}>
+          <FormLabel sx={{ flex: '1 1 100%', fontSize: '0.9em', margin: '0px 0px -6px' }}>Use Range</FormLabel>
           <TextField
             id="item-userange-normal"
             label="Normal"
@@ -1190,7 +1188,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             Armor Properties
           </h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em', margin: '0' }}>
-            <FormControl sx={{ width: '7em', m: 0, flex: '0 0 auto', margin: '0 1em 0 0' }} size="small" disabled={!isArmor(item)}>
+            <FormControl sx={{ width: '7em', flex: '0 0 auto', margin: '0 1em 0 0' }} size="small" disabled={!isArmor(item)}>
               <InputLabel shrink id="armorclass">
                 Armor Class
               </InputLabel>
@@ -1215,7 +1213,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               </Select>
             </FormControl>
 
-            <FormControl sx={{ width: '9em', m: 0, flex: '0 0 auto', margin: '0 1em 0 0' }} size="small" disabled={!isArmor(item)}>
+            <FormControl sx={{ width: '9em', flex: '0 0 auto', margin: '0 1em 0 0' }} size="small" disabled={!isArmor(item)}>
               <InputLabel shrink id="strength-minimum">
                 Strength Minimum
               </InputLabel>
@@ -1340,7 +1338,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
 
           <div className={classes.rowBreak} />
 
-          <FormControl sx={{ width: '12em', m: 0, flex: '0 0 auto' }} size="small" disabled={!isWeapon(item)}>
+          <FormControl sx={{ width: '12em', flex: '0 0 auto' }} size="small" disabled={!isWeapon(item)}>
             <InputLabel shrink id="damageDiceAmount">
               Damage Dice Amount
             </InputLabel>
@@ -1364,7 +1362,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               })}
             </Select>
           </FormControl>
-          <FormControl sx={{ width: '10em', m: 0, flex: '0 0 auto' }} size="small" disabled={!isWeapon(item)}>
+          <FormControl sx={{ width: '10em', flex: '0 0 auto' }} size="small" disabled={!isWeapon(item)}>
             <InputLabel shrink id="damageDice">
               Damage Dice
             </InputLabel>
@@ -1390,7 +1388,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             </Select>
           </FormControl>
 
-          <FormControl sx={{ width: '10em', m: 0, flex: '0 0 auto' }} size="small" disabled={!isWeapon(item)}>
+          <FormControl sx={{ width: '10em', flex: '0 0 auto' }} size="small" disabled={!isWeapon(item)}>
             <InputLabel shrink id="damageDice">
               Damage Type
             </InputLabel>
@@ -1446,7 +1444,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
       >
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1em', margin: '1em 0 0 0' }}>
           <FormControl
-            sx={{ width: '13em', m: 0, flex: '0 0 auto' }}
+            sx={{ width: '13em', flex: '0 0 auto' }}
             size="small"
             disabled={
               !isWeapon(item) ||
@@ -1477,7 +1475,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             </Select>
           </FormControl>
           <FormControl
-            sx={{ width: '13em', m: 0, flex: '0 0 auto' }}
+            sx={{ width: '13em', flex: '0 0 auto' }}
             size="small"
             disabled={
               !isWeapon(item) ||
@@ -1510,7 +1508,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
           </FormControl>
 
           <FormControl
-            sx={{ width: '13em', m: 0, flex: '0 0 auto' }}
+            sx={{ width: '13em', flex: '0 0 auto' }}
             size="small"
             disabled={
               !isWeapon(item) ||
@@ -1571,14 +1569,12 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '.3em',
+              alignItems: 'end',
               opacity: !item.hasThrownProperty() ? '0.5' : '1',
               userSelect: !item.hasThrownProperty() ? 'none' : 'all'
             }}
           >
-            <Typography variant="caption" sx={{ flex: '1 1 100%', color: (theme) => theme.palette.grey[700] }}>
-              Throw Range
-            </Typography>
+            <FormLabel sx={{ flex: '1 1 100%', fontSize: '0.9em', margin: '0px 0px -6px' }}>Throw Range</FormLabel>
             <TextField
               id="item-throwrange-normal"
               label="Normal"
@@ -1618,7 +1614,12 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
         </Tooltip>
       </div>
 
-      <Container dragHandleSelector=".drag-handle" lockAxis="y" onDrop={onDrop}>
+      <Container
+        dragHandleSelector=".drag-handle"
+        lockAxis="y"
+        onDrop={onDrop}
+        style={{ minHeight: _.isEmpty(item.features) ? 0 : '30px' }}
+      >
         {item.features.map((feature: any, index: any) => {
           return (
             <Draggable key={index} className={`${classes.draggableContainer}`}>

@@ -69,7 +69,9 @@ const ItemsPage: React.FC = () => {
       setItemList(itemSearchResponse.items.map((item) => new ItemDTO(item)))
       setTotalCount(itemSearchResponse.totalCount)
     } catch (error: any) {
-      setError(error)
+      if (!(error instanceof DOMException)) {
+        setError(error)
+      }
     }
   }
 
@@ -97,9 +99,6 @@ const ItemsPage: React.FC = () => {
 
   useEffect(() => {
     fetchAndSetItems({ ...defaultFilters, ...itemTableFilters })
-    return () => {
-      fetchItemsControllerRef?.current?.abort()
-    }
   }, [
     authState.loggedIn,
     itemTableFilters.itemsPerPage,
