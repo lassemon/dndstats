@@ -139,7 +139,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
   return (
     <div className={`${!isText ? 'editing ' : ''}${classes.root} ${className}`} onDoubleClick={onDoubleClick}>
       {isText ? (
-        <Typography variant="h2" className={`${classes.shortDescription}`}>
+        <Typography variant="body2" className={`${classes.shortDescription}`}>
           {character.short_description}
         </Typography>
       ) : (

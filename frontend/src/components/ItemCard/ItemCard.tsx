@@ -350,23 +350,21 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   <TaperedRule />
                 </div>
               )}
-            <div style={{ display: 'flex', margin: `1em 0 -5px ${!isWeapon(item) ? '' : '-0.5em'}` }}>
+            <div style={{ display: 'flex', margin: `0.5em 0 0px ${!isWeapon(item) ? '0' : '-0.5em'}` }}>
               {!isWeapon(item) && <TinyStat title="weight" value={item.weight_label} />}
               <TinyStat title="price" value={item.price_label} />
             </div>
           </div>
-          <div>
-            {itemImage && !loadingImage && (
-              <div className={classes.imageContainer}>
-                <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
-              </div>
-            )}
-            {loadingImage && (
-              <div className={classes.imageContainer}>
-                <LoadingIndicator />
-              </div>
-            )}
-          </div>
+          {itemImage && !loadingImage && (
+            <div className={classes.imageContainer}>
+              <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
+            </div>
+          )}
+          {loadingImage && (
+            <div className={classes.imageContainer}>
+              <LoadingIndicator />
+            </div>
+          )}
         </>
       ) : (
         <div className={classes.textContainer}>

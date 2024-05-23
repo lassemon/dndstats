@@ -13,6 +13,7 @@ export type {
   LocalStorageImageRepositoryInterface
 } from './repositories/ImageRepositoryInterface'
 export type { DatabaseUserRepositoryInterface, HttpUserRepositoryInterface } from './repositories/UserRepositoryInterface'
+export type { DatabaseFeaturedRepositoryInterface } from './repositories/FeaturedRepositoryInterface'
 
 export { ItemService } from './services/ItemService'
 export type { ItemServiceInterface } from './services/ItemServiceInterface'
@@ -42,8 +43,13 @@ export type {
   PriceSearchQuery,
   WeightSearchQuery,
   ItemSearchRequest,
-  ItemSearchResponse
+  ItemSearchResponse,
+  ItemViews
 } from './interfaces/http/Item'
+
+export type { DatabaseItemViewsRepositoryInterface } from './repositories/itemViewsRepositoryInterface'
+
+export type { FeaturedDBEntity } from './interfaces/http/Featured'
 
 export type { FetchOptions } from './interfaces/http/Fetch'
 

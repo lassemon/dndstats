@@ -1,6 +1,6 @@
+import { ItemResponse } from './Item'
+
 export interface PageStatsResponse {
-  itemsCreated: number
-  spellsCreated: number
-  weaponsCreated: number
-  monstersCreated: number
+  featuredItem: ItemResponse
+  trendingItems: ItemResponse[]
 }

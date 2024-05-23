@@ -31,6 +31,9 @@ import { FifthApiService, ImageService } from '@dmtool/infrastructure'
 import { GetFifthSRDItemUseCase } from '/useCases/GetFifthSRDItemUseCase'
 import _ from 'lodash'
 import { Order } from '@dmtool/common'
+import { IncreaseItemViewCountUseCase } from '/useCases/IncreaseItemViewCountUseCase'
+import ItemViewsRepository from '/infrastructure/repositories/ItemViewsRepository'
+import { RemoveItemViewsUseCase } from '/useCases/RemoveItemViewsUseCase'
 const authentication = new Authentication(passport)
 
 const imageService = new ImageService()
@@ -45,9 +48,14 @@ const userService = new UserService(new UserRepository())
 const removeImageFromItemUseCase = new RemoveImageFromItemUseCase(itemRepository, imageStorageService, imageRepository)
 const saveItemUseCase = new SaveItemUseCase(itemService, itemRepository, saveImageUseCase)
 
-const deleteItemUseCase = new DeleteItemUseCase(itemRepository, removeImageFromItemUseCase)
+const itemViewRepository = new ItemViewsRepository()
+const removeItemViewsUseCase = new RemoveItemViewsUseCase(itemViewRepository)
+
+const deleteItemUseCase = new DeleteItemUseCase(itemRepository, removeImageFromItemUseCase, removeItemViewsUseCase)
 const searchItemsUseCase = new SearchItemsUseCase(itemRepository)
 const getFifthSRDItemUseCase = new GetFifthSRDItemUseCase(new FifthApiService(), itemRepository)
+
+const increaseItemViewCountUseCase = new IncreaseItemViewCountUseCase(itemViewRepository)
 
 interface SearchQueryParams extends Omit<ItemSearchRequest, 'order' | 'orderBy'> {
   order?: `${Order}`
@@ -99,21 +107,46 @@ export class ItemController extends Controller {
   @Get('item/')
   public async get(@Request() request: express.Request, @Query() id: string, @Query() source: `${Source}`): Promise<ItemResponse> {
     if (id && source === Source.FifthESRD) {
-      return await getFifthSRDItemUseCase.execute({
+      const item = await getFifthSRDItemUseCase.execute({
         unknownError: throwUnknownError,
         invalidArgument: throwIllegalArgument,
         itemName: id
       })
+      if (item) {
+        await increaseItemViewCountUseCase.execute({
+          itemId: item.id,
+          source: item.source,
+          unknownError: throwUnknownError,
+          invalidArgument: throwIllegalArgument
+        })
+      }
+      return item
     } else if (id && source) {
       const item = await itemRepository.getByIdAndSource(id, source)
       if (item.visibility === Visibility.LOGGED_IN && !request.user) {
         throw new ApiError(404, 'NotFound')
+      }
+      if (item) {
+        await increaseItemViewCountUseCase.execute({
+          itemId: item.id,
+          source: item.source,
+          unknownError: throwUnknownError,
+          invalidArgument: throwIllegalArgument
+        })
       }
       return item
     } else if (id) {
       const item = await itemRepository.getById(id)
       if (item.visibility === Visibility.LOGGED_IN && !request.user) {
         throw new ApiError(404, 'NotFound')
+      }
+      if (item) {
+        await increaseItemViewCountUseCase.execute({
+          itemId: item.id,
+          source: item.source,
+          unknownError: throwUnknownError,
+          invalidArgument: throwIllegalArgument
+        })
       }
       return item
     } else {

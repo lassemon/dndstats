@@ -399,6 +399,19 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     return this.parseDBItemJSON(item)
   }
 
+  async getItemsByIdsAndSources(items: { itemId: string; source: string }[]): Promise<ItemResponse[]> {
+    const result = await connection('items').where((queryBuilder: Knex.QueryBuilder) => {
+      items.forEach((item) => {
+        queryBuilder.orWhere({
+          id: item.itemId,
+          source: item.source
+        })
+      })
+    })
+
+    return result?.map(this.parseDBItemJSON)
+  }
+
   async getByIdAndSource(itemId: string, source: `${Source}`): Promise<ItemResponse> {
     const item = await connection
       .join('users', 'items.createdBy', '=', 'users.id')
@@ -408,7 +421,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
       .andWhere('items.source', source)
       .first()
     if (!item) {
-      throw new ApiError(404, 'NotFound', `Item was not found. ( ${itemId} )`)
+      throw new ApiError(404, 'NotFound', `Item was not found. ( id: ${itemId} source: ${source} )`)
     }
 
     return this.parseDBItemJSON(item)
@@ -458,7 +471,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
       .where('items.id', itemId)
       .first()
     if (!item) {
-      throw new ApiError(404, 'NotFound', `Item was not found. ( ${itemId} )`)
+      throw new ApiError(404, 'NotFound', `RAW Item was not found. ( ${itemId} )`)
     }
 
     return item

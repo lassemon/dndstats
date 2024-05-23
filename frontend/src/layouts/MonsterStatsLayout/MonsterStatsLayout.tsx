@@ -9,6 +9,7 @@ const MonsterStatsLayout: React.FC = () => {
   return (
     <StatsLayout
       screenshotMode={screenshotMode}
+      alwaysPortrait={true}
       statsComponent={<MonsterStats screenshotMode={screenshotMode} editMode={editMode} setEditMode={setEditMode} />}
       inputComponent={
         <MonsterStatsInput

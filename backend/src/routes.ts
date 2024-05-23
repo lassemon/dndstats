@@ -80,17 +80,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "PageStatsResponse": {
-        "dataType": "refObject",
-        "properties": {
-            "itemsCreated": {"dataType":"double","required":true},
-            "spellsCreated": {"dataType":"double","required":true},
-            "weaponsCreated": {"dataType":"double","required":true},
-            "monstersCreated": {"dataType":"double","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ItemPrice": {
         "dataType": "refObject",
         "properties": {
@@ -227,6 +216,15 @@ const models: TsoaRoute.Models = {
     "ItemResponse": {
         "dataType": "refAlias",
         "type": {"dataType":"union","subSchemas":[{"ref":"BaseItemResponse"},{"ref":"ArmorItemResponse"},{"ref":"WeaponItemResponse"}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PageStatsResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "featuredItem": {"ref":"ItemResponse","required":true},
+            "trendingItems": {"dataType":"array","array":{"dataType":"refAlias","ref":"ItemResponse"},"required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ItemSearchResponse": {

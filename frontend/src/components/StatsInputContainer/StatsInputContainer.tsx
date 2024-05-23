@@ -13,11 +13,10 @@ export const useStyles = makeStyles()((theme) => ({
     flexDirection: 'column',
     gap: '1.4em',
     boxSizing: 'border-box',
-    '&& .MuiBox-root': {
+    '&& > .MuiBox-root': {
       height: '100%',
       background: theme.palette.primary.main,
       position: 'relative',
-      padding: '1em 1em 10em 1em',
       backgroundSize: 'cover',
       display: 'flex',
       flexDirection: 'column',

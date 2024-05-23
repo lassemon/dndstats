@@ -33,10 +33,12 @@ export class HttpItemRepository implements HttpItemRepositoryInterface {
       priceUnit,
       weightComparison,
       weight,
+      itemsPerPage = 50,
       ...mandatoryParams
     } = query
     const cleanedUpQuery = {
       ...mandatoryParams,
+      itemsPerPage,
       ...(!_.isEmpty(search) ? { search } : {}),
       ...(!_.isEmpty(visibility) ? { visibility } : {}),
       ...(!_.isEmpty(source) ? { source } : {}),

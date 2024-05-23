@@ -7,7 +7,18 @@ import { makeStyles } from 'tss-react/mui'
 import DownloadJSON from 'components/DownloadJSON'
 import UploadJSON from 'components/UploadJSON'
 import Character from 'domain/entities/Character'
-import { Autocomplete, Button, ButtonGroup, CircularProgress, Switch, TextField, Tooltip } from '@mui/material'
+import {
+  Autocomplete,
+  Box,
+  Button,
+  ButtonGroup,
+  CircularProgress,
+  Switch,
+  TextField,
+  Tooltip,
+  useMediaQuery,
+  useTheme
+} from '@mui/material'
 import { AutocompleteGroupHeader, AutocompleteGroupItems } from 'components/Autocomplete/AutocompleteGroup'
 import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
 import { MonsterListOption, emptyMonster } from 'domain/entities/Monster'
@@ -29,11 +40,12 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     gap: '1em',
     flexWrap: 'wrap',
-    justifyContent: 'space-between'
+    justifyContent: 'end'
   },
   uploadButtons: {
     display: 'flex',
-    gap: '1em'
+    gap: '1em',
+    flex: '1 1 100%'
   }
 }))
 
@@ -54,6 +66,9 @@ const mapCustomCharacterToMonsterListOption = (customCharacter: Character) => {
 }
 
 export const MonsterStatsInput: React.FC<MonsterStatsInputProps> = ({ screenshotMode, setScreenshotMode, editMode, setEditMode }) => {
+  const theme = useTheme()
+  const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
+
   const [currentMonster, setCurrentMonster] = useAtom(useMemo(() => monsterAtom, []))
   const [selectedMonster, setSelectedMonster] = useState(emptyMonster)
   const [loadingMonsterList, setLoadingMonsterList] = useState(false)
@@ -315,27 +330,29 @@ export const MonsterStatsInput: React.FC<MonsterStatsInputProps> = ({ screenshot
 
       <ImageButtons onUpload={onUpload} onDeleteImage={onDeleteImage} />
       <div className={classes.buttons}>
-        <div className={classes.uploadButtons}>
-          <UploadJSON onUpload={onUploadMonster}>Import Monster</UploadJSON>
+        <Box className={classes.uploadButtons} sx={{ '&&&': { flexDirection: 'row' } }}>
+          <UploadJSON onUpload={onUploadMonster}>Import</UploadJSON>
           <DownloadJSON fileName={currentMonster.id} data={currentMonster}>
-            Export Monster
+            Export
           </DownloadJSON>
-        </div>
-        {monsterSavedInHomebrew ? (
-          <Tooltip title="No changes to be saved" placement="top-start">
-            <div style={{ textAlign: 'end' }}>
-              <Button variant="contained" onClick={onSaveCustomCharacter} disabled>
-                Save as homebrew character
-              </Button>
-            </div>
-          </Tooltip>
-        ) : (
-          <div style={{ textAlign: 'end' }}>
-            <Button variant="contained" onClick={onSaveCustomCharacter}>
-              Save as homebrew character
-            </Button>
-          </div>
-        )}
+          {monsterSavedInHomebrew ? (
+            <Tooltip title="No changes to be saved" placement="top-start" disableInteractive>
+              <div style={{ textAlign: 'end' }}>
+                <Button variant="contained" onClick={onSaveCustomCharacter} disabled>
+                  Save
+                </Button>
+              </div>
+            </Tooltip>
+          ) : (
+            <Tooltip title="Save as homebrew character" placement="top-start" disableInteractive>
+              <div style={{ textAlign: 'end' }}>
+                <Button variant="contained" onClick={onSaveCustomCharacter}>
+                  Save
+                </Button>
+              </div>
+            </Tooltip>
+          )}
+        </Box>
       </div>
 
       <ButtonGroup

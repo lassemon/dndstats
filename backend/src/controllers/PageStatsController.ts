@@ -2,12 +2,21 @@ import { PageStatsResponse } from '@dmtool/application'
 import { Controller, Get, Middlewares, Request, Route, Tags } from 'tsoa'
 import ItemRepository from '/infrastructure/repositories/ItemRepository'
 import express from 'express'
-import { User } from '@dmtool/domain'
 import Authentication from '/security/Authentication'
 import passport from 'passport'
+import { GetFeaturedItemUseCase } from '/useCases/GetFeaturedItemUseCase'
+import FeaturedRepository from '/infrastructure/repositories/FeaturedRepository'
+import { throwIllegalArgument, throwUnknownError } from '/utils/errorUtil'
+import { GetTrendingItemsUseCase } from '/useCases/GetTrendingItemsUseCase'
+import ItemViewsRepository from '/infrastructure/repositories/ItemViewsRepository'
 const authentication = new Authentication(passport)
 
+const featuredRepository = new FeaturedRepository()
 const itemRepository = new ItemRepository()
+const itemViewsRepository = new ItemViewsRepository()
+
+const getFeaturedItemUseCase = new GetFeaturedItemUseCase(featuredRepository, itemRepository)
+const getTrendingItemsUseCase = new GetTrendingItemsUseCase(itemViewsRepository, itemRepository)
 
 @Route('/pagestats')
 @Middlewares(authentication.passThroughAuthenticationMiddleware())
@@ -19,12 +28,17 @@ export class PageStatsController extends Controller {
   @Tags('page')
   @Get()
   public async get(@Request() request: express.Request): Promise<PageStatsResponse> {
-    const itemsCreated = await itemRepository.countAll(request?.isAuthenticated() ? (request.user as User).id : undefined)
+    const featuredItem = await getFeaturedItemUseCase.execute({
+      unknownError: throwUnknownError,
+      invalidArgument: throwIllegalArgument
+    })
+    const trendingItems = await getTrendingItemsUseCase.execute({
+      unknownError: throwUnknownError,
+      invalidArgument: throwIllegalArgument
+    })
     return {
-      itemsCreated,
-      spellsCreated: 0,
-      weaponsCreated: 0,
-      monstersCreated: 0
+      featuredItem: featuredItem,
+      trendingItems: trendingItems
     }
   }
 }

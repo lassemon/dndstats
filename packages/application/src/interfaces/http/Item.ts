@@ -47,6 +47,12 @@ export interface ItemDBResponse extends DBItem {
   createdByUserName: string
 }
 
+export interface ItemViews {
+  itemId: string
+  source: `${Source}`
+  viewCount: number
+}
+
 export type BaseItemResponse = BaseItem & {
   createdByUserName: string
   url?: string

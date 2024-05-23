@@ -756,6 +756,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             loading={loadingItemList}
             options={itemList.sort((a, b) => b.source.localeCompare(a.source))}
             onChange={onSelectItem}
+            getOptionKey={(option) => (typeof option !== 'string' ? option?.id : '')}
             getOptionLabel={(option) => (typeof option !== 'string' ? option?.name : '')}
             PaperComponent={AutoCompleteItem}
             filterOptions={(list, state) =>

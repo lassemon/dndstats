@@ -49,6 +49,48 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           fontFamily: "'Noto Sans', 'Myriad Pro', Calibri, Helvetica, Arial, sans-serif"
+        },
+        h1: {
+          fontFamily:
+            '"Libre Baskerville","Lora","Calisto MT","Bookman Old Style",Bookman,"Goudy Old Style",Garamond,"Hoefler Text","Bitstream Charter",Georgia,serif',
+          letterSpacing: '0.04em',
+          fontVariant: 'small-caps',
+          color: 'rgba(0, 0, 0, 0.6)'
+        },
+        h2: {
+          fontFamily:
+            '"Libre Baskerville","Lora","Calisto MT","Bookman Old Style",Bookman,"Goudy Old Style",Garamond,"Hoefler Text","Bitstream Charter",Georgia,serif',
+          letterSpacing: '0.04em',
+          fontVariant: 'small-caps',
+          color: 'rgba(0, 0, 0, 0.6)'
+        },
+        h3: {
+          fontFamily:
+            '"Libre Baskerville","Lora","Calisto MT","Bookman Old Style",Bookman,"Goudy Old Style",Garamond,"Hoefler Text","Bitstream Charter",Georgia,serif',
+          letterSpacing: '0.04em',
+          fontVariant: 'small-caps',
+          color: 'rgba(0, 0, 0, 0.6)'
+        },
+        h4: {
+          fontFamily:
+            '"Libre Baskerville","Lora","Calisto MT","Bookman Old Style",Bookman,"Goudy Old Style",Garamond,"Hoefler Text","Bitstream Charter",Georgia,serif',
+          letterSpacing: '0.04em',
+          fontVariant: 'small-caps',
+          color: 'rgba(0, 0, 0, 0.6)'
+        },
+        h5: {
+          fontFamily:
+            '"Libre Baskerville","Lora","Calisto MT","Bookman Old Style",Bookman,"Goudy Old Style",Garamond,"Hoefler Text","Bitstream Charter",Georgia,serif',
+          letterSpacing: '0.04em',
+          fontVariant: 'small-caps',
+          color: 'rgba(0, 0, 0, 0.6)'
+        },
+        h6: {
+          fontFamily:
+            '"Libre Baskerville","Lora","Calisto MT","Bookman Old Style",Bookman,"Goudy Old Style",Garamond,"Hoefler Text","Bitstream Charter",Georgia,serif',
+          letterSpacing: '0.04em',
+          fontVariant: 'small-caps',
+          color: 'rgba(0, 0, 0, 0.6)'
         }
       }
     },

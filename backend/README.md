@@ -3,24 +3,49 @@ Installation to cPanel:
 - upload latest code to server /dmtools/ (do not copy node_modules or build folder)
 
   - remove:
-    /dmtools/backend/src
-    /dmtools/backend/build
-    /dmtools/packages
     /nodevenv/dmtools/18/lib/packages
-    -- don't remove package-lock.json from /dmtools root folder (you can overwrite it yes)
   - upload:
-    to /dmtools/backend
-    -- backend/src
-    -- backend/tools
-    -- backend/<files (not folders)> <-- except README.MD and .env
-    to /dmtools/packages
-    -- run `npm run clean:build` LOCALLY on root before you upload to remove lib folders
-    -- packages/\*
     to /nodevenv/dmtools/18/lib
     -- packages/\*
     -- tsconfig.package.json
     -- tsconfig.build.json
     -- package-lock.json
+
+  - remove: -- don't remove package-lock.json from /dmtools root folder (you can overwrite it yes)
+    /dmtools/packages
+  - upload:
+    to /dmtools/packages
+    -- local machine: run `npm run clean:build`. LOCALLY on root before you upload to remove lib folders
+    -- packages/\*
+    -- tsconfig.package.json
+    -- tsconfig.build.json
+    -- package-lock.json
+    -- package.json
+
+  - remove:
+    /nodevenv/dmtools/18/lib/backend/
+    -- /src
+    -- /tools
+  - upload:
+    to /nodevenv/dmtools/18/lib/backend/
+    -- /src
+    -- /tools
+    -- tsoa.json
+    -- tsconfig.json
+    -- swagger.json
+    -- package.json
+    -- nodemon.json
+
+  - remove:
+    /dmtools/backend/src
+    /dmtools/backend/tools
+    /dmtools/backend/build
+
+  - upload:
+    to /dmtools/backend
+    -- backend/src
+    -- backend/tools
+    -- backend/<files (not folders)> <-- except README.MD and .env
 
 - open cPanel and go to Setup Node.js App
 - edit the application
@@ -28,12 +53,14 @@ Installation to cPanel:
 - copy the "source ..." command from the view
 - open a new terminal and open source
   -- BEOYND HERE, THERE BE DRAGONS --
+  - stop the application from the cPanel UI
   - run rm -rf node_modules in /home/viitevhg/dmtools/
   - press the "Run NPM Install" -button
     //- run `tail -f logs/dmtools.log`
 - in the terminal goto ../nodevenv/dmtools/18/lib and run `npm run build`
 - then goto /home/viitevhg/dmtools/backend and run `npm run build`
 - finally
+  - if you stopped the app, start it from the web UI
   - press the "Run Script" -button and run the build script
   - Restart the app
 

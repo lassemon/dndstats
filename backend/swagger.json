@@ -125,34 +125,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"PageStatsResponse": {
-				"properties": {
-					"itemsCreated": {
-						"type": "number",
-						"format": "double"
-					},
-					"spellsCreated": {
-						"type": "number",
-						"format": "double"
-					},
-					"weaponsCreated": {
-						"type": "number",
-						"format": "double"
-					},
-					"monstersCreated": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"itemsCreated",
-					"spellsCreated",
-					"weaponsCreated",
-					"monstersCreated"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"ItemPrice": {
 				"properties": {
 					"quantity": {
@@ -740,6 +712,25 @@
 						"$ref": "#/components/schemas/WeaponItemResponse"
 					}
 				]
+			},
+			"PageStatsResponse": {
+				"properties": {
+					"featuredItem": {
+						"$ref": "#/components/schemas/ItemResponse"
+					},
+					"trendingItems": {
+						"items": {
+							"$ref": "#/components/schemas/ItemResponse"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"featuredItem",
+					"trendingItems"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"ItemSearchResponse": {
 				"properties": {

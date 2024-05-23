@@ -414,10 +414,10 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
       setImageId(localItem.imageId)
     }
 
-    const getFifthApiItem = async (_id: string) => {
+    const getItem = async (_id: string, _source: `${Source}`) => {
       setLoadingItem(true)
       try {
-        const fifthEditionItem = await itemRepository.getByIdAndSource(_id, Source.FifthESRD)
+        const fifthEditionItem = await itemRepository.getByIdAndSource(_id, _source)
         // this if is to prevent setting the default item as the item on the row
         if (fifthEditionItem.id === _id) {
           setLocalItem(new ItemDTO(fifthEditionItem))
@@ -428,8 +428,8 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
       }
     }
 
-    if (open && localItem.source === Source.FifthESRD) {
-      getFifthApiItem(localItem.id)
+    if (open) {
+      getItem(localItem.id, localItem.source)
     }
   }, [open])
 

@@ -19,7 +19,8 @@ export const useStyles = makeStyles()((theme) => ({
     flexBasis: '16.6%',
     textTransform: 'capitalize',
     display: 'inline-block',
-    marginInlineStart: '0.5em'
+    marginInlineStart: '0.5em',
+    whiteSpace: 'nowrap'
   }
 }))
 
@@ -34,7 +35,11 @@ const Stat: React.FC<StatProps> = ({ header, value, onClick, onDoubleClick }) =>
   const { classes } = useStyles()
 
   return (
-    <div className={classes.root} onClick={onClick ? onClick : undefined} onDoubleClick={onDoubleClick ? onDoubleClick : undefined}>
+    <div
+      className={`baseStat ${classes.root}`}
+      onClick={onClick ? onClick : undefined}
+      onDoubleClick={onDoubleClick ? onDoubleClick : undefined}
+    >
       <span className={classes.statHeader}>{header}</span>
       <span className={classes.statValue}>{value}</span>
     </div>

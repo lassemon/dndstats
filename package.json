@@ -1,7 +1,7 @@
 {
   "name": "dmtool",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "ISC",
   "scripts": {
     "clean:buildinfo": "rimraf -g \"packages/**/tsconfig.tsbuildinfo\"",

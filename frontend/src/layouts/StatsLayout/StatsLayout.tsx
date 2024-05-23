@@ -8,7 +8,7 @@ import PlusButton from 'components/PlusButton'
 import { makeStyles } from 'tss-react/mui'
 import classNames from 'classnames/bind'
 import { useOrientation } from 'utils/hooks'
-import { mutationObserver, resizeObserver } from 'utils/rootResize'
+import { resizeObserver } from 'utils/rootResize'
 
 interface StatsLayoutProps {
   statsComponent?: React.ReactNode
@@ -41,7 +41,7 @@ export const useStyles = makeStyles()((theme) => ({
     width: '90%'
   },
   largeContainer: {
-    width: '70%'
+    width: '90%'
   }
 }))
 

@@ -15,6 +15,9 @@ import { atomWithStorage } from 'jotai/utils'
 import React, { useEffect, useRef, useState } from 'react'
 import { UpdateParam, itemAtom } from 'state/itemAtom'
 import config from 'config'
+import { unstable_batchedUpdates } from 'react-dom'
+
+const DEBUG = false
 
 const imageProcessingService = new BrowserImageProcessingService()
 
@@ -78,19 +81,44 @@ const localStorageImageAtom = atomWithStorage<ImageDTO | null | undefined>(
 
 export interface UseItemWithImageOptions {
   persist?: boolean
+  useDefault?: boolean
 }
 
 const useItemWithImage = (
   itemRepository: HttpItemRepositoryInterface,
   imageRepository: LocalStorageImageRepositoryInterface | HttpImageRepositoryInterface,
   itemId?: string,
-  options: UseItemWithImageOptions = { persist: false }
+  options: UseItemWithImageOptions = { persist: false, useDefault: true }
 ): UseItemReturn => {
-  const { persist } = options
+  const imageRequestControllerRef = useRef<AbortController | null>(null)
+  const fetchAndSetImage = async (_imageId: string) => {
+    try {
+      setIsLoadingImage(true)
+      const controller = new AbortController()
+      imageRequestControllerRef.current = controller
+
+      DEBUG && console.log('fetching image', _imageId)
+      const fetchedImage = await imageRepository.getById(_imageId, { signal: controller.signal })
+      DEBUG && console.log('fetched image', fetchedImage)
+      unstable_batchedUpdates(() => {
+        setIsLoadingImage(false)
+
+        //console.log('setting image', fetchedImage)
+        setImage(new ImageDTO(fetchedImage))
+        setLocalStorageImage(new ImageDTO(fetchedImage))
+      })
+    } catch (error) {
+      unstable_batchedUpdates(() => {
+        setIsLoadingImage(false)
+        setImageError(error)
+      })
+    }
+  }
+
+  const { persist, useDefault = true } = options
   const [authState] = useAtom(authAtom)
 
   const itemRequestControllerRef = useRef<AbortController | null>(null)
-  const imageRequestControllerRef = useRef<AbortController | null>(null)
 
   const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
 
@@ -108,111 +136,109 @@ const useItemWithImage = (
 
   let returnItem = (persist === true && localStorageItem ? localStorageItem : item) || null
   let returnImage = (persist === true ? localStorageImage : image) || null
-  const imageId = returnItem?.imageId
+  let imageId = returnItem?.imageId || null
 
   useEffect(() => {
+    DEBUG && console.log('itemId changed =>', itemId)
     const fetchAndSetItem = async (_itemId: string) => {
       try {
         setIsLoadingItem(true)
         const controller = new AbortController()
         itemRequestControllerRef.current = controller
         const fetchedItem = await itemRepository.getById(_itemId, { signal: controller.signal })
-        setIsLoadingItem(false)
 
-        setBackendItem(new ItemDTO(fetchedItem))
-        setLocalStorageItem(new ItemDTO({ ...fetchedItem, updatedAt: unixtimeNow() }))
-        setItem(new ItemDTO(fetchedItem))
+        unstable_batchedUpdates(() => {
+          setIsLoadingItem(false)
+          setBackendItem(new ItemDTO(fetchedItem))
+          setLocalStorageItem(new ItemDTO({ ...fetchedItem, updatedAt: unixtimeNow() }))
+          setItem(new ItemDTO(fetchedItem))
 
-        if (!fetchedItem.imageId) {
-          setImage(null)
-          setLocalStorageImage(null)
-        }
-        if (fetchedItem.imageId !== localStorageImage?.id) {
-          //setImage(null)
-          //setLocalStorageImage(null)
-        }
+          if (!fetchedItem.imageId) {
+            setImage(null)
+            setLocalStorageImage(null)
+          }
+        })
       } catch (error) {
-        setIsLoadingItem(false)
-        setItemError(error)
+        unstable_batchedUpdates(() => {
+          setIsLoadingItem(false)
+          setItemError(error)
+        })
       }
     }
 
     const itemIdExists = !!itemId
     const itemIdIsTheSameAsSavedItem = itemId === (persist ? localStorageItem?.id : item?.id)
-    const itemExists = persist ? !!localStorageItem : !!item
+    const itemExists = !!returnItem
 
-    const localStorageInvalidated = localStorageItem?.updatedAt || 0 < unixtimeNow() + config.localStorageInvalidateTimeInMilliseconds
+    const localStorageInvalidated = (localStorageItem?.updatedAt || 0) < unixtimeNow() + config.localStorageInvalidateTimeInMilliseconds
 
     const shouldFetchItem =
       (itemIdExists && !itemIdIsTheSameAsSavedItem) ||
       (itemIdExists && !itemExists) ||
       (authState.loggedIn && itemIdExists && persist && localStorageInvalidated)
 
-    /*
-    console.log('itemIdExists', itemIdExists)
-    console.log('backendItem?.id', backendItem?.id)
-    console.log('localStorageItem?.id', localStorageItem?.id)
-    console.log('itemId', itemId)
-    console.log('isLoadingItem', isLoadingItem)
-    console.log('persist', persist)
-    console.log('item?.id', item?.id)
-    console.log('itemIdIsTheSameAsSavedItem', itemIdIsTheSameAsSavedItem)
-    console.log('itemExists', itemExists)
-    console.log('local storage item last updated at', dateStringFromUnixTime(localStorageItem?.updatedAt || 0))
-    console.log('localStorageInvalidated', localStorageInvalidated)
-    console.log('shouldFetchItem', shouldFetchItem)
-    console.log('\n\n\n')*/
+    if (DEBUG) {
+      console.log('\n\n\n')
+      console.log('itemIdExists', itemIdExists)
+      console.log('itemIdIsTheSameAsSavedItem', itemIdIsTheSameAsSavedItem)
+      console.log('itemExists', itemExists)
+      console.log('authState.loggedIn', authState.loggedIn)
+      console.log('persist', persist)
+      console.log('localStorageInvalidated', localStorageInvalidated)
+      console.log('---')
+      console.log('backendItem?.id', backendItem?.id)
+      console.log('localStorageItem?.id', localStorageItem?.id)
+      console.log('itemId', itemId)
+      console.log('isLoadingItem', isLoadingItem)
+      console.log('item?.id', item?.id)
+      //console.log('local storage item last updated at', dateStringFromUnixTime(localStorageItem?.updatedAt || 0))
+      console.log('shouldFetchItem', shouldFetchItem)
+      console.log('\n\n\n')
+
+      console.log('returnImage', returnImage)
+      console.log('imageId', imageId)
+      console.log('\n\n\n')
+    }
 
     if (shouldFetchItem && !isLoadingItem) {
       fetchAndSetItem(itemId)
-    } else if (!itemIdExists && !itemExists) {
+    } else if (!itemIdExists && !itemExists && useDefault) {
+      DEBUG && console.log('fetching default item')
       fetchAndSetItem('defaultItem')
     }
 
-    return () => {
-      itemRequestControllerRef?.current?.abort()
-      imageRequestControllerRef?.current?.abort()
+    if (!returnImage && !!imageId && returnItem?.imageId) {
+      fetchAndSetImage(returnItem.imageId)
     }
   }, [itemId])
 
   useEffect(() => {
-    const fetchAndSetImage = async (_imageId: string) => {
-      try {
-        setIsLoadingImage(true)
-        const controller = new AbortController()
-        imageRequestControllerRef.current = controller
-
-        const fetchedImage = await imageRepository.getById(_imageId, { signal: controller.signal })
-        setIsLoadingImage(false)
-
-        setImage(new ImageDTO(fetchedImage))
-        setLocalStorageImage(new ImageDTO(fetchedImage))
-      } catch (error) {
-        setIsLoadingImage(false)
-        setImageError(error)
-      }
-    }
-
+    const itemIdExists = !!itemId
     const imageIdExists = !!imageId
     const imageIdIsTheSameAsSavedImage = imageId === (persist ? localStorageImage?.id : image?.id)
     const imageExists = persist ? !!localStorageImage : !!image
-    const shouldFetchImage = (imageIdExists && !imageIdIsTheSameAsSavedImage) || (imageIdExists && !imageExists)
+    const shouldFetchImage = itemIdExists && ((imageIdExists && !imageIdIsTheSameAsSavedImage) || (imageIdExists && !imageExists))
 
-    /*
-    console.log('imageIdExists', imageIdExists)
-    console.log('imageIdIsTheSameAsSavedImage', imageIdIsTheSameAsSavedImage)
-    console.log('imageExists', imageExists)
-    console.log('shouldFetchImage', shouldFetchImage)*/
-
-    if (shouldFetchImage) {
-      fetchAndSetImage(imageId)
+    if (DEBUG) {
+      console.log('imageId', imageId)
+      console.log('imageIdExists', imageIdExists)
+      console.log('imageIdIsTheSameAsSavedImage', imageIdIsTheSameAsSavedImage)
+      console.log('imageExists', imageExists)
+      console.log('shouldFetchImage', shouldFetchImage)
     }
 
+    if (shouldFetchImage && imageId) {
+      fetchAndSetImage(imageId)
+    }
+  }, [imageId])
+
+  useEffect(() => {
     return () => {
+      DEBUG && console.log('ABORTING item & image fetch')
       itemRequestControllerRef?.current?.abort()
       imageRequestControllerRef?.current?.abort()
     }
-  }, [imageId])
+  }, [])
 
   const itemState = {
     loadingItem: isLoadingItem,

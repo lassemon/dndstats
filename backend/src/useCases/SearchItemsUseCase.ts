@@ -78,9 +78,9 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
     }
   }
 
-  private paginateItems = (items: ItemResponse[], itemsPerPage: number = 50, pageNumber: number = 0) => {
-    const startIndex = (pageNumber || 1 - 1) * (itemsPerPage || items.length)
-    const endIndex = startIndex + (itemsPerPage || items.length)
+  private paginateItems = (items: ItemResponse[], itemsPerPage: number | undefined, pageNumber: number = 0) => {
+    const startIndex = itemsPerPage ? (pageNumber || 1 - 1) * (itemsPerPage || items.length) : 0
+    const endIndex = itemsPerPage ? startIndex + (itemsPerPage || items.length) : items.length
 
     return items.slice(startIndex, endIndex)
   }

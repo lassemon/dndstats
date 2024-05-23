@@ -24,6 +24,7 @@ export interface DatabaseItemRepositoryInterface {
   getUserItemsByName(itemName: string, userId: string): Promise<ItemResponse[]>
   countItemsCreatedByUser(userId: string): Promise<number>
   getById(itemId?: string): Promise<ItemResponse>
+  getItemsByIdsAndSources(items: { itemId: string; source: string }[]): Promise<ItemResponse[]>
   getByImageId(imageId: string): Promise<ItemResponse[]>
   getByIdAndSource(itemId: string, source: `${Source}`): Promise<ItemResponse>
   create(item: ItemInsertQuery, userId: string): Promise<ItemResponse>
