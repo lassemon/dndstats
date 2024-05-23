@@ -99,7 +99,7 @@ const useStyles = makeStyles()((theme) => {
       }
     },
     blockDescription: {
-      margin: '0.3em 0 0 0.5em'
+      margin: '0.3em 0.5em 0 0.5em'
     },
     inlineDescription: {
       display: 'inline'
