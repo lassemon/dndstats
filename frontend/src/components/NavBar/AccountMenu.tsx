@@ -6,6 +6,7 @@ import { useAtom } from 'jotai'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useOrientation } from 'utils/hooks'
+import underline from 'assets/underline.png'
 
 export const AccountMenu: React.FC = () => {
   const [authState, setAuthState] = useAtom(authAtom)

@@ -11,8 +11,7 @@ import SiteActionsMenu from './SiteActionsMenu'
 
 const TABS = {
   '/items': 'Items',
-  '/combattracker': 'Combat Tracker',
-  '/about': 'About'
+  '/combattracker': 'Combat Tracker'
 } as { [key: string]: string }
 
 function a11yProps(index: number) {

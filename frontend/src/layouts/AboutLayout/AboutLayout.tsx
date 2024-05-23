@@ -7,8 +7,8 @@ export const useStyles = makeStyles()((theme) => ({
   root: {
     background: theme.status.light,
     height: '100%',
+    padding: '1em',
     '&& > *': {
-      margin: 0,
       padding: '0 2rem'
     },
     '&& > *:last-child': {
@@ -27,16 +27,16 @@ const AboutLayout: React.FC = () => {
       <Typography
         variant="h3"
         sx={{
-          margin: '1em 0 0 0'
+          margin: '0.4em 0 0 0'
         }}
       >
         How to use
       </Typography>
-      <Typography variant="h6">Text fields</Typography>
+      <Typography variant="h6">Input fields</Typography>
       <Typography>
-        Use the edit fields to change generated stats to your liking. Some of the stats can be left empty and that will make them disappear
-        from the generated result. Mandatory stats are not going to disappear even if you leave the input empty (for example the Actions
-        header of a monster).
+        Use the input fields to change generated stats to your liking. Some of the stats can be left empty and that will make them disappear
+        from the generated UI. Mandatory stats are not going to disappear even if you leave the input empty (for example the Actions header
+        of a monster).
       </Typography>
       <Typography variant="h6">Images</Typography>
       <Typography>
@@ -70,10 +70,10 @@ const AboutLayout: React.FC = () => {
       </Typography>
       <Typography variant="h6">Credits</Typography>
       <Typography>
-        The Shield image and Hammer image, that are shamelessly used on this site, are made by{' '}
-        <a href="https://brackwall.artstation.com/projects">Erik Dolphin</a>
-        .<br />
-        The Balor image is stolen from <a href="https://www.dndbeyond.com/monsters/balor">D&D Beyond</a>.
+        The 5th e SRD item data is from{' '}
+        <a href="https://www.dnd5eapi.co/" target="_blank">
+          dnd5eapi.co
+        </a>
       </Typography>
       <Typography variant="h6">Feedback</Typography>
       <Typography>

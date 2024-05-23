@@ -2,7 +2,6 @@ import { ITEM_DEFAULTS, ItemDTO, ItemResponse, WeaponItemResponse } from '@dmtoo
 import { unixtimeNow } from '@dmtool/common'
 import { ItemCategory, Source, Visibility, WeaponProperty } from '@dmtool/domain'
 import balorImage from 'assets/balorImage'
-import mjolnirImage from 'assets/mjolnirImage'
 import Character from 'domain/entities/Character'
 import { AbilityScores } from 'domain/services/FifthESRDService'
 import { PlayerType, Condition, DamageSource, Skill, Senses, Speed } from 'interfaces'
