@@ -162,13 +162,30 @@ export class ItemController extends Controller {
       if (item.visibility === Visibility.LOGGED_IN && !request.user) {
         throw new ApiError(404, 'NotFound')
       }
+      if (item) {
+        await increaseItemViewCountUseCase.execute({
+          itemId: item.id,
+          source: item.source,
+          unknownError: throwUnknownError,
+          invalidArgument: throwIllegalArgument
+        })
+      }
       return item
     } catch (err) {
-      return await getFifthSRDItemUseCase.execute({
+      const item = await getFifthSRDItemUseCase.execute({
         unknownError: throwUnknownError,
         invalidArgument: throwIllegalArgument,
         itemName: itemId
       })
+      if (item) {
+        await increaseItemViewCountUseCase.execute({
+          itemId: item.id,
+          source: item.source,
+          unknownError: throwUnknownError,
+          invalidArgument: throwIllegalArgument
+        })
+      }
+      return item
     }
   }
 
