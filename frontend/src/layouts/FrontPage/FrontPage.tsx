@@ -156,7 +156,7 @@ const FrontPage: React.FC = () => {
             )}
           </Box>
         </Box>
-        <Box sx={{ flex: '2', maxHeight: '95dvh', overflowY: 'scroll', minWidth: '17em' }}>
+        <Box sx={{ flex: '2', maxHeight: '95dvh', overflowY: 'scroll', scrollbarWidth: 'thin', minWidth: '17em' }}>
           <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Trending Items</FrontPageHeader>
           <Box sx={{ margin: '1.5em 0.5em 0.5em 0', width: '90%', '&& > .stats-container': { margin: '0 0 1em 0' } }}>
             {loadingPageStats ? (

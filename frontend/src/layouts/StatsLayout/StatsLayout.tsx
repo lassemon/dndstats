@@ -174,7 +174,10 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
             padding: 0,
             paddingTop: 0,
             maxWidth: isLarge && !alwaysPortrait ? '35%' : '100%',
-            minHeight: '100%'
+            minHeight: '100%',
+            maxHeight: isLarge && !alwaysPortrait ? '100dvh' : 'inherit',
+            overflowY: isLarge && !alwaysPortrait ? 'scroll' : 'auto',
+            scrollbarWidth: 'thin'
           }
         }}
       >

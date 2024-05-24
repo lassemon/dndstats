@@ -1192,7 +1192,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
       </div>
 
       <Tooltip
-        title={!isArmor(item) ? 'The item must be part of an armor category before you can assign an armor properties to it.' : ''}
+        title={!isArmor(item) ? 'The item must be part of an armor category before you can assign armor properties to it.' : ''}
         placement="top-start"
         disableInteractive
       >

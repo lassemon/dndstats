@@ -7,6 +7,8 @@ html {
   padding: 0;
   position: relative;
   touch-action: manipulation;
+  scrollbar-color: #c77b09 #eee3c5;
+  scrollbar-width: thin;
 }
 
 @media (max-width: 500px) {
