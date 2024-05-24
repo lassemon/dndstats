@@ -155,6 +155,9 @@ export class ItemDTO extends DTO<ItemDTO, ItemProperties> {
       ? this._properties.categories?.map((category) => capitalize(category.replaceAll('-', ' '))).join(', ')
       : ''
   }
+  public get hasSecondaryCategories() {
+    return this.main_categories_label !== this.all_categories_label
+  }
   public set categories(value) {
     this._properties.categories = value
   }

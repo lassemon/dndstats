@@ -145,6 +145,7 @@ const useItemWithImage = (
         setIsLoadingItem(true)
         const controller = new AbortController()
         itemRequestControllerRef.current = controller
+        DEBUG && console.log('getting item by id  =>', _itemId)
         const fetchedItem = await itemRepository.getById(_itemId, { signal: controller.signal })
 
         unstable_batchedUpdates(() => {

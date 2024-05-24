@@ -78,10 +78,13 @@ const getCantDeleteReason = ({ isDefaultItem, isNewItem, isCreatedByCurrentUser,
 interface CantSaveReasonOptions {
   isDefaultItem: boolean
   hasChanged: boolean
+  isCreatedByCurrentUser: boolean
 }
-const getCantSaveReason = ({ isDefaultItem, hasChanged }: CantSaveReasonOptions): string => {
+const getCantSaveReason = ({ isDefaultItem, hasChanged, isCreatedByCurrentUser }: CantSaveReasonOptions): string => {
   if (isDefaultItem) {
     return 'Cannot modify system default item'
+  } else if (!isCreatedByCurrentUser) {
+    return `Cannot modify an item that is not created by you (Try saving as new)`
   } else if (!hasChanged) {
     return `No changes to save`
   }
@@ -661,7 +664,9 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   }
 
   const onSaveAs = () => {
-    onSave(item?.clone({ id: uuid() }) || null)
+    // do not set new id here, let backend handle new item id creation
+    // to avoid frontend getting item with some random temp id
+    onSave(item)
   }
 
   const closeUnsavedChangesDialog = (saveChanges?: boolean, createNew?: boolean) => {
@@ -726,8 +731,8 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   }
 
   const canSave = {
-    reason: getCantSaveReason({ hasChanged, isDefaultItem }),
-    status: hasChanged && !isDefaultItem
+    reason: getCantSaveReason({ hasChanged, isDefaultItem, isCreatedByCurrentUser }),
+    status: hasChanged && !isDefaultItem && isCreatedByCurrentUser
   }
 
   const isCreatingItem = canSave.status && isNewItemForUser
@@ -807,16 +812,23 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               }}
             >
               <Tooltip
-                title={showSecondaryCategories ? 'Hide secondary categories' : 'Show secondary categories'}
+                title={
+                  showSecondaryCategories
+                    ? `Hide secondary categories ${!item.hasSecondaryCategories ? '(currently no secondary gategories to hide)' : ''}`
+                    : 'Show secondary categories'
+                }
                 placement="top-start"
                 disableInteractive
               >
-                <IconButton
-                  color={showSecondaryCategories ? 'secondary' : 'default'}
-                  onClick={() => setShowSecondaryCategories(!showSecondaryCategories)}
-                >
-                  {showSecondaryCategories ? <LayersIcon /> : <LayersClearIcon />}
-                </IconButton>
+                <span>
+                  <IconButton
+                    disabled={!item.hasSecondaryCategories}
+                    color={showSecondaryCategories ? 'secondary' : 'default'}
+                    onClick={() => setShowSecondaryCategories(!showSecondaryCategories)}
+                  >
+                    {showSecondaryCategories ? <LayersIcon /> : <LayersClearIcon />}
+                  </IconButton>
+                </span>
               </Tooltip>
               <Tooltip title="Toggle screenshot mode" placement="top-start" disableInteractive>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
