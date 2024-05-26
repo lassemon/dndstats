@@ -10,6 +10,7 @@ import {
   DialogTitle,
   IconButton,
   Paper,
+  Skeleton,
   SxProps,
   Table,
   TableBody,
@@ -285,19 +286,21 @@ export const ItemTable: React.FC<ItemTableProps> = ({
           <TableBody sx={{ opacity: loading ? '0.5' : '1', background: '#fdf4dc' }}>
             {loading ? (
               <TableRow>
-                <TableCell sx={{ width: '0%', minWidth: '2em' }} />
-                <TableCell sx={{ width: '0%', minWidth: '6em' }} />
-                <TableCell sx={{ width: '0%', minWidth: '8em' }} />
-                <TableCell sx={{ width: '0%' }} />
-                <TableCell>
-                  <LoadingIndicator size={100} sx={{ padding: '3em 0' }} />
+                <TableCell
+                  sx={{ width: '0%', minWidth: '2em' }}
+                  colSpan={authState.loggedIn ? LOGGED_IN_TABLE_COLUMN_COUNT : LOGGED_IN_TABLE_COLUMN_COUNT - 1}
+                >
+                  {Array.from(Array(4).keys()).map(() => {
+                    return (
+                      <Skeleton
+                        variant="rounded"
+                        width="100%"
+                        height={40}
+                        sx={{ margin: '0 0 0.5em 0', backgroundColor: 'rgba(0, 0, 0, 0.21)' }}
+                      />
+                    )
+                  })}
                 </TableCell>
-                <TableCell sx={{ width: '0%' }} />
-                <TableCell sx={{ width: '0%' }} />
-                <TableCell sx={{ width: '0%' }} />
-                <TableCell sx={{ width: '0%' }} />
-                {authState.loggedIn && <TableCell sx={{ width: '0%' }} />}
-                {authState.loggedIn && <TableCell sx={{ width: '0%' }} />}
               </TableRow>
             ) : items && items.length > 0 ? (
               items.map((item, index) => {
@@ -632,7 +635,7 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
               }}
             >
               {loadingItem ? (
-                <LoadingIndicator />
+                <Skeleton variant="rounded" width="100%" height={60} animation="wave" />
               ) : (
                 <ItemCard
                   item={localItem}

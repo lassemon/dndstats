@@ -551,7 +551,10 @@ export class ItemDTO extends DTO<ItemDTO, ItemProperties> {
     if (otherItem === null) {
       return false
     }
-    return JSON.stringify(this) === JSON.stringify(otherItem)
+    return (
+      JSON.stringify(_.omit(this.toJSON(), 'updatedAt')) ===
+      JSON.stringify(_.omit((otherItem as ItemDTO)?.toJSON() || otherItem, 'updatedAt'))
+    )
   }
 
   toJSON(): ItemProperties {

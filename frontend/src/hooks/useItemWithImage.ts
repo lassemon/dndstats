@@ -19,7 +19,7 @@ import { unstable_batchedUpdates } from 'react-dom'
 
 // FIXME, this whole hook has become too complex to maintain. refactor and separate image fetch from item fetch
 
-const DEBUG = true
+const DEBUG = false
 
 const imageProcessingService = new BrowserImageProcessingService()
 
@@ -159,12 +159,12 @@ const useItemWithImage = (
           setIsLoadingItem(false)
           const localStorageItemIsSameAsFetched = fetchedItem.id === localStorageItem?.id && fetchedItem.source === localStorageItem.source
           const localStorageItemIsNewer = (fetchedItem?.updatedAt || 0) < (localStorageItem?.updatedAt || -1)
+          setBackendItem(new ItemDTO(fetchedItem))
 
           DEBUG && console.log('localStorageItemIsSameAsFetched', localStorageItemIsSameAsFetched)
           DEBUG && console.log('localStorageItemIsNewer', localStorageItemIsNewer)
 
           if ((localStorageItemIsSameAsFetched && !localStorageItemIsNewer) || !localStorageItemIsSameAsFetched) {
-            setBackendItem(new ItemDTO(fetchedItem))
             setLocalStorageItem(new ItemDTO({ ...fetchedItem, updatedAt: unixtimeNow() }))
             setItem(new ItemDTO(fetchedItem))
 

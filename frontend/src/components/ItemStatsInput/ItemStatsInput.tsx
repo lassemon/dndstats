@@ -57,8 +57,8 @@ import SaveAsIcon from '@mui/icons-material/SaveAs'
 import LayersIcon from '@mui/icons-material/Layers'
 import LayersClearIcon from '@mui/icons-material/LayersClear'
 import ViewStreamIcon from '@mui/icons-material/ViewStream'
-import HideImageIcon from '@mui/icons-material/HideImage'
-import ImageIcon from '@mui/icons-material/Image'
+import BlurOnIcon from '@mui/icons-material/BlurOn'
+import BlurOffIcon from '@mui/icons-material/BlurOff'
 
 interface CantDeleteReasonOptions {
   isDefaultItem: boolean
@@ -87,7 +87,7 @@ const getCantSaveReason = ({ isDefaultItem, hasChanged, isCreatedByCurrentUser }
   if (isDefaultItem) {
     return 'Cannot modify system default item'
   } else if (!isCreatedByCurrentUser) {
-    return `Cannot modify an item that is not created by you (Try saving as new)`
+    return `Cannot modify an item that is not created by you (Try to Save As..)`
   } else if (!hasChanged) {
     return `No changes to save`
   }
@@ -822,17 +822,19 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                 gap: '0.2em'
               }}
             >
-              <Tooltip
-                title={hideBgBrush ? `Show grey background brush` : 'Hide grey background brush'}
-                placement="top-start"
-                disableInteractive
-              >
-                <span>
-                  <IconButton color={hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
-                    {hideBgBrush ? <HideImageIcon /> : <ImageIcon />}
-                  </IconButton>
-                </span>
-              </Tooltip>
+              {image && (
+                <Tooltip
+                  title={hideBgBrush ? `Show images grey background brush` : 'Hide images grey background brush'}
+                  placement="top-start"
+                  disableInteractive
+                >
+                  <span>
+                    <IconButton color={hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
+                      {hideBgBrush ? <BlurOffIcon /> : <BlurOnIcon />}
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              )}
               <Tooltip
                 title={!lockToPortrait ? `Lock View to Portrait Mode` : 'Release Portrait Mode Lock'}
                 placement="top-start"
@@ -844,34 +846,27 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                   </IconButton>
                 </span>
               </Tooltip>
-              <Tooltip
-                title={
-                  showSecondaryCategories
-                    ? `Hide secondary categories ${!item.hasSecondaryCategories ? '(currently no secondary gategories to hide)' : ''}`
-                    : 'Show secondary categories'
-                }
-                placement="top-start"
-                disableInteractive
-              >
-                <span>
-                  <IconButton
-                    disabled={!item.hasSecondaryCategories}
-                    color={showSecondaryCategories ? 'secondary' : 'default'}
-                    onClick={() => setShowSecondaryCategories(!showSecondaryCategories)}
-                  >
-                    {showSecondaryCategories ? <LayersIcon /> : <LayersClearIcon />}
-                  </IconButton>
-                </span>
-              </Tooltip>
+              {item.hasSecondaryCategories && (
+                <Tooltip
+                  title={showSecondaryCategories ? `Hide secondary categories` : 'Show secondary categories'}
+                  placement="top-start"
+                  disableInteractive
+                >
+                  <span>
+                    <IconButton
+                      disabled={!item.hasSecondaryCategories}
+                      color={showSecondaryCategories ? 'secondary' : 'default'}
+                      onClick={() => setShowSecondaryCategories(!showSecondaryCategories)}
+                    >
+                      {showSecondaryCategories ? <LayersIcon /> : <LayersClearIcon />}
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              )}
               <Tooltip title="Toggle screenshot mode" placement="top-start" disableInteractive>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <ScreenshotButton
-                    onClick={onToggleScreenshotMode}
-                    color={screenshotMode ? 'secondary' : 'default'}
-                    sx={{ paddingBottom: 0 }}
-                  />
-                  <Switch onClick={onToggleScreenshotMode} checked={screenshotMode} sx={{ marginTop: '-10px' }} color="secondary" />
-                </div>
+                <span>
+                  <ScreenshotButton onClick={onToggleScreenshotMode} color={screenshotMode ? 'secondary' : 'default'} />
+                </span>
               </Tooltip>
               <Tooltip title={canDelete.status ? 'Delete item' : canDelete.reason} placement="top-start" disableInteractive>
                 <div>
@@ -951,17 +946,19 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
           </>
         ) : (
           <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1em' }}>
-            <Tooltip
-              title={hideBgBrush ? `Show grey background brush` : 'Hide grey background brush'}
-              placement="top-start"
-              disableInteractive
-            >
-              <span>
-                <IconButton color={hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
-                  {hideBgBrush ? <HideImageIcon /> : <ImageIcon />}
-                </IconButton>
-              </span>
-            </Tooltip>
+            {image && (
+              <Tooltip
+                title={hideBgBrush ? `Show images grey background brush` : 'Hide images grey background brush'}
+                placement="top-start"
+                disableInteractive
+              >
+                <span>
+                  <IconButton color={hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
+                    {hideBgBrush ? <BlurOffIcon /> : <BlurOnIcon />}
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
             <Tooltip
               title={lockToPortrait ? 'Release Portrait Mode Lock' : `Lock View to Portrait Mode`}
               placement="top-start"
@@ -973,34 +970,27 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                 </IconButton>
               </span>
             </Tooltip>
-            <Tooltip
-              title={
-                showSecondaryCategories
-                  ? `Hide secondary categories ${!item.hasSecondaryCategories ? '(currently no secondary gategories to hide)' : ''}`
-                  : 'Show secondary categories'
-              }
-              placement="top-start"
-              disableInteractive
-            >
-              <span>
-                <IconButton
-                  disabled={!item.hasSecondaryCategories}
-                  color={showSecondaryCategories ? 'secondary' : 'default'}
-                  onClick={() => setShowSecondaryCategories(!showSecondaryCategories)}
-                >
-                  {showSecondaryCategories ? <LayersIcon /> : <LayersClearIcon />}
-                </IconButton>
-              </span>
-            </Tooltip>
+            {item.hasSecondaryCategories && (
+              <Tooltip
+                title={showSecondaryCategories ? `Hide secondary categories` : 'Show secondary categories'}
+                placement="top-start"
+                disableInteractive
+              >
+                <span>
+                  <IconButton
+                    disabled={!item.hasSecondaryCategories}
+                    color={showSecondaryCategories ? 'secondary' : 'default'}
+                    onClick={() => setShowSecondaryCategories(!showSecondaryCategories)}
+                  >
+                    {showSecondaryCategories ? <LayersIcon /> : <LayersClearIcon />}
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
             <Tooltip title="Toggle screenshot mode" placement="top-end" disableInteractive>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <ScreenshotButton
-                  onClick={onToggleScreenshotMode}
-                  color={screenshotMode ? 'secondary' : 'default'}
-                  sx={{ paddingBottom: 0 }}
-                />
-                <Switch onClick={onToggleScreenshotMode} checked={screenshotMode} sx={{ marginTop: '-10px' }} color="secondary" />
-              </div>
+              <span>
+                <ScreenshotButton onClick={onToggleScreenshotMode} color={screenshotMode ? 'secondary' : 'default'} />
+              </span>
             </Tooltip>
           </div>
         )}

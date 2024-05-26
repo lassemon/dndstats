@@ -1,5 +1,5 @@
 import { ImageDTO, ItemDTO, isArmor, isWeapon } from '@dmtool/application'
-import { Box } from '@mui/material'
+import { Box, Skeleton } from '@mui/material'
 import LoadingIndicator from 'components/LoadingIndicator'
 import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
@@ -276,7 +276,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     <StatsContainer containerClassName={classes.container} rootClassName={className}>
       {!loadingItem ? (
         <>
-          <Box sx={{ flex: '1 1 60%' }} className="itemCard-textContainer">
+          <Box sx={{ flex: '1 1 60%', position: 'relative' }} className="itemCard-textContainer">
             <div className={`${classes.root}`}>
               <div className={classes.textContainer}>
                 <h1 className={classes.name}>{item.name}</h1>
@@ -376,10 +376,12 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   <TaperedRule />
                 </div>
               )}
-            <div style={{ display: 'flex', margin: `0.5em 0 0px ${!isWeapon(item) ? '0' : '-0.5em'}` }}>
-              {!isWeapon(item) && <TinyStat title="weight" value={item.weight_label} />}
-              <TinyStat title="price" value={item.price_label} />
-            </div>
+            <Box sx={{ height: '100%' }}>
+              <div style={{ display: 'flex', margin: `0.5em 0 0px ${!isWeapon(item) ? '0' : '-0.5em'}` }}>
+                {!isWeapon(item) && <TinyStat title="weight" value={item.weight_label} />}
+                <TinyStat title="price" value={item.price_label} />
+              </div>
+            </Box>
           </Box>
           {itemImage && !loadingImage && (
             <Box
@@ -399,7 +401,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           )}
           {loadingImage && (
             <div className={classes.imageContainer}>
-              <LoadingIndicator />
+              <Skeleton variant="rounded" width={220} height={100} animation="wave" sx={{ margin: '3em 0 0 0' }} />
             </div>
           )}
         </>
