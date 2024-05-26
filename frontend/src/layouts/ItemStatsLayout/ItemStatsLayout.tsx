@@ -17,6 +17,8 @@ const ItemStatsLayout: React.FC = () => {
   const navigate = useNavigate()
   const [screenshotMode, setScreenshotMode] = useState(false)
   const [showSecondaryCategories, setShowSecondaryCategories] = useState<boolean>(true)
+  const [lockToPortrait, setLockToPortrait] = useState<boolean>(false)
+  const [hideBgBrush, setHideBgBrush] = useState<boolean>(false)
 
   const [{ item, backendItem, setBackendItem, loadingItem, image, loadingImage }, setItem, setImage] = useItemWithImage(
     itemRepository,
@@ -47,6 +49,10 @@ const ItemStatsLayout: React.FC = () => {
     }
   }, [image])
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const itemProps = {
     item: item,
     backendItem,
@@ -67,6 +73,7 @@ const ItemStatsLayout: React.FC = () => {
   return (
     <StatsLayout
       screenshotMode={screenshotMode}
+      alwaysPortrait={lockToPortrait}
       statsComponent={
         <ItemStats
           item={item}
@@ -74,6 +81,7 @@ const ItemStatsLayout: React.FC = () => {
           loadingImage={loadingImage}
           loadingItem={loadingItem}
           showSecondaryCategories={showSecondaryCategories}
+          hideBgBrush={hideBgBrush}
           screenshotMode={screenshotMode}
         />
       }
@@ -83,6 +91,10 @@ const ItemStatsLayout: React.FC = () => {
           {...imageProps}
           showSecondaryCategories={showSecondaryCategories}
           setShowSecondaryCategories={setShowSecondaryCategories}
+          lockToPortrait={lockToPortrait}
+          setLockToPortrait={setLockToPortrait}
+          hideBgBrush={hideBgBrush}
+          setHideBgBrush={setHideBgBrush}
           screenshotMode={screenshotMode}
           setScreenshotMode={setScreenshotMode}
         />

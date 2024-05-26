@@ -56,6 +56,9 @@ import { DamageType } from 'interfaces'
 import SaveAsIcon from '@mui/icons-material/SaveAs'
 import LayersIcon from '@mui/icons-material/Layers'
 import LayersClearIcon from '@mui/icons-material/LayersClear'
+import ViewStreamIcon from '@mui/icons-material/ViewStream'
+import HideImageIcon from '@mui/icons-material/HideImage'
+import ImageIcon from '@mui/icons-material/Image'
 
 interface CantDeleteReasonOptions {
   isDefaultItem: boolean
@@ -159,6 +162,10 @@ interface ItemStatsInputProps {
   imageRepository: HttpImageRepositoryInterface
   showSecondaryCategories: boolean
   setShowSecondaryCategories: React.Dispatch<React.SetStateAction<boolean>>
+  lockToPortrait: boolean
+  setLockToPortrait: React.Dispatch<React.SetStateAction<boolean>>
+  hideBgBrush: boolean
+  setHideBgBrush: React.Dispatch<React.SetStateAction<boolean>>
   screenshotMode?: boolean
   setScreenshotMode?: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -175,6 +182,10 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   setImage,
   screenshotMode,
   setScreenshotMode,
+  lockToPortrait,
+  setLockToPortrait,
+  hideBgBrush,
+  setHideBgBrush,
   showSecondaryCategories,
   setShowSecondaryCategories
 }) => {
@@ -812,6 +823,28 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               }}
             >
               <Tooltip
+                title={hideBgBrush ? `Show grey background brush` : 'Hide grey background brush'}
+                placement="top-start"
+                disableInteractive
+              >
+                <span>
+                  <IconButton color={hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
+                    {hideBgBrush ? <HideImageIcon /> : <ImageIcon />}
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip
+                title={!lockToPortrait ? `Lock View to Portrait Mode` : 'Release Portrait Mode Lock'}
+                placement="top-start"
+                disableInteractive
+              >
+                <span>
+                  <IconButton color={lockToPortrait ? 'secondary' : 'default'} onClick={() => setLockToPortrait(!lockToPortrait)}>
+                    {lockToPortrait ? <ViewStreamIcon /> : <ViewStreamIcon />}
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip
                 title={
                   showSecondaryCategories
                     ? `Hide secondary categories ${!item.hasSecondaryCategories ? '(currently no secondary gategories to hide)' : ''}`
@@ -918,6 +951,47 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
           </>
         ) : (
           <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '1em' }}>
+            <Tooltip
+              title={hideBgBrush ? `Show grey background brush` : 'Hide grey background brush'}
+              placement="top-start"
+              disableInteractive
+            >
+              <span>
+                <IconButton color={hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
+                  {hideBgBrush ? <HideImageIcon /> : <ImageIcon />}
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip
+              title={lockToPortrait ? 'Release Portrait Mode Lock' : `Lock View to Portrait Mode`}
+              placement="top-start"
+              disableInteractive
+            >
+              <span>
+                <IconButton color={lockToPortrait ? 'secondary' : 'default'} onClick={() => setLockToPortrait(!lockToPortrait)}>
+                  <ViewStreamIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip
+              title={
+                showSecondaryCategories
+                  ? `Hide secondary categories ${!item.hasSecondaryCategories ? '(currently no secondary gategories to hide)' : ''}`
+                  : 'Show secondary categories'
+              }
+              placement="top-start"
+              disableInteractive
+            >
+              <span>
+                <IconButton
+                  disabled={!item.hasSecondaryCategories}
+                  color={showSecondaryCategories ? 'secondary' : 'default'}
+                  onClick={() => setShowSecondaryCategories(!showSecondaryCategories)}
+                >
+                  {showSecondaryCategories ? <LayersIcon /> : <LayersClearIcon />}
+                </IconButton>
+              </span>
+            </Tooltip>
             <Tooltip title="Toggle screenshot mode" placement="top-end" disableInteractive>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <ScreenshotButton
@@ -980,6 +1054,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
         label="Short Description"
         value={item.shortDescription || ''}
         onChange={onChange('shortDescription')}
+        multiline={true}
         InputLabelProps={{
           shrink: true
         }}
@@ -1012,7 +1087,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             <Select
               labelId={'visibility'}
               id="visibility-select"
-              value={item.visibility || authState.loggedIn ? Visibility.PRIVATE : Visibility.PUBLIC}
+              value={item.visibility || (authState.loggedIn ? Visibility.LOGGED_IN : Visibility.PUBLIC)}
               label="Visibility"
               onChange={onChange('visibility')}
             >

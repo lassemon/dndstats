@@ -17,7 +17,9 @@ import { UpdateParam, itemAtom } from 'state/itemAtom'
 import config from 'config'
 import { unstable_batchedUpdates } from 'react-dom'
 
-const DEBUG = false
+// FIXME, this whole hook has become too complex to maintain. refactor and separate image fetch from item fetch
+
+const DEBUG = true
 
 const imageProcessingService = new BrowserImageProcessingService()
 
@@ -103,9 +105,14 @@ const useItemWithImage = (
       unstable_batchedUpdates(() => {
         setIsLoadingImage(false)
 
-        //console.log('setting image', fetchedImage)
-        setImage(new ImageDTO(fetchedImage))
-        setLocalStorageImage(new ImageDTO(fetchedImage))
+        const localStorageImageIsSameAsFetched = fetchedImage.metadata.id === localStorageItem?.id
+        const localStorageImageIsNewer = (fetchedImage.metadata?.updatedAt || 0) < (localStorageItem?.updatedAt || -1)
+        DEBUG && console.log('localStorageImageIsSameAsFetched', localStorageImageIsSameAsFetched)
+        DEBUG && console.log('localStorageImageIsNewer', localStorageImageIsNewer)
+        if ((localStorageImageIsSameAsFetched && !localStorageImageIsNewer) || !localStorageImageIsSameAsFetched) {
+          setImage(new ImageDTO(fetchedImage))
+          setLocalStorageImage(new ImageDTO(fetchedImage))
+        }
       })
     } catch (error) {
       unstable_batchedUpdates(() => {
@@ -150,13 +157,21 @@ const useItemWithImage = (
 
         unstable_batchedUpdates(() => {
           setIsLoadingItem(false)
-          setBackendItem(new ItemDTO(fetchedItem))
-          setLocalStorageItem(new ItemDTO({ ...fetchedItem, updatedAt: unixtimeNow() }))
-          setItem(new ItemDTO(fetchedItem))
+          const localStorageItemIsSameAsFetched = fetchedItem.id === localStorageItem?.id && fetchedItem.source === localStorageItem.source
+          const localStorageItemIsNewer = (fetchedItem?.updatedAt || 0) < (localStorageItem?.updatedAt || -1)
 
-          if (!fetchedItem.imageId) {
-            setImage(null)
-            setLocalStorageImage(null)
+          DEBUG && console.log('localStorageItemIsSameAsFetched', localStorageItemIsSameAsFetched)
+          DEBUG && console.log('localStorageItemIsNewer', localStorageItemIsNewer)
+
+          if ((localStorageItemIsSameAsFetched && !localStorageItemIsNewer) || !localStorageItemIsSameAsFetched) {
+            setBackendItem(new ItemDTO(fetchedItem))
+            setLocalStorageItem(new ItemDTO({ ...fetchedItem, updatedAt: unixtimeNow() }))
+            setItem(new ItemDTO(fetchedItem))
+
+            if (!fetchedItem.imageId) {
+              setImage(null)
+              setLocalStorageImage(null)
+            }
           }
         })
       } catch (error) {

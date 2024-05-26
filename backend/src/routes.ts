@@ -223,6 +223,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "featuredItem": {"ref":"ItemResponse","required":true},
             "trendingItems": {"dataType":"array","array":{"dataType":"refAlias","ref":"ItemResponse"},"required":true},
+            "latestItems": {"dataType":"array","array":{"dataType":"refAlias","ref":"ItemResponse"},"required":true},
         },
         "additionalProperties": false,
     },

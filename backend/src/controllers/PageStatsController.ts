@@ -9,6 +9,7 @@ import FeaturedRepository from '/infrastructure/repositories/FeaturedRepository'
 import { throwIllegalArgument, throwUnknownError } from '/utils/errorUtil'
 import { GetTrendingItemsUseCase } from '/useCases/GetTrendingItemsUseCase'
 import ItemViewsRepository from '/infrastructure/repositories/ItemViewsRepository'
+import { GetLatestItemsUseCase } from '../useCases/GetLatestItemsUseCase'
 const authentication = new Authentication(passport)
 
 const featuredRepository = new FeaturedRepository()
@@ -17,6 +18,7 @@ const itemViewsRepository = new ItemViewsRepository()
 
 const getFeaturedItemUseCase = new GetFeaturedItemUseCase(featuredRepository, itemRepository)
 const getTrendingItemsUseCase = new GetTrendingItemsUseCase(itemViewsRepository, itemRepository)
+const getLatestItemsUseCase = new GetLatestItemsUseCase(itemRepository)
 
 @Route('/pagestats')
 @Middlewares(authentication.passThroughAuthenticationMiddleware())
@@ -36,9 +38,14 @@ export class PageStatsController extends Controller {
       unknownError: throwUnknownError,
       invalidArgument: throwIllegalArgument
     })
+    const latestItems = await getLatestItemsUseCase.execute({
+      unknownError: throwUnknownError,
+      invalidArgument: throwIllegalArgument
+    })
     return {
       featuredItem: featuredItem,
-      trendingItems: trendingItems
+      trendingItems: trendingItems,
+      latestItems: latestItems
     }
   }
 }

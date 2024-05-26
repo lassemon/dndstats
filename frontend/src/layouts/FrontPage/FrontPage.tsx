@@ -47,8 +47,10 @@ export const useStyles = makeStyles()((theme) => ({
         cursor: 'pointer'
       }
     },
-    img: {
-      minWidth: '240px'
+    '&&&': {
+      img: {
+        minWidth: '240px'
+      }
     }
   }
 }))
@@ -58,6 +60,7 @@ const FrontPage: React.FC = () => {
   const [loadingImage, setLoadingImage] = useState(true)
   const [featuredItem, setFeaturedItem] = useState<ItemDTO | null>(null)
   const [trendingItems, setTrendingItems] = useState<ItemDTO[]>([])
+  const [latestItems, setLatestItems] = useState<ItemDTO[]>([])
   const imageId = featuredItem?.imageId
   const [image, setImage] = useState<ImageDTO | null | undefined>(null)
   const navigate = useNavigate()
@@ -83,6 +86,7 @@ const FrontPage: React.FC = () => {
         unstable_batchedUpdates(() => {
           setFeaturedItem(new ItemDTO(pageStatsResponse.featuredItem))
           setTrendingItems(pageStatsResponse.trendingItems.map((item) => new ItemDTO(item)))
+          setLatestItems(pageStatsResponse.latestItems.map((item) => new ItemDTO(item)))
         })
       } catch (error) {
         console.error('Failed to fetch page stats', error)
@@ -137,10 +141,10 @@ const FrontPage: React.FC = () => {
         overflow: 'hidden'
       }}
     >
-      <Box sx={{ margin: '2em 2em 1em 2em', display: 'flex', flexWrap: 'wrap' }}>
+      <Box sx={{ margin: '2em 1em 1em 2em', display: 'flex', flexWrap: 'wrap', gap: '1em' }}>
         <Box sx={{ flex: '6' }}>
           <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Featured Item</FrontPageHeader>
-          <Box sx={{ margin: '1.5em 0.5em 0.5em 0', width: isLarge ? '85%' : '98%' }}>
+          <Box sx={{ margin: '1.5em 0.5em 0.5em 0', width: isLarge ? '95%' : '98%' }}>
             {loadingPageStats ? (
               <Skeleton variant="rounded" width="100%" height={600} animation="wave" />
             ) : (
@@ -156,26 +160,72 @@ const FrontPage: React.FC = () => {
             )}
           </Box>
         </Box>
-        <Box sx={{ flex: '2', maxHeight: '95dvh', overflowY: 'scroll', scrollbarWidth: 'thin', minWidth: '17em' }}>
-          <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Trending Items</FrontPageHeader>
-          <Box sx={{ margin: '1.5em 0.5em 0.5em 0', width: '90%', '&& > .stats-container': { margin: '0 0 1em 0' } }}>
-            {loadingPageStats ? (
-              <>
-                <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
-                <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
-                <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
-                <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
-                <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
-              </>
-            ) : (
-              trendingItems.map((trendingItem) => {
-                return (
-                  <div key={trendingItem.id} onClick={() => goToItem(trendingItem.id)}>
-                    <TinyItemCardWithImage item={trendingItem} />
-                  </div>
-                )
-              })
-            )}
+        <Box sx={{ flex: '4', display: 'flex', gap: '1.5em' }}>
+          <Box
+            sx={{
+              flex: '1',
+              maxHeight: '95dvh',
+              overflowY: 'scroll',
+              scrollbarWidth: 'thin',
+              minWidth: '12em',
+              padding: '0.4em 1em 0.4em 1em',
+              background: 'rgba(245, 245, 245, 0.7)',
+              borderRadius: '0.5em'
+            }}
+          >
+            <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Latest Items</FrontPageHeader>
+            <Box sx={{ margin: '1.5em 0.5em 0.5em 0', width: '90%', '&& > .stats-container': { margin: '0 0 1em 0' } }}>
+              {loadingPageStats ? (
+                <>
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                </>
+              ) : (
+                latestItems.map((latestItem) => {
+                  return (
+                    <div key={latestItem.id} onClick={() => goToItem(latestItem.id)}>
+                      <TinyItemCardWithImage item={latestItem} />
+                    </div>
+                  )
+                })
+              )}
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              flex: '1',
+              maxHeight: '95dvh',
+              overflowY: 'scroll',
+              scrollbarWidth: 'thin',
+              minWidth: '17em',
+              padding: '0.4em 1em 0.4em 1em',
+              background: 'rgba(245, 245, 245, 0.7)',
+              borderRadius: '0.5em'
+            }}
+          >
+            <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Trending Items</FrontPageHeader>
+            <Box sx={{ margin: '1.5em 1em 0.5em 0', '&& > .stats-container': { margin: '0 0 1em 0' } }}>
+              {loadingPageStats ? (
+                <>
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                  <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
+                </>
+              ) : (
+                trendingItems.map((trendingItem) => {
+                  return (
+                    <div key={trendingItem.id} onClick={() => goToItem(trendingItem.id)}>
+                      <TinyItemCardWithImage item={trendingItem} />
+                    </div>
+                  )
+                })
+              )}
+            </Box>
           </Box>
         </Box>
       </Box>

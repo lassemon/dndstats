@@ -8,6 +8,8 @@ import React from 'react'
 import { makeStyles } from 'tss-react/mui'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import gray_brush_bg from 'assets/gray_brush_bg.png'
+import Markdown from 'components/Markdown'
 
 const useStyles = makeStyles()((theme) => {
   return {
@@ -21,7 +23,27 @@ const useStyles = makeStyles()((theme) => {
     imageContainer: {
       display: 'flex',
       alignItems: 'center',
+      margin: '0 auto',
+      position: 'relative',
+      flex: '1 1 auto',
+      '&:before': {
+        content: '" "',
+        display: 'block',
+        position: 'absolute',
+        left: '0',
+        top: '0',
+        opacity: '0.6',
+        width: '100%',
+        height: '100%',
+        transform: 'translateY(2%)',
+        background: `url(${gray_brush_bg})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: '130%',
+        zIndex: '1'
+      },
       '& > img': {
+        zIndex: '2',
         width: '100%',
         minWidth: '320px'
       },
@@ -53,12 +75,14 @@ const useStyles = makeStyles()((theme) => {
       textTransform: 'capitalize'
     },
     shortDescription: {
-      marginTop: '0.2em',
+      margin: '0.6em 0',
       marginBottom: 0,
       fontWeight: 'normal',
       fontStyle: 'italic',
       fontSize: '0.95em',
-      textTransform: 'capitalize'
+      textTransform: 'capitalize',
+      whiteSpace: 'pre-line',
+      lineHeight: '1.1em'
     },
     mainDescription: {
       background: '#e0e4c3',
@@ -66,8 +90,8 @@ const useStyles = makeStyles()((theme) => {
       margin: '0.2em 0 0 0',
       borderTop: '3px solid #1b1b1b',
       borderBottom: '3px solid #1b1b1b',
-      '&> p': {
-        margin: '0.5em'
+      '& > div > div > p': {
+        margin: '0.5em 0'
       }
     },
     markdown: {
@@ -102,10 +126,14 @@ const useStyles = makeStyles()((theme) => {
       margin: '0.3em 0.5em 0 0.5em'
     },
     inlineDescription: {
-      display: 'inline'
+      display: 'inline',
+      '& p': {
+        display: 'inline'
+      }
     },
     featureContainer: {
-      margin: '0.5em 0 0.5em 0'
+      margin: '0.5em 0 0.5em 0',
+      whiteSpace: 'pre-line'
     },
     featureName: {
       color: '#1b1b1b',
@@ -181,7 +209,7 @@ const DescriptionBlock: React.FC = (props) => {
 const DescriptionInline: React.FC = (props) => {
   const { children } = props
   const { classes } = useStyles()
-  return <p className={classes.inlineDescription}>{children}</p>
+  return <div className={classes.inlineDescription}>{children}</div>
 }
 
 const MainDescription: React.FC = (props) => {
@@ -215,6 +243,7 @@ interface ItemCardProps {
   loadingItem?: boolean
   loadingImage?: boolean
   showSecondaryCategories?: boolean
+  hideBgBrush?: boolean
   inlineFeatures?: boolean
   className?: string
 }
@@ -226,6 +255,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   loadingItem = false,
   loadingImage = false,
   showSecondaryCategories = true,
+  hideBgBrush = false,
   className = ''
 }) => {
   const { classes } = useStyles()
@@ -246,7 +276,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     <StatsContainer containerClassName={classes.container} rootClassName={className}>
       {!loadingItem ? (
         <>
-          <div>
+          <Box sx={{ flex: '1 1 60%' }} className="itemCard-textContainer">
             <div className={`${classes.root}`}>
               <div className={classes.textContainer}>
                 <h1 className={classes.name}>{item.name}</h1>
@@ -261,9 +291,11 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   <>{item.rarity ? `${!_.isEmpty(item.categories) ? ', ' : ''}${item.rarity_label}` : '' || ''}</>
                   <span style={{ textTransform: 'none' }}> {item.requiresAttunement_label}</span>
                 </h2>
-                <h2 className={classes.shortDescription}>
-                  <span style={{ textTransform: 'none' }}>{item.shortDescription_label}</span>
-                </h2>
+                {item.shortDescription_label && (
+                  <Box sx={{ fontSize: '0.95em', fontStyle: 'italic' }}>
+                    <Markdown text={item.shortDescription_label} />
+                  </Box>
+                )}
                 {isArmor(item) && (
                   <Box>
                     {item.armorClass_label && <TinyStat title="AC" value={item.armorClass_label} noMargins />}
@@ -273,9 +305,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 )}
                 {item.mainDescription && isWeapon(item) && (
                   <div style={{ whiteSpace: 'pre-wrap' }}>
-                    <ReactMarkdown className={classes.markdown} remarkPlugins={[remarkGfm]}>
-                      {item.mainDescription}
-                    </ReactMarkdown>
+                    <Markdown text={item.mainDescription} />
                   </div>
                 )}
                 {item.features?.map((feature: any, key: any) => {
@@ -287,14 +317,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                         </h4>
                       )}
                       {feature.featureDescription &&
-                        (inlineFeatures || !feature.featureName ? (
-                          <DescriptionInline>{feature.featureDescription}</DescriptionInline>
+                        (inlineFeatures ? (
+                          <Markdown className={classes.inlineDescription} text={feature.featureDescription} />
                         ) : (
-                          <>
-                            {feature.featureDescription.split('\n').map((value: any, key: any) => {
-                              return <DescriptionBlock key={`description-${key}`}>{value}</DescriptionBlock>
-                            })}
-                          </>
+                          <Markdown text={feature.featureDescription} />
                         ))}
                     </div>
                   )
@@ -354,11 +380,22 @@ export const ItemCard: React.FC<ItemCardProps> = ({
               {!isWeapon(item) && <TinyStat title="weight" value={item.weight_label} />}
               <TinyStat title="price" value={item.price_label} />
             </div>
-          </div>
+          </Box>
           {itemImage && !loadingImage && (
-            <div className={classes.imageContainer}>
+            <Box
+              className={`${classes.imageContainer} itemCard-imageContainer`}
+              sx={{
+                '&&:before': {
+                  ...(hideBgBrush
+                    ? {
+                        backgroundImage: 'none'
+                      }
+                    : {})
+                }
+              }}
+            >
               <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
-            </div>
+            </Box>
           )}
           {loadingImage && (
             <div className={classes.imageContainer}>

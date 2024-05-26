@@ -20,6 +20,7 @@ export interface DatabaseItemRepositoryInterface {
   search(query: ItemSearchQuery): Promise<ItemResponse[]>
   getAllVisibleForLoggedInUser(userId: string, orderBy: string, order: `${Order}`): Promise<ItemResponse[]>
   getAllForUser(userId: string): Promise<ItemResponse[]>
+  getLatest(limit: number): Promise<ItemResponse[]>
   getSystemItemsByName(itemName: string): Promise<ItemResponse[]>
   getUserItemsByName(itemName: string, userId: string): Promise<ItemResponse[]>
   countItemsCreatedByUser(userId: string): Promise<number>

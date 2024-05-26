@@ -133,14 +133,23 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
               <LoadingIndicator />
             </div>
           )}
-          <Box sx={{ display: 'flex', alignItems: 'baseline', margin: '0 0 -1em 0' }}>
+          {item.createdByUserName && (
+            <Typography variant="body2" sx={{ fontSize: '0.6em', margin: '1em  0 0 0' }}>
+              Created by: <span style={{ fontWeight: '600', margin: '0.4em 0 0 0' }}>{item.getCreatedByUserName(authState.user?.id)}</span>
+            </Typography>
+          )}
+          <Box sx={{ display: 'flex', alignItems: 'end', margin: '0 0 -1em 0', justifyContent: 'space-between' }}>
             {item.updatedAt && (
-              <Typography variant="body2" sx={{ fontSize: '0.6em', margin: '0.4em 0 0 0' }}>
-                Last updated: <span>{dateStringFromUnixTime(item.updatedAt)}</span>
+              <Typography variant="body2" sx={{ fontSize: '0.6em' }}>
+                <span>{dateStringFromUnixTime(item.updatedAt)}</span>
               </Typography>
             )}
             {item.getSource(authState.user?.id) && (
-              <Typography variant="caption" color="secondary" sx={{ fontSize: '0.6em', margin: '0 0 0 1em', fontWeight: '600' }}>
+              <Typography
+                variant="caption"
+                color="secondary"
+                sx={{ fontSize: '0.6em', margin: '0 0 0 1em', fontWeight: '600', whiteSpace: 'nowrap' }}
+              >
                 {item.getSource(authState.user?.id)}
               </Typography>
             )}

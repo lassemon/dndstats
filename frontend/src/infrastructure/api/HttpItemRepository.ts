@@ -63,7 +63,14 @@ export class HttpItemRepository implements HttpItemRepositoryInterface {
   }
 
   async save(item: Item, image?: Image | null, options: FetchOptions = {}) {
-    return await putJson<ItemUpdateResponse>({ ...{ endpoint: '/item', payload: { item, image } }, ...options })
+    const cleanedUpItem = {
+      ...item,
+      price: {
+        ...item.price,
+        quantity: item.price.quantity || 0
+      }
+    }
+    return await putJson<ItemUpdateResponse>({ ...{ endpoint: '/item', payload: { item: cleanedUpItem, image } }, ...options })
   }
 
   async delete(itemId: string, options: FetchOptions = {}) {

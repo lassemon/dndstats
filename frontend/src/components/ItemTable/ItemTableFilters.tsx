@@ -378,6 +378,7 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
           <FormLabel sx={{ fontSize: '1em' }}>Requires Attunement</FormLabel>
           <Box sx={{ display: 'flex', gap: '0.5em' }}>
             <ButtonGroup
+              disabled={loading}
               variant="contained"
               sx={{ border: `1px solid ${theme.palette.grey[400]}`, '& > button': { fontWeight: '500' } }}
               disableElevation={true}
@@ -402,6 +403,7 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
           <Box sx={{ display: 'flex', gap: '0.5em' }}>
             <ButtonGroup
               variant="contained"
+              disabled={loading}
               sx={{ border: `1px solid ${theme.palette.grey[400]}`, '& > button': { fontWeight: '500' } }}
               disableElevation={true}
             >

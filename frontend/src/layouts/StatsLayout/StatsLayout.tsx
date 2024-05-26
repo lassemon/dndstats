@@ -88,10 +88,18 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
 
   const onFontSizeLarger = () => {
     const statsContainers = document.getElementsByClassName('stats-container')
+
     for (var i = 0; i < statsContainers.length; i++) {
       const element = statsContainers.item(i) as HTMLElement
       const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
       element.style.fontSize = `${fontSize + 1}px`
+
+      const textContainer = element.getElementsByClassName('itemCard-textContainer')
+      const textElement = textContainer.item(i) as HTMLElement
+      if (textElement) {
+        const flexBasis = parseFloat(window.getComputedStyle(textElement, null).getPropertyValue('flex-basis').replace('%', ''))
+        textElement.style.flexBasis = `${flexBasis - 2}%`
+      }
     }
   }
 
@@ -101,6 +109,13 @@ const StatsLayout: React.FC<StatsLayoutProps> = (props) => {
       const element = statsContainers.item(i) as HTMLElement
       const fontSize = parseFloat(window.getComputedStyle(element, null).getPropertyValue('font-size'))
       element.style.fontSize = `${fontSize - 1}px`
+
+      const textContainer = element.getElementsByClassName('itemCard-textContainer')
+      const textElement = textContainer.item(i) as HTMLElement
+      if (textElement) {
+        const flexBasis = parseFloat(window.getComputedStyle(textElement, null).getPropertyValue('flex-basis').replace('%', ''))
+        textElement.style.flexBasis = `${flexBasis + 2}%`
+      }
     }
   }
 

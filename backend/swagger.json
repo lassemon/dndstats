@@ -723,11 +723,18 @@
 							"$ref": "#/components/schemas/ItemResponse"
 						},
 						"type": "array"
+					},
+					"latestItems": {
+						"items": {
+							"$ref": "#/components/schemas/ItemResponse"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
 					"featuredItem",
-					"trendingItems"
+					"trendingItems",
+					"latestItems"
 				],
 				"type": "object",
 				"additionalProperties": false

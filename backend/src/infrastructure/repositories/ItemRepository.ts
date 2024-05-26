@@ -262,6 +262,20 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     })
   }
 
+  async getLatest(limit: number): Promise<ItemResponse[]> {
+    return (
+      await connection
+        .join('users', 'items.createdBy', '=', 'users.id')
+        .select('items.*', 'users.name as createdByUserName')
+        .from<any, ItemDBResponse[]>('items')
+        .whereIn('visibility', ['public'])
+        .modify<any, ItemDBResponse[]>(withOrderBy('createdAt', 'desc'))
+        .limit(limit || 5)
+    ).map((item) => {
+      return this.parseDBItemJSON(item)
+    })
+  }
+
   async countAll(userId?: string): Promise<number> {
     const result = await connection('items')
       .whereNotIn('visibility', userId ? ['private'] : ['private', 'logged_in'])
@@ -400,14 +414,18 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
   }
 
   async getItemsByIdsAndSources(items: { itemId: string; source: string }[]): Promise<ItemResponse[]> {
-    const result = await connection('items').where((queryBuilder: Knex.QueryBuilder) => {
-      items.forEach((item) => {
-        queryBuilder.orWhere({
-          id: item.itemId,
-          source: item.source
+    const result = await connection
+      .join('users', 'items.createdBy', '=', 'users.id')
+      .select('items.*', 'users.name as createdByUserName')
+      .from<any, ItemDBResponse[]>('items')
+      .where((queryBuilder: Knex.QueryBuilder) => {
+        items.forEach((item) => {
+          queryBuilder.orWhere({
+            'items.id': item.itemId,
+            'items.source': item.source
+          })
         })
       })
-    })
 
     return result?.map(this.parseDBItemJSON)
   }

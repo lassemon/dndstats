@@ -14,6 +14,7 @@ interface ItemStatsProps {
   loadingItem: boolean
   loadingImage: boolean
   showSecondaryCategories: boolean
+  hideBgBrush?: boolean
   screenshotMode?: boolean
 }
 
@@ -23,7 +24,8 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
   image,
   loadingImage,
   showSecondaryCategories,
-  screenshotMode
+  hideBgBrush = false,
+  screenshotMode = false
 }) => {
   const [inlineFeatures, setInlineFeatures] = useState(false)
   const [authState] = useAtom(authAtom)
@@ -44,6 +46,7 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
         image={image}
         loadingImage={loadingImage}
         showSecondaryCategories={showSecondaryCategories}
+        hideBgBrush={hideBgBrush}
         inlineFeatures={inlineFeatures}
       />
       <Box displayPrint="none">

@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS items  (
   source                VARCHAR(255),
   shortDescription      TEXT,
   mainDescription       TEXT,
-  price                 longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{"quantity":1,"unit":"gp"}' CHECK (json_valid(price)),
+  price                 longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{"quantity":0,"unit":"gp"}' CHECK (json_valid(price)),
   rarity                VARCHAR(255),
   weight                INT(11),
   features              longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '[]' CHECK (json_valid(features)),
