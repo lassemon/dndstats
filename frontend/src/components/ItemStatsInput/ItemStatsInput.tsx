@@ -33,7 +33,7 @@ import { Dice, EntityType, Item, ItemCategory, ItemRarity, Source, Visibility, W
 import { UpdateParam } from 'state/itemAtom'
 import { unixtimeNow, uuid } from '@dmtool/common'
 import { useAtom } from 'jotai'
-import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
+import { authAtom, errorAtom, successAtom } from 'infrastructure/dataAccess/atoms'
 import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
 import { HttpImageRepositoryInterface, ITEM_DEFAULTS, ImageDTO, ItemDTO, isArmor, isWeapon } from '@dmtool/application'
 import _, { capitalize } from 'lodash'
@@ -59,6 +59,7 @@ import LayersClearIcon from '@mui/icons-material/LayersClear'
 import ViewStreamIcon from '@mui/icons-material/ViewStream'
 import BlurOnIcon from '@mui/icons-material/BlurOn'
 import BlurOffIcon from '@mui/icons-material/BlurOff'
+import { unstable_batchedUpdates } from 'react-dom'
 
 interface CantDeleteReasonOptions {
   isDefaultItem: boolean
@@ -192,6 +193,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   const controllersRef = useRef<AbortController[]>([])
   const { classes } = useStyles()
   const [errorState, setError] = useAtom(React.useMemo(() => errorAtom, []))
+  const [, setSuccess] = useAtom(React.useMemo(() => successAtom, []))
   const navigate = useNavigate()
 
   const [savingItem, setSavingItem] = useState<boolean>(false)
@@ -589,10 +591,14 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               itemRepository
                 .save(itemToSave.toUpdateRequestItemJSON(), newImage, { signal: controller.signal })
                 .then((itemSaveResponse) => {
-                  setItem(new ItemDTO(itemSaveResponse.item))
-                  setBackendItem(new ItemDTO(itemSaveResponse.item))
-                  setImage(itemSaveResponse.image ? new ImageDTO(itemSaveResponse.image) : null)
-                  setItemList((_itemList) => _.unionBy(_itemList, [itemToItemListOption(authState.user?.id, itemSaveResponse.item)], 'id'))
+                  unstable_batchedUpdates(() => {
+                    setItem(new ItemDTO(itemSaveResponse.item))
+                    setBackendItem(new ItemDTO(itemSaveResponse.item))
+                    setImage(itemSaveResponse.image ? new ImageDTO(itemSaveResponse.image) : null)
+                    setItemList((_itemList) =>
+                      _.unionBy(_itemList, [itemToItemListOption(authState.user?.id, itemSaveResponse.item)], 'id')
+                    )
+                  })
                 })
                 .catch((error) => {
                   setImage(newImage ? new ImageDTO(newImage) : null)
@@ -656,9 +662,12 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
         itemRepository
           .save(newItem.toUpdateRequestItemJSON(), image?.parseForSaving(image.base64), { signal: controller.signal })
           .then((itemSaveResponse) => {
-            setBackendItem(new ItemDTO(itemSaveResponse.item))
-            setItem(new ItemDTO(itemSaveResponse.item))
-            setImage(itemSaveResponse.image ? new ImageDTO(itemSaveResponse.image) : null)
+            unstable_batchedUpdates(() => {
+              setBackendItem(new ItemDTO(itemSaveResponse.item))
+              setItem(new ItemDTO(itemSaveResponse.item))
+              setImage(itemSaveResponse.image ? new ImageDTO(itemSaveResponse.image) : null)
+              setSuccess({ message: 'Item saved succesfully!' })
+            })
             fetchItemList()
           })
           .catch((error) => {
@@ -829,7 +838,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                   disableInteractive
                 >
                   <span>
-                    <IconButton color={hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
+                    <IconButton color={!hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
                       {hideBgBrush ? <BlurOffIcon /> : <BlurOnIcon />}
                     </IconButton>
                   </span>
@@ -953,7 +962,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                 disableInteractive
               >
                 <span>
-                  <IconButton color={hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
+                  <IconButton color={!hideBgBrush ? 'secondary' : 'default'} onClick={() => setHideBgBrush(!hideBgBrush)}>
                     {hideBgBrush ? <BlurOffIcon /> : <BlurOnIcon />}
                   </IconButton>
                 </span>

@@ -296,6 +296,7 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                         variant="rounded"
                         width="100%"
                         height={40}
+                        animation="wave"
                         sx={{ margin: '0 0 0.5em 0', backgroundColor: 'rgba(0, 0, 0, 0.21)' }}
                       />
                     )

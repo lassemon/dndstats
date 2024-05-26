@@ -20,8 +20,12 @@ export interface AuthState {
 export type CombatAtom = typeof defaultCombat
 export type ItemAtom = Item
 export type CustomCharactersAtom = typeof defaultCustomCharacters
+export interface Success {
+  message: string
+}
 
 export const errorAtom = atom<Error | null>(null)
+export const successAtom = atom<Success | null>(null)
 
 type LoadParser<T> = (value: T) => T
 type SaveParser<T> = (value: T) => { [key: string]: any }

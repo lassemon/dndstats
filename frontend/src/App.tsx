@@ -22,6 +22,7 @@ import AccountPage from 'layouts/AccountPage'
 import ProfilePage from 'layouts/PorfilePage'
 import ItemsPage from 'layouts/ItemsPage'
 import FrontPage from 'layouts/FrontPage'
+import SuccessDisplay from 'components/SuccessDisplay'
 
 const App: React.FC = () => {
   const { classes } = useStyles()
@@ -43,6 +44,7 @@ const App: React.FC = () => {
               <React.Suspense fallback={<LoadingIndicator />}>
                 <Outlet />
                 <ErrorDisplay />
+                <SuccessDisplay />
               </React.Suspense>
             </ErrorBoundary>
           </main>

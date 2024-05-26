@@ -206,12 +206,6 @@ const DescriptionBlock: React.FC = (props) => {
   return <div className={classes.blockDescription}>{children}</div>
 }
 
-const DescriptionInline: React.FC = (props) => {
-  const { children } = props
-  const { classes } = useStyles()
-  return <div className={classes.inlineDescription}>{children}</div>
-}
-
 const MainDescription: React.FC = (props) => {
   const { children } = props
   const { classes } = useStyles()
@@ -276,7 +270,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     <StatsContainer containerClassName={classes.container} rootClassName={className}>
       {!loadingItem ? (
         <>
-          <Box sx={{ flex: '1 1 60%', position: 'relative' }} className="itemCard-textContainer">
+          <Box sx={{ flex: '1 1 60%', display: 'flex', flexDirection: 'column' }} className="itemCard-textContainer">
             <div className={`${classes.root}`}>
               <div className={classes.textContainer}>
                 <h1 className={classes.name}>{item.name}</h1>
@@ -327,15 +321,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 })}
               </div>
             </div>
-            {item.mainDescription && !isWeapon(item) && (
-              <MainDescription>
-                <DescriptionBlock>
-                  <ReactMarkdown className={classes.markdown} remarkPlugins={[remarkGfm]}>
-                    {item.mainDescription}
-                  </ReactMarkdown>
-                </DescriptionBlock>
-              </MainDescription>
-            )}
+
             {isWeapon(item) &&
               (item.twoHandedDamage_full_label ||
                 item.damage_full_label ||
@@ -376,11 +362,28 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   <TaperedRule />
                 </div>
               )}
-            <Box sx={{ height: '100%' }}>
-              <div style={{ display: 'flex', margin: `0.5em 0 0px ${!isWeapon(item) ? '0' : '-0.5em'}` }}>
-                {!isWeapon(item) && <TinyStat title="weight" value={item.weight_label} />}
-                <TinyStat title="price" value={item.price_label} />
-              </div>
+            <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', justifyContent: 'flex-end' }}>
+              {item.mainDescription && !isWeapon(item) && (
+                <MainDescription>
+                  <DescriptionBlock>
+                    <ReactMarkdown className={classes.markdown} remarkPlugins={[remarkGfm]}>
+                      {item.mainDescription}
+                    </ReactMarkdown>
+                  </DescriptionBlock>
+                </MainDescription>
+              )}
+              {(item.weight_label || item.price_label) && (
+                <div
+                  style={{
+                    display: 'flex',
+                    margin: `0.5em 0 0px ${!isWeapon(item) ? '0' : '-0.5em'}`,
+                    alignItems: 'flex-end'
+                  }}
+                >
+                  {!isWeapon(item) && <TinyStat title="weight" value={item.weight_label} />}
+                  <TinyStat title="price" value={item.price_label} />
+                </div>
+              )}
             </Box>
           </Box>
           {itemImage && !loadingImage && (
@@ -400,14 +403,24 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             </Box>
           )}
           {loadingImage && (
-            <div className={classes.imageContainer}>
+            <Box
+              className={`${classes.imageContainer} itemCard-imageContainer`}
+              sx={{
+                '&&': {
+                  flex: '0 0 auto'
+                },
+                '&&:before': {
+                  backgroundImage: 'none'
+                }
+              }}
+            >
               <Skeleton variant="rounded" width={220} height={100} animation="wave" sx={{ margin: '3em 0 0 0' }} />
-            </div>
+            </Box>
           )}
         </>
       ) : (
         <div className={classes.textContainer}>
-          <LoadingIndicator />
+          <Skeleton variant="rounded" width="100%" height={240} animation="wave" />
         </div>
       )}
     </StatsContainer>
