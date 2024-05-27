@@ -2,6 +2,7 @@ import {
   BrowserImageProcessingService,
   HttpImageRepositoryInterface,
   HttpItemRepositoryInterface,
+  ITEM_DEFAULTS,
   ImageDTO,
   ItemDTO,
   LocalStorageImageRepositoryInterface
@@ -185,13 +186,13 @@ const useItemWithImage = (
     const itemIdExists = !!itemId
     const itemIdIsTheSameAsSavedItem = itemId === (persist ? localStorageItem?.id : item?.id)
     const itemExists = !!returnItem
-
+    const isNewItem = itemId === ITEM_DEFAULTS.NEW_ITEM_ID
     const localStorageInvalidated = (localStorageItem?.updatedAt || 0) < unixtimeNow() + config.localStorageInvalidateTimeInMilliseconds
 
     const shouldFetchItem =
-      (itemIdExists && !itemIdIsTheSameAsSavedItem) ||
-      (itemIdExists && !itemExists) ||
-      (authState.loggedIn && itemIdExists && persist && localStorageInvalidated)
+      (itemIdExists && !itemIdIsTheSameAsSavedItem && !isNewItem) ||
+      (itemIdExists && !itemExists && !isNewItem) ||
+      (authState.loggedIn && itemIdExists && persist && localStorageInvalidated && !isNewItem)
 
     if (DEBUG) {
       console.log('\n\n\n')
