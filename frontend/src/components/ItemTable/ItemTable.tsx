@@ -290,9 +290,10 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                   sx={{ width: '0%', minWidth: '2em' }}
                   colSpan={authState.loggedIn ? LOGGED_IN_TABLE_COLUMN_COUNT : LOGGED_IN_TABLE_COLUMN_COUNT - 1}
                 >
-                  {Array.from(Array(4).keys()).map(() => {
+                  {Array.from(Array(4).keys()).map((index) => {
                     return (
                       <Skeleton
+                        key={index}
                         variant="rounded"
                         width="100%"
                         height={40}
@@ -307,7 +308,7 @@ export const ItemTable: React.FC<ItemTableProps> = ({
               items.map((item, index) => {
                 return (
                   <TableItemRow
-                    key={`${index}${open}${resetKey}`}
+                    key={`${item.id}-${index}-${resetKey}`}
                     item={item}
                     search={search}
                     itemRepository={itemRepository}

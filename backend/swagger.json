@@ -1865,7 +1865,7 @@
 				]
 			}
 		},
-		"/items/{userId}": {
+		"/myitems": {
 			"get": {
 				"operationId": "GetAllForUser",
 				"responses": {
@@ -1887,16 +1887,7 @@
 					"Item"
 				],
 				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
+				"parameters": []
 			}
 		},
 		"/item": {

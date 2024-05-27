@@ -71,14 +71,14 @@ const FrontPage: React.FC = () => {
   const isLarge = useMediaQuery(theme.breakpoints.up('xl'))
 
   const imageRequestControllerRef = useRef<AbortController | null>(null)
-  const itemRequestControllerRef = useRef<AbortController | null>(null)
+  const pageStatsRequestControllerRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     const fetchAndSetPageStats = async () => {
       try {
         setLoadingPageStats(true)
         const controller = new AbortController()
-        itemRequestControllerRef.current = controller
+        pageStatsRequestControllerRef.current = controller
 
         const pageStatsResponse = await pageStatsService.getPageStats({ signal: controller.signal }).finally(() => {
           setLoadingPageStats(false)
@@ -119,7 +119,7 @@ const FrontPage: React.FC = () => {
 
   useEffect(() => {
     return () => {
-      itemRequestControllerRef?.current?.abort()
+      pageStatsRequestControllerRef?.current?.abort()
       imageRequestControllerRef?.current?.abort()
     }
   }, [])

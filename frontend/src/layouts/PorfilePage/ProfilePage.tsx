@@ -11,6 +11,7 @@ import ProfileRepository from 'infrastructure/repositories/ProfileRepository'
 import { ProfileResponse } from '@dmtool/application'
 import PageHeader from 'components/PageHeader'
 import { dateStringFromUnixTime } from '@dmtool/common'
+import { useNavigate } from 'react-router-dom'
 
 const useStyles = makeStyles()(() => ({
   root: {
@@ -49,6 +50,7 @@ const ProfilePage: React.FC = () => {
   const [loadingProfile, setLoadingProfile] = useState(false)
   const [profile, setProfile] = useState<ProfileResponse | null>(null)
   const { classes } = useStyles()
+  const navigate = useNavigate()
   useDefaultPage(!authState.loggedIn)
 
   useEffect(() => {
@@ -86,6 +88,10 @@ const ProfilePage: React.FC = () => {
       fetchAndSetProfile()
     }
   }, [])
+
+  const goToMyItems = () => {
+    navigate(`/myitems`, { replace: true })
+  }
 
   if (!user) {
     return null
@@ -130,7 +136,13 @@ const ProfilePage: React.FC = () => {
       )}
 
       <div className={classes.statsContainer}>
-        <ProfileStat title="Items created" loading={loadingProfile} amount={profile?.itemsCreated || 0} />
+        <ProfileStat
+          title="Items created"
+          loading={loadingProfile}
+          amount={profile?.itemsCreated || 0}
+          onClick={() => goToMyItems()}
+          sx={{ cursor: 'pointer' }}
+        />
         <ProfileStat title="Spells created" loading={loadingProfile} amount={profile?.spellsCreated || 0} style={{ opacity: '0.4' }} />
         <ProfileStat title="Monsters created" loading={loadingProfile} amount={profile?.monstersCreated || 0} style={{ opacity: '0.4' }} />
       </div>

@@ -93,14 +93,12 @@ export class ItemController extends Controller {
   }
 
   @Tags('Item')
-  @Get('items/{userId}')
-  public async getAllForUser(@Request() request: express.Request, @Path() userId?: string): Promise<ItemResponse[]> {
+  @Get('myitems/')
+  public async getAllForUser(@Request() request: express.Request): Promise<ItemResponse[]> {
     if (!request.user) {
       throw new ApiError(401, 'Unauthorized', 'Must be logged in to do that')
     }
-    return (await itemRepository.getAllForUser((request.user as User).id)).map((item) => {
-      return item
-    })
+    return await itemRepository.getAllForUser((request.user as User).id)
   }
 
   @Tags('Item')

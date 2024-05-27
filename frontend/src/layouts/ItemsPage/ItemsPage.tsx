@@ -18,7 +18,7 @@ const useStyles = makeStyles()(() => ({
   }
 }))
 
-const defaultFilters = {
+export const defaultFilters = {
   itemsPerPage: 50,
   pageNumber: 0,
   orderBy: 'name',
@@ -86,7 +86,7 @@ const ItemsPage: React.FC = () => {
       category: itemTableFilters.category || [],
       rarity: itemTableFilters.rarity || [],
       source: itemTableFilters.source || [],
-      ...(itemTableFilters.search && itemTableFilters.search ? { search: itemTableFilters.search } : {}),
+      ...(itemTableFilters.search && itemTableFilters.search ? { search: itemTableFilters.search } : { search: '' }),
       ...(itemTableFilters.priceQuantity && itemTableFilters.priceComparison ? { priceComparison: itemTableFilters.priceComparison } : {}),
       ...(itemTableFilters.priceQuantity ? { priceQuantity: String(itemTableFilters.priceQuantity) } : {}),
       ...(itemTableFilters.priceQuantity && itemTableFilters.priceUnit ? { priceUnit: itemTableFilters.priceUnit || '' } : {}),

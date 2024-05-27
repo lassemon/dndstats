@@ -104,57 +104,62 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
   return (
     <Box className={`${classes.root} ${className}`}>
       {!loadingItem ? (
-        <>
-          <div>
-            <div className={`${classes.textRoot}`}>
-              <div className={classes.textContainer}>
-                <h1 className={classes.name}>{item.name}</h1>
-                <h2
-                  className={classes.tinyDescription}
-                  style={{
-                    fontSize: '0.85em',
-                    fontWeight: 'normal'
-                  }}
-                >
-                  <>{item.main_categories_label || ''}</>
-                  <>{item.rarity ? `${!_.isEmpty(item.categories) ? ', ' : ''}${item.rarity_label}` : '' || ''}</>
-                  <span style={{ textTransform: 'none' }}> {item.requiresAttunement_label}</span>
-                </h2>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Box>
+            <div>
+              <div className={`${classes.textRoot}`}>
+                <div className={classes.textContainer}>
+                  <h1 className={classes.name}>{item.name}</h1>
+                  <h2
+                    className={classes.tinyDescription}
+                    style={{
+                      fontSize: '0.85em',
+                      fontWeight: 'normal'
+                    }}
+                  >
+                    <>{item.main_categories_label || ''}</>
+                    <>{item.rarity ? `${!_.isEmpty(item.categories) ? ', ' : ''}${item.rarity_label}` : '' || ''}</>
+                    <span style={{ textTransform: 'none' }}> {item.requiresAttunement_label}</span>
+                  </h2>
+                </div>
               </div>
             </div>
-          </div>
-          {itemImage && !loadingImage && (
-            <div className={classes.imageContainer}>
-              <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
-            </div>
-          )}
-          {loadingImage && (
-            <div className={classes.imageContainer}>
-              <Skeleton variant="rounded" width="100%" height={100} animation="wave" />
-            </div>
-          )}
-          {item.createdByUserName && (
-            <Typography variant="body2" sx={{ fontSize: '0.6em', margin: '1em  0 0 0' }}>
-              Created by: <span style={{ fontWeight: '600', margin: '0.4em 0 0 0' }}>{item.getCreatedByUserName(authState.user?.id)}</span>
-            </Typography>
-          )}
-          <Box sx={{ display: 'flex', alignItems: 'end', margin: '0 0 -1em 0', justifyContent: 'space-between' }}>
-            {item.updatedAt && (
-              <Typography variant="body2" sx={{ fontSize: '0.6em' }}>
-                <span>{dateStringFromUnixTime(item.updatedAt)}</span>
-              </Typography>
+            {itemImage && !loadingImage && (
+              <div className={classes.imageContainer}>
+                <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
+              </div>
             )}
-            {item.getSource(authState.user?.id) && (
-              <Typography
-                variant="caption"
-                color="secondary"
-                sx={{ fontSize: '0.6em', margin: '0 0 0 1em', fontWeight: '600', whiteSpace: 'nowrap' }}
-              >
-                {item.getSource(authState.user?.id)}
-              </Typography>
+            {loadingImage && (
+              <div className={classes.imageContainer}>
+                <Skeleton variant="rounded" width="100%" height={100} animation="wave" />
+              </div>
             )}
           </Box>
-        </>
+          <Box sx={{ margin: '-1em 0 0.5em 0' }}>
+            {item.createdByUserName && (
+              <Typography variant="body2" sx={{ fontSize: '0.6em', margin: '1em  0 0 0' }}>
+                Created by:{' '}
+                <span style={{ fontWeight: '600', margin: '0.4em 0 0 0' }}>{item.getCreatedByUserName(authState.user?.id)}</span>
+              </Typography>
+            )}
+            <Box sx={{ display: 'flex', alignItems: 'end', margin: '0 0 -1em 0', justifyContent: 'space-between' }}>
+              {item.updatedAt && (
+                <Typography variant="body2" sx={{ fontSize: '0.6em' }}>
+                  <span>{dateStringFromUnixTime(item.updatedAt)}</span>
+                </Typography>
+              )}
+              {item.getSource(authState.user?.id) && (
+                <Typography
+                  variant="caption"
+                  color="secondary"
+                  sx={{ fontSize: '0.6em', margin: '0 0 0 1em', fontWeight: '600', whiteSpace: 'nowrap' }}
+                >
+                  {item.getSource(authState.user?.id)}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+        </Box>
       ) : (
         <div className={classes.textContainer}>
           <LoadingIndicator />

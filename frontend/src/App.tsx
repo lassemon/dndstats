@@ -23,6 +23,7 @@ import ProfilePage from 'layouts/PorfilePage'
 import ItemsPage from 'layouts/ItemsPage'
 import FrontPage from 'layouts/FrontPage'
 import SuccessDisplay from 'components/SuccessDisplay'
+import MyItemsPage from 'layouts/MyItemsPage'
 
 const App: React.FC = () => {
   const { classes } = useStyles()
@@ -65,6 +66,7 @@ const App: React.FC = () => {
         <Route path="card/weapon" element={<WeaponStatsLayout />} />
         <Route path="card/monster" element={<MonsterStatsLayout />} />
         <Route path="items" element={<ItemsPage />} />
+        <Route path="myitems" element={<MyItemsPage />} />
         <Route path="combattracker" element={<CombatTrackerLayout />} />
         <Route path="about" element={<AboutLayout />} />
 

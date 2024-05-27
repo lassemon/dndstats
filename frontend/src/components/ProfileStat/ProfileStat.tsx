@@ -1,6 +1,7 @@
 import { makeStyles } from 'tss-react/mui'
 import React from 'react'
 import LoadingIndicator from 'components/LoadingIndicator'
+import { Box, BoxProps } from '@mui/material'
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles()((theme) => ({
   }
 }))
 
-interface ProfileStatProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ProfileStatProps extends BoxProps {
   title: string
   amount: number
   loading: boolean
@@ -33,10 +34,10 @@ interface ProfileStatProps extends React.HTMLAttributes<HTMLDivElement> {
 const ProfileStat: React.FC<ProfileStatProps> = ({ title, amount, loading, ...props }) => {
   const { classes } = useStyles()
   return (
-    <div className={classes.root} {...props}>
+    <Box className={classes.root} {...props}>
       <span className={classes.title}>{title}</span>
       {loading ? <LoadingIndicator /> : <span className={classes.amount}>{amount}</span>}
-    </div>
+    </Box>
   )
 }
 

@@ -36,7 +36,7 @@ export interface DatabaseItemRepositoryInterface {
 export interface HttpItemRepositoryInterface {
   getAll(options?: FetchOptions): Promise<ItemSearchResponse>
   search(query: ItemSearchRequest, options?: FetchOptions): Promise<ItemSearchResponse>
-  getAllForUser(userId: string, options?: FetchOptions): Promise<ItemResponse[]>
+  getAllForUser(options?: FetchOptions): Promise<ItemResponse[]>
   getById(itemId?: string, options?: FetchOptions): Promise<ItemResponse>
   getByIdAndSource(id: string, source: `${Source}`, options?: FetchOptions): Promise<ItemResponse>
   save(item: Item, image?: Image | null, options?: FetchOptions): Promise<ItemUpdateResponse>

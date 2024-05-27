@@ -1,4 +1,5 @@
 import { AccountBox, AccountCircle, Logout, Person } from '@mui/icons-material'
+import AppsIcon from '@mui/icons-material/Apps'
 import { Button, Divider, Menu, MenuItem, Typography } from '@mui/material'
 import { logout } from 'api/auth'
 import { authAtom } from 'infrastructure/dataAccess/atoms'
@@ -6,7 +7,6 @@ import { useAtom } from 'jotai'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useOrientation } from 'utils/hooks'
-import underline from 'assets/underline.png'
 
 export const AccountMenu: React.FC = () => {
   const [authState, setAuthState] = useAtom(authAtom)
@@ -121,6 +121,18 @@ export const AccountMenu: React.FC = () => {
               </MenuItem>
             </Link>
 
+            <Divider />
+            <Link
+              to="/myitems"
+              onClick={() => {
+                handleUserMenuClose()
+              }}
+              style={{ color: 'inherit', textDecoration: 'inherit' }}
+            >
+              <MenuItem sx={{ gap: '1em', padding: '0.7em 1em' }}>
+                <AppsIcon fontSize="small" color="secondary" /> My Items
+              </MenuItem>
+            </Link>
             <Divider />
             <MenuItem
               onClick={() => {

@@ -11,10 +11,9 @@ interface TinyItemCardWithImageProps {
   className?: string
 }
 
-const itemRepository = new ItemRepository()
 const imageRepository = new ImageRepository()
 
-export const TinyItemCardWithImage: React.FC<TinyItemCardWithImageProps> = ({ item }) => {
+export const TinyItemCardWithImage: React.FC<TinyItemCardWithImageProps> = ({ item, className }) => {
   const imageId = item?.imageId
   const [loadingImage, setLoadingImage] = useState(false)
   const [image, setImage] = useState<ImageDTO | null | undefined>(null)
@@ -40,7 +39,7 @@ export const TinyItemCardWithImage: React.FC<TinyItemCardWithImageProps> = ({ it
     }
   }, [imageId])
 
-  return <TinyItemCard item={item} image={image} loadingImage={loadingImage} />
+  return <TinyItemCard item={item} image={image} loadingImage={loadingImage} className={className} />
 }
 
 export default TinyItemCardWithImage

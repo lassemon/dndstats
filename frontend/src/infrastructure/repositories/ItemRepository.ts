@@ -25,8 +25,8 @@ class ItemRepository implements FrontendItemRepositoryInterface {
     return await this.backendRepository.getAll(options)
   }
 
-  async getAllForUser(userId: string): Promise<ItemResponse[]> {
-    return await this.backendRepository.getAllForUser(userId)
+  async getAllForUser(options: FetchOptions = {}): Promise<ItemResponse[]> {
+    return await this.backendRepository.getAllForUser(options)
   }
 
   async search(query: ItemSearchRequest, options: FetchOptions = {}) {

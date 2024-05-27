@@ -16,8 +16,8 @@ export class HttpItemRepository implements HttpItemRepositoryInterface {
     return await getJson<ItemSearchResponse>({ ...{ endpoint: `/items` }, ...options })
   }
 
-  async getAllForUser(userId: string, options: FetchOptions = {}): Promise<ItemResponse[]> {
-    return await getJson<ItemResponse[]>({ ...{ endpoint: `/items/${userId}` }, ...options })
+  async getAllForUser(options: FetchOptions = {}): Promise<ItemResponse[]> {
+    return await getJson<ItemResponse[]>({ ...{ endpoint: `/myitems` }, ...options })
   }
 
   async search(query: ItemSearchRequest, options?: FetchOptions): Promise<ItemSearchResponse> {

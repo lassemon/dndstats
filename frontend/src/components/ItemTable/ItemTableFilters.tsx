@@ -30,6 +30,8 @@ import { authAtom } from 'infrastructure/dataAccess/atoms'
 import { ComparisonOption, ItemCategory, ItemRarity, PriceUnit, Source, Visibility, WeaponProperty } from '@dmtool/domain'
 import { AutoCompleteItem } from 'components/Autocomplete/AutocompleteItem'
 import _, { capitalize } from 'lodash'
+import defaultFilters from '../../layouts/ItemsPage'
+import { unstable_batchedUpdates } from 'react-dom'
 
 type SearchFilters = Omit<ItemSearchRequest, 'order' | 'orderBy'>
 
@@ -102,6 +104,44 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
       setOnlyMyItems(filters.onlyMyItems || false)
     }
   }, [filters.onlyMyItems])
+
+  const clearFiltersAndSearch = () => {
+    unstable_batchedUpdates(() => {
+      setRarityFilter([])
+      setVisibilityFilter([])
+      setCategoryFilter([])
+      setPropertyFilter([])
+      setSourceFilter([])
+      setSearchFilter('')
+      setPriceComparison(ComparisonOption.EXACTLY)
+      setPriceQuantity('')
+      setPriceUnit('gp')
+      setWeightComparison(ComparisonOption.EXACTLY)
+      setWeightFilter('')
+      setOnlyMyItems(false)
+      setRequiresAttunementFilter(null)
+      setHasImageFilter(null)
+    })
+    setTimeout(() => {
+      const searchFilters: SearchFilters = {
+        rarity: [],
+        visibility: [],
+        category: [],
+        property: [],
+        source: [],
+        search: '',
+        priceComparison: ComparisonOption.EXACTLY,
+        priceQuantity: '',
+        priceUnit: 'gp',
+        weightComparison: ComparisonOption.EXACTLY,
+        weight: '',
+        onlyMyItems: false,
+        requiresAttunement: null,
+        hasImage: null
+      }
+      onSearch(searchFilters)
+    }, 500)
+  }
 
   const internalOnSearch = () => {
     const searchFilters: SearchFilters = {
@@ -422,7 +462,7 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
         <Tooltip title="Searches from item name, short description and main description" placement="top-end" disableInteractive>
           <TextField
             id={'search-filter'}
-            value={searchFilter}
+            value={searchFilter || ''}
             label={'Word Search'}
             disabled={loading}
             size="small"
@@ -494,9 +534,14 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
           ) : (
             <div />
           )}
-          <LoadingButton loading={loading} variant="contained" color="secondary" endIcon={<SearchIcon />} onClick={internalOnSearch}>
-            Search
-          </LoadingButton>
+          <Box sx={{ display: 'flex', gap: '1em' }}>
+            <LoadingButton loading={loading} variant="contained" color="secondary" endIcon={<SearchIcon />} onClick={clearFiltersAndSearch}>
+              Clear Filters and Search
+            </LoadingButton>
+            <LoadingButton loading={loading} variant="contained" color="secondary" endIcon={<SearchIcon />} onClick={internalOnSearch}>
+              Search
+            </LoadingButton>
+          </Box>
         </Box>
       </Box>
     </Paper>

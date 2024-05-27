@@ -714,14 +714,13 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/v1/items/:userId',
+        app.get('/api/v1/myitems',
             ...(fetchMiddlewares<RequestHandler>(ItemController)),
             ...(fetchMiddlewares<RequestHandler>(ItemController.prototype.getAllForUser)),
 
             function ItemController_getAllForUser(request: any, response: any, next: any) {
             const args = {
                     request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    userId: {"in":"path","name":"userId","required":true,"dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
