@@ -636,7 +636,6 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   }
 
   const newItem = () => {
-    const newItemId = uuid()
     const newItem = newItemDTO.clone({
       createdBy: authState.user?.id,
       source: authState.loggedIn ? Source.MyItem : Source.HomeBrew,
@@ -644,12 +643,12 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
     })
     setItem(newItem)
     setImage(null)
-    navigate(`${config.cardPageRoot}/item/${newItemId}`)
+    navigate(`${config.cardPageRoot}/item/${newItem.id}`)
   }
 
   const onSave = (_item: ItemDTO | null, callback?: () => void) => {
     if (_item) {
-      const newItem = _item.clone({ ...(_item.id === ITEM_DEFAULTS.NEW_ITEM_ID ? { id: uuid() } : {}) })
+      const newItem = _item.clone()
 
       if (errorState) {
         setError(null)
