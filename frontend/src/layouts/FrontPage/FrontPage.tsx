@@ -164,7 +164,7 @@ const FrontPage: React.FC = () => {
           <Box
             sx={{
               flex: '1',
-              maxHeight: '95dvh',
+              maxHeight: '90dvh',
               overflowY: 'scroll',
               scrollbarWidth: 'thin',
               minWidth: '12em',
@@ -197,7 +197,7 @@ const FrontPage: React.FC = () => {
           <Box
             sx={{
               flex: '1',
-              maxHeight: '95dvh',
+              maxHeight: '90dvh',
               overflowY: 'scroll',
               scrollbarWidth: 'thin',
               minWidth: '17em',
