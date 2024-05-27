@@ -1,6 +1,5 @@
 import { ImageDTO, ItemDTO, isArmor, isWeapon } from '@dmtool/application'
 import { Box, Skeleton } from '@mui/material'
-import LoadingIndicator from 'components/LoadingIndicator'
 import StatsContainer from 'components/StatsContainer'
 import TaperedRule from 'components/TaperedRule'
 import _ from 'lodash'

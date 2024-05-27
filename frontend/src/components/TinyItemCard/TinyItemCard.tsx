@@ -8,6 +8,7 @@ import { makeStyles } from 'tss-react/mui'
 import { dateStringFromUnixTime } from '@dmtool/common'
 import { useAtom } from 'jotai'
 import { authAtom } from 'infrastructure/dataAccess/atoms'
+import gray_brush_bg from 'assets/gray_brush_bg.png'
 
 const useStyles = makeStyles()((theme) => {
   return {
@@ -29,7 +30,25 @@ const useStyles = makeStyles()((theme) => {
       maxWidth: '60%',
       display: 'flex',
       alignItems: 'center',
+      position: 'relative',
+      '&:before': {
+        content: '" "',
+        display: 'block',
+        position: 'absolute',
+        left: '0',
+        top: '0',
+        opacity: '0.6',
+        width: '100%',
+        height: '100%',
+        transform: 'translateY(2%)',
+        background: `url(${gray_brush_bg})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: '130%',
+        zIndex: '1'
+      },
       '& > img': {
+        zIndex: '2',
         width: '100%',
         minWidth: '120px',
         margin: '0 0 1em 0'
@@ -131,7 +150,7 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
               </div>
             )}
             {!itemImage && !loadingImage && (
-              <div className={classes.imageContainer}>
+              <div>
                 <Box sx={{ padding: '1em' }} />
               </div>
             )}
