@@ -639,6 +639,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
     const newItem = newItemDTO.clone({
       createdBy: authState.user?.id,
       source: authState.loggedIn ? Source.MyItem : Source.HomeBrew,
+      visibility: authState.loggedIn ? Visibility.LOGGED_IN : Visibility.PUBLIC,
       updatedAt: unixtimeNow()
     })
     setItem(newItem)

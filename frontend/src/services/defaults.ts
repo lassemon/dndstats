@@ -67,7 +67,7 @@ export const newItemDTO = new ItemDTO({
   rarity: null,
   weight: 1,
   source: Source.HomeBrew,
-  visibility: Visibility.PRIVATE,
+  visibility: Visibility.PUBLIC,
   createdBy: '0',
   createdByUserName: '',
   createdAt: unixtimeNow()
