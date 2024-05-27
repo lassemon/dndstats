@@ -332,16 +332,22 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 <div>
                   <TaperedRule />
                   <div className={classes.weaponStats}>
-                    <div className={classes.weaponStatHeader}>Damage</div>
+                    {(item.damage_full_label || item.twoHandedDamage_full_label) && <div className={classes.weaponStatHeader}>Damage</div>}
                     <div className={classes.weaponStatHeader}>Weight</div>
                     <div className={classes.weaponStatHeader}>Properties</div>
                     {item.useRange_label && <div className={classes.weaponStatHeader}>Range</div>}
                     {item.throwRange_label && <div className={classes.weaponStatHeader}>Thrown Range</div>}
                     <div className={classes.rowBreak} />
-                    <div className={classes.weaponStatValue}>
-                      <span style={{ paddingBottom: item.twoHandedDamage_full_label ? 0 : '6px' }}>{item.damage_full_label}</span>
-                      <span style={{ paddingTop: 0 }}>{item.twoHandedDamage_full_label}</span>
-                    </div>
+                    {(item.damage_full_label || item.twoHandedDamage_full_label) && (
+                      <div className={classes.weaponStatValue}>
+                        {item.damage_full_label && (
+                          <span style={{ paddingBottom: item.twoHandedDamage_full_label ? 0 : '6px' }}>{item.damage_full_label}</span>
+                        )}
+                        {item.twoHandedDamage_full_label && (
+                          <span style={{ paddingTop: item.damage_full_label ? 0 : '6px' }}>{item.twoHandedDamage_full_label}</span>
+                        )}
+                      </div>
+                    )}
                     <div className={classes.weaponStatValue}>
                       <span>{item.weight_label}</span>
                     </div>

@@ -363,13 +363,14 @@ export class ItemDTO extends DTO<ItemDTO, ItemProperties> {
   }
   public get twoHandedDamage_full_label() {
     if (isWeapon(this._properties) && this.hasTwoHandedProperty() && this._properties.damage) {
-      return `${
-        this.twoHandedDamage_label
-          ? ` (${this.twoHandedDamage_label} ${capitalize(this._properties.twoHandedDamage?.damageType || '')} ${
-              this._properties.twoHandedDamage?.qualifier || ''
-            })`
-          : ''
-      }`
+      const damageType = capitalize(this._properties.twoHandedDamage?.damageType || '')
+      const damageQualifier = this._properties.twoHandedDamage?.qualifier ? ' ' + this._properties.twoHandedDamage?.qualifier : ''
+      const fullLabel = `${this.twoHandedDamage_label}${damageType}${damageQualifier}`
+      if (this.damage_full_label) {
+        return this.twoHandedDamage_label ? `(${fullLabel})` : ''
+      } else {
+        return this.twoHandedDamage_label ? `${fullLabel}` : ''
+      }
     } else {
       return ''
     }
