@@ -89,7 +89,6 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
     } else {
       savedItem = await this.itemRepository.update({
         ...this.convertItemToSave(item),
-
         ...(savedImage ? { imageId: savedImage.metadata.id } : {})
       })
     }

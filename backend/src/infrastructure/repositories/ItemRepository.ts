@@ -262,14 +262,14 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     })
   }
 
-  async getLatest(limit: number): Promise<ItemResponse[]> {
+  async getLatest(limit: number, loggedIn: boolean): Promise<ItemResponse[]> {
     return (
       await connection
         .join('users', 'items.createdBy', '=', 'users.id')
         .select('items.*', 'users.name as createdByUserName')
         .from<any, ItemDBResponse[]>('items')
-        .whereIn('visibility', ['public'])
-        .modify<any, ItemDBResponse[]>(withOrderBy('createdAt', 'desc'))
+        .whereIn('visibility', [...(loggedIn ? [Visibility.LOGGED_IN] : []), Visibility.PUBLIC])
+        .modify<any, ItemDBResponse[]>(withOrderBy('createdAt', Order.DESCENDING))
         .limit(limit || 5)
     ).map((item) => {
       return this.parseDBItemJSON(item)
@@ -562,7 +562,6 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
       ...(isWeapon(item) && item.throwRange ? { throwRange: JSON.stringify(item.throwRange) } : { throwRange: null }),
       ...(isWeapon(item) && item.useRange ? { useRange: JSON.stringify(item.useRange) } : { useRange: null }),
       ...(isWeapon(item) || (isArmor(item) && item.properties) ? { properties: JSON.stringify(item.properties) } : { properties: '[]' }),
-      createdAt: updatedAt,
       updatedAt: updatedAt
     }
   }

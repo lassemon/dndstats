@@ -31,7 +31,8 @@ const useStyles = makeStyles()((theme) => {
       alignItems: 'center',
       '& > img': {
         width: '100%',
-        minWidth: '120px'
+        minWidth: '120px',
+        margin: '0 0 1em 0'
       },
       '& > div': {
         alignItems: 'center',
@@ -127,6 +128,11 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
             {itemImage && !loadingImage && (
               <div className={classes.imageContainer}>
                 <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
+              </div>
+            )}
+            {!itemImage && !loadingImage && (
+              <div className={classes.imageContainer}>
+                <Box sx={{ padding: '1em' }} />
               </div>
             )}
             {loadingImage && (

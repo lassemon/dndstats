@@ -15,6 +15,7 @@ export const useStyles = makeStyles()((theme) => ({
     width: '13em',
     height: '13em',
     border: '2px solid #d3c7a6',
+    background: theme.status.light,
     '&&': {
       fontSize: '12px',
       '&:hover': {
@@ -28,7 +29,9 @@ export const useStyles = makeStyles()((theme) => ({
     },
     '&&&': {
       img: {
-        minWidth: '80px'
+        width: 'auto',
+        minWidth: 'auto',
+        maxHeight: '80px'
       }
     }
   }

@@ -28,7 +28,7 @@ export interface BaseItem extends Entity {
   throwRange?: ItemRange | null
 }
 
-export const ItemSortableKeys = ['name', 'rarity', 'price', 'weight', 'visibility', 'createdBy', 'source']
+export const ItemSortableKeys = ['name', 'rarity', 'price', 'weight', 'visibility', 'createdBy', 'source', 'createdAt', 'updatedAt']
 
 export interface ArmorItem extends BaseItem {
   armorClass: {
