@@ -167,14 +167,23 @@ const FrontPage: React.FC = () => {
               maxHeight: '90dvh',
               overflowY: 'scroll',
               scrollbarWidth: 'thin',
-              minWidth: '12em',
+              minWidth: '15em',
               padding: '0.4em 1em 0.4em 1em',
               background: 'rgba(245, 245, 245, 0.7)',
               borderRadius: '0.5em'
             }}
           >
             <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Latest Items</FrontPageHeader>
-            <Box sx={{ margin: '1.5em 0.5em 0.5em 0', width: '90%', '&& > .stats-container': { margin: '0 0 1em 0' } }}>
+            <Box
+              sx={{
+                margin: '1.5em 0.5em 0.5em 0',
+                width: '90%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1em',
+                '&& > .stats-container': { margin: '0 0 1em 0' }
+              }}
+            >
               {loadingPageStats ? (
                 <>
                   <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
@@ -207,7 +216,15 @@ const FrontPage: React.FC = () => {
             }}
           >
             <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Trending Items</FrontPageHeader>
-            <Box sx={{ margin: '1.5em 1em 0.5em 0', '&& > .stats-container': { margin: '0 0 1em 0' } }}>
+            <Box
+              sx={{
+                margin: '1.5em 1em 0.5em 0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1em',
+                '&& > .stats-container': { margin: '0 0 1em 0' }
+              }}
+            >
               {loadingPageStats ? (
                 <>
                   <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />

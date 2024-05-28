@@ -14,8 +14,7 @@ const useStyles = makeStyles()((theme) => {
   return {
     root: {
       minWidth: '10em',
-      padding: '0.6em 0.6em 1em 0.6em',
-      margin: '0 0 1.4em 0',
+      height: '100%',
       borderRadius: '4px',
       borderBottom: `2px solid ${theme.palette.primary.dark}`,
       '&:hover': {
@@ -27,10 +26,10 @@ const useStyles = makeStyles()((theme) => {
       display: 'flex'
     },
     imageContainer: {
-      maxWidth: '60%',
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
+      maxWidth: '120px',
       '&:before': {
         content: '" "',
         display: 'block',
@@ -40,18 +39,17 @@ const useStyles = makeStyles()((theme) => {
         opacity: '0.6',
         width: '100%',
         height: '100%',
-        transform: 'translateY(2%)',
+        transform: 'translate(4%, -2%)',
         background: `url(${gray_brush_bg})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
-        backgroundSize: '130%',
+        backgroundSize: '100%',
         zIndex: '1'
       },
       '& > img': {
         zIndex: '2',
         width: '100%',
-        minWidth: '120px',
-        margin: '0 0 1em 0'
+        margin: '0.5em 0'
       },
       '& > div': {
         alignItems: 'center',
@@ -124,7 +122,16 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
   return (
     <Box className={`${classes.root} ${className}`}>
       {!loadingItem ? (
-        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxSizing: 'border-box',
+            padding: '0.5em'
+          }}
+        >
           <Box>
             <div>
               <div className={`${classes.textRoot}`}>
@@ -145,29 +152,36 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
               </div>
             </div>
             {itemImage && !loadingImage && (
-              <div className={classes.imageContainer}>
+              <Box className={classes.imageContainer}>
                 <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
-              </div>
+              </Box>
             )}
             {!itemImage && !loadingImage && (
               <div>
-                <Box sx={{ padding: '1em' }} />
+                <Box sx={{ margin: '1em' }} />
               </div>
             )}
             {loadingImage && (
-              <div className={classes.imageContainer}>
-                <Skeleton variant="rounded" width="100%" height={100} animation="wave" />
-              </div>
+              <Box
+                className={classes.imageContainer}
+                sx={{
+                  '&&:before': {
+                    backgroundImage: 'none'
+                  }
+                }}
+              >
+                <Skeleton variant="rounded" width="100%" height={100} animation="wave" sx={{ margin: '0.5em 0.5em 1em 0.5em' }} />
+              </Box>
             )}
           </Box>
-          <Box sx={{ margin: '-1em 0 0.5em 0' }}>
+          <Box>
             {item.createdByUserName && (
               <Typography variant="body2" sx={{ fontSize: '0.6em', margin: '1em  0 0 0' }}>
                 Created by:{' '}
                 <span style={{ fontWeight: '600', margin: '0.4em 0 0 0' }}>{item.getCreatedByUserName(authState.user?.id)}</span>
               </Typography>
             )}
-            <Box sx={{ display: 'flex', alignItems: 'end', margin: '0 0 -1em 0', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between' }}>
               {item.updatedAt && (
                 <Typography variant="body2" sx={{ fontSize: '0.6em' }}>
                   <span>{dateStringFromUnixTime(item.updatedAt)}</span>

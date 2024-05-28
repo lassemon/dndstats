@@ -21,7 +21,6 @@ const getTrendingItemsUseCase = new GetTrendingItemsUseCase(itemViewsRepository,
 const getLatestItemsUseCase = new GetLatestItemsUseCase(itemRepository)
 
 @Route('/pagestats')
-@Middlewares(authentication.passThroughAuthenticationMiddleware())
 export class PageStatsController extends Controller {
   constructor() {
     super()
@@ -29,16 +28,20 @@ export class PageStatsController extends Controller {
 
   @Tags('page')
   @Get()
+  @Middlewares(authentication.passThroughAuthenticationMiddleware())
   public async get(@Request() request: express.Request): Promise<PageStatsResponse> {
+    const loggedIn = !!request?.isAuthenticated() && !!request.user
     const featuredItem = await getFeaturedItemUseCase.execute({
       unknownError: throwUnknownError,
       invalidArgument: throwIllegalArgument
     })
     const trendingItems = await getTrendingItemsUseCase.execute({
+      loggedIn,
       unknownError: throwUnknownError,
       invalidArgument: throwIllegalArgument
     })
     const latestItems = await getLatestItemsUseCase.execute({
+      loggedIn,
       unknownError: throwUnknownError,
       invalidArgument: throwIllegalArgument
     })

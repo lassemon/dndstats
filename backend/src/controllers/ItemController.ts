@@ -241,6 +241,7 @@ export class ItemController extends Controller {
   @Tags('Item')
   @SuccessResponse('200', 'OK')
   @Delete('item/{itemId}')
+  @Middlewares(authentication.authenticationMiddleware())
   public async deleteIem(@Request() request: express.Request, @Path() itemId: string): Promise<ItemResponse> {
     if (!request?.isAuthenticated() || !request.user) {
       throw new ApiError(401, 'Unauthorized', 'Must be logged in to do that')

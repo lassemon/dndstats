@@ -6,7 +6,9 @@ import {
   UseCaseOptionsInterface
 } from '@dmtool/application'
 
-export interface GetTrendingItemsUseCaseOptions extends UseCaseOptionsInterface {}
+export interface GetTrendingItemsUseCaseOptions extends UseCaseOptionsInterface {
+  loggedIn: boolean
+}
 
 export type GetTrendingItemsUseCaseInterface = UseCaseInterface<GetTrendingItemsUseCaseOptions, ItemResponse[]>
 
@@ -15,8 +17,8 @@ export class GetTrendingItemsUseCase implements GetTrendingItemsUseCaseInterface
     private readonly itemViewsRepository: DatabaseItemViewsRepositoryInterface,
     private readonly itemRepository: DatabaseItemRepositoryInterface
   ) {}
-  async execute({}: GetTrendingItemsUseCaseOptions): Promise<ItemResponse[]> {
-    const trendingItems = await this.itemViewsRepository.getMostTrendingItems(5)
+  async execute({ loggedIn }: GetTrendingItemsUseCaseOptions): Promise<ItemResponse[]> {
+    const trendingItems = await this.itemViewsRepository.getMostTrendingItems(5, loggedIn)
     const items = await this.itemRepository.getItemsByIdsAndSources(
       trendingItems.map((trendingItem) => {
         return { itemId: trendingItem.itemId, source: trendingItem.source }

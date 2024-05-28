@@ -1,5 +1,5 @@
 import { ItemDTO } from '@dmtool/application'
-import { Box } from '@mui/material'
+import { Box, Skeleton } from '@mui/material'
 import PageHeader from 'components/PageHeader'
 import TinyItemCardWithImage from 'components/TinyItemCard/TinyItemCardWithImage'
 import { authAtom } from 'infrastructure/dataAccess/atoms'
@@ -12,8 +12,7 @@ import { makeStyles } from 'tss-react/mui'
 
 export const useStyles = makeStyles()((theme) => ({
   myItemCard: {
-    width: '13em',
-    height: '13em',
+    width: '15em',
     border: '2px solid #d3c7a6',
     background: theme.status.light,
     '&&': {
@@ -30,8 +29,7 @@ export const useStyles = makeStyles()((theme) => ({
     '&&&': {
       img: {
         width: 'auto',
-        minWidth: 'auto',
-        maxHeight: '80px'
+        minWidth: 'auto'
       }
     }
   }
@@ -55,25 +53,31 @@ const MyItemsPage: React.FC = () => {
   }
 
   useEffect(() => {
-    const fetchAndSetPageStats = async () => {
-      try {
-        setLoadingMyItems(true)
-        const controller = new AbortController()
-        myItemsRequestControllerRef.current = controller
+    if (!authState.loggedIn) {
+      navigate(`/`)
+    } else {
+      const fetchAndSetPageStats = async () => {
+        try {
+          setLoadingMyItems(true)
+          const controller = new AbortController()
+          myItemsRequestControllerRef.current = controller
 
-        const myItemsResponse = await itemRepository.getAllForUser({ signal: controller.signal }).finally(() => {
-          setLoadingMyItems(false)
-        })
-        unstable_batchedUpdates(() => {
-          setMyItems(myItemsResponse.map((item) => new ItemDTO(item)))
-        })
-      } catch (error) {
-        console.error('Failed to fetch page stats', error)
+          const myItemsResponse = await itemRepository.getAllForUser({ signal: controller.signal }).finally(() => {
+            setLoadingMyItems(false)
+          })
+          unstable_batchedUpdates(() => {
+            setMyItems(myItemsResponse.map((item) => new ItemDTO(item)))
+          })
+        } catch (error) {
+          console.error('Failed to fetch page stats', error)
+        }
       }
+
+      fetchAndSetPageStats()
     }
+  }, [authState.loggedIn])
 
-    fetchAndSetPageStats()
-
+  useEffect(() => {
     return () => {
       myItemsRequestControllerRef?.current?.abort()
     }
@@ -103,13 +107,26 @@ const MyItemsPage: React.FC = () => {
             border: '2px solid #d3c7a6'
           }}
         >
-          {myItems.map((item, index) => {
-            return (
-              <div key={`${item.id}-${index}`} onClick={() => goToItem(item.id)}>
-                <TinyItemCardWithImage item={item} className={classes.myItemCard} />
-              </div>
-            )
-          })}
+          {loadingMyItems
+            ? Array.from(Array(6).keys()).map((index) => {
+                return (
+                  <Skeleton
+                    key={index}
+                    variant="rounded"
+                    width={120}
+                    height={120}
+                    animation="wave"
+                    sx={{ margin: '0 0 0.5em 0', backgroundColor: 'rgba(0, 0, 0, 0.21)', opacity: 1.0 - index * 0.2 }}
+                  />
+                )
+              })
+            : myItems.map((item, index) => {
+                return (
+                  <div key={`${item.id}-${index}`} onClick={() => goToItem(item.id)}>
+                    <TinyItemCardWithImage item={item} className={classes.myItemCard} />
+                  </div>
+                )
+              })}
         </Box>
       </Box>
     </Box>

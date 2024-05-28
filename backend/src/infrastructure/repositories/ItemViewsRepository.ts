@@ -1,12 +1,14 @@
 import { DatabaseItemViewsRepositoryInterface, ItemViews } from '@dmtool/application'
-import { Source } from '@dmtool/domain'
+import { Source, Visibility } from '@dmtool/domain'
 import connection from '../database/connection'
 
 class ItemViewsRepository implements DatabaseItemViewsRepositoryInterface {
-  async getMostTrendingItems(limit: number): Promise<ItemViews[]> {
+  async getMostTrendingItems(limit: number, loggedIn: boolean): Promise<ItemViews[]> {
     return await connection
+      .join('items', 'itemViews.itemId', '=', 'items.id')
       .select('*')
       .from<any, ItemViews[]>('itemViews')
+      .whereIn('visibility', [...(loggedIn ? [Visibility.LOGGED_IN] : []), Visibility.PUBLIC])
       .orderBy('viewCount', 'desc')
       .limit(limit || 5)
   }
