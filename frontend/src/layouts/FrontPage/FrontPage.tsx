@@ -168,7 +168,7 @@ const FrontPage: React.FC = () => {
               overflowY: 'scroll',
               scrollbarWidth: 'thin',
               minWidth: '15em',
-              padding: '0.4em 1em 0.4em 1em',
+              padding: '0.4em 0 0.4em 1em',
               background: 'rgba(245, 245, 245, 0.7)',
               borderRadius: '0.5em'
             }}
@@ -176,8 +176,8 @@ const FrontPage: React.FC = () => {
             <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Latest Items</FrontPageHeader>
             <Box
               sx={{
-                margin: '1.5em 0.5em 0.5em 0',
-                width: '90%',
+                margin: '0.5em 0 0.5em 0',
+                width: '95%',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '1em',
@@ -218,7 +218,7 @@ const FrontPage: React.FC = () => {
             <FrontPageHeader sx={{ opacity: loadingPageStats ? '0.4' : '1' }}>Trending Items</FrontPageHeader>
             <Box
               sx={{
-                margin: '1.5em 1em 0.5em 0',
+                margin: '0.5em 0 0.5em 0',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '1em',

@@ -288,7 +288,7 @@ export const ItemTable: React.FC<ItemTableProps> = ({
               <TableRow>
                 <TableCell
                   sx={{ width: '0%', minWidth: '2em' }}
-                  colSpan={authState.loggedIn ? LOGGED_IN_TABLE_COLUMN_COUNT : LOGGED_IN_TABLE_COLUMN_COUNT - 1}
+                  colSpan={authState.loggedIn ? LOGGED_IN_TABLE_COLUMN_COUNT - 6 : LOGGED_IN_TABLE_COLUMN_COUNT - 7}
                 >
                   {Array.from(Array(4).keys()).map((index) => {
                     return (

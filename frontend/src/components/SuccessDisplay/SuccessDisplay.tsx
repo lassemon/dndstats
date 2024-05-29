@@ -23,7 +23,7 @@ export const SuccessDisplay: React.FC = () => {
   }
 
   return (
-    <Snackbar open={!!success} autoHideDuration={6000} onClose={handleClose}>
+    <Snackbar open={!!success} autoHideDuration={3500} onClose={handleClose}>
       <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
         <Typography variant="body2" sx={{ margin: '0 0 0 0.5em' }}>
           <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap' }}>

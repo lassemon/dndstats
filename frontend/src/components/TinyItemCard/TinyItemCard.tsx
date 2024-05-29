@@ -1,6 +1,5 @@
 import { ImageDTO, ItemDTO } from '@dmtool/application'
 import { Box, Skeleton, Typography } from '@mui/material'
-import LoadingIndicator from 'components/LoadingIndicator'
 import underline from 'assets/underline.png'
 import _ from 'lodash'
 import React from 'react'
@@ -201,7 +200,7 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
         </Box>
       ) : (
         <div className={classes.textContainer}>
-          <LoadingIndicator />
+          <Skeleton variant="rounded" width="80%" height={60} animation="wave" sx={{ margin: '0 0 1em 0' }} />
         </div>
       )}
     </Box>
