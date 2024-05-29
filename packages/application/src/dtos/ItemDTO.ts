@@ -473,7 +473,7 @@ export class ItemDTO extends DTO<ItemDTO, ItemProperties> {
   }
 
   public get properties() {
-    return isArmor(this._properties) || isWeapon(this._properties) ? this._properties.properties : []
+    return isArmor(this._properties) || isWeapon(this._properties) ? this._properties.properties || [] : []
   }
   public get properties_label() {
     if (isArmor(this._properties) || (isWeapon(this._properties) && this._properties.properties)) {
