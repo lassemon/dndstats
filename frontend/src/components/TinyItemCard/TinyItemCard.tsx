@@ -48,7 +48,7 @@ const useStyles = makeStyles()((theme) => {
         background: `url(${gray_brush_bg})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
-        backgroundSize: '100%',
+        backgroundSize: '140%',
         zIndex: '1'
       },
       '& > img': {
