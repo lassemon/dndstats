@@ -25,6 +25,7 @@ export enum ItemCategory {
   POTION = 'potion',
   RANGED_WEAPON = 'ranged-weapon',
   RING = 'ring',
+  NECKLACE = 'necklace',
   ROD = 'rod',
   SCROLL = 'scroll',
   SHIELD = 'shield',

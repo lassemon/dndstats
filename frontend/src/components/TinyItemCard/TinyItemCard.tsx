@@ -24,6 +24,12 @@ const useStyles = makeStyles()((theme) => {
     textRoot: {
       display: 'flex'
     },
+    imageRoot: {
+      width: '100%',
+      flex: '1 1 auto',
+      display: 'flex',
+      justifyContent: 'center'
+    },
     imageContainer: {
       display: 'flex',
       alignItems: 'center',
@@ -126,12 +132,11 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
             boxSizing: 'border-box',
             padding: '0.5em'
           }}
         >
-          <Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', flex: '1 1 auto' }}>
             <div>
               <div className={`${classes.textRoot}`}>
                 <div className={classes.textContainer}>
@@ -151,8 +156,10 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
               </div>
             </div>
             {itemImage && !loadingImage && (
-              <Box className={classes.imageContainer}>
-                <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
+              <Box className={classes.imageRoot}>
+                <Box className={classes.imageContainer}>
+                  <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
+                </Box>
               </Box>
             )}
             {!itemImage && !loadingImage && (
