@@ -29,7 +29,6 @@
   "routes": {
     "basePath": "/api/v1",
     "routesDir": "./src",
-    "authenticationModule": "./src/security/AuthenticationProvider.ts",
-    "middlewareTemplate": "./src/security/express-reseponse-template.hbs"
+    "authenticationModule": "./src/security/AuthenticationProvider.ts"
   }
 }

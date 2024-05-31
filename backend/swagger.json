@@ -2134,7 +2134,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/UserResponse"
+									"type": "boolean"
 								}
 							}
 						}
