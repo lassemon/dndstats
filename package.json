@@ -4,10 +4,10 @@
   "version": "1.0.1",
   "license": "ISC",
   "scripts": {
-    "clean:buildinfo": "rimraf -g \"packages/**/tsconfig.tsbuildinfo\"",
-    "clean:lib": "rimraf -g \"packages/**/lib\"",
+    "clean:buildinfo": "npx --yes rimraf -g \"packages/**/tsconfig.tsbuildinfo\"",
+    "clean:lib": "npx --yes rimraf -g \"packages/**/lib\"",
     "clean:build": "npm run clean:lib && npm run clean:buildinfo",
-    "clean:node_modules": "rimraf -g \"packages/**/node_modules\" && rimraf backend/node_modules && rimraf frontend/node_modules",
+    "clean:node_modules": "npx --yes rimraf -g \"packages/**/node_modules\" && npx --yes rimraf backend/node_modules && npx --yes rimraf frontend/node_modules",
     "clean": "npm run clean:lib && npm run clean:buildinfo && npm run clean:node_modules",
     "build": "tsc -b tsconfig.build.json"
   },
@@ -16,10 +16,7 @@
     "frontend",
     "packages/*"
   ],
-  "devDependencies": {
-    "rimraf": "^5.0.5"
-  },
   "dependencies": {
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.5"
   }
 }
