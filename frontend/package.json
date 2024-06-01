@@ -45,7 +45,8 @@
     "vite-tsconfig-paths": "^4.3.2"
   },
   "scripts": {
-    "watch": "vite",
+    "watch": "vite --open true",
+    "watch:docker": "vite --open false",
     "build": "tsc && vite build",
     "prepreview": "npm run build",
     "preview": "vite preview"

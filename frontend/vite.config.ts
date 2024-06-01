@@ -13,10 +13,10 @@ export default defineConfig({
     include: ['@mui/material/Tooltip']
   },
   server: {
-    // this ensures that the browser opens upon server start
-    open: true,
+    open: false, // Disable automatic opening of the browser
     // this sets a default port to 3000
     port: 3000,
+    host: true, // Ensure it listens on all network interfaces
     proxy: {
       '/api/v1': {
         target: 'http://localhost:80', // Proxy requests to the backend server running on port 80

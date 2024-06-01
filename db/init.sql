@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (id, name, password, email, active, roles, createdAt, updatedAt) VALUES
-  ('0','system','$2a$10$lZzKUHY5zCIbCcfKmv2RaOH412mNfemffeQUBKpGqsWOrsZZGsJmO','admin@admin.com',1,'["superAdmin"]',1707508500,1707511589),
-  ('1','dmtool','$2a$10$lZzKUHY5zCIbCcfKmv2RaOH412mNfemffeQUBKpGqsWOrsZZGsJmO','admin@admin.com',1,'["superAdmin", "admin", "creator"]',1707508500,1707511589);
+  ('0','system','$2a$10$lZzKUHY5zCIbCcfKmv2RaOH412mNfemffeQUBKpGqsWOrsZZGsJmO','admin@admin.com',1,'["superAdmin", "admin", "creator"]',1707508500,1707511589),
+  ('1','dmtool','$2a$10$lZzKUHY5zCIbCcfKmv2RaOH412mNfemffeQUBKpGqsWOrsZZGsJmO','dmtool@example.com',1,'["admin", "creator"]',1707508500,1707511589);
 
 
 CREATE TABLE IF NOT EXISTS items  (
@@ -82,7 +82,7 @@ INSERT INTO items (
     15,
     '[{"featureName":"Dimensions","featureDescription":"This bag has an interior space considerably larger than its outside dimensions, roughly 2 feet in diameter at the mouth and 4 feet deep. The bag can hold up to 500 pounds, not exceeding a volume of 64 cubic feet. The bag weighs 15 pounds, regardless of its contents."},{"featureName":"Usage","featureDescription":"Retrieving an item from the bag requires an action. If the bag is overloaded, pierced, or torn, it ruptures and is destroyed, and its contents are scattered in the Astral Plane. If the bag is turned inside out, its contents spill forth, unharmed, but the bag must be put right before it can be used again. Breathing creatures inside the bag can survive up to a number of minutes equal to 10 divided by the number of creatures (minimum 1 minute), after which time they begin to suffocate."},{"featureName":"Divide by zero","featureDescription":"Placing a bag of holding inside an extradimensional space created by a handy haversack, portable hole, or similar item instantly destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it to a random location on the Astral Plane. The gate then closes. The gate is one-way only and can''t be reopened."}]',
     '["wondrous-item"]',
-    '',
+    null,
     0,
     false,
     null,
