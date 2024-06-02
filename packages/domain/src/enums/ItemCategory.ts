@@ -23,6 +23,7 @@ export enum ItemCategory {
   MUSICAL_INSTRUMENT = 'musical-instrument',
   OTHER_TOOL = 'other-tool',
   POTION = 'potion',
+  POWDER = 'powder',
   RANGED_WEAPON = 'ranged-weapon',
   RING = 'ring',
   NECKLACE = 'necklace',
