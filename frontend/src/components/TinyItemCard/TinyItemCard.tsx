@@ -1,5 +1,5 @@
 import { ImageDTO, ItemDTO } from '@dmtool/application'
-import { Box, Skeleton, Typography } from '@mui/material'
+import { Box, Chip, Skeleton, Typography } from '@mui/material'
 import underline from 'assets/underline.png'
 import _ from 'lodash'
 import React from 'react'
@@ -8,6 +8,7 @@ import { dateStringFromUnixTime } from '@dmtool/common'
 import { useAtom } from 'jotai'
 import { authAtom } from 'infrastructure/dataAccess/atoms'
 import gray_brush_bg from 'assets/gray_brush_bg.png'
+import { Visibility } from '@dmtool/domain'
 
 const useStyles = makeStyles()((theme) => {
   return {
@@ -180,28 +181,53 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
               </Box>
             )}
           </Box>
-          <Box>
-            {item.createdByUserName && (
-              <Typography variant="body2" sx={{ fontSize: '0.6em', margin: '1em  0 0 0' }}>
-                Created by:{' '}
-                <span style={{ fontWeight: '600', margin: '0.4em 0 0 0' }}>{item.getCreatedByUserName(authState.user?.id)}</span>
-              </Typography>
-            )}
-            <Box sx={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
+              {item.createdByUserName && (
+                <Typography variant="body2" sx={{ fontSize: '0.6em', margin: '1em  0 0 0' }}>
+                  Created by:{' '}
+                  <span style={{ fontWeight: '600', margin: '0.4em 0 0 0' }}>{item.getCreatedByUserName(authState.user?.id)}</span>
+                </Typography>
+              )}
               {item.updatedAt && (
                 <Typography variant="body2" sx={{ fontSize: '0.6em' }}>
                   <span>{dateStringFromUnixTime(item.updatedAt)}</span>
                 </Typography>
               )}
-              {item.getSource(authState.user?.id) && (
-                <Typography
-                  variant="caption"
-                  color="secondary"
-                  sx={{ fontSize: '0.6em', margin: '0 0 0 1em', fontWeight: '600', whiteSpace: 'nowrap' }}
-                >
-                  {item.getSource(authState.user?.id)}
-                </Typography>
-              )}
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'end', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
+                {item.getSource(authState.user?.id) && (
+                  <Typography
+                    variant="caption"
+                    color="secondary"
+                    sx={{ fontSize: '0.6em', fontWeight: '600', whiteSpace: 'nowrap', lineHeight: 'normal' }}
+                  >
+                    {item.getSource(authState.user?.id)}
+                  </Typography>
+                )}
+                {authState.loggedIn && (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontSize: '0.7em',
+                      fontWeight: '600',
+                      whiteSpace: 'nowrap',
+                      lineHeight: 'normal',
+                      color: (theme) =>
+                        item.visibility === Visibility.PUBLIC
+                          ? theme.palette.success.main
+                          : item.visibility === Visibility.LOGGED_IN
+                          ? theme.palette.warning.main
+                          : item.visibility === Visibility.PRIVATE
+                          ? theme.palette.error.main
+                          : theme.palette.common.black
+                    }}
+                  >
+                    {item.visibility_label}
+                  </Typography>
+                )}
+              </Box>
             </Box>
           </Box>
         </Box>
