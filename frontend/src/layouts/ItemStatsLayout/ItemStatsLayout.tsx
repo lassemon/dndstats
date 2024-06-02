@@ -19,6 +19,7 @@ const ItemStatsLayout: React.FC = () => {
   const [showSecondaryCategories, setShowSecondaryCategories] = useState<boolean>(true)
   const [lockToPortrait, setLockToPortrait] = useState<boolean>(false)
   const [hideBgBrush, setHideBgBrush] = useState<boolean>(false)
+  const [savingItem, setSavingItem] = useState<boolean>(false)
 
   const [{ item, backendItem, setBackendItem, loadingItem, image, loadingImage }, setItem, setImage] = useItemWithImage(
     itemRepository,
@@ -80,6 +81,7 @@ const ItemStatsLayout: React.FC = () => {
           image={image}
           loadingImage={loadingImage}
           loadingItem={loadingItem}
+          savingItem={savingItem}
           showSecondaryCategories={showSecondaryCategories}
           hideBgBrush={hideBgBrush}
           screenshotMode={screenshotMode}
@@ -97,6 +99,8 @@ const ItemStatsLayout: React.FC = () => {
           setHideBgBrush={setHideBgBrush}
           screenshotMode={screenshotMode}
           setScreenshotMode={setScreenshotMode}
+          savingItem={savingItem}
+          setSavingItem={setSavingItem}
         />
       }
     />

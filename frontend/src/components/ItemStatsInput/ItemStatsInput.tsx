@@ -169,6 +169,8 @@ interface ItemStatsInputProps {
   setHideBgBrush: React.Dispatch<React.SetStateAction<boolean>>
   screenshotMode?: boolean
   setScreenshotMode?: React.Dispatch<React.SetStateAction<boolean>>
+  savingItem: boolean
+  setSavingItem: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
@@ -188,16 +190,15 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   hideBgBrush,
   setHideBgBrush,
   showSecondaryCategories,
-  setShowSecondaryCategories
+  setShowSecondaryCategories,
+  savingItem,
+  setSavingItem
 }) => {
   const controllersRef = useRef<AbortController[]>([])
   const { classes } = useStyles()
   const [errorState, setError] = useAtom(React.useMemo(() => errorAtom, []))
   const [, setSuccess] = useAtom(React.useMemo(() => successAtom, []))
   const navigate = useNavigate()
-
-  const [savingItem, setSavingItem] = useState<boolean>(false)
-
   const [authState] = useAtom(authAtom)
 
   const theme = useTheme()
@@ -598,6 +599,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                     setItemList((_itemList) =>
                       _.unionBy(_itemList, [itemToItemListOption(authState.user?.id, itemSaveResponse.item)], 'id')
                     )
+                    setSuccess({ message: 'Image saved succesfully!' })
                   })
                 })
                 .catch((error) => {

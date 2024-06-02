@@ -12,6 +12,7 @@ interface ItemStatsProps {
   item: ItemDTO | null
   image?: ImageDTO | null
   loadingItem: boolean
+  savingItem: boolean
   loadingImage: boolean
   showSecondaryCategories: boolean
   hideBgBrush?: boolean
@@ -21,6 +22,7 @@ interface ItemStatsProps {
 export const ItemStats: React.FC<ItemStatsProps> = ({
   item,
   loadingItem,
+  savingItem,
   image,
   loadingImage,
   showSecondaryCategories,
@@ -45,6 +47,7 @@ export const ItemStats: React.FC<ItemStatsProps> = ({
         loadingItem={loadingItem}
         image={image}
         loadingImage={loadingImage}
+        savingItem={savingItem}
         showSecondaryCategories={showSecondaryCategories}
         hideBgBrush={hideBgBrush}
         inlineFeatures={inlineFeatures}

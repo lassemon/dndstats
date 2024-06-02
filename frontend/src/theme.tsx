@@ -238,6 +238,15 @@ const theme = createTheme({
           borderBottom: '0px solid transparent'
         }
       }
+    },
+    MuiSkeleton: {
+      styleOverrides: {
+        root: {
+          ':after': {
+            animationDuration: '1.3s'
+          }
+        }
+      }
     }
   }
 })

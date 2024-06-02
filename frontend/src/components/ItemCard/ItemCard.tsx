@@ -14,7 +14,8 @@ const useStyles = makeStyles()((theme) => {
   return {
     container: {
       display: 'flex',
-      gap: '1.5em'
+      gap: '1.5em',
+      position: 'relative'
     },
     root: {
       display: 'flex'
@@ -38,7 +39,7 @@ const useStyles = makeStyles()((theme) => {
         background: `url(${gray_brush_bg})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
-        backgroundSize: '130%',
+        backgroundSize: '100%',
         zIndex: '1'
       },
       '& > img': {
@@ -234,6 +235,7 @@ interface ItemCardProps {
   item: ItemDTO | null
   image?: ImageDTO | null
   loadingItem?: boolean
+  savingItem?: boolean
   loadingImage?: boolean
   showSecondaryCategories?: boolean
   hideBgBrush?: boolean
@@ -246,6 +248,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   inlineFeatures = false,
   image = null,
   loadingItem = false,
+  savingItem = false,
   loadingImage = false,
   showSecondaryCategories = true,
   hideBgBrush = false,
@@ -269,159 +272,180 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     <StatsContainer containerClassName={classes.container} rootClassName={className}>
       {!loadingItem ? (
         <>
-          <Box sx={{ flex: '1 1 60%', display: 'flex', flexDirection: 'column' }} className="itemCard-textContainer">
-            <div className={`${classes.root}`}>
-              <div className={classes.textContainer}>
-                <h1 className={classes.name}>{item.name}</h1>
-                <h2
-                  className={classes.tinyDescription}
-                  style={{
-                    fontSize: item.shortDescription_label ? '0.85em' : '1em',
-                    fontWeight: item.shortDescription_label ? 'bold' : 'normal'
-                  }}
-                >
-                  <>{showSecondaryCategories ? item.all_categories_label || '' : item.main_categories_label || ''}</>
-                  <>{item.rarity ? `${!_.isEmpty(item.categories) ? ', ' : ''}${item.rarity_label}` : '' || ''}</>
-                  <span style={{ textTransform: 'none' }}> {item.requiresAttunement_label}</span>
-                </h2>
-                {item.shortDescription_label && (
-                  <Box sx={{ fontSize: '0.95em', fontStyle: 'italic' }}>
-                    <Markdown text={item.shortDescription_label} />
-                  </Box>
-                )}
-                {isArmor(item) && (
-                  <Box>
-                    {item.armorClass_label && <TinyStat title="AC" value={item.armorClass_label} noMargins />}
-                    {!!parseInt(item.strengthMinimum || '0') && <TinyStat title="Minimum STR" value={item.strengthMinimum} noMargins />}
-                    {item.stealthDisadvantage === true && <TinyStat title="Stealth" value={'Disadvantage'} noMargins />}
-                  </Box>
-                )}
-                {item.mainDescription && isWeapon(item) && (
-                  <div style={{ whiteSpace: 'pre-wrap' }}>
-                    <Markdown text={item.mainDescription} />
-                  </div>
-                )}
-                {item.features?.map((feature: any, key: any) => {
-                  return (
-                    <div className={classes.featureContainer} key={key}>
-                      {feature.featureName && (
-                        <h4 className={`${classes.featureName} ${isWeapon(item) ? classes.weaponFeatureName : ''}`}>
-                          {feature.featureName}
-                        </h4>
-                      )}
-                      {feature.featureDescription &&
-                        (inlineFeatures ? (
-                          <Markdown className={classes.inlineDescription} text={feature.featureDescription} />
-                        ) : (
-                          <Markdown text={feature.featureDescription} />
-                        ))}
+          {savingItem && (
+            <Skeleton
+              animation="wave"
+              sx={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+                transform: 'none',
+                backgroundColor: 'rgba(0, 0, 0, 0.21)',
+                ':after': {
+                  animationDuration: '1.3s'
+                }
+              }}
+            />
+          )}
+          <Box sx={{ display: 'flex', opacity: savingItem ? '0.5' : 1, cursor: savingItem ? 'wait' : 'cursor' }}>
+            <Box sx={{ flex: '1 1 60%', display: 'flex', flexDirection: 'column' }} className="itemCard-textContainer">
+              <div className={`${classes.root}`}>
+                <div className={classes.textContainer}>
+                  <h1 className={classes.name}>{item.name}</h1>
+                  <h2
+                    className={classes.tinyDescription}
+                    style={{
+                      fontSize: item.shortDescription_label ? '0.85em' : '1em',
+                      fontWeight: item.shortDescription_label ? 'bold' : 'normal'
+                    }}
+                  >
+                    <>{showSecondaryCategories ? item.all_categories_label || '' : item.main_categories_label || ''}</>
+                    <>{item.rarity ? `${!_.isEmpty(item.categories) ? ', ' : ''}${item.rarity_label}` : '' || ''}</>
+                    <span style={{ textTransform: 'none' }}> {item.requiresAttunement_label}</span>
+                  </h2>
+                  {item.shortDescription_label && (
+                    <Box sx={{ fontSize: '0.95em', fontStyle: 'italic' }}>
+                      <Markdown text={item.shortDescription_label} />
+                    </Box>
+                  )}
+                  {isArmor(item) && (
+                    <Box>
+                      {item.armorClass_label && <TinyStat title="AC" value={item.armorClass_label} noMargins />}
+                      {!!parseInt(item.strengthMinimum || '0') && <TinyStat title="Minimum STR" value={item.strengthMinimum} noMargins />}
+                      {item.stealthDisadvantage === true && <TinyStat title="Stealth" value={'Disadvantage'} noMargins />}
+                    </Box>
+                  )}
+                  {item.mainDescription && isWeapon(item) && (
+                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                      <Markdown text={item.mainDescription} />
                     </div>
-                  )
-                })}
+                  )}
+                  {item.features?.map((feature: any, key: any) => {
+                    return (
+                      <div className={classes.featureContainer} key={key}>
+                        {feature.featureName && (
+                          <h4 className={`${classes.featureName} ${isWeapon(item) ? classes.weaponFeatureName : ''}`}>
+                            {feature.featureName}
+                          </h4>
+                        )}
+                        {feature.featureDescription &&
+                          (inlineFeatures ? (
+                            <Markdown className={classes.inlineDescription} text={feature.featureDescription} />
+                          ) : (
+                            <Markdown text={feature.featureDescription} />
+                          ))}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
 
-            {isWeapon(item) &&
-              (item.twoHandedDamage_full_label ||
-                item.damage_full_label ||
-                item.weight_label ||
-                item.properties_label ||
-                item.useRange_label ||
-                item.throwRange_label) && (
-                <div>
-                  <TaperedRule />
-                  <div className={classes.weaponStats}>
-                    {(item.damage_full_label || item.twoHandedDamage_full_label) && <div className={classes.weaponStatHeader}>Damage</div>}
-                    <div className={classes.weaponStatHeader}>Weight</div>
-                    <div className={classes.weaponStatHeader}>Properties</div>
-                    {item.useRange_label && <div className={classes.weaponStatHeader}>Range</div>}
-                    {item.throwRange_label && <div className={classes.weaponStatHeader}>Thrown Range</div>}
-                    <div className={classes.rowBreak} />
-                    {(item.damage_full_label || item.twoHandedDamage_full_label) && (
+              {isWeapon(item) &&
+                (item.twoHandedDamage_full_label ||
+                  item.damage_full_label ||
+                  item.weight_label ||
+                  item.properties_label ||
+                  item.useRange_label ||
+                  item.throwRange_label) && (
+                  <div>
+                    <TaperedRule />
+                    <div className={classes.weaponStats}>
+                      {(item.damage_full_label || item.twoHandedDamage_full_label) && (
+                        <div className={classes.weaponStatHeader}>Damage</div>
+                      )}
+                      <div className={classes.weaponStatHeader}>Weight</div>
+                      <div className={classes.weaponStatHeader}>Properties</div>
+                      {item.useRange_label && <div className={classes.weaponStatHeader}>Range</div>}
+                      {item.throwRange_label && <div className={classes.weaponStatHeader}>Thrown Range</div>}
+                      <div className={classes.rowBreak} />
+                      {(item.damage_full_label || item.twoHandedDamage_full_label) && (
+                        <div className={classes.weaponStatValue}>
+                          {item.damage_full_label && (
+                            <span style={{ paddingBottom: item.twoHandedDamage_full_label ? 0 : '6px' }}>{item.damage_full_label}</span>
+                          )}
+                          {item.twoHandedDamage_full_label && (
+                            <span style={{ paddingTop: item.damage_full_label ? 0 : '6px' }}>{item.twoHandedDamage_full_label}</span>
+                          )}
+                        </div>
+                      )}
                       <div className={classes.weaponStatValue}>
-                        {item.damage_full_label && (
-                          <span style={{ paddingBottom: item.twoHandedDamage_full_label ? 0 : '6px' }}>{item.damage_full_label}</span>
-                        )}
-                        {item.twoHandedDamage_full_label && (
-                          <span style={{ paddingTop: item.damage_full_label ? 0 : '6px' }}>{item.twoHandedDamage_full_label}</span>
-                        )}
+                        <span>{item.weight_label}</span>
                       </div>
-                    )}
-                    <div className={classes.weaponStatValue}>
-                      <span>{item.weight_label}</span>
+                      <div className={classes.weaponStatValue}>
+                        <span style={{ textTransform: 'capitalize' }}>{item.properties_label}</span>
+                      </div>
+                      {item.useRange_label && (
+                        <div className={classes.weaponStatValue}>
+                          <span>{item.useRange_label}</span>
+                        </div>
+                      )}
+                      {item.throwRange_label && (
+                        <div className={classes.weaponStatValue}>
+                          <span>{item.throwRange_label}</span>
+                        </div>
+                      )}
                     </div>
-                    <div className={classes.weaponStatValue}>
-                      <span style={{ textTransform: 'capitalize' }}>{item.properties_label}</span>
-                    </div>
-                    {item.useRange_label && (
-                      <div className={classes.weaponStatValue}>
-                        <span>{item.useRange_label}</span>
-                      </div>
-                    )}
-                    {item.throwRange_label && (
-                      <div className={classes.weaponStatValue}>
-                        <span>{item.throwRange_label}</span>
-                      </div>
-                    )}
+                    <TaperedRule />
                   </div>
-                  <TaperedRule />
-                </div>
-              )}
-            <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', justifyContent: 'flex-end' }}>
-              {item.mainDescription && !isWeapon(item) && (
-                <MainDescription>
-                  <DescriptionBlock>
-                    <ReactMarkdown className={classes.markdown} remarkPlugins={[remarkGfm]}>
-                      {item.mainDescription}
-                    </ReactMarkdown>
-                  </DescriptionBlock>
-                </MainDescription>
-              )}
-              {(item.weight_label || item.price_label) && (
-                <div
-                  style={{
-                    display: 'flex',
-                    margin: `0.5em 0 0px ${!isWeapon(item) ? '0' : '-0.5em'}`,
-                    alignItems: 'flex-end'
-                  }}
-                >
-                  {!isWeapon(item) && <TinyStat title="weight" value={item.weight_label} />}
-                  <TinyStat title="price" value={item.price_label} />
-                </div>
-              )}
+                )}
+              <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                {item.mainDescription && !isWeapon(item) && (
+                  <MainDescription>
+                    <DescriptionBlock>
+                      <ReactMarkdown className={classes.markdown} remarkPlugins={[remarkGfm]}>
+                        {item.mainDescription}
+                      </ReactMarkdown>
+                    </DescriptionBlock>
+                  </MainDescription>
+                )}
+                {(item.weight_label || item.price_label) && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      margin: `0.5em 0 0px ${!isWeapon(item) ? '0' : '-0.5em'}`,
+                      alignItems: 'flex-end'
+                    }}
+                  >
+                    {!isWeapon(item) && <TinyStat title="weight" value={item.weight_label} />}
+                    <TinyStat title="price" value={item.price_label} />
+                  </div>
+                )}
+              </Box>
             </Box>
+            {itemImage && !loadingImage && (
+              <Box
+                className={`${classes.imageContainer} itemCard-imageContainer`}
+                sx={{
+                  '&&:before': {
+                    ...(hideBgBrush
+                      ? {
+                          backgroundImage: 'none'
+                        }
+                      : {})
+                  }
+                }}
+              >
+                <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
+              </Box>
+            )}
+            {loadingImage && (
+              <Box
+                className={`${classes.imageContainer} itemCard-imageContainer`}
+                sx={{
+                  '&&': {
+                    flex: '0 0 auto'
+                  },
+                  '&&:before': {
+                    backgroundImage: 'none'
+                  }
+                }}
+              >
+                <Skeleton variant="rounded" width={220} height={100} animation="wave" sx={{ margin: '3em 0 0 0' }} />
+              </Box>
+            )}
           </Box>
-          {itemImage && !loadingImage && (
-            <Box
-              className={`${classes.imageContainer} itemCard-imageContainer`}
-              sx={{
-                '&&:before': {
-                  ...(hideBgBrush
-                    ? {
-                        backgroundImage: 'none'
-                      }
-                    : {})
-                }
-              }}
-            >
-              <img alt={itemImage.props.alt} src={`${itemImage.props.src}`} />
-            </Box>
-          )}
-          {loadingImage && (
-            <Box
-              className={`${classes.imageContainer} itemCard-imageContainer`}
-              sx={{
-                '&&': {
-                  flex: '0 0 auto'
-                },
-                '&&:before': {
-                  backgroundImage: 'none'
-                }
-              }}
-            >
-              <Skeleton variant="rounded" width={220} height={100} animation="wave" sx={{ margin: '3em 0 0 0' }} />
-            </Box>
-          )}
         </>
       ) : (
         <div className={classes.textContainer}>
