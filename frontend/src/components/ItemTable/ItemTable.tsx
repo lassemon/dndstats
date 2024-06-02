@@ -47,7 +47,6 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
 import LastPageIcon from '@mui/icons-material/LastPage'
 import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
 import { TablePaginationActionsProps } from '@mui/material/TablePagination/TablePaginationActions'
-import LoadingIndicator from 'components/LoadingIndicator'
 import { Source, Visibility } from '@dmtool/domain'
 import config from 'config'
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
@@ -345,7 +344,7 @@ export const ItemTable: React.FC<ItemTableProps> = ({
               <TablePagination
                 labelRowsPerPage="Items per page"
                 disabled={loading}
-                rowsPerPageOptions={[2, 10, 25, 50, 75, 100]}
+                rowsPerPageOptions={[2, 10, 25, 50, 75, 100, 200]}
                 count={totalCount}
                 colSpan={LOGGED_IN_TABLE_COLUMN_COUNT}
                 rowsPerPage={itemsPerPage}
