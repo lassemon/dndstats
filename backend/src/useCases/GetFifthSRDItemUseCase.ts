@@ -44,14 +44,14 @@ export class GetFifthSRDItemUseCase implements GetMonsterUseCaseInterface {
       }
 
       if (parsedFithApiItem) {
-        //console.log('fifth api item PARSED', parsedFithApiItem)
+        console.log('fifth api item PARSED', parsedFithApiItem)
         try {
           item = await this.itemRepository.update(parsedFithApiItem)
-          //console.log('fifth api item UPDATED', item)
+          console.log('fifth api item UPDATED', item)
         } catch (error) {
           if (error instanceof ApiError && error.status === 404) {
             item = await this.itemRepository.create(parsedFithApiItem, parsedFithApiItem.createdBy)
-            // console.log('fifth api item SAVED', item)
+            console.log('fifth api item SAVED', item)
           }
         }
       }

@@ -458,17 +458,17 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
   }
 
   async update(item: ItemInsertQuery) {
-    const itemToInsert: DBItem = this.constructItemToUpdateFromQuery(item)
+    const itemUpdate = this.constructItemToUpdateFromQuery(item)
     try {
       // TODO use update here instead of insert
       // need to create separate POST and PUT into ItemController
-      await connection<any, DBItem>('items').where('id', item.id).update(itemToInsert) // mariadb does not return inserted object
+      await connection<any, DBItem>('items').where('id', item.id).update(itemUpdate) // mariadb does not return inserted object
     } catch (error: any) {
       logger.error((error as any)?.message, error.stack ? error.stack : error)
       throw new UnknownError(500, 'UnknownError')
     }
 
-    return this.parseDBItemJSON(await this.getByIdRAW(itemToInsert.id))
+    return this.parseDBItemJSON(await this.getByIdRAW(itemUpdate.id))
   }
 
   async delete(itemId: string) {
@@ -543,7 +543,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     }
   }
 
-  private constructItemToUpdateFromQuery = (item: ItemUpdateQuery): DBItem => {
+  private constructItemToUpdateFromQuery = (item: ItemUpdateQuery): Omit<DBItem, 'createdAt'> => {
     const updatedAt = unixtimeNow()
     return {
       ...omit(item, 'createdByUserName', 'createdAt'),
@@ -562,7 +562,6 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
       ...(isWeapon(item) && item.throwRange ? { throwRange: JSON.stringify(item.throwRange) } : { throwRange: null }),
       ...(isWeapon(item) && item.useRange ? { useRange: JSON.stringify(item.useRange) } : { useRange: null }),
       ...(isWeapon(item) || (isArmor(item) && item.properties) ? { properties: JSON.stringify(item.properties) } : { properties: '[]' }),
-      createdAt: item.createdAt,
       updatedAt: updatedAt
     }
   }
