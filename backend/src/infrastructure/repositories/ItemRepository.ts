@@ -546,7 +546,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
   private constructItemToUpdateFromQuery = (item: ItemUpdateQuery): DBItem => {
     const updatedAt = unixtimeNow()
     return {
-      ...omit(item, 'createdByUserName'),
+      ...omit(item, 'createdByUserName', 'createdAt'),
       id: item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? uuid() : item.id, // don't allow overwriting of the default item
       imageId: item.imageId,
       ...(item.price ? { price: JSON.stringify(item.price) } : { price: '{}' }),
@@ -562,6 +562,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
       ...(isWeapon(item) && item.throwRange ? { throwRange: JSON.stringify(item.throwRange) } : { throwRange: null }),
       ...(isWeapon(item) && item.useRange ? { useRange: JSON.stringify(item.useRange) } : { useRange: null }),
       ...(isWeapon(item) || (isArmor(item) && item.properties) ? { properties: JSON.stringify(item.properties) } : { properties: '[]' }),
+      createdAt: item.createdAt,
       updatedAt: updatedAt
     }
   }

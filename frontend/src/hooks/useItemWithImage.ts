@@ -8,7 +8,6 @@ import {
   LocalStorageImageRepositoryInterface
 } from '@dmtool/application'
 import { unixtimeNow } from '@dmtool/common'
-import { Source } from '@dmtool/domain'
 import { StorageSyncError } from 'domain/errors/StorageError'
 import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
 import { useAtom } from 'jotai'
@@ -51,7 +50,7 @@ const localStorageItemAtom = atomWithStorage<ItemDTO | null | undefined>(
       if (newValue === null) {
         localStorage.removeItem(key)
       } else {
-        localStorage.setItem(key, JSON.stringify({ ...newValue?.toJSON(), source: Source.HomeBrew, updatedAt: unixtimeNow() }))
+        localStorage.setItem(key, JSON.stringify({ ...newValue?.toJSON(), updatedAt: unixtimeNow() }))
       }
     },
     removeItem: (key) => {
@@ -72,7 +71,7 @@ const localStorageImageAtom = atomWithStorage<ImageDTO | null | undefined>(
       if (newValue === null) {
         localStorage.removeItem(key)
       } else {
-        localStorage.setItem(key, JSON.stringify({ ...newValue?.toJSON(), source: Source.HomeBrew, updatedAt: unixtimeNow() }))
+        localStorage.setItem(key, JSON.stringify({ ...newValue?.toJSON(), updatedAt: unixtimeNow() }))
       }
     },
     removeItem: (key) => {
@@ -115,10 +114,11 @@ const useItemWithImage = (
           setLocalStorageImage(new ImageDTO(fetchedImage))
         }
       })
-    } catch (error) {
+    } catch (error: any) {
       unstable_batchedUpdates(() => {
         setIsLoadingImage(false)
         setImageError(error)
+        setError(error?.message ? error.message : error)
       })
     }
   }
@@ -175,10 +175,11 @@ const useItemWithImage = (
             }
           }
         })
-      } catch (error) {
+      } catch (error: any) {
         unstable_batchedUpdates(() => {
           setIsLoadingItem(false)
           setItemError(error)
+          setError(error?.message ? error.message : error)
         })
       }
     }

@@ -549,7 +549,7 @@ export class ItemDTO extends DTO<ItemDTO, ItemProperties> {
   }
 
   isEqual(otherItem: ItemDTO | object | null): boolean {
-    if (otherItem === null) {
+    if (otherItem === null || _.isEmpty(otherItem)) {
       return false
     }
     return (

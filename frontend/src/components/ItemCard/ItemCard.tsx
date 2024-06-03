@@ -282,7 +282,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 right: 0,
                 bottom: 0,
                 transform: 'none',
-                backgroundColor: 'rgba(0, 0, 0, 0.21)',
+                backgroundColor: 'rgba(0, 0, 0, 0.11)',
                 ':after': {
                   animationDuration: '1.3s'
                 }
