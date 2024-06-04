@@ -34,35 +34,20 @@ export class GetFifthSRDItemUseCase implements GetMonsterUseCaseInterface {
       const fifthApiItemResponse = await this.fifthApiService.get<FifthESRDEquipment>(`/equipment/${itemName}`).catch(async () => {
         return await this.fifthApiService.get<FifthESRDMagicItem>(`/magic-items/${itemName}`)
       })
-      //console.log('fifthApiItemResponse', fifthApiItemResponse)
+
+      try {
+        return await this.itemRepository.getByIdAndSource(fifthApiItemResponse.index, Source.FifthESRD)
+      } catch (error) {
+        // silently fail if fifth api item is not found and continue to create it
+      }
+
       const parsedFithApiItem = await this.parseItemFromFifthApiItemResponse(fifthApiItemResponse)
 
-      let item = parsedFithApiItem
-
-      if (item === null) {
+      if (parsedFithApiItem === null) {
         throw new ApiError(404, 'NotFound')
       }
 
-      if (parsedFithApiItem) {
-        console.log('fifth api item PARSED', parsedFithApiItem)
-        try {
-          // TODO, would it be better to not update fifth api item if it exists?
-          item = await this.itemRepository.update(
-            _.omit(parsedFithApiItem, ['shortDescription', 'mainDescription', 'features', 'createdBy', 'createdAt', 'imageId'])
-          )
-          console.log('fifth api item UPDATED', item)
-        } catch (error) {
-          if (error instanceof ApiError && error.status === 404) {
-            item = await this.itemRepository.create(parsedFithApiItem, parsedFithApiItem.createdBy)
-            console.log('fifth api item SAVED', item)
-          }
-        }
-      }
-
-      return {
-        createdByUserName: process.env.SYSTEM_USER_NAME || 'system',
-        ...item
-      }
+      return await this.itemRepository.create(parsedFithApiItem, parsedFithApiItem.createdBy)
     } catch (error) {
       unknownError(error)
       throw error

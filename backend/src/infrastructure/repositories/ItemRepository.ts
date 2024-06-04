@@ -459,7 +459,6 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
 
   async update(item: ItemUpdateQuery) {
     const itemUpdate = this.constructItemToUpdateFromQuery(item)
-    console.log('ITEM UPDATE', itemUpdate)
     try {
       // TODO use update here instead of insert
       // need to create separate POST and PUT into ItemController

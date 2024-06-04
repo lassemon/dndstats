@@ -12,7 +12,6 @@ export class ImageProcessingService implements ImageProcessingServiceInterface {
   async resizeImage(buffer: Buffer, resizeOptions: { width: number }) {
     try {
       // Detect the MIME type of the image
-      console.log('====================fileType', fileType)
       const type = await fileType.fromBuffer(buffer)
 
       if (type && type.mime === 'image/webp') {

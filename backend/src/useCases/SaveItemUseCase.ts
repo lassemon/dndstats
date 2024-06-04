@@ -57,8 +57,6 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
 
     const creatingNewItem = item.id === ITEM_DEFAULTS.NEW_ITEM_ID || !isUpdatingUsersExistingItem || existingItem?.createdBy !== userId
 
-    console.log('creating new item', creatingNewItem)
-
     if (creatingNewItem) {
       item.id = uuid()
     }
