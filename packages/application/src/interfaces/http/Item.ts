@@ -74,7 +74,7 @@ export interface ItemUpdateResponse {
 }
 
 export type ItemInsertQuery = Item
-export type ItemUpdateQuery = Item
+export type ItemUpdateQuery = Partial<Item> & { id: string }
 
 export interface PriceSearchQuery extends ItemPrice {
   comparison: `${ComparisonOption}`

@@ -1,12 +1,13 @@
 import ItemStats from 'components/ItemStats'
 import ItemStatsInput from 'components/ItemStatsInput'
-import useItemWithImage from 'hooks/useItemWithImage'
+import useItem from 'hooks/useItem'
 import ImageRepository from 'infrastructure/repositories/ImageRepository'
 import ItemRepository from 'infrastructure/repositories/ItemRepository'
 import StatsLayout from 'layouts/StatsLayout'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import config from 'config'
+import useImage from 'hooks/useImage'
 
 const itemRepository = new ItemRepository()
 const imageRepository = new ImageRepository()
@@ -21,14 +22,11 @@ const ItemStatsLayout: React.FC = () => {
   const [hideBgBrush, setHideBgBrush] = useState<boolean>(false)
   const [savingItem, setSavingItem] = useState<boolean>(false)
 
-  const [{ item, backendItem, setBackendItem, loadingItem, image, loadingImage }, setItem, setImage] = useItemWithImage(
-    itemRepository,
-    imageRepository,
-    urlItemId,
-    {
-      persist: true
-    }
-  )
+  const [{ item, backendItem, setBackendItem, loadingItem }, setItem] = useItem(itemRepository, urlItemId, {
+    persist: true
+  })
+
+  const [{ image, loading: loadingImage }, setImage] = useImage(imageRepository, item?.imageId)
 
   const itemId = item?.id
 
@@ -65,12 +63,6 @@ const ItemStatsLayout: React.FC = () => {
     imageRepository
   }
 
-  const imageProps = {
-    setImage: setImage,
-    image: image,
-    loadingImage: loadingImage
-  }
-
   return (
     <StatsLayout
       screenshotMode={screenshotMode}
@@ -90,7 +82,8 @@ const ItemStatsLayout: React.FC = () => {
       inputComponent={
         <ItemStatsInput
           {...itemProps}
-          {...imageProps}
+          setImage={setImage}
+          image={image}
           showSecondaryCategories={showSecondaryCategories}
           setShowSecondaryCategories={setShowSecondaryCategories}
           lockToPortrait={lockToPortrait}

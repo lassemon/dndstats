@@ -1,14 +1,5 @@
-import {
-  BrowserImageProcessingService,
-  HttpImageRepositoryInterface,
-  HttpItemRepositoryInterface,
-  ITEM_DEFAULTS,
-  ImageDTO,
-  ItemDTO,
-  LocalStorageImageRepositoryInterface
-} from '@dmtool/application'
+import { HttpItemRepositoryInterface, ITEM_DEFAULTS, ImageDTO, ItemDTO } from '@dmtool/application'
 import { unixtimeNow } from '@dmtool/common'
-import { StorageSyncError } from 'domain/errors/StorageError'
 import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
 import { useAtom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
@@ -17,25 +8,17 @@ import { UpdateParam, itemAtom } from 'state/itemAtom'
 import config from 'config'
 import { unstable_batchedUpdates } from 'react-dom'
 
-// FIXME, this whole hook has become too complex to maintain. refactor and separate image fetch from item fetch
-
 const DEBUG = false
-
-const imageProcessingService = new BrowserImageProcessingService()
 
 type UseItemReturn = [
   {
     loadingItem: boolean
-    loadingImage: boolean
     item: ItemDTO | null
-    image: ImageDTO | null | undefined
     backendItem: ItemDTO | null
     setBackendItem: React.Dispatch<React.SetStateAction<ItemDTO | null>>
     itemError?: any
-    imageError?: any
   },
-  (update: UpdateParam<ItemDTO | null>) => void,
-  (update: UpdateParam<ImageDTO | null | undefined>) => void
+  (update: UpdateParam<ItemDTO | null>) => void
 ]
 
 const localStorageItemAtom = atomWithStorage<ItemDTO | null | undefined>(
@@ -86,42 +69,12 @@ export interface UseItemWithImageOptions {
   useDefault?: boolean
 }
 
-const useItemWithImage = (
+const useItem = (
   itemRepository: HttpItemRepositoryInterface,
-  imageRepository: LocalStorageImageRepositoryInterface | HttpImageRepositoryInterface,
   itemId?: string,
   options: UseItemWithImageOptions = { persist: false, useDefault: true }
 ): UseItemReturn => {
   const imageRequestControllerRef = useRef<AbortController | null>(null)
-  const fetchAndSetImage = async (_imageId: string) => {
-    try {
-      setIsLoadingImage(true)
-      const controller = new AbortController()
-      imageRequestControllerRef.current = controller
-
-      DEBUG && console.log('fetching image', _imageId)
-      const fetchedImage = await imageRepository.getById(_imageId, { signal: controller.signal })
-      DEBUG && console.log('fetched image', fetchedImage)
-      unstable_batchedUpdates(() => {
-        setIsLoadingImage(false)
-
-        const localStorageImageIsSameAsFetched = fetchedImage.metadata.id === localStorageItem?.id
-        const localStorageImageIsNewer = (fetchedImage.metadata?.updatedAt || 0) < (localStorageItem?.updatedAt || -1)
-        DEBUG && console.log('localStorageImageIsSameAsFetched', localStorageImageIsSameAsFetched)
-        DEBUG && console.log('localStorageImageIsNewer', localStorageImageIsNewer)
-        if ((localStorageImageIsSameAsFetched && !localStorageImageIsNewer) || !localStorageImageIsSameAsFetched) {
-          setImage(new ImageDTO(fetchedImage))
-          setLocalStorageImage(new ImageDTO(fetchedImage))
-        }
-      })
-    } catch (error: any) {
-      unstable_batchedUpdates(() => {
-        setIsLoadingImage(false)
-        setImageError(error)
-        setError(error?.message ? error.message : error)
-      })
-    }
-  }
 
   const { persist, useDefault = true } = options
   const [authState] = useAtom(authAtom)
@@ -138,9 +91,7 @@ const useItemWithImage = (
   const [localStorageImage, setLocalStorageImage] = useAtom(localStorageImageAtom)
 
   const [itemError, setItemError] = useState<any>(null)
-  const [imageError, setImageError] = useState<any>(null)
   const [isLoadingItem, setIsLoadingItem] = useState(false)
-  const [isLoadingImage, setIsLoadingImage] = useState(false)
 
   let returnItem = (persist === true && localStorageItem ? localStorageItem : item) || null
   let returnImage = (persist === true ? localStorageImage : image) || null
@@ -224,31 +175,7 @@ const useItemWithImage = (
       DEBUG && console.log('fetching default item')
       fetchAndSetItem('defaultItem')
     }
-
-    if (!returnImage && !!imageId && returnItem?.imageId) {
-      fetchAndSetImage(returnItem.imageId)
-    }
   }, [itemId])
-
-  useEffect(() => {
-    const itemIdExists = !!itemId
-    const imageIdExists = !!imageId
-    const imageIdIsTheSameAsSavedImage = imageId === (persist ? localStorageImage?.id : image?.id)
-    const imageExists = persist ? !!localStorageImage : !!image
-    const shouldFetchImage = itemIdExists && ((imageIdExists && !imageIdIsTheSameAsSavedImage) || (imageIdExists && !imageExists))
-
-    if (DEBUG) {
-      console.log('imageId', imageId)
-      console.log('imageIdExists', imageIdExists)
-      console.log('imageIdIsTheSameAsSavedImage', imageIdIsTheSameAsSavedImage)
-      console.log('imageExists', imageExists)
-      console.log('shouldFetchImage', shouldFetchImage)
-    }
-
-    if (shouldFetchImage && imageId) {
-      fetchAndSetImage(imageId)
-    }
-  }, [imageId])
 
   useEffect(() => {
     return () => {
@@ -260,13 +187,10 @@ const useItemWithImage = (
 
   const itemState = {
     loadingItem: isLoadingItem,
-    loadingImage: isLoadingImage,
     item: returnItem ? returnItem : localStorageItem || null,
     backendItem: backendItem?.clone(backendItem.toJSON()) || null,
     setBackendItem,
-    image: !!returnItem?.imageId ? returnImage : null,
-    ...(itemError ? { itemError: itemError } : {}),
-    ...(imageError ? { imageError: imageError } : {})
+    ...(itemError ? { itemError: itemError } : {})
   }
 
   const setItemToAtomAndLocalStorage = (update: UpdateParam<ItemDTO | null>) => {
@@ -279,23 +203,7 @@ const useItemWithImage = (
     setLocalStorageItem(parsedValue)
   }
 
-  const imageSetter = (update: UpdateParam<ImageDTO | null | undefined>) => {
-    let parsedValue = update instanceof Function ? update(image) : update
-    setImage(parsedValue)
-
-    try {
-      imageProcessingService.resizeImage(parsedValue?.base64 || '', { maxWidth: 320 }, (base64Image: string) => {
-        if (parsedValue) {
-          parsedValue.base64 = base64Image
-        }
-        setLocalStorageImage(parsedValue)
-      })
-    } catch (error: any) {
-      setError(new StorageSyncError(error.message))
-    }
-  }
-
-  return [itemState, setItemToAtomAndLocalStorage, imageSetter]
+  return [itemState, setItemToAtomAndLocalStorage]
 }
 
-export default useItemWithImage
+export default useItem

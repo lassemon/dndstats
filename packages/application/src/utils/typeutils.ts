@@ -22,11 +22,11 @@ const ARMOR_CATEGORIES = [
   ItemCategory.SHIELD
 ]
 
-export const isArmor = (item: BaseItem | WeaponItem | ArmorItem | ItemDTO): item is ArmorItem => {
+export const isArmor = (item: Partial<BaseItem | WeaponItem | ArmorItem | ItemDTO>): item is ArmorItem => {
   return ARMOR_CATEGORIES.some((category) => item.categories?.includes(category))
 }
 
-export const isWeapon = (item: BaseItem | WeaponItem | ArmorItem | ItemDTO): item is WeaponItem => {
+export const isWeapon = (item: Partial<BaseItem | WeaponItem | ArmorItem | ItemDTO>): item is WeaponItem => {
   return WEAPON_CATEGORIES.some((category) => item.categories?.includes(category))
 }
 

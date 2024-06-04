@@ -1,8 +1,11 @@
-import { HttpImageRepositoryInterface, ImageDTO, LocalStorageImageRepositoryInterface } from '@dmtool/application'
-import { useAtom } from 'jotai'
+import {
+  BrowserImageProcessingService,
+  HttpImageRepositoryInterface,
+  ImageDTO,
+  LocalStorageImageRepositoryInterface
+} from '@dmtool/application'
 import { useEffect, useRef, useState } from 'react'
 import { UpdateParam } from 'state/itemAtom'
-import { atomWithStorage } from 'jotai/utils'
 import { StorageSyncError } from 'domain/errors/StorageError'
 
 type UseImageReturn = [
@@ -10,23 +13,16 @@ type UseImageReturn = [
   (update: UpdateParam<ImageDTO | null | undefined>) => void
 ]
 
-const localStorageImageAtom = atomWithStorage<ImageDTO | null | undefined>('localImageAtom', null)
-
-export interface UseImageOptions {
-  persist?: boolean
-}
+const DEBUG = false
+const imageProcessingService = new BrowserImageProcessingService()
 
 const useImage = (
   imageRepository: LocalStorageImageRepositoryInterface | HttpImageRepositoryInterface,
-  imageId: string | null,
-  options: UseImageOptions = { persist: false }
+  imageId?: string | null
 ): UseImageReturn => {
-  const { persist } = options
-
   const controllerRef = useRef<AbortController | null>(null)
 
   const [image, setImage] = useState<ImageDTO | null | undefined>(null)
-  const [persistedImage, setPersistedImage] = useAtom(localStorageImageAtom)
   const [error, setError] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -44,7 +40,7 @@ const useImage = (
           setIsLoading(false)
 
           setImage(new ImageDTO(fetchedImage))
-          setPersistedImage(new ImageDTO(fetchedImage))
+          //setPersistedImage(new ImageDTO(fetchedImage))
         } catch (error) {
           setIsLoading(false)
           setError(error)
@@ -53,10 +49,24 @@ const useImage = (
     }
 
     const imageIdExists = !!imageId
-    const imageIdIsTheSameAsSavedImage = imageId === (persist ? persistedImage?.id : image?.id)
-    const imageExists = persist ? !!persistedImage : !!image
+    const imageIdIsTheSameAsSavedImage = imageId === image?.id
+    const imageExists = !!image
+    const isTempImage = imageId?.startsWith('temp-')
+    const shouldFetchImage =
+      (!isTempImage && imageIdExists && !imageIdIsTheSameAsSavedImage) || (!isTempImage && imageIdExists && !imageExists)
 
-    if ((imageIdExists && !imageIdIsTheSameAsSavedImage) || (imageIdExists && !imageExists)) {
+    DEBUG && console.log('\n\n====')
+    DEBUG && console.log('useImage - imageId', imageId)
+    DEBUG && console.log('useImage - imageIdExists', imageIdExists)
+    DEBUG && console.log('useImage - imageExists', imageExists)
+    DEBUG && console.log('useImage - imageIdIsTheSameAsSavedImage', imageIdIsTheSameAsSavedImage)
+    DEBUG && console.log('useImage - isTempImage', isTempImage)
+    DEBUG && console.log('useImage - image', image)
+    DEBUG && console.log('useImage - shouldFetchImage', shouldFetchImage)
+    DEBUG && console.log('useImage - imageId', imageId)
+    DEBUG && console.log('===\n\n')
+
+    if (shouldFetchImage) {
       fetchAndSetImage(imageId)
     }
 
@@ -65,22 +75,23 @@ const useImage = (
     }
   }, [imageId])
 
-  const returnImage = (persist === true ? persistedImage : image) || null
-
   const imageState = {
     loading: isLoading,
-    image: !!imageId ? returnImage : null,
+    image: imageId === image?.id ? image : null,
     ...(error ? { error: error } : {})
   }
 
   const imageSetter = (update: UpdateParam<ImageDTO | null | undefined>) => {
     let parsedValue = update instanceof Function ? update(image) : update
-    setImage(parsedValue)
-    setPersistedImage(parsedValue)
     try {
-      setPersistedImage(parsedValue)
+      imageProcessingService.resizeImage(parsedValue?.base64 || '', { maxWidth: 320 }, (base64Image: string) => {
+        if (parsedValue) {
+          parsedValue.base64 = base64Image
+        }
+        setImage(parsedValue)
+      })
     } catch (error: any) {
-      setError(new StorageSyncError(error.message))
+      setError(new StorageSyncError('Saving image failed: ' + error.message))
     }
   }
 

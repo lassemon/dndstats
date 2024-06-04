@@ -1,17 +1,30 @@
 import ImageRepository from 'infrastructure/repositories/ImageRepository'
-import TinyItemCard from './TinyItemCard'
+import ItemCard from './ItemCard'
 import { ImageDTO, ItemDTO } from '@dmtool/application'
 import { useEffect, useRef, useState } from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
 
-interface TinyItemCardWithImageProps {
+interface ItemCardWithImageProps {
   item: ItemDTO | null
+  loadingItem: boolean
+  savingItem?: boolean
+  showSecondaryCategories?: boolean
+  hideBgBrush?: boolean
+  inlineFeatures?: boolean
   className?: string
 }
 
 const imageRepository = new ImageRepository()
 
-export const TinyItemCardWithImage: React.FC<TinyItemCardWithImageProps> = ({ item, className }) => {
+export const ItemCardWithImage: React.FC<ItemCardWithImageProps> = ({
+  item,
+  loadingItem,
+  savingItem = false,
+  showSecondaryCategories = false,
+  hideBgBrush = false,
+  inlineFeatures = false,
+  className
+}) => {
   const imageId = item?.imageId
   const [loadingImage, setLoadingImage] = useState(false)
   const [image, setImage] = useState<ImageDTO | null | undefined>(null)
@@ -39,7 +52,19 @@ export const TinyItemCardWithImage: React.FC<TinyItemCardWithImageProps> = ({ it
     }
   }, [imageId])
 
-  return <TinyItemCard item={item} image={image} loadingImage={loadingImage} className={className} />
+  return (
+    <ItemCard
+      item={item}
+      loadingItem={loadingItem}
+      image={image}
+      loadingImage={loadingImage}
+      savingItem={savingItem}
+      showSecondaryCategories={showSecondaryCategories}
+      hideBgBrush={hideBgBrush}
+      inlineFeatures={inlineFeatures}
+      className={className}
+    />
+  )
 }
 
-export default TinyItemCardWithImage
+export default ItemCardWithImageProps

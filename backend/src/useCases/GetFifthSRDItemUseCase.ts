@@ -46,7 +46,10 @@ export class GetFifthSRDItemUseCase implements GetMonsterUseCaseInterface {
       if (parsedFithApiItem) {
         console.log('fifth api item PARSED', parsedFithApiItem)
         try {
-          item = await this.itemRepository.update(parsedFithApiItem)
+          // TODO, would it be better to not update fifth api item if it exists?
+          item = await this.itemRepository.update(
+            _.omit(parsedFithApiItem, ['shortDescription', 'mainDescription', 'features', 'createdBy', 'createdAt', 'imageId'])
+          )
           console.log('fifth api item UPDATED', item)
         } catch (error) {
           if (error instanceof ApiError && error.status === 404) {

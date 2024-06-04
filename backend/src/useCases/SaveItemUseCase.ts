@@ -5,7 +5,7 @@ import {
   UseCaseInterface,
   UseCaseOptionsInterface
 } from '@dmtool/application'
-import { ApiError, Image, Item, Source } from '@dmtool/domain'
+import { ApiError, Image, Item } from '@dmtool/domain'
 import { SaveImageUseCase } from './SaveImageUseCase'
 
 import _, { orderBy, head } from 'lodash'
@@ -57,6 +57,8 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
 
     const creatingNewItem = item.id === ITEM_DEFAULTS.NEW_ITEM_ID || !isUpdatingUsersExistingItem || existingItem?.createdBy !== userId
 
+    console.log('creating new item', creatingNewItem)
+
     if (creatingNewItem) {
       item.id = uuid()
     }
@@ -105,8 +107,7 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
       name: item.name
         .split(' ')
         .map((namepart) => _.capitalize(namepart))
-        .join(' '),
-      source: Source.HomeBrew
+        .join(' ')
     }
   }
 }

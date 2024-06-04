@@ -457,8 +457,9 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     return this.parseDBItemJSON(await this.getByIdRAW(itemToInsert.id))
   }
 
-  async update(item: ItemInsertQuery) {
+  async update(item: ItemUpdateQuery) {
     const itemUpdate = this.constructItemToUpdateFromQuery(item)
+    console.log('ITEM UPDATE', itemUpdate)
     try {
       // TODO use update here instead of insert
       // need to create separate POST and PUT into ItemController
@@ -543,16 +544,15 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
     }
   }
 
-  private constructItemToUpdateFromQuery = (item: ItemUpdateQuery): Omit<DBItem, 'createdAt'> => {
+  private constructItemToUpdateFromQuery = (item: ItemUpdateQuery): Partial<DBItem> & { id: string } => {
     const updatedAt = unixtimeNow()
     return {
-      ...omit(item, 'createdByUserName', 'createdAt'),
+      ...omit(item, 'createdByUserName', 'source', 'createdAt'),
       id: item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID ? uuid() : item.id, // don't allow overwriting of the default item
       imageId: item.imageId,
       ...(item.price ? { price: JSON.stringify(item.price) } : { price: '{}' }),
       ...(item.features ? { features: JSON.stringify(item.features) } : { features: '[]' }),
       ...(item.categories ? { categories: JSON.stringify(item.categories) } : { categories: '[]' }),
-      source: item.source || Source.HomeBrew,
       ...(item.attunement ? { attunement: JSON.stringify(item.attunement) } : { attunement: JSON.stringify({ required: false }) }),
       ...(isArmor(item) && item.armorClass ? { armorClass: JSON.stringify(item.armorClass) } : { armorClass: null }),
       strengthMinimum: (isArmor(item) && item.strengthMinimum) || '',

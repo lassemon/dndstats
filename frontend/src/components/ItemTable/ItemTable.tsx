@@ -205,11 +205,11 @@ export const ItemTable: React.FC<ItemTableProps> = ({
           <TableHead
             sx={{
               '& th': {
-                background: (theme) => theme.palette.secondary.light,
+                background: (theme) => (loading ? theme.palette.grey[200] : theme.palette.secondary.light),
                 textTransform: 'capitalize',
                 fontWeight: 'bold',
                 fontSize: '1.3em',
-                color: tablePalette.contrastText,
+                color: loading ? theme.palette.grey[400] : tablePalette.contrastText,
                 whiteSpace: 'nowrap'
               }
             }}
@@ -221,6 +221,11 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                   active={orderBy === 'name'}
                   direction={orderBy === 'name' ? reverseOrder(order) : 'desc'}
                   onClick={createSortHandler('name')}
+                  sx={{
+                    '&&': {
+                      color: loading ? theme.palette.grey[400] : 'initial'
+                    }
+                  }}
                 >
                   name
                 </TableSortLabel>

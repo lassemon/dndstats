@@ -570,7 +570,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             const now = unixtimeNow()
             const newImage = new ImageDTO({
               metadata: {
-                id: uuid(),
+                id: `temp-${uuid()}`,
                 createdAt: now,
                 visibility: Visibility.PUBLIC,
                 fileName: imageFile.name,
@@ -584,37 +584,11 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               },
               base64: imageBase64
             }).parseForSaving(imageBase64)
-            // upload new image with associated item also to the backend, if successful, set the persisted image to the frontend atom
-            if (authState.loggedIn) {
-              const controller = new AbortController()
-              controllersRef.current.push(controller)
-              setSavingItem(true)
-              itemRepository
-                .save(itemToSave.toUpdateRequestItemJSON(), newImage, { signal: controller.signal })
-                .then((itemSaveResponse) => {
-                  unstable_batchedUpdates(() => {
-                    setItem(new ItemDTO(itemSaveResponse.item))
-                    setBackendItem(new ItemDTO(itemSaveResponse.item))
-                    setImage(itemSaveResponse.image ? new ImageDTO(itemSaveResponse.image) : null)
-                    setItemList((_itemList) =>
-                      _.unionBy(_itemList, [itemToItemListOption(authState.user?.id, itemSaveResponse.item)], 'id')
-                    )
-                    setSuccess({ message: 'Image saved succesfully!' })
-                  })
-                })
-                .catch((error) => {
-                  setImage(newImage ? new ImageDTO(newImage) : null)
-                  setError(error)
-                })
-                .finally(() => {
-                  setSavingItem(false)
-                })
-            } else {
-              const newImageDTO = new ImageDTO(newImage)
-              setItem(itemToSave.clone({ id: uuid(), imageId: newImageDTO.id }))
-              navigate(`${config.cardPageRoot}/item/`)
-              return newImageDTO
-            }
+
+            const newImageDTO = new ImageDTO(newImage)
+            setItem(itemToSave.clone({ imageId: newImageDTO.id }))
+            navigate(`${config.cardPageRoot}/item/`)
+            return newImageDTO
           })
         }
       }
