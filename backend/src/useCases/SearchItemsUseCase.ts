@@ -29,6 +29,7 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
     try {
       const getAllFifthSRDItemsUseCase = new GetAllFifthSRDItemsUseCase(fifthApiService)
       const isAnyFilterDefined = this.anyFilterDefined(itemSearchRequest)
+      console.log('isAnyFilterDefined', isAnyFilterDefined)
 
       const shouldGetAllFifthApiItems = !isAnyFilterDefined
 
@@ -134,7 +135,9 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
     priceQuantity,
     priceUnit,
     weightComparison,
-    weight
+    weight,
+    requiresAttunement,
+    hasImage
   }: Omit<SearchItemsUseCaseOptions, 'order' | 'orderBy'>) => {
     return {
       userId,
@@ -145,6 +148,8 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
       visibility,
       source,
       rarity,
+      requiresAttunement,
+      hasImage,
       ...(priceQuantity
         ? {
             price: {
