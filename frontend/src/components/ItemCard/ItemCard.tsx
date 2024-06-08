@@ -282,10 +282,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 right: 0,
                 bottom: 0,
                 transform: 'none',
-                backgroundColor: 'rgba(0, 0, 0, 0.11)',
-                ':after': {
-                  animationDuration: '1.3s'
-                }
+                backgroundColor: 'rgba(0, 0, 0, 0.11)'
               }}
             />
           )}
@@ -442,7 +439,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   }
                 }}
               >
-                <Skeleton variant="rounded" width={220} height={100} animation="wave" sx={{ margin: '3em 0 0 0' }} />
+                <Skeleton variant="rounded" width={220} height={320} animation="wave" sx={{ margin: '3em 1em 1em 1em' }} />
               </Box>
             )}
           </Box>

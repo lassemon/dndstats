@@ -28,7 +28,7 @@ import {
   useTheme
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import ItemCard from 'components/ItemCard'
@@ -393,7 +393,7 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
   const [open, setOpen] = useState(externalOpen || false)
   const [loadingItem, setLoadingItem] = useState(false)
   const [imageId, setImageId] = useState<string | null>(null)
-  const [{ image, loading: loadingImage }] = useImage(imageRepository, imageId)
+  const [{ image, loading: loadingImage }, , reloadImage] = useImage(imageRepository, imageId)
   const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
   const navigate = useNavigate()
   const { classes } = useStyles()
@@ -413,16 +413,16 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
   }, [item])
 
   useEffect(() => {
+    setImageId(localItem.imageId)
+  }, [localItem])
+
+  useEffect(() => {
     if (externalOpen !== open) {
       setOpen(externalOpen || false)
     }
   }, [externalOpen])
 
   useEffect(() => {
-    if (open && localItem.imageId) {
-      setImageId(localItem.imageId)
-    }
-
     const getItem = async (_id: string, _source: `${Source}`) => {
       setLoadingItem(true)
       try {

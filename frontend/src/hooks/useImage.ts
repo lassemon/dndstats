@@ -7,10 +7,12 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { UpdateParam } from 'state/itemAtom'
 import { StorageSyncError } from 'domain/errors/StorageError'
+import { uuid } from '@dmtool/common'
 
 type UseImageReturn = [
   { loading: boolean; image: ImageDTO | null | undefined; error?: any },
-  (update: UpdateParam<ImageDTO | null | undefined>) => void
+  (update: UpdateParam<ImageDTO | null | undefined>) => void,
+  () => void
 ]
 
 const DEBUG = false
@@ -24,6 +26,7 @@ const useImage = (
 
   const [image, setImage] = useState<ImageDTO | null | undefined>(null)
   const [error, setError] = useState<any>(null)
+  const [reloadTrigger, setReloadTrigger] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -40,7 +43,6 @@ const useImage = (
           setIsLoading(false)
 
           setImage(new ImageDTO(fetchedImage))
-          //setPersistedImage(new ImageDTO(fetchedImage))
         } catch (error) {
           setIsLoading(false)
           setError(error)
@@ -49,17 +51,14 @@ const useImage = (
     }
 
     const imageIdExists = !!imageId
-    const imageIdIsTheSameAsSavedImage = imageId === image?.id
     const imageExists = !!image
     const isTempImage = imageId?.startsWith('temp-')
-    const shouldFetchImage =
-      (!isTempImage && imageIdExists && !imageIdIsTheSameAsSavedImage) || (!isTempImage && imageIdExists && !imageExists)
+    const shouldFetchImage = (!isTempImage && imageIdExists) || (!isTempImage && imageIdExists && !imageExists)
 
     DEBUG && console.log('\n\n====')
     DEBUG && console.log('useImage - imageId', imageId)
     DEBUG && console.log('useImage - imageIdExists', imageIdExists)
     DEBUG && console.log('useImage - imageExists', imageExists)
-    DEBUG && console.log('useImage - imageIdIsTheSameAsSavedImage', imageIdIsTheSameAsSavedImage)
     DEBUG && console.log('useImage - isTempImage', isTempImage)
     DEBUG && console.log('useImage - image', image)
     DEBUG && console.log('useImage - shouldFetchImage', shouldFetchImage)
@@ -73,7 +72,9 @@ const useImage = (
     return () => {
       controllerRef?.current?.abort()
     }
-  }, [imageId])
+  }, [imageId, reloadTrigger])
+
+  DEBUG && console.log('image', image)
 
   const imageState = {
     loading: isLoading,
@@ -95,7 +96,11 @@ const useImage = (
     }
   }
 
-  return [imageState, imageSetter]
+  const reloadImage = () => {
+    setReloadTrigger(uuid())
+  }
+
+  return [imageState, imageSetter, reloadImage]
 }
 
 export default useImage
