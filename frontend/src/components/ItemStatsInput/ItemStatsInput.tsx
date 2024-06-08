@@ -97,7 +97,7 @@ const getCantSaveReason = ({ isDefaultItem, hasChanged, isCreatedByCurrentUser }
 }
 
 const filterOptions = createFilterOptions({
-  matchFrom: 'start',
+  matchFrom: 'any',
   stringify: (option: ItemListOption) => option.name,
   trim: true,
   ignoreCase: true
