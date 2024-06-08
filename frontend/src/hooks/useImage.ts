@@ -31,6 +31,7 @@ const useImage = (
 
   useEffect(() => {
     const fetchAndSetImage = async (_imageId: string) => {
+      DEBUG && console.log('useImage - fetchAndSetImage')
       if (isLoading) {
         return
       } else {
@@ -39,7 +40,9 @@ const useImage = (
           const controller = new AbortController()
           controllerRef.current = controller
 
+          DEBUG && console.log('useImage - fetching', _imageId)
           const fetchedImage = await Promise.resolve(imageRepository.getById(_imageId, { signal: controller.signal }))
+          DEBUG && console.log('useImage - fetchedImage', fetchedImage)
           setIsLoading(false)
 
           setImage(new ImageDTO(fetchedImage))
@@ -62,7 +65,6 @@ const useImage = (
     DEBUG && console.log('useImage - isTempImage', isTempImage)
     DEBUG && console.log('useImage - image', image)
     DEBUG && console.log('useImage - shouldFetchImage', shouldFetchImage)
-    DEBUG && console.log('useImage - imageId', imageId)
     DEBUG && console.log('===\n\n')
 
     if (shouldFetchImage) {
@@ -70,6 +72,7 @@ const useImage = (
     }
 
     return () => {
+      DEBUG && console.log('useImage ABORTING', imageId)
       controllerRef?.current?.abort()
     }
   }, [imageId, reloadTrigger])

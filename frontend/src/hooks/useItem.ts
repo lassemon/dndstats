@@ -74,8 +74,6 @@ const useItem = (
   itemId?: string,
   options: UseItemWithImageOptions = { persist: false, useDefault: true }
 ): UseItemReturn => {
-  const imageRequestControllerRef = useRef<AbortController | null>(null)
-
   const { persist, useDefault = true } = options
   const [authState] = useAtom(authAtom)
 
@@ -87,15 +85,10 @@ const useItem = (
   const [localStorageItem, setLocalStorageItem] = useAtom(localStorageItemAtom)
   const [backendItem, setBackendItem] = useState<ItemDTO | null>(null)
 
-  const [image, setImage] = useState<ImageDTO | null | undefined>(null)
-  const [localStorageImage, setLocalStorageImage] = useAtom(localStorageImageAtom)
-
   const [itemError, setItemError] = useState<any>(null)
   const [isLoadingItem, setIsLoadingItem] = useState(false)
 
   let returnItem = (persist === true && localStorageItem ? localStorageItem : item) || null
-  let returnImage = (persist === true ? localStorageImage : image) || null
-  let imageId = returnItem?.imageId || null
 
   useEffect(() => {
     DEBUG && console.log('itemId changed =>', itemId)
@@ -119,11 +112,6 @@ const useItem = (
           if ((localStorageItemIsSameAsFetched && !localStorageItemIsNewer) || !localStorageItemIsSameAsFetched) {
             setLocalStorageItem(new ItemDTO({ ...fetchedItem, updatedAt: unixtimeNow() }))
             setItem(new ItemDTO(fetchedItem))
-
-            if (!fetchedItem.imageId) {
-              setImage(null)
-              setLocalStorageImage(null)
-            }
           }
         })
       } catch (error: any) {
@@ -163,10 +151,6 @@ const useItem = (
       //console.log('local storage item last updated at', dateStringFromUnixTime(localStorageItem?.updatedAt || 0))
       console.log('shouldFetchItem', shouldFetchItem)
       console.log('\n\n\n')
-
-      console.log('returnImage', returnImage)
-      console.log('imageId', imageId)
-      console.log('\n\n\n')
     }
 
     if (shouldFetchItem && !isLoadingItem) {
@@ -179,15 +163,17 @@ const useItem = (
 
   useEffect(() => {
     return () => {
-      DEBUG && console.log('ABORTING item & image fetch')
+      DEBUG && console.log('ABORTING item fetch')
       itemRequestControllerRef?.current?.abort()
-      imageRequestControllerRef?.current?.abort()
     }
   }, [])
 
+  DEBUG && console.log('useItem - given itemid', itemId)
+  DEBUG && console.log('useItem - returnItem item id', returnItem?.id)
+
   const itemState = {
     loadingItem: isLoadingItem,
-    item: returnItem ? returnItem : localStorageItem || null,
+    item: itemId === returnItem?.id ? returnItem : null,
     backendItem: backendItem?.clone(backendItem.toJSON()) || null,
     setBackendItem,
     ...(itemError ? { itemError: itemError } : {})
