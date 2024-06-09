@@ -226,12 +226,14 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
   }
 
   const selectItem = async (selected: ItemListOption | null | string) => {
-    if (selected && typeof selected !== 'string' && selected.id) {
-      navigate(`${config.cardPageRoot}/item/${selected.id}`)
-      setItemId(selected.id)
-    }
+    unstable_batchedUpdates(() => {
+      if (selected && typeof selected !== 'string' && selected.id) {
+        navigate(`${config.cardPageRoot}/item/${selected.id}`)
+        setItemId(selected.id)
+      }
 
-    setSelectedItem(selectedItem)
+      setSelectedItem(selectedItem)
+    })
   }
 
   const internalSetItem = (update: UpdateParam<ItemDTO | null>) => {

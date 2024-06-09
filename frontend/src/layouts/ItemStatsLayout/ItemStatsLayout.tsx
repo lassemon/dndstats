@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import config from 'config'
 import useImage from 'hooks/useImage'
+import { ITEM_DEFAULTS } from '@dmtool/application'
 
 const itemRepository = new ItemRepository()
 const imageRepository = new ImageRepository()
@@ -38,6 +39,9 @@ const ItemStatsLayout: React.FC = () => {
     if (itemId) {
       setItemId(itemId)
       navigate(`${config.cardPageRoot}/item/${itemId}`)
+    } else if (!urlItemId && !itemId) {
+      setItemId(ITEM_DEFAULTS.DEFAULT_ITEM_ID)
+      navigate(`${config.cardPageRoot}/item/${ITEM_DEFAULTS.DEFAULT_ITEM_ID}`)
     }
   }, [itemId])
 
