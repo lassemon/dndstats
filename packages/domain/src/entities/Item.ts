@@ -36,7 +36,7 @@ export interface ArmorItem extends BaseItem {
     dexterityBonus: boolean
     maximumBonus?: string
   }
-  strengthMinimum: string | null
+  strengthMinimum: number | null
   stealthDisadvantage: boolean
   properties: string[]
 }

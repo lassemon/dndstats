@@ -574,7 +574,7 @@ export class ItemDTO extends DTO<ItemDTO, ItemProperties> {
     properties.weight = properties.weight ?? null
     properties.properties = properties.properties ?? []
     properties.stealthDisadvantage = properties.stealthDisadvantage ?? false
-    properties.strengthMinimum = properties.strengthMinimum ?? ''
+    properties.strengthMinimum = properties.strengthMinimum ?? null
 
     properties.price = {
       ...{ quantity: '', unit: '' },

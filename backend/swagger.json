@@ -476,7 +476,8 @@
 						"type": "object"
 					},
 					"strengthMinimum": {
-						"type": "string",
+						"type": "number",
+						"format": "double",
 						"nullable": true
 					},
 					"stealthDisadvantage": {

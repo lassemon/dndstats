@@ -149,7 +149,14 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
               <InputLabel shrink id="size">
                 Size
               </InputLabel>
-              <Select labelId={'size'} id="size-select" value={shortDescription.size} label="Size" onChange={onChangeSize}>
+              <Select
+                labelId={'size'}
+                id="size-select"
+                name="size-select"
+                value={shortDescription.size}
+                label="Size"
+                onChange={onChangeSize}
+              >
                 {Object.values(Size).map((value, index) => {
                   return (
                     <MenuItem key={index} value={value}>
@@ -165,7 +172,14 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
               <InputLabel shrink id="type">
                 Type
               </InputLabel>
-              <Select labelId={'type'} id="type-select" value={shortDescription.type.toLowerCase()} label="Type" onChange={onChangeType}>
+              <Select
+                labelId={'type'}
+                id="type-select"
+                name="type-select"
+                value={shortDescription.type.toLowerCase()}
+                label="Type"
+                onChange={onChangeType}
+              >
                 {Object.values(MonsterType).map((value, index) => {
                   return (
                     <MenuItem key={index} value={value}>
@@ -184,6 +198,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
               <Select
                 labelId={'subtype'}
                 id="subtype-select"
+                name="subtype-select"
                 value={shortDescription.subtype.toLowerCase()}
                 label="Subtype"
                 onChange={onChangeSubtype}
@@ -209,6 +224,7 @@ const EditableShortDescription: React.FC<EditableShortDescriptionProps> = (props
               <Select
                 labelId={'alignment'}
                 id="alignment-select"
+                name="alignment-select"
                 value={shortDescription.alignment}
                 label="Armor Class"
                 onChange={onChangeAlignment}

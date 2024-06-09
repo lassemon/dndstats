@@ -359,7 +359,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
     internalSetItem((_item) => {
       if (_item) {
         const itemClone = _item.clone()
-        itemClone.strengthMinimum = String(event.target.value) ?? ''
+        itemClone.strengthMinimum = parseInt(event.target.value) ?? ''
         return itemClone
       }
     })
@@ -1064,6 +1064,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             <Select
               labelId={'visibility'}
               id="visibility-select"
+              name="visibility-select"
               value={item.visibility || (authState.loggedIn ? Visibility.LOGGED_IN : Visibility.PUBLIC)}
               label="Visibility"
               onChange={onChange('visibility')}
@@ -1129,6 +1130,8 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
           />
           <Select
             size="small"
+            id="price-unit-select"
+            name="price-unit-select"
             value={item?.price?.unit || 'gp'}
             onChange={onChangePrice('unit')}
             sx={{ '&& .MuiSelect-select': { textTransform: 'lowercase' } }}
@@ -1217,6 +1220,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             <Select
               labelId={'rarity'}
               id="rarity-select"
+              name="rarity-select"
               value={item.rarity || ''}
               label="Rarity"
               onChange={onChange('rarity')}
@@ -1261,6 +1265,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                 displayEmpty
                 labelId={'armorClass'}
                 id="armorClass-select"
+                name="armorClass-select"
                 value={item.armorClass?.base ? String(item.armorClass.base) : ''}
                 label="Armor Class"
                 onChange={onChangeArmorClassBase}
@@ -1286,6 +1291,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
                 displayEmpty
                 labelId={'strength-minimum'}
                 id="strength-minimum-select"
+                name="strength-minimum-select"
                 value={item.strengthMinimum ? String(item.strengthMinimum) : ''}
                 label="Strength Minimum"
                 onChange={onChangeStrengthMinimum}
@@ -1411,6 +1417,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               displayEmpty
               labelId={'damage dice amount'}
               id="damageDiceAmount-select"
+              name="damageDiceAmount-select"
               value={item.damageDiceAmount}
               label="Damage Dice Amount"
               onChange={onChangeDamageDiceAmount}
@@ -1435,6 +1442,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               displayEmpty
               labelId={'damage dice'}
               id="damageDice-select"
+              name="damageDice-select"
               value={item.damageDice}
               label="Damage Dice"
               onChange={onChangeDamageDice}
@@ -1461,6 +1469,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               displayEmpty
               labelId={'damage type'}
               id="damageType-select"
+              name="damageType-select"
               value={item.damage?.damageType || ''}
               label="Damage Type"
               onChange={onChangeDamageType}
@@ -1523,6 +1532,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               displayEmpty
               labelId={'two handed dice amount'}
               id="twoHandedDiceAmount-select"
+              name="twoHandedDiceAmount-select"
               value={item.twoHandedDiceAmount}
               label="Dice Amount (Two Handed )"
               onChange={onChangeTwoHandedDiceAmount}
@@ -1554,6 +1564,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               displayEmpty
               labelId={'two handed damage dice'}
               id="twoHandedDice-select"
+              name="twoHandedDice-select"
               value={item.twoHandedDice}
               label="Damage Dice (Two Handed)"
               onChange={onChangeTwoHandedDice}
@@ -1587,6 +1598,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
               displayEmpty
               labelId={'two handed damage type'}
               id="two-handed-damageType-select"
+              name="two-handed-damageType-select"
               value={item.twoHandedDamage?.damageType || ''}
               label="Damage Type (Two Handed)"
               onChange={onChangeTwoHandedDamageType}

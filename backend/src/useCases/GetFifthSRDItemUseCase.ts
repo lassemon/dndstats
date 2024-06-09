@@ -120,7 +120,7 @@ export class GetFifthSRDItemUseCase implements GetMonsterUseCaseInterface {
             dexterityBonus: fifthApiItemResponse.armor_class?.dex_bonus || false,
             maximumBonus: fifthApiItemResponse.armor_class?.max_bonus?.toString()
           },
-          strengthMinimum: fifthApiItemResponse.str_minimum?.toString() || null,
+          strengthMinimum: fifthApiItemResponse.str_minimum || null,
           stealthDisadvantage: fifthApiItemResponse.stealth_disadvantage || false,
           properties: fifthApiItemResponse.properties?.map((property) => property.index) || []
         }

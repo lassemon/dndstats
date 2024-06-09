@@ -299,6 +299,8 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
             <div>
               <Select
                 size="small"
+                id="price-comparison"
+                name="price-comparison"
                 disabled={loading}
                 value={priceComparison}
                 onChange={(event) => setPriceComparison(event.target.value)}
@@ -345,6 +347,8 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
               <InputLabel>unit</InputLabel>
               <Select
                 size="small"
+                id="price-unit"
+                name="price-unit"
                 label="unit"
                 value={priceUnit}
                 onChange={(event) => setPriceUnit(event.target.value)}
@@ -368,6 +372,8 @@ const ItemTableFilters: React.FC<TableFiltersProps> = ({ onSearch, filters, setF
             <div>
               <Select
                 size="small"
+                id="weight-comparison"
+                name="weight-comparison"
                 value={weightComparison}
                 onChange={(event) => setWeightComparison(event.target.value)}
                 sx={{ width: '6em' }}

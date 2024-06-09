@@ -161,7 +161,7 @@ const models: TsoaRoute.Models = {
             "attunement": {"dataType":"nestedObjectLiteral","nestedProperties":{"qualifier":{"dataType":"string"},"required":{"dataType":"boolean","required":true}},"required":true},
             "throwRange": {"dataType":"union","subSchemas":[{"ref":"ItemRange"},{"dataType":"enum","enums":[null]}]},
             "armorClass": {"dataType":"nestedObjectLiteral","nestedProperties":{"maximumBonus":{"dataType":"string"},"dexterityBonus":{"dataType":"boolean","required":true},"base":{"dataType":"string","required":true}},"required":true},
-            "strengthMinimum": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "strengthMinimum": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}],"required":true},
             "stealthDisadvantage": {"dataType":"boolean","required":true},
             "properties": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },

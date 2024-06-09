@@ -127,6 +127,7 @@ const AddCharacterInput: React.FC<AddCharacterInputProps> = (props) => {
           size="small"
           labelId={`type`}
           id="type-select"
+          name="type-select"
           value={character.player_type}
           label="Player type"
           onChange={onChangePlayerType}

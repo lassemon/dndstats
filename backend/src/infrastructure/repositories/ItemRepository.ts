@@ -526,7 +526,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
         ? { attunement: JSON.stringify(insertQuery.attunement) }
         : { attunement: JSON.stringify({ required: false }) }),
       ...(isArmor(insertQuery) && insertQuery.armorClass ? { armorClass: JSON.stringify(insertQuery.armorClass) } : { armorClass: null }),
-      strengthMinimum: (isArmor(insertQuery) && insertQuery.strengthMinimum) || '',
+      strengthMinimum: (isArmor(insertQuery) && insertQuery.strengthMinimum) || null,
       stealthDisadvantage: (isArmor(insertQuery) && insertQuery.stealthDisadvantage === true ? 1 : 0) || 0,
       ...(isWeapon(insertQuery) && insertQuery.damage ? { damage: JSON.stringify(insertQuery.damage) } : { damage: null }),
       ...(isWeapon(insertQuery) && insertQuery.twoHandedDamage
@@ -554,7 +554,7 @@ class ItemRepository implements DatabaseItemRepositoryInterface {
       ...(item.categories ? { categories: JSON.stringify(item.categories) } : { categories: '[]' }),
       ...(item.attunement ? { attunement: JSON.stringify(item.attunement) } : { attunement: JSON.stringify({ required: false }) }),
       ...(isArmor(item) && item.armorClass ? { armorClass: JSON.stringify(item.armorClass) } : { armorClass: null }),
-      strengthMinimum: (isArmor(item) && item.strengthMinimum) || '',
+      strengthMinimum: (isArmor(item) && item.strengthMinimum) || null,
       stealthDisadvantage: (isArmor(item) && item.stealthDisadvantage === true ? 1 : 0) || 0,
       ...(isWeapon(item) && item.damage ? { damage: JSON.stringify(item.damage) } : { damage: null }),
       ...(isWeapon(item) && item.twoHandedDamage ? { twoHandedDamage: JSON.stringify(item.twoHandedDamage) } : { twoHandedDamage: null }),

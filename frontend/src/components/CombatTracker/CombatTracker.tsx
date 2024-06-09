@@ -1219,6 +1219,7 @@ export const CombatTracker: React.FC = () => {
                             size="small"
                             labelId={`type-${index}`}
                             id="type-select"
+                            name="type-select"
                             value={character.player_type}
                             label="Age"
                             onChange={onChangeType(index)}

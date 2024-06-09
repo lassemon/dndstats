@@ -310,7 +310,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   {isArmor(item) && (
                     <Box sx={{ display: 'flex', flexDirection: 'column', margin: '0.6em 0 0 0', gap: '0.2em' }}>
                       {item.armorClass_label && <TinyStat title="AC" value={item.armorClass_label} noMargins />}
-                      {!!parseInt(item.strengthMinimum || '0') && <TinyStat title="Minimum STR" value={item.strengthMinimum} noMargins />}
+                      {!!item.strengthMinimum && <TinyStat title="Minimum STR" value={item.strengthMinimum} noMargins />}
                       {item.stealthDisadvantage === true && <TinyStat title="Stealth" value={'Disadvantage'} noMargins />}
                     </Box>
                   )}

@@ -174,6 +174,7 @@ const EditableArmorClass: React.FC<EditableArmorClassProps> = (props) => {
                     <Select
                       labelId={'armor-class-type'}
                       id="type-select"
+                      name="type-select"
                       value={armorClass.type}
                       label="Armor Class"
                       onChange={onChangeType(index)}
