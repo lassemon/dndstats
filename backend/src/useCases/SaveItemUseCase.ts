@@ -67,7 +67,7 @@ export class SaveItemUseCase implements SaveItemUseCaseInterface {
     //await this.removeImageFromItemUseCase.execute({ itemId: item.id, userId, unknownError, invalidArgument })
     let savedImage = null
     if (image) {
-      image.metadata.fileName = item.name.replaceAll(' ', '').toLowerCase()
+      image.metadata.fileName = item.id.replaceAll(' ', '').toLowerCase()
       if (creatingNewItem) {
         image.metadata.id = uuid()
         image.metadata.createdBy = userId

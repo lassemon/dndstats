@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { ImageStorageServiceInterface } from './ImageStorageServiceInterface'
 import { Logger } from '@dmtool/common'
+import sanitize from 'sanitize-filename'
 
 const logger = new Logger('ImageStorageService')
 
@@ -19,7 +20,8 @@ export class ImageStorageService implements ImageStorageServiceInterface {
   }
 
   writeImageBufferToFile(imageBuffer: Buffer, fileName: string) {
-    const outputPath = `${imagesBasePath}/${fileName}`
+    const sanitizedFileName = sanitize(fileName)
+    const outputPath = `${imagesBasePath}/${sanitizedFileName}`
     fs.writeFile(outputPath, imageBuffer, (err) => {
       if (err) {
         console.error('Failed to save the image file:', err)
