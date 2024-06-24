@@ -8,8 +8,14 @@ const imagesBasePath = process.env.IMAGES_BASE_PATH || './images'
 
 webp.grant_permission()
 
+const defaultOptions = {
+  width: 320,
+  height: 320
+}
+
 export class ImageProcessingService implements ImageProcessingServiceInterface {
-  async resizeImage(buffer: Buffer, resizeOptions: { width: number }) {
+  async resizeImage(buffer: Buffer, resizeOptions: { width: number; height?: number }) {
+    const options = { ...defaultOptions, ...resizeOptions }
     try {
       // Detect the MIME type of the image
       const type = await fileType.fromBuffer(buffer)
@@ -30,7 +36,12 @@ export class ImageProcessingService implements ImageProcessingServiceInterface {
 
         // Resize the PNG buffer using Jimp
         const image = await Jimp.read(pngBuffer)
-        await image.resize(resizeOptions.width, Jimp.AUTO)
+        const ratio = Math.min(options.width / image.getWidth(), options.height / image.getHeight())
+        const width = image.getWidth() * ratio
+        const height = image.getHeight() * ratio
+        image.filterType(Jimp.PNG_FILTER_NONE)
+        image.resize(width, height, Jimp.RESIZE_NEAREST_NEIGHBOR)
+
         const resizedBuffer = await image.getBufferAsync(Jimp.MIME_PNG)
 
         // Cleanup temporary files
@@ -39,9 +50,15 @@ export class ImageProcessingService implements ImageProcessingServiceInterface {
 
         return resizedBuffer
       } else {
-        // Process non-WebP images directly with Jimp
         const image = await Jimp.read(buffer)
-        await image.resize(resizeOptions.width, Jimp.AUTO)
+        const ratio = Math.min(options.width / image.getWidth(), options.height / image.getHeight())
+        const width = image.getWidth() * ratio
+        const height = image.getHeight() * ratio
+
+        // Process non-WebP images directly with Jimp
+        image.filterType(Jimp.PNG_FILTER_NONE)
+        image.resize(width, height, Jimp.RESIZE_NEAREST_NEIGHBOR)
+
         return await image.getBufferAsync(Jimp.MIME_PNG)
       }
     } catch (error) {
