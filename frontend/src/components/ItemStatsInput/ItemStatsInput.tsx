@@ -589,7 +589,6 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
 
             const newImageDTO = new ImageDTO(newImage)
             setItem(itemToSave.clone({ imageId: newImageDTO.id }))
-            navigate(`${config.cardPageRoot}/item/`)
             return newImageDTO
           })
         }

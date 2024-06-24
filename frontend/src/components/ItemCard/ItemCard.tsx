@@ -26,6 +26,7 @@ const useStyles = makeStyles()((theme) => {
       margin: '0 auto',
       position: 'relative',
       flex: '1 1 auto',
+      minHeight: '320px',
       '&:before': {
         content: '" "',
         display: 'block',
@@ -44,8 +45,9 @@ const useStyles = makeStyles()((theme) => {
       },
       '& > img': {
         zIndex: '2',
-        width: '100%',
-        minWidth: '320px'
+        maxWidth: '320px',
+        width: '80%',
+        margin: '0 auto'
       },
       '& > div': {
         alignItems: 'center',
