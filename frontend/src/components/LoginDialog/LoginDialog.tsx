@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   Button,
-  CircularProgress,
+  LinearProgress,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -174,13 +174,13 @@ const LoginDialog: React.FC<LoginDialogProps> = (props) => {
             )
           }}
         />
-        {loading && <CircularProgress size={25} />}
+        {loading && <LinearProgress color="secondary" />}
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={closeLoginDialog}>
+        <Button variant="contained" onClick={closeLoginDialog} disabled={loading}>
           Cancel
         </Button>
-        <Button variant="contained" onClick={handleLogin}>
+        <Button variant="contained" onClick={handleLogin} disabled={loading}>
           Login
         </Button>
       </DialogActions>
