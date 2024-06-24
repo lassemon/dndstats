@@ -46,8 +46,8 @@ const useStyles = makeStyles()((theme) => {
       '& > img': {
         zIndex: '2',
         maxWidth: '320px',
-        width: '80%',
-        margin: '0 auto'
+        margin: '0 auto',
+        objectFit: 'scale-down'
       },
       '& > div': {
         alignItems: 'center',
