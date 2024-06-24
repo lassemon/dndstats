@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import config from 'config'
 import useImage from 'hooks/useImage'
 import { ITEM_DEFAULTS } from '@dmtool/application'
+import { Skeleton } from '@mui/material'
 
 const itemRepository = new ItemRepository()
 const imageRepository = new ImageRepository()
@@ -72,16 +73,20 @@ const ItemStatsLayout: React.FC = () => {
       screenshotMode={screenshotMode}
       alwaysPortrait={lockToPortrait}
       statsComponent={
-        <ItemStats
-          item={item}
-          image={image}
-          loadingImage={loadingImage}
-          loadingItem={loadingItem}
-          savingItem={savingItem}
-          showSecondaryCategories={showSecondaryCategories}
-          hideBgBrush={hideBgBrush}
-          screenshotMode={screenshotMode}
-        />
+        loadingItem && !item ? (
+          <Skeleton variant="rounded" width="100%" height={400} animation="wave" />
+        ) : (
+          <ItemStats
+            item={item}
+            image={image}
+            loadingImage={loadingImage}
+            loadingItem={loadingItem}
+            savingItem={savingItem}
+            showSecondaryCategories={showSecondaryCategories}
+            hideBgBrush={hideBgBrush}
+            screenshotMode={screenshotMode}
+          />
+        )
       }
       inputComponent={
         <ItemStatsInput

@@ -28,7 +28,7 @@ import {
   useTheme
 } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import ItemCard from 'components/ItemCard'
@@ -393,7 +393,7 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
   const [open, setOpen] = useState(externalOpen || false)
   const [loadingItem, setLoadingItem] = useState(false)
   const [imageId, setImageId] = useState<string | null>(null)
-  const [{ image, loading: loadingImage }, , reloadImage] = useImage(imageRepository, imageId)
+  const [{ image, loading: loadingImage }] = useImage(imageRepository, imageId)
   const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
   const navigate = useNavigate()
   const { classes } = useStyles()
@@ -407,6 +407,8 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
   const isLarge = useMediaQuery(theme.breakpoints.down('xl'))
 
   const itemCardPadding = isLarge ? '5%' : '20%'
+
+  const itemRequestControllerRef = useRef<AbortController | null>(null)
 
   useEffect(() => {
     setLocalItem(item)
@@ -425,8 +427,10 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
   useEffect(() => {
     const getItem = async (_id: string, _source: `${Source}`) => {
       setLoadingItem(true)
+      const controller = new AbortController()
+      itemRequestControllerRef.current = controller
       try {
-        const fifthEditionItem = await itemRepository.getByIdAndSource(_id, _source)
+        const fifthEditionItem = await itemRepository.getByIdAndSource(_id, _source, { signal: controller.signal })
         // this if is to prevent setting the default item as the item on the row
         if (fifthEditionItem.id === _id) {
           setLocalItem(new ItemDTO(fifthEditionItem))
@@ -441,6 +445,12 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
       getItem(localItem.id, localItem.source)
     }
   }, [open])
+
+  useEffect(() => {
+    return () => {
+      itemRequestControllerRef?.current?.abort()
+    }
+  }, [])
 
   const redirectToItemStats = () => {
     navigate(`${config.cardPageRoot}/item/${localItem.id}`)
