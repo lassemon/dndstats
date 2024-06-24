@@ -13,8 +13,13 @@ const defaultOptions = {
   height: 320
 }
 
+interface ResizeOptions {
+  width: number
+  height?: number
+}
+
 export class ImageProcessingService implements ImageProcessingServiceInterface {
-  async resizeImage(buffer: Buffer, resizeOptions: { width: number; height?: number }) {
+  async resizeImage(buffer: Buffer, resizeOptions: ResizeOptions) {
     const options = { ...defaultOptions, ...resizeOptions }
     try {
       // Detect the MIME type of the image
@@ -35,13 +40,7 @@ export class ImageProcessingService implements ImageProcessingServiceInterface {
         const pngBuffer = await fs.promises.readFile(outputPngPath)
 
         // Resize the PNG buffer using Jimp
-        const image = await Jimp.read(pngBuffer)
-        const ratio = Math.min(options.width / image.getWidth(), options.height / image.getHeight())
-        const width = image.getWidth() * ratio
-        const height = image.getHeight() * ratio
-        image.filterType(Jimp.PNG_FILTER_NONE)
-        image.resize(width, height, Jimp.RESIZE_NEAREST_NEIGHBOR)
-
+        const image = this.setImageResizeOptions(await Jimp.read(pngBuffer), options)
         const resizedBuffer = await image.getBufferAsync(Jimp.MIME_PNG)
 
         // Cleanup temporary files
@@ -50,15 +49,7 @@ export class ImageProcessingService implements ImageProcessingServiceInterface {
 
         return resizedBuffer
       } else {
-        const image = await Jimp.read(buffer)
-        const ratio = Math.min(options.width / image.getWidth(), options.height / image.getHeight())
-        const width = image.getWidth() * ratio
-        const height = image.getHeight() * ratio
-
-        // Process non-WebP images directly with Jimp
-        image.filterType(Jimp.PNG_FILTER_NONE)
-        image.resize(width, height, Jimp.RESIZE_NEAREST_NEIGHBOR)
-
+        const image = this.setImageResizeOptions(await Jimp.read(buffer), options)
         return await image.getBufferAsync(Jimp.MIME_PNG)
       }
     } catch (error) {
@@ -70,5 +61,22 @@ export class ImageProcessingService implements ImageProcessingServiceInterface {
   async getBufferMimeType(buffer: Buffer) {
     const extractedFileType = await fileType.fromBuffer(buffer)
     return extractedFileType?.mime
+  }
+
+  private setImageResizeOptions = (image: Jimp, options: ResizeOptions): Jimp => {
+    const maxWidth = options.width
+    let maxHeight = options.height || defaultOptions.height
+    if (image.getWidth() > image.getHeight()) {
+      maxHeight = 480
+    }
+    const ratio = Math.min(maxWidth / image.getWidth(), maxHeight / image.getHeight())
+    const width = image.getWidth() * ratio
+    const height = image.getHeight() * ratio
+
+    // Process non-WebP images directly with Jimp
+    image.filterType(Jimp.PNG_FILTER_NONE)
+    image.resize(width, height, Jimp.RESIZE_NEAREST_NEIGHBOR)
+
+    return image
   }
 }

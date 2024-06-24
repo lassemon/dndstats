@@ -9,8 +9,12 @@ export class BrowserImageProcessingService implements BrowserImageProcessingServ
   resizeImage(base64Image: string, resizeOptions: BrowserImageProcessingOptions, callback: (base64Image: string) => void) {
     const options = { ...defaultOptions, ...resizeOptions }
 
-    var img = document.createElement('img')
+    var img = new Image()
     img.src = base64Image
+
+    if (img.naturalWidth > img.naturalHeight) {
+      options.maxHeight = 480
+    }
 
     // When the event "onload" is triggered we can resize the image.
     img.onload = function () {
