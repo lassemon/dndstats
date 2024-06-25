@@ -49,8 +49,9 @@ import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/Ite
 import { TablePaginationActionsProps } from '@mui/material/TablePagination/TablePaginationActions'
 import { Source, Visibility } from '@dmtool/domain'
 import config from 'config'
-import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore'
-import UnfoldLessIcon from '@mui/icons-material/UnfoldLess'
+
+import OpenInFullIcon from '@mui/icons-material/OpenInFull'
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import { Order, uuid } from '@dmtool/common'
 import { ItemSortableKeys } from '@dmtool/domain'
 import { boldTextPart } from 'utils/utils'
@@ -80,12 +81,12 @@ const ExpandCollapseTableCell: React.FC<{ closeAll: () => void; openAll: () => v
     <TableCell sx={{ width: '0%', textAlign: 'right', maxWidth: '3%' }}>
       <Tooltip title="Close all" placement="top-end">
         <IconButton onClick={closeAll}>
-          <UnfoldLessIcon />
+          <CloseFullscreenIcon />
         </IconButton>
       </Tooltip>
       <Tooltip title="Open all" placement="top-end">
         <IconButton onClick={openAll}>
-          <UnfoldMoreIcon />
+          <OpenInFullIcon />
         </IconButton>
       </Tooltip>
     </TableCell>
