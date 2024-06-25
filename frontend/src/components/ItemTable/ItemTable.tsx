@@ -448,7 +448,7 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
 
   useEffect(() => {
     return () => {
-      itemRequestControllerRef?.current?.abort()
+      itemRequestControllerRef?.current?.abort(`item ${item.id} row unmounted`)
     }
   }, [])
 
