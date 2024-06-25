@@ -36,6 +36,7 @@ const useStyles = makeStyles()((theme) => {
       alignItems: 'center',
       position: 'relative',
       maxWidth: '120px',
+      maxHeight: '140px',
       '&:before': {
         content: '" "',
         display: 'block',
