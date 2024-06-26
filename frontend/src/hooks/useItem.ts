@@ -1,4 +1,4 @@
-import { HttpItemRepositoryInterface, ITEM_DEFAULTS, ImageDTO, ItemDTO } from '@dmtool/application'
+import { HttpItemRepositoryInterface, ITEM_DEFAULTS, ItemDTO } from '@dmtool/application'
 import { unixtimeNow } from '@dmtool/common'
 import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
 import { useAtom } from 'jotai'
@@ -42,27 +42,6 @@ const localStorageItemAtom = atomWithStorage<ItemDTO | null | undefined>(
   },
   { getOnInit: true }
 )
-const localStorageImageAtom = atomWithStorage<ImageDTO | null | undefined>(
-  'localImageAtom',
-  null,
-  {
-    getItem: (key, initialValue) => {
-      const storedItem = JSON.parse(localStorage.getItem(key) || 'null')
-      return storedItem ? new ImageDTO(storedItem) : initialValue
-    },
-    setItem: (key, newValue) => {
-      if (newValue === null) {
-        localStorage.removeItem(key)
-      } else {
-        localStorage.setItem(key, JSON.stringify({ ...newValue?.toJSON(), updatedAt: unixtimeNow() }))
-      }
-    },
-    removeItem: (key) => {
-      localStorage.removeItem(key)
-    }
-  },
-  { getOnInit: true }
-)
 
 export interface UseItemWithImageOptions {
   persist?: boolean
@@ -74,6 +53,7 @@ const useItem = (
   itemId?: string,
   options: UseItemWithImageOptions = { persist: false, useDefault: true }
 ): UseItemReturn => {
+  DEBUG && console.log('useItem setup id:', itemId)
   const { persist, useDefault = true } = options
   const [authState] = useAtom(authAtom)
 
@@ -138,6 +118,7 @@ const useItem = (
       console.log('\n\n\n')
       console.log('itemIdExists', itemIdExists)
       console.log('itemIdIsTheSameAsSavedItem', itemIdIsTheSameAsSavedItem)
+      console.log('isNewItem', isNewItem)
       console.log('itemExists', itemExists)
       console.log('authState.loggedIn', authState.loggedIn)
       console.log('persist', persist)

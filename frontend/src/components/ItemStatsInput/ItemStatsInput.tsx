@@ -238,8 +238,12 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
 
   const internalSetItem = (update: UpdateParam<ItemDTO | null>) => {
     let parsedValue = update instanceof Function ? update(item) : update
-    if (parsedValue?.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || (parsedValue && !authState.loggedIn)) {
-      setItem(parsedValue.clone({ id: uuid(), source: Source.HomeBrew }))
+    if (parsedValue && !authState.loggedIn) {
+      const newId = uuid()
+      unstable_batchedUpdates(() => {
+        setItem(parsedValue.clone({ id: newId, source: Source.HomeBrew }))
+        setItemId(newId) // set item id here so that useItem props id is the same as the returnItem inside the hook
+      })
     } else {
       setItem(parsedValue?.clone({ source: Source.HomeBrew }) || null)
     }
@@ -560,8 +564,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
     const imageFile = (event.target.files || [])[0]
 
     if (item && imageFile) {
-      const shouldGenerateNewId = item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || item.id === ITEM_DEFAULTS.NEW_ITEM_ID
-      const itemToSave = shouldGenerateNewId ? item.clone({ id: uuid() }) : item.clone()
+      const itemToSave = item.clone()
       const reader = new FileReader()
 
       reader.onload = (event) => {
@@ -588,7 +591,10 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             }).parseForSaving(imageBase64)
 
             const newImageDTO = new ImageDTO(newImage)
-            setItem(itemToSave.clone({ imageId: newImageDTO.id }))
+            unstable_batchedUpdates(() => {
+              setItem(itemToSave.clone({ imageId: newImageDTO.id }))
+              setItemId(itemToSave.id) // set item id here so that useItem props id is the same as the returnItem inside the hook
+            })
             return newImageDTO
           })
         }
@@ -619,14 +625,18 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
       visibility: authState.loggedIn ? Visibility.LOGGED_IN : Visibility.PUBLIC,
       updatedAt: unixtimeNow()
     })
-    setItem(newItem)
-    setImage(null)
-    navigate(`${config.cardPageRoot}/item/${newItem.id}`)
+    unstable_batchedUpdates(() => {
+      setItemId(newItem.id) // set item id here so that useItem props id is the same as the returnItem inside the hook
+      setItem(newItem)
+      setImage(null)
+      navigate(`${config.cardPageRoot}/item/${newItem.id}`)
+    })
   }
 
   const onSave = (_item: ItemDTO | null, callback?: () => void) => {
     if (_item) {
-      const newItem = _item.clone()
+      const shouldGenerateNewId = _item.id === ITEM_DEFAULTS.DEFAULT_ITEM_ID || _item.id === ITEM_DEFAULTS.NEW_ITEM_ID
+      const newItem = shouldGenerateNewId ? _item.clone({ id: uuid() }) : _item.clone()
 
       if (errorState) {
         setError(null)
@@ -642,6 +652,7 @@ export const ItemStatsInput: React.FC<ItemStatsInputProps> = ({
             unstable_batchedUpdates(() => {
               setBackendItem(new ItemDTO(itemSaveResponse.item))
               setItem(new ItemDTO(itemSaveResponse.item))
+              setItemId(itemSaveResponse.item.id) // set item id here so that useItem props id is the same as the returnItem inside the hook
               setImage(itemSaveResponse.image ? new ImageDTO(itemSaveResponse.image) : null)
               setSuccess({ message: 'Item saved succesfully!' })
             })
