@@ -85,8 +85,6 @@ const atomWithAsyncStorage = <T extends unknown>(key: string, initialValue: T, p
 
 export const authAtom = atomWithAsyncStorage<AuthState>('authState', { loggedIn: false })
 
-export const BLAAAitemAtom = atomWithAsyncStorage<typeof defaultItem | null>('itemState', defaultItem)
-
 export const spellAtom = atomWithAsyncStorage<typeof defaultSpell | null>('spellState', defaultSpell)
 
 export const weaponAtom = atomWithAsyncStorage<typeof defaultWeapon | null>('weaponState', defaultWeapon)

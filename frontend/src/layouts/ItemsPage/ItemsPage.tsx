@@ -11,12 +11,44 @@ import { useAtom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import _ from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { makeStyles } from 'tss-react/mui'
+import AppsIcon from '@mui/icons-material/Apps'
+import TableRowsIcon from '@mui/icons-material/TableRows'
+import { Box, IconButton, Tooltip } from '@mui/material'
+import TinyItemCardWithImage from 'components/TinyItemCard/TinyItemCardWithImage'
+import { castToEnum } from '@dmtool/application'
+import { unstable_batchedUpdates } from 'react-dom'
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     margin: '2em'
+  },
+  gridContainer: {
+    flex: '1 1 120px',
+    boxSizing: 'border-box'
+  },
+  gridCard: {
+    width: '15em',
+    border: '2px solid #d3c7a6',
+    background: theme.status.light,
+    '&&': {
+      fontSize: '12px',
+      '&:hover': {
+        '& > .stats-background': {
+          backgroundBlendMode: 'multiply',
+          boxShadow: '0.1rem 0 0.2rem #89857f,-0.1rem 0 0.2rem #89857f'
+        },
+        opacity: '0.9',
+        cursor: 'pointer'
+      }
+    },
+    '&&&': {
+      img: {
+        width: 'auto',
+        minWidth: 'auto'
+      }
+    }
   }
 }))
 
@@ -25,6 +57,11 @@ export const defaultFilters = {
   pageNumber: 0,
   orderBy: 'name',
   order: Order.ASCENDING
+}
+
+enum ListViewMode {
+  TABLE = 'table',
+  GRID = 'grid'
 }
 
 const itemRepository = new ItemRepository()
@@ -43,6 +80,28 @@ const localStorageFiltersAtom = atomWithStorage<ItemSearchRequest>(
         localStorage.removeItem(key)
       } else {
         localStorage.setItem(key, JSON.stringify({ ...newValue }))
+      }
+    },
+    removeItem: (key) => {
+      localStorage.removeItem(key)
+    }
+  },
+  { getOnInit: true }
+)
+
+const localStorageViewModeAtom = atomWithStorage<`${ListViewMode}`>(
+  'localItemsViewModeAtom',
+  ListViewMode.TABLE,
+  {
+    getItem: (key, initialValue) => {
+      const storedViewMode = castToEnum(localStorage.getItem(key), ListViewMode, ListViewMode.TABLE)
+      return storedViewMode || initialValue
+    },
+    setItem: (key, newValue) => {
+      if (newValue === null) {
+        localStorage.removeItem(key)
+      } else {
+        localStorage.setItem(key, newValue)
       }
     },
     removeItem: (key) => {
@@ -129,14 +188,52 @@ const convertFiltersToUrlSearchParams = (itemTableFilters: ItemSearchRequest, lo
   }
 }
 
+interface ListViewSelectionProps {
+  onClick: (mode: `${ListViewMode}`) => void
+  listViewMode: `${ListViewMode}`
+}
+
+const ListViewSelection: React.FC<ListViewSelectionProps> = ({ onClick, listViewMode }) => {
+  const internalOnClick = (mode: `${ListViewMode}`) => () => {
+    onClick(mode)
+  }
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <Tooltip title="Table View" disableInteractive placement="top-end">
+        <IconButton
+          sx={{ borderRadius: 0 }}
+          color={listViewMode === ListViewMode.TABLE ? 'secondary' : 'default'}
+          size="large"
+          onClick={internalOnClick('table')}
+        >
+          <TableRowsIcon fontSize="inherit" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Grid View" disableInteractive placement="top-end">
+        <IconButton
+          sx={{ borderRadius: 0 }}
+          color={listViewMode === ListViewMode.GRID ? 'secondary' : 'default'}
+          size="large"
+          onClick={internalOnClick('grid')}
+        >
+          <AppsIcon fontSize="inherit" />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  )
+}
+
 const ItemsPage: React.FC = () => {
+  const navigate = useNavigate()
   const { classes } = useStyles()
 
   const fetchItemsControllerRef = useRef<AbortController | null>(null)
 
   const [localStorageFilters, setLocalStorageFilters] = useAtom(localStorageFiltersAtom)
+  const [localStorageViewMode, setLocalStorageViewMode] = useAtom(localStorageViewModeAtom)
 
   const [itemList, setItemList] = useState<ItemDTO[]>([])
+  const [listViewMode, setListViewMode] = useState<`${ListViewMode}`>(localStorageViewMode)
   const [loadingItemList, setLoadingItemList] = useState(false)
   let [searchParams, setSearchParams] = useSearchParams()
 
@@ -192,30 +289,66 @@ const ItemsPage: React.FC = () => {
     fetchAndSetItems(allFilters)
   }
 
+  const onChangeMode = (mode: `${ListViewMode}`) => {
+    unstable_batchedUpdates(() => {
+      setListViewMode(mode)
+      setLocalStorageViewMode(mode)
+    })
+  }
+
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: (typeof ItemSortableKeys)[number]) => {
     const isAsc = itemTableFilters.orderBy === property && itemTableFilters.order === 'asc'
     setItemTableFilters({ ...defaultFilters, ...itemTableFilters, order: isAsc ? Order.DESCENDING : Order.ASCENDING, orderBy: property })
+  }
+
+  const goToItem = (itemId?: string) => {
+    if (itemId) {
+      navigate(`/card/item/${itemId}`, { replace: true })
+    }
   }
 
   return (
     <div className={classes.root}>
       <PageHeader>Items</PageHeader>
       <ItemTableFilters onSearch={onSearch} filters={itemTableFilters} setFilters={setItemTableFilters} loading={loadingItemList} />
-      <ItemTable
-        itemRepository={itemRepository}
-        items={itemList}
-        imageRepository={imageRepository}
-        setItemList={setItemList}
-        pageNumber={itemTableFilters.pageNumber && totalCount > 0 ? itemTableFilters.pageNumber : defaultFilters.pageNumber}
-        itemsPerPage={itemTableFilters.itemsPerPage || defaultFilters.itemsPerPage}
-        search={itemTableFilters.search}
-        setItemTableFilters={setItemTableFilters}
-        onRequestSort={handleRequestSort}
-        order={itemTableFilters.order}
-        orderBy={itemTableFilters.orderBy}
-        totalCount={totalCount}
-        loading={loadingItemList}
-      />
+      <ListViewSelection onClick={onChangeMode} listViewMode={listViewMode} />
+      {listViewMode === ListViewMode.TABLE ? (
+        <ItemTable
+          itemRepository={itemRepository}
+          items={itemList}
+          imageRepository={imageRepository}
+          setItemList={setItemList}
+          pageNumber={itemTableFilters.pageNumber && totalCount > 0 ? itemTableFilters.pageNumber : defaultFilters.pageNumber}
+          itemsPerPage={itemTableFilters.itemsPerPage || defaultFilters.itemsPerPage}
+          search={itemTableFilters.search}
+          setItemTableFilters={setItemTableFilters}
+          onRequestSort={handleRequestSort}
+          order={itemTableFilters.order}
+          orderBy={itemTableFilters.orderBy}
+          totalCount={totalCount}
+          loading={loadingItemList}
+        />
+      ) : (
+        <Box
+          sx={{
+            margin: '2em 0 0 0',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gap: '1em',
+            padding: '1em',
+            background: 'rgba(245, 245, 245, 0.7)',
+            border: '2px solid #d3c7a6'
+          }}
+        >
+          {itemList.map((item, index) => {
+            return (
+              <div key={`${item.id}-${index}`} onClick={() => goToItem(item.id)}>
+                <TinyItemCardWithImage item={item} className={classes.gridCard} />
+              </div>
+            )
+          })}
+        </Box>
+      )}
     </div>
   )
 }

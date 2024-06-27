@@ -99,8 +99,8 @@ const MyItemsPage: React.FC = () => {
         <Box
           sx={{
             margin: '2em 0 0 0',
-            display: 'flex',
-            flexWrap: 'wrap',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
             gap: '1em',
             padding: '1em',
             background: 'rgba(245, 245, 245, 0.7)',

@@ -59,4 +59,4 @@ export type { PageStatsResponse } from './interfaces/http/PageStats'
 export { ITEM_DEFAULTS } from './enums/defaults/ItemDefaults'
 
 export { Encryption } from './security/Encryption'
-export { isWeapon, isArmor, isFifthESRDEquipment, isFifthESRDMagicItem } from './utils/typeutils'
+export { isWeapon, isArmor, isFifthESRDEquipment, isFifthESRDMagicItem, castToEnum } from './utils/typeutils'
