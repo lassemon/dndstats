@@ -36,6 +36,7 @@ const useStyles = makeStyles()((theme) => {
       alignItems: 'center',
       position: 'relative',
       maxWidth: '120px',
+      minHeight: '120px',
       maxHeight: '140px',
       '&:before': {
         content: '" "',
@@ -46,7 +47,6 @@ const useStyles = makeStyles()((theme) => {
         opacity: '0.6',
         width: '100%',
         height: '100%',
-        transform: 'translate(4%, -2%)',
         background: `url(${gray_brush_bg})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
@@ -55,8 +55,7 @@ const useStyles = makeStyles()((theme) => {
       },
       '& > img': {
         zIndex: '2',
-        width: '100%',
-        margin: '0.5em 0'
+        margin: '0 auto'
       },
       '& > div': {
         alignItems: 'center',
