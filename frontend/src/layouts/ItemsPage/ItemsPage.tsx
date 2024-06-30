@@ -1,7 +1,7 @@
 import { ItemDTO, ItemSearchRequest } from '@dmtool/application'
 import { Order } from '@dmtool/common'
 import { ComparisonOption, ItemSortableKeys } from '@dmtool/domain'
-import ItemTable from 'components/ItemTable/ItemTable'
+import ItemTable from 'components/ItemTable'
 import ItemTableFilters from 'components/ItemTable/ItemTableFilters'
 import PageHeader from 'components/PageHeader'
 import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
@@ -15,18 +15,15 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { makeStyles } from 'tss-react/mui'
 import AppsIcon from '@mui/icons-material/Apps'
 import TableRowsIcon from '@mui/icons-material/TableRows'
-import { Box, IconButton, Tooltip } from '@mui/material'
+import { Box, IconButton, TablePagination, Tooltip } from '@mui/material'
 import TinyItemCardWithImage from 'components/TinyItemCard/TinyItemCardWithImage'
 import { castToEnum } from '@dmtool/application'
 import { unstable_batchedUpdates } from 'react-dom'
+import ItemGrid from 'components/ItemGrid'
 
 const useStyles = makeStyles()((theme) => ({
   root: {
     margin: '2em'
-  },
-  gridContainer: {
-    flex: '1 1 120px',
-    boxSizing: 'border-box'
   },
   gridCard: {
     width: '15em',
@@ -191,33 +188,40 @@ const convertFiltersToUrlSearchParams = (itemTableFilters: ItemSearchRequest, lo
 interface ListViewSelectionProps {
   onClick: (mode: `${ListViewMode}`) => void
   listViewMode: `${ListViewMode}`
+  disabled?: boolean
 }
 
-const ListViewSelection: React.FC<ListViewSelectionProps> = ({ onClick, listViewMode }) => {
+const ListViewSelection: React.FC<ListViewSelectionProps> = ({ onClick, listViewMode, disabled }) => {
   const internalOnClick = (mode: `${ListViewMode}`) => () => {
     onClick(mode)
   }
   return (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
       <Tooltip title="Table View" disableInteractive placement="top-end">
-        <IconButton
-          sx={{ borderRadius: 0 }}
-          color={listViewMode === ListViewMode.TABLE ? 'secondary' : 'default'}
-          size="large"
-          onClick={internalOnClick('table')}
-        >
-          <TableRowsIcon fontSize="inherit" />
-        </IconButton>
+        <span>
+          <IconButton
+            sx={{ borderRadius: 0 }}
+            color={listViewMode === ListViewMode.TABLE ? 'secondary' : 'default'}
+            size="large"
+            onClick={internalOnClick('table')}
+            disabled={disabled}
+          >
+            <TableRowsIcon fontSize="inherit" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Grid View" disableInteractive placement="top-end">
-        <IconButton
-          sx={{ borderRadius: 0 }}
-          color={listViewMode === ListViewMode.GRID ? 'secondary' : 'default'}
-          size="large"
-          onClick={internalOnClick('grid')}
-        >
-          <AppsIcon fontSize="inherit" />
-        </IconButton>
+        <span>
+          <IconButton
+            sx={{ borderRadius: 0 }}
+            color={listViewMode === ListViewMode.GRID ? 'secondary' : 'default'}
+            size="large"
+            onClick={internalOnClick('grid')}
+            disabled={disabled}
+          >
+            <AppsIcon fontSize="inherit" />
+          </IconButton>
+        </span>
       </Tooltip>
     </Box>
   )
@@ -311,7 +315,7 @@ const ItemsPage: React.FC = () => {
     <div className={classes.root}>
       <PageHeader>Items</PageHeader>
       <ItemTableFilters onSearch={onSearch} filters={itemTableFilters} setFilters={setItemTableFilters} loading={loadingItemList} />
-      <ListViewSelection onClick={onChangeMode} listViewMode={listViewMode} />
+      <ListViewSelection onClick={onChangeMode} listViewMode={listViewMode} disabled={loadingItemList} />
       {listViewMode === ListViewMode.TABLE ? (
         <ItemTable
           itemRepository={itemRepository}
@@ -329,25 +333,15 @@ const ItemsPage: React.FC = () => {
           loading={loadingItemList}
         />
       ) : (
-        <Box
-          sx={{
-            margin: '2em 0 0 0',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-            gap: '1em',
-            padding: '1em',
-            background: 'rgba(245, 245, 245, 0.7)',
-            border: '2px solid #d3c7a6'
-          }}
-        >
-          {itemList.map((item, index) => {
-            return (
-              <div key={`${item.id}-${index}`} onClick={() => goToItem(item.id)}>
-                <TinyItemCardWithImage item={item} className={classes.gridCard} />
-              </div>
-            )
-          })}
-        </Box>
+        <ItemGrid
+          items={itemList}
+          totalCount={totalCount}
+          pageNumber={itemTableFilters.pageNumber && totalCount > 0 ? itemTableFilters.pageNumber : defaultFilters.pageNumber}
+          itemsPerPage={itemTableFilters.itemsPerPage || defaultFilters.itemsPerPage}
+          loading={loadingItemList}
+          setItemTableFilters={setItemTableFilters}
+          goToItem={goToItem}
+        />
       )}
     </div>
   )
