@@ -78,22 +78,28 @@ const useItem = (
         const controller = new AbortController()
         itemRequestControllerRef.current = controller
         DEBUG && console.log('getting item by id  =>', _itemId)
-        const fetchedItem = await itemRepository.getById(_itemId, { signal: controller.signal })
-
-        unstable_batchedUpdates(() => {
-          setIsLoadingItem(false)
-          const localStorageItemIsSameAsFetched = fetchedItem.id === localStorageItem?.id && fetchedItem.source === localStorageItem.source
-          const localStorageItemIsNewer = (fetchedItem?.updatedAt || 0) < (localStorageItem?.updatedAt || -1)
-          setBackendItem(new ItemDTO(fetchedItem))
-
-          DEBUG && console.log('localStorageItemIsSameAsFetched', localStorageItemIsSameAsFetched)
-          DEBUG && console.log('localStorageItemIsNewer', localStorageItemIsNewer)
-
-          if ((localStorageItemIsSameAsFetched && !localStorageItemIsNewer) || !localStorageItemIsSameAsFetched) {
-            setLocalStorageItem(new ItemDTO({ ...fetchedItem, updatedAt: unixtimeNow() }))
-            setItem(new ItemDTO(fetchedItem))
-          }
+        const fetchedItem = await itemRepository.getById(_itemId, { signal: controller.signal }).catch((error) => {
+          setError(error)
+          return null
         })
+
+        if (fetchedItem) {
+          unstable_batchedUpdates(() => {
+            setIsLoadingItem(false)
+            const localStorageItemIsSameAsFetched =
+              fetchedItem.id === localStorageItem?.id && fetchedItem.source === localStorageItem.source
+            const localStorageItemIsNewer = (fetchedItem?.updatedAt || 0) < (localStorageItem?.updatedAt || -1)
+            setBackendItem(new ItemDTO(fetchedItem))
+
+            DEBUG && console.log('localStorageItemIsSameAsFetched', localStorageItemIsSameAsFetched)
+            DEBUG && console.log('localStorageItemIsNewer', localStorageItemIsNewer)
+
+            if ((localStorageItemIsSameAsFetched && !localStorageItemIsNewer) || !localStorageItemIsSameAsFetched) {
+              setLocalStorageItem(new ItemDTO({ ...fetchedItem, updatedAt: unixtimeNow() }))
+              setItem(new ItemDTO(fetchedItem))
+            }
+          })
+        }
       } catch (error: any) {
         unstable_batchedUpdates(() => {
           setIsLoadingItem(false)
