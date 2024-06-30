@@ -242,10 +242,10 @@ const withHasImage = (hasImage?: boolean | null) => (queryBuilder: Knex.QueryBui
 
 const withWordSearch = (wordSearch?: string) => (queryBuilder: Knex.QueryBuilder) => {
   if (wordSearch) {
-    queryBuilder.andWhere(function () {
-      queryBuilder.orWhereILike('items.name', `%${wordSearch}%`)
-      queryBuilder.orWhereILike('items.shortDescription', `%${wordSearch}%`)
-      queryBuilder.orWhereILike('items.mainDescription', `%${wordSearch}%`)
+    queryBuilder.andWhere(function (_queryBuilder) {
+      _queryBuilder.whereILike('items.name', `%${wordSearch}%`)
+      _queryBuilder.orWhereILike('items.shortDescription', `%${wordSearch}%`)
+      _queryBuilder.orWhereILike('items.mainDescription', `%${wordSearch}%`)
     })
   }
 }

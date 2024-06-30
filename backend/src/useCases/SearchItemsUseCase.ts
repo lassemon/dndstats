@@ -29,7 +29,6 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
     try {
       const getAllFifthSRDItemsUseCase = new GetAllFifthSRDItemsUseCase(fifthApiService)
       const isAnyFilterDefined = this.anyFilterDefined(itemSearchRequest)
-      console.log('isAnyFilterDefined', isAnyFilterDefined)
 
       const shouldGetAllFifthApiItems = !isAnyFilterDefined
 
