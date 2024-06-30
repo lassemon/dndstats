@@ -35,6 +35,7 @@ const useStyles = makeStyles()((theme) => {
       display: 'flex',
       alignItems: 'center',
       position: 'relative',
+      width: '100%',
       maxWidth: '120px',
       minHeight: '120px',
       maxHeight: '140px',
