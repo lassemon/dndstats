@@ -29,7 +29,8 @@ const useStyles = makeStyles()((theme) => {
       width: '100%',
       flex: '1 1 auto',
       display: 'flex',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     imageContainer: {
       display: 'flex',
@@ -51,12 +52,13 @@ const useStyles = makeStyles()((theme) => {
         background: `url(${gray_brush_bg})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
-        backgroundSize: '140%',
+        backgroundSize: '130%',
         zIndex: '1'
       },
       '& > img': {
         zIndex: '2',
-        margin: '0 auto'
+        margin: '1em auto',
+        maxHeight: '140px'
       },
       '& > div': {
         alignItems: 'center',
@@ -185,7 +187,7 @@ export const TinyItemCard: React.FC<TinyItemCardProps> = ({
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
               {item.createdByUserName && (
-                <Typography variant="body2" sx={{ fontSize: '0.6em', margin: '1em  0 0 0' }}>
+                <Typography variant="body2" sx={{ fontSize: '0.6em' }}>
                   Created by:{' '}
                   <span style={{ fontWeight: '600', margin: '0.4em 0 0 0' }}>{item.getCreatedByUserName(authState.user?.id)}</span>
                 </Typography>

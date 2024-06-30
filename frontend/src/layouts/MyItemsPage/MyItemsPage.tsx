@@ -2,7 +2,7 @@ import { ItemDTO } from '@dmtool/application'
 import { Box, Skeleton } from '@mui/material'
 import PageHeader from 'components/PageHeader'
 import TinyItemCardWithImage from 'components/TinyItemCard/TinyItemCardWithImage'
-import { authAtom } from 'infrastructure/dataAccess/atoms'
+import { authAtom, errorAtom } from 'infrastructure/dataAccess/atoms'
 import ItemRepository from 'infrastructure/repositories/ItemRepository'
 import { useAtom } from 'jotai'
 import React, { useEffect, useRef, useState } from 'react'
@@ -43,6 +43,7 @@ const MyItemsPage: React.FC = () => {
   const [authState] = useAtom(authAtom)
   const navigate = useNavigate()
   const { classes } = useStyles()
+  const [, setError] = useAtom(React.useMemo(() => errorAtom, []))
 
   const myItemsRequestControllerRef = useRef<AbortController | null>(null)
 
@@ -62,13 +63,22 @@ const MyItemsPage: React.FC = () => {
           const controller = new AbortController()
           myItemsRequestControllerRef.current = controller
 
-          const myItemsResponse = await itemRepository.getAllForUser({ signal: controller.signal }).finally(() => {
-            setLoadingMyItems(false)
-          })
-          unstable_batchedUpdates(() => {
-            setMyItems(myItemsResponse.map((item) => new ItemDTO(item)))
-          })
+          const myItemsResponse = await itemRepository
+            .getAllForUser({ signal: controller.signal })
+            .finally(() => {
+              setLoadingMyItems(false)
+            })
+            .catch((error) => {
+              setError(error)
+              return null
+            })
+          if (myItemsResponse) {
+            unstable_batchedUpdates(() => {
+              setMyItems(myItemsResponse.map((item) => new ItemDTO(item)))
+            })
+          }
         } catch (error) {
+          setLoadingMyItems(false)
           console.error('Failed to fetch page stats', error)
         }
       }
@@ -100,7 +110,7 @@ const MyItemsPage: React.FC = () => {
           sx={{
             margin: '2em 0 0 0',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+            gridTemplateColumns: `repeat(${loadingMyItems ? '6, 0fr' : 'auto-fill, minmax(180px, 1fr)'})`,
             gap: '1em',
             padding: '1em',
             background: 'rgba(245, 245, 245, 0.7)',
