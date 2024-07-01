@@ -3,8 +3,8 @@ import { IllegalArgument, UnknownError } from '@dmtool/domain'
 
 const logger = new Logger('ErrorUtil')
 
-export const throwUnknownError = (e?: any) => {
-  logger.error(`Failed to process use case due to error: ${e}`, e.stack ? e.stack : e)
+export const throwUnknownError = (useCaseName: string, e?: any) => {
+  logger.error(`Failed to process use case ${useCaseName} due to error: ${e}`, e.stack ? e.stack : e)
   throw new UnknownError(500, 'Unknown Error')
 }
 

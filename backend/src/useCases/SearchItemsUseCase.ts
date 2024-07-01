@@ -73,7 +73,7 @@ export class SearchItemsUseCase implements SearchItemsUseCaseInterface {
         totalCount: totalCount + (shouldGetAllFifthApiItems ? itemCountFromExternalResources : 0)
       }
     } catch (error) {
-      unknownError(error)
+      unknownError('SearchItemsUseCase', error)
       throw error
     }
   }

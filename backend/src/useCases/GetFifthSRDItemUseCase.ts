@@ -49,7 +49,7 @@ export class GetFifthSRDItemUseCase implements GetMonsterUseCaseInterface {
 
       return await this.itemRepository.create(parsedFithApiItem, parsedFithApiItem.createdBy)
     } catch (error) {
-      unknownError(error)
+      unknownError('GetFifthSRDItemUseCase', error)
       throw error
     }
   }
