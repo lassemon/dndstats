@@ -44,15 +44,21 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import { FrontendItemRepositoryInterface } from 'infrastructure/repositories/ItemRepository'
 import { Source, Visibility } from '@dmtool/domain'
 import config from 'config'
+import { yellow } from '@mui/material/colors'
 
 import OpenInFullIcon from '@mui/icons-material/OpenInFull'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import { Order, uuid } from '@dmtool/common'
 import { ItemSortableKeys } from '@dmtool/domain'
-import { boldTextPart } from 'utils/utils'
+import { highlightTextPart } from 'utils/utils'
 import { TablePaginationActions } from './TablePaginationActions'
 
 const useStyles = makeStyles()(() => ({
+  root: {
+    '& .highlight': {
+      backgroundColor: yellow['A200']
+    }
+  },
   itemCard: {
     '&&&': {
       margin: '0'
@@ -126,6 +132,7 @@ export const ItemTable: React.FC<ItemTableProps> = ({
   const isPortrait = orientation === 'portrait'
   const [allOpen, setAllOpen] = useState(false)
   const [resetKey, setResetKey] = useState('')
+  const { classes } = useStyles()
 
   const isSmall = useMediaQuery(theme.breakpoints.down('md'))
   const isMedium = useMediaQuery(theme.breakpoints.down('lg'))
@@ -181,6 +188,7 @@ export const ItemTable: React.FC<ItemTableProps> = ({
     <>
       <TableContainer
         component={Paper}
+        className={classes.root}
         sx={{
           borderRadius: 'unset',
           background: 'transparent',
@@ -502,7 +510,7 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
           scope="row"
           sx={{ '&&': { whiteSpace: 'normal' }, width: '0%', minWidth: '6em', textTransform: 'capitalize' }}
           onClick={() => setOpen(!open)}
-          dangerouslySetInnerHTML={{ __html: boldTextPart(localItem.name, search) || localItem.name }}
+          dangerouslySetInnerHTML={{ __html: highlightTextPart(localItem.name, search) || localItem.name }}
         />
         <TableCell
           component="th"
@@ -655,6 +663,7 @@ const TableItemRow: React.FC<TableItemRowProps> = ({
                   image={image}
                   loadingImage={loadingImage}
                   className={`${classes.itemCard}${item.source === Source.FifthESRD ? ` ${classes.fifthEItemCard}` : ''}`}
+                  highlightText={search}
                 />
               )}
             </Box>

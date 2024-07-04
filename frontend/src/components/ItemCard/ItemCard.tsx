@@ -5,8 +5,6 @@ import TaperedRule from 'components/TaperedRule'
 import _ from 'lodash'
 import React from 'react'
 import { makeStyles } from 'tss-react/mui'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import gray_brush_bg from 'assets/gray_brush_bg.png'
 import Markdown from 'components/Markdown'
 
@@ -243,6 +241,7 @@ interface ItemCardProps {
   hideBgBrush?: boolean
   inlineFeatures?: boolean
   className?: string
+  highlightText?: string
 }
 
 export const ItemCard: React.FC<ItemCardProps> = ({
@@ -254,7 +253,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   loadingImage = false,
   showSecondaryCategories = true,
   hideBgBrush = false,
-  className = ''
+  className = '',
+  highlightText = ''
 }) => {
   const { classes } = useStyles()
 
@@ -306,7 +306,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   </h2>
                   {item.shortDescription_label && (
                     <Box sx={{ fontSize: '0.95em', fontStyle: 'italic' }}>
-                      <Markdown text={item.shortDescription_label} />
+                      <Markdown text={item.shortDescription_label} highlightText={highlightText} />
                     </Box>
                   )}
                   {isArmor(item) && (
@@ -318,7 +318,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   )}
                   {item.mainDescription && isWeapon(item) && (
                     <div style={{ whiteSpace: 'pre-wrap' }}>
-                      <Markdown text={item.mainDescription} />
+                      <Markdown text={item.mainDescription} highlightText={highlightText} />
                     </div>
                   )}
                   {item.features?.map((feature: any, key: any) => {
@@ -393,9 +393,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                 {item.mainDescription && !isWeapon(item) && (
                   <MainDescription>
                     <DescriptionBlock>
-                      <ReactMarkdown className={classes.markdown} remarkPlugins={[remarkGfm]}>
-                        {item.mainDescription}
-                      </ReactMarkdown>
+                      <Markdown className={classes.markdown} text={item.mainDescription} highlightText={highlightText} />
                     </DescriptionBlock>
                   </MainDescription>
                 )}
