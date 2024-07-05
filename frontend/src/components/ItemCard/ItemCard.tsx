@@ -439,7 +439,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                   }
                 }}
               >
-                <Skeleton variant="rounded" width={220} height={320} animation="wave" sx={{ margin: '3em 1em 1em 1em' }} />
+                <Skeleton variant="rounded" width={220} height={260} animation="wave" sx={{ margin: '1em 1em 1em 1em' }} />
               </Box>
             )}
           </Box>
