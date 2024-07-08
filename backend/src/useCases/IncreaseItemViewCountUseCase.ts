@@ -1,4 +1,4 @@
-import { DatabaseItemViewsRepositoryInterface, UseCaseInterface, UseCaseOptionsInterface } from '@dmtool/application'
+import { DatabaseItemViewsRepositoryInterface, ITEM_DEFAULTS, UseCaseInterface, UseCaseOptionsInterface } from '@dmtool/application'
 import { Source } from '@dmtool/domain'
 
 export interface IncreaseItemViewCountUseCaseOptions extends UseCaseOptionsInterface {
@@ -11,6 +11,8 @@ export type IncreaseItemViewCountUseCaseInterface = UseCaseInterface<IncreaseIte
 export class IncreaseItemViewCountUseCase implements IncreaseItemViewCountUseCaseInterface {
   constructor(private readonly itemViewRepository: DatabaseItemViewsRepositoryInterface) {}
   async execute({ itemId, source }: IncreaseItemViewCountUseCaseOptions): Promise<void> {
-    await this.itemViewRepository.incrementViewCount(itemId, source)
+    if (itemId !== ITEM_DEFAULTS.DEFAULT_ITEM_ID) {
+      await this.itemViewRepository.incrementViewCount(itemId, source)
+    }
   }
 }
