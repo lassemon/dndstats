@@ -39,10 +39,10 @@ const ItemStatsLayout: React.FC = () => {
     // useItemWithImage does not load the item from the backend
     if (itemId) {
       setItemId(itemId)
-      navigate(`${config.cardPageRoot}/item/${itemId}`)
+      navigate(`${config.cardPageRoot}/item/${itemId}`, { replace: true })
     } else if (!urlItemId && !itemId) {
       setItemId(ITEM_DEFAULTS.DEFAULT_ITEM_ID)
-      navigate(`${config.cardPageRoot}/item/${ITEM_DEFAULTS.DEFAULT_ITEM_ID}`)
+      navigate(`${config.cardPageRoot}/item/${ITEM_DEFAULTS.DEFAULT_ITEM_ID}`, { replace: true })
     }
   }, [itemId])
 

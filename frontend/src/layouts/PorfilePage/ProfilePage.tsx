@@ -90,7 +90,7 @@ const ProfilePage: React.FC = () => {
   }, [])
 
   const goToMyItems = () => {
-    navigate(`/myitems`, { replace: true })
+    navigate(`/myitems`)
   }
 
   if (!user) {

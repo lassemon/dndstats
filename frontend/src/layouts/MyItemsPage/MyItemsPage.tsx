@@ -49,7 +49,7 @@ const MyItemsPage: React.FC = () => {
 
   const goToItem = (itemId?: string) => {
     if (itemId) {
-      navigate(`/card/item/${itemId}`, { replace: true })
+      navigate(`/card/item/${itemId}`)
     }
   }
 
