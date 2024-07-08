@@ -77,7 +77,7 @@ const Login: React.FC = () => {
   }
 
   const onLogout = () => {
-    logout().finally(() => {
+    return logout().then(() => {
       setAuthState(() => {
         return {
           loggedIn: false,
@@ -89,8 +89,9 @@ const Login: React.FC = () => {
 
   const closeLoggedOutDialog = () => {
     setLoggedOutDialogOpen(false)
-    onLogout()
-    window.location.reload()
+    onLogout().finally(() => {
+      window.location.reload()
+    })
   }
 
   return (
