@@ -71,6 +71,8 @@ export default class Authentication {
             throw new ApiError(401, 'Unauthorized')
           }
           if (user) {
+            console.log('====user', user)
+            console.log('====user2', JSON.stringify(user))
             req.user = user
           }
           // Proceed to the next middleware, user might be undefined if not authenticated

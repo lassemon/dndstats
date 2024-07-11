@@ -1,7 +1,7 @@
 version: '3.8'
 
 volumes:
-  data:
+  dmtool_data:
 
 services:
   db:
@@ -13,7 +13,7 @@ services:
       MARIADB_USER: development
       MARIADB_PASSWORD: development123
     volumes:
-      - data:/var/lib/mysql
+      - dmtool_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - '3306:3306'
