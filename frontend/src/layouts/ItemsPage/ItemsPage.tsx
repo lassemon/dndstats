@@ -15,8 +15,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { makeStyles } from 'tss-react/mui'
 import AppsIcon from '@mui/icons-material/Apps'
 import TableRowsIcon from '@mui/icons-material/TableRows'
-import { Box, IconButton, TablePagination, Tooltip } from '@mui/material'
-import TinyItemCardWithImage from 'components/TinyItemCard/TinyItemCardWithImage'
+import { Box, IconButton, Tooltip } from '@mui/material'
 import { castToEnum } from '@dmtool/application'
 import { unstable_batchedUpdates } from 'react-dom'
 import ItemGrid from 'components/ItemGrid'
@@ -112,7 +111,7 @@ const getFiltersFromUrl = (searchParams: URLSearchParams): Partial<ItemSearchReq
   return _({
     itemsPerPage: parseInt(searchParams.get('itemsPerPage') || '') || undefined,
     pageNumber: parseInt(searchParams.get('pageNumber') || '') || undefined,
-    onlyMyItems: searchParams.get('onlyMyItems') ? Boolean(searchParams.get('onlyMyItems')) : undefined,
+    onlyMyItems: searchParams.get('onlyMyItems') ? searchParams.get('onlyMyItems') === 'true' : undefined,
     search: searchParams.get('search') || undefined,
     order: (searchParams.get('order') as `${Order}`) || undefined,
     orderBy: searchParams.get('orderBy') || undefined,
